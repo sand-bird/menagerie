@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://assets/images/sizing_centered.png" type="Texture" id=1]
+
+[node name="container" type="Container"]
+
+anchor/left = 3
+anchor/right = 3
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 240.0
+margin/top = 0.0
+margin/right = -240.0
+margin/bottom = 360.0
+
+[node name="center_align" type="TextureFrame" parent="."]
+
+anchor/left = 3
+anchor/right = 3
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 240.0
+margin/top = 0.0
+margin/right = -240.0
+margin/bottom = 360.0
+texture = ExtResource( 1 )
+stretch_mode = 0
+
+

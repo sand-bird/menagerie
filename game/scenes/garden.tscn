@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://assets/tiles/garden.png" type="Texture" id=1]
+
+[node name="garden" type="TextureFrame"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 359.0
+margin/bottom = 199.0
+texture = ExtResource( 1 )
+stretch_mode = 0
+
+
