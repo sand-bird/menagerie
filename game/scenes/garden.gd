@@ -7,9 +7,15 @@ extends TextureFrame
 func _ready():
 	var m = get_node("monster")
 	
-	# print(m.serialize().to_json())
+	var j = m.serialize().to_json()
+	var data = {}
+	data.parse_json(j)
+	
+	print(data)
+	m.deserialize(data)
+	
 	# m.serialize()
-	var test = utils.weighted_average([[100, 1], [1, 3]])
-	print("test weighted average: ", test)
-	print("iq: ", m.iq, " | size: ", m.size)
+	#var test = utils.weighted_average([[100, 1], [1, 3]])
+	#print("test weighted average: ", test)
+	#print("iq: ", m.iq.value, " | size: ", m.size)
 	pass

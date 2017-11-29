@@ -43,30 +43,34 @@ var social
 var Trait = preload("res://monster/traits.gd")
 
 # INT
-var iq
-var learning
+var iq = Trait.Iq.new()
+var learning = Trait.Learning.new()
 # VIT
-var size
-var strength
-var health
+var size = Trait.Size.new()
+var strength = Trait.Strength.new()
+var health = Trait.Health.new()
 # CON
-var composure
-var willpower
-var patience
+var composure = Trait.Composure.new()
+var willpower = Trait.Willpower.new()
+var patience = Trait.Patience.new()
 # CHA
-var confidence
-var beauty
-var poise
+var confidence = Trait.Confidence.new()
+var beauty = Trait.Beauty.new()
+var poise = Trait.Poise.new()
 # AMI
-var independence
-var empathy
-var kindness
-var arrogance
-var aggressiveness
+var independence = Trait.Independence.new()
+var empathy = Trait.Empathy.new()
+var kindness = Trait.Kindness.new()
+var arrogance = Trait.Arrogance.new()
+var aggressiveness = Trait.Aggressiveness.new()
+# SPR
+var happiness
+var actualization
+var loyalty
 # N/A
-var openness
-var appetite
-var sociability
+var openness = Trait.Openness.new()
+var appetite = Trait.Appetite.new()
+var sociability = Trait.Sociability.new()
 
 var traits = [
 	iq, learning, 
@@ -86,19 +90,27 @@ func serialize():
 		birthday = birthday,
 		traits = {}
 	}
-	for i in traits:
-		data.traits[i.name] = i.serialize()
+	#for i in traits:
+	#	data.traits[i.name] = i.serialize()
 	return data
 
-func _init():
-	iq = Trait.Iq.new(10)
+func deserialize(data):
+	print("-----------------------")
+	print("deserializing: ....")
+	print(data)
+	for i in data:
+		print(i, ": ", data[i])
+
+func _init(): pass
 
 func _ready(): pass
 
 func _process(delta): pass
 
-func choose_action():
+func decide_action():
 	# logic to select current and next action(s)
+    var stomach_priority = (max_status.stomach - status.stomach) / (max_status.stomach * 30) * 100
+    
 	var duration = 12
 	current_action = Action.new(Action.IDLE_ACTION, duration)
 	pass
@@ -106,7 +118,7 @@ func choose_action():
 func update_status():
 	# updates the pet's status meters (mood, hunger, etc)
 	pass
-	
+
 func update_preferences(): 
 	# updates pet's likes and dislikes via discipline
 	pass
@@ -114,7 +126,7 @@ func update_preferences():
 func update_attributes(): 
 	# INT, VIT, CON... via all sorts of stuff
 	pass
-	
+
 func walk(): pass
 
 func _on_focus():
