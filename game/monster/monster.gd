@@ -1,46 +1,97 @@
 extends Area2D
 var Action = load("res://scripts/action.gd")
 
-var attributes = {
-	INT: 0,
-	VIT: 0,
-	CON: 0,
-	CHA: 0,
-	AMI: 0,
-	SPR: 0
-}
+var name
+var species
+var color
+var birthday
+
+# ------------ #
+#  ATTRIBUTES  #
+# ------------ #
+
+var intelligence
+var vitality
+var constitution
+var charm
+var amiability
+var spirit
+
+var attributes = [
+	intelligence, vitality, constitution,
+	charm, amiability, spirit
+]
 
 # action pointers
 var past_actions = []
 var current_action
 var next_action
 
-# status (meters)
-var status = {
-	hunger: 0,
-	mood: 0,
-	energy: 0,
-	social: 0
-}
+# -------- #
+#  DRIVES  #
+# -------- #
 
-var traits = {
-	intelligence: 0,
-	size: 0,
-	strength: 0,
-	health: 0,
-	composure: 0,
-	patience: 0,
-	willpower: 0,
-	beauty: 0,
-	confidence: 0,
-	poise: 0,
-	empathy: 0,
-	kindness: 0,
-	independence: 0,
-	arrogance: 0,
-	openness: 0,
-	appetite: 0
-}
+var belly
+var mood
+var energy
+var social
+
+# -------- #
+#  TRAITS  #
+# -------- #
+
+var Trait = preload("res://monster/traits.gd")
+
+# INT
+var iq
+var learning
+# VIT
+var size
+var strength
+var health
+# CON
+var composure
+var willpower
+var patience
+# CHA
+var confidence
+var beauty
+var poise
+# AMI
+var independence
+var empathy
+var kindness
+var arrogance
+var aggressiveness
+# N/A
+var openness
+var appetite
+var sociability
+
+var traits = [
+	iq, learning, 
+	size, strength, health, 
+	composure, willpower, patience, 
+	confidence, beauty, poise, 
+	independence, empathy, kindness, 
+	arrogance, aggressiveness, 
+	openness, appetite, sociability
+]
+
+func serialize():
+	var data = {
+		name = name,
+		species = species,
+		color = color,
+		birthday = birthday,
+		traits = {}
+	}
+	for i in traits:
+		data.traits[i.name] = i.serialize()
+	return data
+
+func _init():
+	iq = Trait.Iq.new(10)
 
 func _ready(): pass
 
