@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=1]
-[ext_resource path="res://gui/monster_info.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ui/monster_info.tscn" type="PackedScene" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -35,7 +35,7 @@ func _on_pressed():
 	pass # replace with function body
 "
 
-[node name="gui" type="Container"]
+[node name="ui" type="Container"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -54,7 +54,6 @@ __meta__ = {
 
 [node name="monster_info" parent="." instance=ExtResource( 2 )]
 
-visibility/visible = false
 theme/theme = null
 custom_styles/panel = SubResource( 1 )
 

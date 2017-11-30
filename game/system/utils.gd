@@ -17,8 +17,8 @@ static func randi_thresh(anchor, threshold):
 	var raw_thresh = round(anchor * threshold)
 	return randi_range(anchor - raw_thresh, anchor + raw_thresh)
 
-static func randi_range(min, max):
-	return randi() % (max + min + 1)
+static func randi_range(minimum, maximum):
+	return randi() % (maximum + minimum + 1)
 
-static func randi(max):
-	return randi() % max + 1
+static func randi_qty(maximum):
+	return randi() % maximum + 1

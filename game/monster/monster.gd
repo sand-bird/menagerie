@@ -90,14 +90,11 @@ func serialize():
 		birthday = birthday,
 		traits = {}
 	}
-	#for i in traits:
-	#	data.traits[i.name] = i.serialize()
+	for i in traits:
+		data.traits[i.name] = i.serialize()
 	return data
 
 func deserialize(data):
-	print("-----------------------")
-	print("deserializing: ....")
-	print(data)
 	for i in data:
 		print(i, ": ", data[i])
 
@@ -109,8 +106,7 @@ func _process(delta): pass
 
 func decide_action():
 	# logic to select current and next action(s)
-    var stomach_priority = (max_status.stomach - status.stomach) / (max_status.stomach * 30) * 100
-    
+	# var stomach_priority = (max_status.stomach - status.stomach) / (max_status.stomach * 30) * 100
 	var duration = 12
 	current_action = Action.new(Action.IDLE_ACTION, duration)
 	pass

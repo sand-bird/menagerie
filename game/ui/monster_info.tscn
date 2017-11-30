@@ -1,8 +1,10 @@
 [gd_scene load_steps=6 format=1]
 
 [ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/sprites/heart.png" type="Texture" id=2]
-[ext_resource path="res://assets/sprites/bar.png" type="Texture" id=3]
+[ext_resource path="res://assets/images/heart.png" type="Texture" id=2]
+[ext_resource path="res://assets/images/bar.png" type="Texture" id=3]
+
+
 
 [sub_resource type="ImageTexture" id=1]
 

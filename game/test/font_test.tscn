@@ -1,7 +1,8 @@
 [gd_scene load_steps=3 format=1]
 
-[ext_resource path="res://scripts/font_test.gd" type="Script" id=1]
+[ext_resource path="res://test/font_test.gd" type="Script" id=1]
 [ext_resource path="res://assets/fonts/font.fnt" type="BitmapFont" id=2]
+
 
 [node name="font_test" type="ReferenceFrame"]
 
