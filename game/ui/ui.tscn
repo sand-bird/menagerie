@@ -1,37 +1,14 @@
-[gd_scene load_steps=16 format=1]
+[gd_scene load_steps=14 format=1]
 
-[ext_resource path="res://assets/fonts/font_kerned.fnt" type="BitmapFont" id=1]
-[ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=2]
-[ext_resource path="res://ui/cursor2.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/images/cursor_slightlylessbeige.png" type="Texture" id=4]
-[ext_resource path="res://assets/images/clock_text_background.png" type="Texture" id=5]
-[ext_resource path="res://assets/images/month_insets.png" type="Texture" id=6]
-[ext_resource path="res://assets/images/weather_circle.png" type="Texture" id=7]
-[ext_resource path="res://assets/images/clock.png" type="Texture" id=8]
-[ext_resource path="res://assets/images/clock_hand_spritesheet.png" type="Texture" id=9]
-[ext_resource path="res://assets/images/clock_pendulum_spritesheet2.png" type="Texture" id=10]
-
-[sub_resource type="GDScript" id=4]
-
-resource/name = "digital_clock"
-script/source = "extends Label
-
-func _ready():
-	Time.connect(\"hour_changed\", self, \"update_display\")
-	update_display()
-
-func update_display():
-	set_text(
-		get_display_hour(Time.hour) + \":00\"
-		+ \" \" + utils.capitalize(Time.get_day())
-		+ \", \" + utils.capitalize(Time.get_month())
-		+ \" \" + utils.ordinalize(Time.day + 1)
-		+ \" (year \" + str(Time.year + 1) + \")\"
-	)
-
-func get_display_hour(hour): # 0 to 23
-	if hour >= 10: return str(hour)
-	else: return \"0\" + str(hour)"
+[ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/images/clock_text_background.png" type="Texture" id=2]
+[ext_resource path="res://assets/fonts/font_kerned.fnt" type="BitmapFont" id=3]
+[ext_resource path="res://assets/images/month_insets.png" type="Texture" id=4]
+[ext_resource path="res://assets/images/weather_circle.png" type="Texture" id=5]
+[ext_resource path="res://assets/images/clock.png" type="Texture" id=6]
+[ext_resource path="res://assets/images/clock_hand_spritesheet.png" type="Texture" id=7]
+[ext_resource path="res://assets/images/clock_pendulum_spritesheet2.png" type="Texture" id=8]
+[ext_resource path="res://ui/cursor2.tscn" type="PackedScene" id=9]
 
 [sub_resource type="GDScript" id=2]
 
@@ -59,7 +36,7 @@ func _on_pressed():
 	new_monster.set_pos(utils.vrandi(garden.get_size()))
 	garden.add_child(new_monster)"
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=4]
 
 resource/name = "date_info"
 script/source = "extends TextureFrame
@@ -125,31 +102,6 @@ margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="digital_clock" type="Label" parent="debug"]
-
-anchor/top = 1
-anchor/bottom = 1
-hint/tooltip = "tooltip"
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 4.0
-margin/top = 15.0
-margin/right = 250.0
-margin/bottom = 4.0
-custom_fonts/font = ExtResource( 1 )
-custom_colors/font_color = Color( 0.929688, 0.929688, 0.929688, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = 1
-custom_constants/shadow_offset_y = 1
-text = "testing 123"
-valign = 2
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-script/script = SubResource( 4 )
-
 [node name="fullscreen" type="Button" parent="debug"]
 
 anchor/left = 1
@@ -160,7 +112,7 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-theme/theme = ExtResource( 2 )
+theme/theme = ExtResource( 1 )
 margin/left = 28.0
 margin/top = 18.0
 margin/right = 4.0
@@ -182,7 +134,7 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-theme/theme = ExtResource( 2 )
+theme/theme = ExtResource( 1 )
 margin/left = 58.0
 margin/top = 18.0
 margin/right = 31.0
@@ -193,10 +145,6 @@ shortcut = null
 text = "+M"
 flat = false
 script/script = SubResource( 3 )
-
-[node name="cursor" parent="." instance=ExtResource( 3 )]
-
-texture = ExtResource( 4 )
 
 [node name="garden_clock_hud" type="ReferenceFrame" parent="."]
 
@@ -223,9 +171,9 @@ margin/left = 110.0
 margin/top = 2.0
 margin/right = 24.0
 margin/bottom = 23.0
-texture = ExtResource( 5 )
+texture = ExtResource( 2 )
 stretch_mode = 0
-script/script = SubResource( 6 )
+script/script = SubResource( 4 )
 
 [node name="week_day" type="Label" parent="garden_clock_hud/date_info"]
 
@@ -237,7 +185,7 @@ margin/left = 8.0
 margin/top = 5.0
 margin/right = 35.0
 margin/bottom = 17.0
-custom_fonts/font = ExtResource( 1 )
+custom_fonts/font = ExtResource( 3 )
 custom_colors/font_color = Color( 0.355469, 0.27771, 0.27771, 1 )
 custom_colors/font_color_shadow = Color( 0.71875, 0.598022, 0.539062, 1 )
 custom_constants/shadow_offset_x = 0
@@ -259,7 +207,7 @@ margin/left = 56.0
 margin/top = 5.0
 margin/right = 81.0
 margin/bottom = 17.0
-custom_fonts/font = ExtResource( 1 )
+custom_fonts/font = ExtResource( 3 )
 custom_colors/font_color = Color( 0.355469, 0.27771, 0.27771, 1 )
 custom_colors/font_color_shadow = Color( 0.71875, 0.598022, 0.539062, 1 )
 custom_constants/shadow_offset_x = 0
@@ -287,7 +235,7 @@ __meta__ = {
 
 [node name="image" type="Sprite" parent="garden_clock_hud/date_info/month_inset"]
 
-texture = ExtResource( 6 )
+texture = ExtResource( 4 )
 centered = false
 vframes = 4
 hframes = 2
@@ -302,7 +250,7 @@ margin/left = -39.0
 margin/top = 18.0
 margin/right = -23.0
 margin/bottom = 34.0
-texture = ExtResource( 7 )
+texture = ExtResource( 5 )
 stretch_mode = 0
 
 [node name="event_circle" type="TextureFrame" parent="garden_clock_hud"]
@@ -315,7 +263,7 @@ margin/left = -54.0
 margin/top = 18.0
 margin/right = -38.0
 margin/bottom = 34.0
-texture = ExtResource( 7 )
+texture = ExtResource( 5 )
 stretch_mode = 0
 
 [node name="clock" type="TextureFrame" parent="garden_clock_hud"]
@@ -330,14 +278,14 @@ margin/left = 29.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 44.0
-texture = ExtResource( 8 )
+texture = ExtResource( 6 )
 stretch_mode = 0
 script/script = SubResource( 5 )
 
 [node name="hand" type="Sprite" parent="garden_clock_hud/clock"]
 
 transform/pos = Vector2( 15, 15 )
-texture = ExtResource( 9 )
+texture = ExtResource( 7 )
 vframes = 4
 hframes = 3
 region_rect = Rect2( 0, 0, 19, 19 )
@@ -345,10 +293,12 @@ region_rect = Rect2( 0, 0, 19, 19 )
 [node name="pendulum" type="Sprite" parent="garden_clock_hud/clock"]
 
 transform/pos = Vector2( 15, 35 )
-texture = ExtResource( 10 )
+texture = ExtResource( 8 )
 vframes = 2
 hframes = 2
 region_rect = Rect2( 0, 10, 11, 10 )
+
+[node name="cursor" parent="." instance=ExtResource( 9 )]
 
 [connection signal="pressed" from="debug/fullscreen" to="debug/fullscreen" method="_on_pressed"]
 

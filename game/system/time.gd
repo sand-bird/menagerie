@@ -7,8 +7,8 @@ signal week_changed
 signal month_changed
 signal year_changed
 
-const MS_IN_TICK = 40
-const TICKS_IN_HOUR = 16
+const ACTUAL_SECONDS_IN_TICK = 0.666
+const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24
 const DAYS_IN_WEEK = 7
 const DAYS_IN_MONTH = 21
@@ -20,26 +20,26 @@ const days = [ "monday", "tuesday", "wednesday",
 const months = [ "verne", "tempest", "zenith", 
 	"sol", "hearth", "hallow", "aurora", "rime" ]
 
-var ms = 0 setget _set_ms
+var actual_seconds = 0
 var tick = 0 setget _set_tick
-var hour = 0 setget _set_hour
+var hour = 6 setget _set_hour
 var day = 0 setget _set_day
 var day_of_week = 0
-var month = 0 setget _set_month
+var month = 1 setget _set_month
 var year = 0 setget _set_year
 
-func _ready(): set_fixed_process(true)
+func _ready(): set_process(true)
 
-func _fixed_process(delta): self.ms += 1
+func _process(delta):
+	actual_seconds += delta
+	if try_rollover(actual_seconds, ACTUAL_SECONDS_IN_TICK, "tick") == 0:
+		actual_seconds -= 1
 
 func try_rollover(new_value, units_per_next_unit, next_unit):
 	if new_value >= units_per_next_unit:
 		self[next_unit] += 1
 		return 0
 	else: return new_value
-
-func _set_ms(new):
-	ms = try_rollover(new, MS_IN_TICK, "tick")
 
 func _set_tick(new):
 	tick = try_rollover(new, TICKS_IN_HOUR, "hour")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=1]
 
-[ext_resource path="res://assets/sprites/cursor.png" type="Texture" id=1]
+[ext_resource path="res://assets/images/cursor.png" type="Texture" id=1]
 
 [sub_resource type="GDScript" id=1]
 
@@ -9,7 +9,7 @@ script/source = "# script: cursor (built-in)
 
 extends ReferenceFrame
 
-func _ready():	
+func _ready():
 	print(Input.get_connected_joysticks())
 	set_process(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
