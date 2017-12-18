@@ -1,18 +1,41 @@
-[gd_scene load_steps=2 format=1]
+[gd_scene load_steps=4 format=1]
 
-[ext_resource path="res://assets/tiles/garden.png" type="Texture" id=1]
+[ext_resource path="res://assets/images/Arkanos.png" type="Texture" id=1]
+[ext_resource path="res://monster/monster.tscn" type="PackedScene" id=2]
+[ext_resource path="res://system/camera.tscn" type="PackedScene" id=3]
 
-[node name="garden" type="TextureFrame"]
+[node name="garden" type="Control"]
 
-focus/ignore_mouse = true
+focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 359.0
-margin/bottom = 199.0
+margin/right = 272.0
+margin/bottom = 200.0
+
+[node name="background" type="TextureFrame" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = -441.0
+margin/top = -509.0
+margin/right = 839.0
+margin/bottom = 771.0
 texture = ExtResource( 1 )
 stretch_mode = 0
+
+[node name="monster" parent="." instance=ExtResource( 2 )]
+
+transform/pos = Vector2( 45, 35 )
+
+[node name="camera" parent="." instance=ExtResource( 3 )]
+
+[node name="color" type="CanvasModulate" parent="."]
+
+color = Color( 1, 1, 1, 1 )
 
 

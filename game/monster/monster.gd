@@ -1,5 +1,8 @@
-extends Area2D
-var Action = load("res://scripts/action.gd")
+extends KinematicBody2D
+# var Action = load("res://scripts/action.gd")
+
+var mother
+var father
 
 var name
 var species
@@ -22,7 +25,11 @@ var attributes = [
 	charm, amiability, spirit
 ]
 
-# action pointers
+# --------- #
+#  ACTIONS  #
+# --------- #
+var Action = preload("res://monster/action.gd")
+
 var past_actions = []
 var current_action
 var next_action
@@ -39,7 +46,6 @@ var social
 # -------- #
 #  TRAITS  #
 # -------- #
-
 var Trait = preload("res://monster/traits.gd")
 
 # INT
@@ -64,9 +70,9 @@ var kindness = Trait.Kindness.new()
 var arrogance = Trait.Arrogance.new()
 var aggressiveness = Trait.Aggressiveness.new()
 # SPR
-var happiness
-var actualization
-var loyalty
+var happiness = Trait.Happiness.new()
+var actualization = Trait.Actualization.new()
+var loyalty = Trait.Loyalty.new()
 # N/A
 var openness = Trait.Openness.new()
 var appetite = Trait.Appetite.new()
@@ -79,6 +85,7 @@ var traits = [
 	confidence, beauty, poise, 
 	independence, empathy, kindness, 
 	arrogance, aggressiveness, 
+	happiness, actualization, loyalty,
 	openness, appetite, sociability
 ]
 
@@ -98,17 +105,51 @@ func deserialize(data):
 	for i in data:
 		print(i, ": ", data[i])
 
-func _init(): pass
+#func _init(dad, mom):
+#	if dad: self.father = dad
+#	if mom: self.mother = mom
+#	birth()
+#	pass
 
-func _ready(): pass
+func update_z():
+	set_z(get_pos().y + get_item_rect().size.y)
 
-func _process(delta): pass
+func _ready(): 
+	add_to_group("monsters", true)
+	connect("item_rect_changed", self, "update_z")
+	set_fixed_process(true)
+	update_z()
+	choose_action()
 
-func decide_action():
+func test():
+	print("test connect success!!!")
+
+func done_test():
+	print("done test success!!")
+
+func _fixed_process(delta): 
+	if current_action: 
+		var action_status = current_action.execute()
+		if action_status == Action.FINISHED:
+			_on_action_finished()
+	# if !utils.veq(get_pos(), dest): walk(dest)
+	# else: wait(time)
+
+func birth():
+	print("A NEW BABY IS BORN!")
+	for trait in traits:
+		trait.calc_initial_value(self)
+	print("----------------------")
+	pass
+
+func choose_action():
 	# logic to select current and next action(s)
-	# var stomach_priority = (max_status.stomach - status.stomach) / (max_status.stomach * 30) * 100
-	var duration = 12
-	current_action = Action.new(Action.IDLE_ACTION, duration)
+	# var stomach_priority = (max_status.stomach - status.stomach) 
+	#   / (max_status.stomach * 30) * 100
+	# var duration = 12
+	# current_action = Action.new(Action.IDLE_ACTION, duration)
+	randomize()
+	current_action = Action.new(utils.randi_range(2, 8) * 100)
 	pass
 
 func update_status():
@@ -123,7 +164,8 @@ func update_attributes():
 	# INT, VIT, CON... via all sorts of stuff
 	pass
 
-func walk(): pass
+func walk(dest):
+	move(utils.vlerp(get_pos(), dest, 0.5))
 
 func _on_focus():
 	# touch input: first tap
@@ -167,10 +209,11 @@ func _on_discipline(discipline_type):
 	# decide whether to stop current action
 	pass
 
-func _on_action_finished(action):
-	update_status()
-	update_attributes()
-	past_actions.append(action)
+func _on_action_finished():
+#	print("action finished!")
+#	update_status()
+#	update_attributes()
+	past_actions.append(current_action)
 	if past_actions.size() > 5:
 		past_actions.pop_front()
 	if (next_action):

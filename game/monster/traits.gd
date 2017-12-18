@@ -1,4 +1,4 @@
-extends Node
+extends Object
 
 class Trait:
 	signal value_changed
@@ -21,7 +21,20 @@ class Trait:
 	func get_increase ():
 		return value - orig_value
 	
-	func init_value ():
+	func calc_initial_value (monster):
+		var v
+		if monster.father and monster.mother:
+			var dad_trait = monster.father[name].value
+			var mom_trait = monster.mother[name].value
+			var parent_avg = utils.avg([dad_trait, mom_trait])
+			print("father ", monster.father.name, "'s ", name, " is ", dad_trait, " | ",
+				"mother ", monster.mother.name, "'s ", name, " is ", mom_trait, " | average: ", parent_avg)
+			v = utils.rand_tri(min_value, max_value, parent_avg)
+		else:
+			v = utils.randi_range(min_value, max_value)
+		value = v
+		orig_value = v
+		print("baby's ", name, " is ", value)
 		pass
 	
 	func load_value (data):
