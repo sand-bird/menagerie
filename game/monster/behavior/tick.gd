@@ -30,6 +30,9 @@ func clode_action(action):
 func exit_action(action):
 	print("action exited: ", action)
 
+# for setting and getting from action nodes, so they don't
+# have to reach through the tick to get to the blackboard
+
 func set(key, value, action_id = null):
 	blackboard.set(key, value, tree.id, action_id)
 

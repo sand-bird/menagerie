@@ -1,17 +1,17 @@
 # class BaseAction
 
-var id
-var children = []
+const Status = Globals.ActionStatus
 
-func _init(children):
-	initialize(children)
+# todo: see if this works
+var id setget , 'get_instance_ID'
 
-func initialize(children):
-	id = generate_uuid()
-	if (children):
-		for child in children:
-			self.children.push(child)
-			# todo: test if loops by key or val
+func _init():
+	initialize()
+
+func initialize(): pass
+	# todo: see if we can call parent initialize in subclasses 
+	# or if we have to put uuid generation in a new function
+	# id = get_instance_ID()
 
 func execute(tick):
 	_enter(tick)
@@ -21,7 +21,7 @@ func execute(tick):
 	
 	var status = _tick(tick)
 	
-	if status != Status.RUNNING: # todo: make and import Status
+	if status != Status.RUNNING:
 		_close(tick)
 	
 	_exit(tick)
