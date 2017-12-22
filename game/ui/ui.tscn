@@ -33,7 +33,7 @@ const Monster = preload(\"res://monster/monster.tscn\")
 func _on_pressed():
 	var new_monster = Monster.instance()
 	var garden = get_tree().get_root().get_node(\"game\").get_node(\"garden\")
-	new_monster.set_pos(utils.vrandi(garden.get_size()))
+	new_monster.set_pos(Utils.vrandi(garden.get_size()))
 	garden.add_child(new_monster)"
 
 [sub_resource type="GDScript" id=4]
@@ -53,10 +53,10 @@ func _ready():
 
 func update_day(day):
 	week_day.set_text(Time.get_day().substr(0, 3).to_upper())
-	date.set_text(utils.ordinalize(day + 1))
+	date.set_text(Utils.ordinalize(day + 1))
 
 func update_month(month):
-	# month_inset.set_tooltip(utils.capitalize(Time.get_month()))
+	# month_inset.set_tooltip(Utils.capitalize(Time.get_month()))
 	month_inset.get_child(0).set_frame(month)"
 
 [sub_resource type="GDScript" id=5]

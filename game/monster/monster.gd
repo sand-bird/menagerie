@@ -151,7 +151,7 @@ func _fixed_process(delta):
 		var action_status = current_action.execute()
 		if action_status == Action.FINISHED:
 			_on_action_finished()
-	# if !utils.veq(get_pos(), dest): walk(dest)
+	# if !Utils.veq(get_pos(), dest): walk(dest)
 	# else: wait(time)
 
 # -----------------------------------------------------------
@@ -172,7 +172,7 @@ func choose_action():
 	# var duration = 12
 	# current_action = Action.new(Action.IDLE_ACTION, duration)
 	randomize()
-	current_action = Action.new(utils.randi_range(2, 8) * 100)
+	current_action = Action.new(Utils.randi_range(2, 8) * 100)
 	pass
 
 # -----------------------------------------------------------
@@ -196,7 +196,7 @@ func update_attributes():
 # -----------------------------------------------------------
 
 func walk(dest):
-	move(utils.vlerp(get_pos(), dest, 0.5))
+	move(Utils.vlerp(get_pos(), dest, 0.5))
 
 # -----------------------------------------------------------
 

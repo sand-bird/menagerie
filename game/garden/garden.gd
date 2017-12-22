@@ -13,7 +13,7 @@ func _ready():
 #	m.deserialize(data)
 	
 	# m.serialize()
-#	var test = utils.weighted_average([[100, 1], [1, 3]])
+#	var test = Utils.weighted_average([[100, 1], [1, 3]])
 #	print("test weighted average: ", test)
 #	print("iq: ", m.iq.value, " | size: ", m.size)
 	
@@ -21,8 +21,8 @@ func _ready():
 #	var results = {}
 	
 #	for i in range(1, 10000):
-#		var x = utils.weighted_avg([[utils.rand_tri(60, 90, 80), 1], [80, 3]])
-#		var x = utils.rand_parab(0, 100, 80)
+#		var x = Utils.weighted_avg([[Utils.rand_tri(60, 90, 80), 1], [80, 3]])
+#		var x = Utils.rand_parab(0, 100, 80)
 #		if results.has(x): results[x] += 1
 #		else: results[x] = 1
 	
