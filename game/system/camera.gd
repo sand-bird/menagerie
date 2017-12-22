@@ -63,15 +63,15 @@ func get_bounds():
 # 	base_pos = get_parent().get_global_pos() # i guess not???
 	base_pos = Vector2(0, 0)
 	parent_size = get_parent().get_size()
-	parent_center = base_pos + utils.vround(parent_size / 2)
+	parent_center = base_pos + Utils.vround(parent_size / 2)
 	center_pos = parent_center - screen_radius
 	
 	# calculate pos values for our bounds
 	var parent_min = base_pos
 	var parent_max = base_pos + parent_size
-	var bound_padding = utils.vmin(parent_size * 0.2, screen_size * 0.25)
-	min_pos = utils.vmin(utils.vround(parent_min - bound_padding), center_pos)
-	max_pos = utils.vmax(utils.vround(parent_max + bound_padding - screen_size), center_pos)
+	var bound_padding = Utils.vmin(parent_size * 0.2, screen_size * 0.25)
+	min_pos = Utils.vmin(Utils.vround(parent_min - bound_padding), center_pos)
+	max_pos = Utils.vmax(Utils.vround(parent_max + bound_padding - screen_size), center_pos)
 
 
 func do_drag_scroll():
@@ -89,13 +89,13 @@ func do_drag_scroll():
 func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_pos() - screen_radius
-	var direction = utils.vsign(heading)
-	var abs_heading = utils.vabs(heading)
+	var direction = Utils.vsign(heading)
+	var abs_heading = Utils.vabs(heading)
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 #		var move_delta = abs_heading / (screen_radius * SCROLL_ACCEL - abs_heading)
 		var move_delta = abs_heading
 		# update target position
-#		target_pos += utils.vround(move_delta * SCROLL_SPEED * direction)
+#		target_pos += Utils.vround(move_delta * SCROLL_SPEED * direction)
 #		target_pos += move_delta * SCROLL_SPEED * direction
 		var new_target_pos = get_pos() + move_delta * direction * SCROLL_SPEED
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
@@ -108,7 +108,7 @@ func _fixed_process(delta): pass
 	if Options.is_drag_scroll_enabled(): do_drag_scroll()
 	
 	# clamp target to camera bounds
-	target_pos = utils.vround(utils.vclamp(target_pos, min_pos, max_pos))
+	target_pos = Utils.vround(Utils.vclamp(target_pos, min_pos, max_pos))
 	
 	# lerp camera to target position
 	if get_pos() != target_pos:

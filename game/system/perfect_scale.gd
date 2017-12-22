@@ -34,7 +34,7 @@ func update_screen():
 	var scaled_size = base_size * scale
 	viewport.set_rect(Rect2(Vector2(0, 0), base_size))
 	if OS.is_window_maximized() or OS.is_window_fullscreen():
-		var gutter = utils.vfloor((OS.get_window_size() - scaled_size) / 2)
+		var gutter = Utils.vfloor((OS.get_window_size() - scaled_size) / 2)
 		viewport.set_render_target_to_screen_rect(Rect2(gutter, scaled_size))
 	else: OS.set_window_size(scaled_size)
 

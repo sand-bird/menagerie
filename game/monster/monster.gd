@@ -1,5 +1,8 @@
 extends KinematicBody2D
-# var Action = load("res://scripts/action.gd")
+
+# ===========================================================
+#                     P R O P E R T I E S
+# -----------------------------------------------------------
 
 var mother
 var father
@@ -9,9 +12,9 @@ var species
 var color
 var birthday
 
-# ------------ #
-#  ATTRIBUTES  #
-# ------------ #
+# ===========================================================
+#                     A T T R I B U T E S
+# -----------------------------------------------------------
 
 var intelligence
 var vitality
@@ -25,55 +28,55 @@ var attributes = [
 	charm, amiability, spirit
 ]
 
-# --------- #
-#  ACTIONS  #
-# --------- #
+# ===========================================================
+#                         M E M O R Y
+# -----------------------------------------------------------
 var Action = preload("res://monster/action.gd")
 
 var past_actions = []
 var current_action
 var next_action
 
-# -------- #
-#  DRIVES  #
-# -------- #
+# ===========================================================
+#                         D R I V E S 
+# -----------------------------------------------------------
 
 var belly
 var mood
 var energy
 var social
 
-# -------- #
-#  TRAITS  #
-# -------- #
+# ===========================================================
+#                         T R A I T S
+# -----------------------------------------------------------
 var Trait = preload("res://monster/traits.gd")
 
-# INT
+# INT -------------------------------------------------------
 var iq = Trait.Iq.new()
 var learning = Trait.Learning.new()
-# VIT
+# VIT -------------------------------------------------------
 var size = Trait.Size.new()
 var strength = Trait.Strength.new()
 var health = Trait.Health.new()
-# CON
+# CON -------------------------------------------------------
 var composure = Trait.Composure.new()
 var willpower = Trait.Willpower.new()
 var patience = Trait.Patience.new()
-# CHA
+# CHA -------------------------------------------------------
 var confidence = Trait.Confidence.new()
 var beauty = Trait.Beauty.new()
 var poise = Trait.Poise.new()
-# AMI
+# AMI -------------------------------------------------------
 var independence = Trait.Independence.new()
 var empathy = Trait.Empathy.new()
 var kindness = Trait.Kindness.new()
 var arrogance = Trait.Arrogance.new()
 var aggressiveness = Trait.Aggressiveness.new()
-# SPR
+# SPR -------------------------------------------------------
 var happiness = Trait.Happiness.new()
 var actualization = Trait.Actualization.new()
 var loyalty = Trait.Loyalty.new()
-# N/A
+# N/A -------------------------------------------------------
 var openness = Trait.Openness.new()
 var appetite = Trait.Appetite.new()
 var sociability = Trait.Sociability.new()
@@ -89,6 +92,10 @@ var traits = [
 	openness, appetite, sociability
 ]
 
+# ===========================================================
+#                        M E T H O D S
+# -----------------------------------------------------------
+
 func serialize():
 	var data = {
 		name = name,
@@ -101,6 +108,8 @@ func serialize():
 		data.traits[i.name] = i.serialize()
 	return data
 
+# -----------------------------------------------------------
+
 func deserialize(data):
 	for i in data:
 		print(i, ": ", data[i])
@@ -111,8 +120,12 @@ func deserialize(data):
 #	birth()
 #	pass
 
+# -----------------------------------------------------------
+
 func update_z():
 	set_z(get_pos().y + get_item_rect().size.y)
+
+# -----------------------------------------------------------
 
 func _ready(): 
 	add_to_group("monsters", true)
@@ -121,19 +134,27 @@ func _ready():
 	update_z()
 	choose_action()
 
+# -----------------------------------------------------------
+
 func test():
 	print("test connect success!!!")
 
+# -----------------------------------------------------------
+
 func done_test():
 	print("done test success!!")
+
+# -----------------------------------------------------------
 
 func _fixed_process(delta): 
 	if current_action: 
 		var action_status = current_action.execute()
 		if action_status == Action.FINISHED:
 			_on_action_finished()
-	# if !utils.veq(get_pos(), dest): walk(dest)
+	# if !Utils.veq(get_pos(), dest): walk(dest)
 	# else: wait(time)
+
+# -----------------------------------------------------------
 
 func birth():
 	print("A NEW BABY IS BORN!")
@@ -142,6 +163,8 @@ func birth():
 	print("----------------------")
 	pass
 
+# -----------------------------------------------------------
+
 func choose_action():
 	# logic to select current and next action(s)
 	# var stomach_priority = (max_status.stomach - status.stomach) 
@@ -149,23 +172,33 @@ func choose_action():
 	# var duration = 12
 	# current_action = Action.new(Action.IDLE_ACTION, duration)
 	randomize()
-	current_action = Action.new(utils.randi_range(2, 8) * 100)
+	current_action = Action.new(Utils.randi_range(2, 8) * 100)
 	pass
+
+# -----------------------------------------------------------
 
 func update_status():
 	# updates the pet's status meters (mood, hunger, etc)
 	pass
 
+# -----------------------------------------------------------
+
 func update_preferences(): 
 	# updates pet's likes and dislikes via discipline
 	pass
+
+# -----------------------------------------------------------
 
 func update_attributes(): 
 	# INT, VIT, CON... via all sorts of stuff
 	pass
 
+# -----------------------------------------------------------
+
 func walk(dest):
-	move(utils.vlerp(get_pos(), dest, 0.5))
+	move(Utils.vlerp(get_pos(), dest, 0.5))
+
+# -----------------------------------------------------------
 
 func _on_focus():
 	# touch input: first tap
@@ -185,12 +218,16 @@ func _on_focus():
 	# game.focused_pet = self
 	pass
 
+# -----------------------------------------------------------
+
 func _on_select(): 
 	# touch: second tap
 	# gamepad: push select button; mouse: click
 	
 	# hud: show interaction buttons
 	pass
+
+# -----------------------------------------------------------
 
 func _on_unfocus():
 	# touch: tap outside of pet
@@ -200,6 +237,8 @@ func _on_unfocus():
 	# game.focused_pet = null
 	pass
 
+# -----------------------------------------------------------
+
 func _on_discipline(discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
 	
@@ -208,6 +247,8 @@ func _on_discipline(discipline_type):
 	
 	# decide whether to stop current action
 	pass
+
+# -----------------------------------------------------------
 
 func _on_action_finished():
 #	print("action finished!")
@@ -221,9 +262,13 @@ func _on_action_finished():
 		next_action = null
 	else: choose_action()
 
+# -----------------------------------------------------------
+
 func _on_state_changed(state):
 	update_status()
 	pass
+
+# -----------------------------------------------------------
 	
 func _on_status_changed():
 	# here we will probably have to decide if we need to

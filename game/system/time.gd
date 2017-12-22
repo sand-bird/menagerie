@@ -69,3 +69,15 @@ func get_day():
 
 func get_month():
 	return months[month]
+
+func get_time(scale):
+	var units = [year, month, day, hour, tick]
+	var relations = [MONTHS_IN_YEAR, DAYS_IN_MONTH, HOURS_IN_DAY, TICKS_IN_HOUR]
+	var total_time = 0
+	for i in min(scale, units.length):
+		# add this unit to total
+		total_time += units[i]
+		# convert running total to next unit
+		if relations[i]: total_time *= relations[i]
+		else: break
+	return total_time
