@@ -107,7 +107,7 @@ class Inverter extends Decorator:
 		
 		if status == Status.SUCCESS:
 			status = Status.FAILURE
-		elsif status == Status.FAILURE:
+		elif status == Status.FAILURE:
 			status = Status.SUCCESS
 		
 		return status
@@ -171,38 +171,59 @@ class Move extends BaseAction:
 		# call on monster to update path
 		# maybe we can check if anything is suddenly blocking our
 		# path before we recalculate? would prob save a lot of cycles
+		pass
 
 # -----------------------------------------------------------
 
-class ChangeColor extends BaseAction:
-	var color
+# TODO: how to make sleep interruptible???
+class Sleep extends BaseAction:
+	var timeout
 	
-	func _init(color):
-		self.color = color
+	func _init(timeout):
+		self.timeout = timeout
 		initialize()
 	
+	func enter(tick):
+		# tick.target.get_node("anim").play("sleep")
+		# (play sleep animation)
+		pass
+	
 	func tick(tick):
-		tick.target.graphics.clear()
-		tick.target.graphics.beingFill(color)
-		tick.target.graphics.draw_rect(0, 0, 100, 100)
-		
+		# if we have reached the timeout, return ???
+		# if our energy is full, return success
+		# else return running
 		return Status.SUCCESS
+	
+	func exit(tick):
+		# stop sleep animation
+		pass
 
 # -----------------------------------------------------------
 
-class ChangePosition extends BaseAction:
-	func _init():
+class Rest extends BaseAction:
+	var timeout
+	
+	func _init(timeout):
+		self.timeout = timeout
 		initialize()
 	
+	func open(tick):
+		# play resting animation
+		pass
+	
+	func close(tick):
+		# stop resting animation (?)
+		pass
+	
 	func tick(tick):
-		tick.target.x = rand()
-		tick.target.y = rand()
+		# rest for length of timeout or until a 
+		# certain amount of energy is regained
 		return Status.SUCCESS
 
 # ===========================================================
 #                     C O N D I T I O N S
 # -----------------------------------------------------------
-		
+
 class IsMouseOver extends BaseAction:
 	func _init():
 		initialize()

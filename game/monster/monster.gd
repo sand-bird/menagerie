@@ -96,6 +96,15 @@ var traits = [
 #                        M E T H O D S
 # -----------------------------------------------------------
 
+func _ready(): 
+	add_to_group("monsters", true)
+	connect("item_rect_changed", self, "update_z")
+	set_fixed_process(true)
+	update_z()
+	choose_action()
+
+# -----------------------------------------------------------
+
 func serialize():
 	var data = {
 		name = name,
@@ -124,15 +133,6 @@ func deserialize(data):
 
 func update_z():
 	set_z(get_pos().y + get_item_rect().size.y)
-
-# -----------------------------------------------------------
-
-func _ready(): 
-	add_to_group("monsters", true)
-	connect("item_rect_changed", self, "update_z")
-	set_fixed_process(true)
-	update_z()
-	choose_action()
 
 # -----------------------------------------------------------
 
