@@ -1,8 +1,10 @@
 extends Camera2D
 
+const ScrollMode = Globals.ScrollMode
+
 # options used for drag scroll
-var FLICK_DISTANCE = 8.0 # Options.camera_flick_distance
-var FLICK_SPEED = 1.0 # Options.camera_flick_speed
+var FLICK_DISTANCE = Options.camera_flick_distance
+var FLICK_SPEED = Options.camera_flick_speed
 
 # options used for edge scroll
 var EDGE_SIZE = Options.camera_edge_size
@@ -43,13 +45,19 @@ func _ready():
 	target_pos = center_pos
 	
 	set_fixed_process(true)
-#	set_process_input(true) # we'll need this for controller scroll
+#	set_process_input(true) # we'll need this for joystick & button scroll (maybe)
+
+# -----------------------------------------------------------
 
 func _input(event): pass
+
+# -----------------------------------------------------------
 
 func _on_screen_resized():
 	get_screen_settings()
 	get_bounds()
+
+# -----------------------------------------------------------
 
 func get_screen_settings():
 	screen_size = get_viewport_rect().size
@@ -57,6 +65,7 @@ func get_screen_settings():
 	edge_width = screen_size * EDGE_SIZE
 	dead_zone_radius = screen_radius - edge_width
 
+# -----------------------------------------------------------
 
 func get_bounds():
 	# set up our member vars
@@ -73,18 +82,19 @@ func get_bounds():
 	min_pos = Utils.vmin(Utils.vround(parent_min - bound_padding), center_pos)
 	max_pos = Utils.vmax(Utils.vround(parent_max + bound_padding - screen_size), center_pos)
 
+# -----------------------------------------------------------
 
 func do_drag_scroll():
 	if Input.is_mouse_button_pressed(1):
 		# calculate move delta
 		var mouse_pos = get_local_mouse_pos()
 		var move_delta = last_mouse_pos - mouse_pos
-		
 		# update target position
 		var new_target_pos = get_pos() + move_delta * FLICK_DISTANCE
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
 
+# -----------------------------------------------------------
 
 func do_edge_scroll():
 	# calculate move delta
@@ -92,20 +102,30 @@ func do_edge_scroll():
 	var direction = Utils.vsign(heading)
 	var abs_heading = Utils.vabs(heading)
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
-#		var move_delta = abs_heading / (screen_radius * SCROLL_ACCEL - abs_heading)
 		var move_delta = abs_heading
 		# update target position
-#		target_pos += Utils.vround(move_delta * SCROLL_SPEED * direction)
-#		target_pos += move_delta * SCROLL_SPEED * direction
 		var new_target_pos = get_pos() + move_delta * direction * SCROLL_SPEED
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.1))
 
+# -----------------------------------------------------------
+
+func do_key_scroll():
+	pass
+
+# -----------------------------------------------------------
+
+func do_joystick_scroll():
+	pass
+
+# -----------------------------------------------------------
 
 func _fixed_process(delta): pass
 	# update target_pos via our scroll methods
-	if Options.is_edge_scroll_enabled(): do_edge_scroll()
-	if Options.is_drag_scroll_enabled(): do_drag_scroll()
+	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
+	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
+	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_button_scroll()
+	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
 	
 	# clamp target to camera bounds
 	target_pos = Utils.vround(Utils.vclamp(target_pos, min_pos, max_pos))
