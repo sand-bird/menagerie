@@ -9,7 +9,7 @@ script/source = "# script: cursor (built-in)
 
 extends ReferenceFrame
 
-func _ready():
+func _ready():	
 	print(Input.get_connected_joysticks())
 	set_process(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)

@@ -1,0 +1,73 @@
+[gd_resource type="Theme" load_steps=4 format=1]
+
+[ext_resource path="res://assets/images/ui_box.tres" type="StyleBox" id=1]
+[ext_resource path="res://assets/images/ui_box_clicked.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/fonts/menagerie_kerned.fnt" type="BitmapFont" id=3]
+
+[resource]
+
+default_font = ExtResource( 3 )
+Button/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.4, 0.25098, 0.168627, 1 )
+Button/colors/font_color_pressed = Color( 0.4, 0.25098, 0.168627, 1 )
+Button/constants/hseparation = 0
+Button/fonts/font = null
+Button/styles/disabled = ExtResource( 1 )
+Button/styles/focus = ExtResource( 2 )
+Button/styles/hover = ExtResource( 1 )
+Button/styles/normal = ExtResource( 1 )
+Button/styles/pressed = ExtResource( 2 )
+Dialogs/constants/button_margin = 0
+Dialogs/constants/margin = 0
+Fonts/fonts/large = null
+Fonts/fonts/normal = null
+HButtonArray/colors/font_color = Color( 0.4, 0.247059, 0.164706, 1 )
+HButtonArray/colors/font_color_selected = Color( 0.4, 0.247059, 0.164706, 1 )
+HButtonArray/constants/button_separator = 4
+HButtonArray/constants/icon_separator = 2
+HButtonArray/fonts/font = null
+HButtonArray/fonts/font_selected = null
+HButtonArray/styles/focus = ExtResource( 2 )
+HButtonArray/styles/hover = ExtResource( 1 )
+HButtonArray/styles/normal = ExtResource( 1 )
+HButtonArray/styles/selected = ExtResource( 2 )
+Label/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
+Label/colors/font_color_shadow = Color( 0.4, 0.247059, 0.164706, 0.188235 )
+Label/constants/line_spacing = 0
+Label/constants/shadow_as_outline = 0
+Label/constants/shadow_offset_x = 0
+Label/constants/shadow_offset_y = 1
+Label/fonts/font = null
+Panel/styles/panel = ExtResource( 1 )
+Panel/styles/panelf = ExtResource( 1 )
+Panel/styles/panelnc = ExtResource( 1 )
+PanelContainer/styles/panel = ExtResource( 1 )
+TabContainer/colors/font_color_bg = Color( 0.690196, 0.690196, 0.690196, 1 )
+TabContainer/colors/font_color_fg = Color( 0.941176, 0.941176, 0.941176, 1 )
+TabContainer/constants/hseparation = 4
+TabContainer/constants/label_valign_bg = 2
+TabContainer/constants/label_valign_fg = 0
+TabContainer/constants/side_margin = 8
+TabContainer/constants/top_margin = 24
+TabContainer/fonts/font = null
+TabContainer/icons/decrement = null
+TabContainer/icons/decrement_hilite = null
+TabContainer/icons/increment = null
+TabContainer/icons/increment_hilite = null
+TabContainer/icons/menu = null
+TabContainer/icons/menu_hilite = null
+TabContainer/styles/panel = ExtResource( 2 )
+TabContainer/styles/tab_bg = ExtResource( 1 )
+TabContainer/styles/tab_fg = ExtResource( 2 )
+VButtonArray/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
+VButtonArray/colors/font_color_selected = Color( 0.4, 0.25098, 0.168627, 1 )
+VButtonArray/constants/button_separator = 4
+VButtonArray/constants/icon_separator = 2
+VButtonArray/fonts/font = null
+VButtonArray/fonts/font_selected = null
+VButtonArray/styles/focus = ExtResource( 2 )
+VButtonArray/styles/hover = ExtResource( 1 )
+VButtonArray/styles/normal = ExtResource( 1 )
+VButtonArray/styles/selected = ExtResource( 2 )
+

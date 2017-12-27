@@ -1,307 +1,128 @@
-[gd_scene load_steps=14 format=1]
+[gd_scene load_steps=6 format=1]
 
-[ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/images/clock_text_background.png" type="Texture" id=2]
-[ext_resource path="res://assets/fonts/font_kerned.fnt" type="BitmapFont" id=3]
-[ext_resource path="res://assets/images/month_insets.png" type="Texture" id=4]
-[ext_resource path="res://assets/images/weather_circle.png" type="Texture" id=5]
-[ext_resource path="res://assets/images/clock.png" type="Texture" id=6]
-[ext_resource path="res://assets/images/clock_hand_spritesheet.png" type="Texture" id=7]
-[ext_resource path="res://assets/images/clock_pendulum_spritesheet2.png" type="Texture" id=8]
-[ext_resource path="res://ui/cursor2.tscn" type="PackedScene" id=9]
+[ext_resource path="res://ui/ui.gd" type="Script" id=1]
+[ext_resource path="res://assets/theme.tres" type="Theme" id=2]
+[ext_resource path="res://ui/garden_clock_hud.tscn" type="PackedScene" id=3]
+[ext_resource path="res://ui/save_list.tscn" type="PackedScene" id=4]
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id=1]
 
-resource/name = "fullscreen_button"
-script/source = "# fullscreen button
+resource/name = "title_menu"
+script/source = "extends VButtonArray
 
-extends Button
-
-func _on_pressed():
-	if OS.is_window_fullscreen(): OS.set_window_fullscreen(false)
-	else: OS.set_window_fullscreen(true)"
-
-[sub_resource type="GDScript" id=3]
-
-resource/name = "spawn_button"
-script/source = "# spawn button
-
-extends Button
-
-const Monster = preload(\"res://monster/monster.tscn\")
-
-func _on_pressed():
-	var new_monster = Monster.instance()
-	var garden = get_tree().get_root().get_node(\"game\").get_node(\"garden\")
-	new_monster.set_pos(Utils.vrandi(garden.get_size()))
-	garden.add_child(new_monster)"
-
-[sub_resource type="GDScript" id=4]
-
-resource/name = "date_info"
-script/source = "extends TextureFrame
-
-onready var week_day = get_node(\"week_day\")
-onready var date = get_node(\"date\")
-onready var month_inset = get_node(\"month_inset\")
+const LOAD = 0
+const NEW = 1
+const OPTIONS = 2
+const EXIT = 3
 
 func _ready():
-	Time.connect(\"day_changed\", self, \"update_day\")
-	Time.connect(\"month_changed\", self, \"update_month\")
-	update_day(Time.day)
-	update_month(Time.month)
+	connect(\"button_selected\", self, \"_on_button_selected\")
+	pass
 
-func update_day(day):
-	week_day.set_text(Time.get_day().substr(0, 3).to_upper())
-	date.set_text(Utils.ordinalize(day + 1))
-
-func update_month(month):
-	# month_inset.set_tooltip(Utils.capitalize(Time.get_month()))
-	month_inset.get_child(0).set_frame(month)"
-
-[sub_resource type="GDScript" id=5]
-
-resource/name = "clock"
-script/source = "extends TextureFrame
-
-onready var hand = get_node(\"hand\")
-onready var pendulum = get_node(\"pendulum\")
-
-func _ready():
-	Time.connect(\"hour_changed\", self, \"move_hand\")
-	Time.connect(\"tick_changed\", self, \"move_pendulum\")
-	move_hand(Time.hour)
-	move_pendulum(Time.tick)
-
-func move_hand(hour):
-	hand.set_frame(hour % 12)
-
-func move_pendulum(tick):
-	pendulum.set_frame((tick + 1) % 4)"
+func _on_button_selected(btn):
+	if btn == LOAD:
+		get_parent().get_node(\"save_list\").show()
+	elif btn == NEW:
+		print(\"start the game\")
+"
 
 [node name="ui" type="CanvasLayer"]
 
+process/pause_mode = 2
 layer = 1
 offset = Vector2( 0, 0 )
 rotation = 0.0
 scale = Vector2( 1, 1 )
+script/script = ExtResource( 1 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="debug" type="Control" parent="."]
+[node name="garden" type="Control" parent="."]
 
+visibility/visible = false
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
+theme/theme = ExtResource( 2 )
 margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="fullscreen" type="Button" parent="debug"]
+[node name="clock_hud" parent="garden" instance=ExtResource( 3 )]
 
-anchor/left = 1
-anchor/top = 1
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 1 )
-margin/left = 28.0
-margin/top = 18.0
-margin/right = 4.0
-margin/bottom = 4.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "FS"
-flat = false
-script/script = SubResource( 2 )
-
-[node name="spawn" type="Button" parent="debug"]
-
-anchor/left = 1
-anchor/top = 1
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 1 )
-margin/left = 58.0
-margin/top = 18.0
-margin/right = 31.0
-margin/bottom = 4.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "+M"
-flat = false
-script/script = SubResource( 3 )
-
-[node name="garden_clock_hud" type="ReferenceFrame" parent="."]
-
-anchor/left = 1
-anchor/right = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 4.0
-margin/top = 4.0
-margin/right = 4.0
-margin/bottom = 4.0
-
-[node name="date_info" type="TextureFrame" parent="garden_clock_hud"]
-
-anchor/left = 1
-anchor/right = 1
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 110.0
+margin/left = 2.0
 margin/top = 2.0
-margin/right = 24.0
-margin/bottom = 23.0
-texture = ExtResource( 2 )
-stretch_mode = 0
-script/script = SubResource( 4 )
+margin/right = 2.0
+margin/bottom = 2.0
 
-[node name="week_day" type="Label" parent="garden_clock_hud/date_info"]
+[node name="title" type="Control" parent="."]
 
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 8.0
-margin/top = 5.0
-margin/right = 35.0
-margin/bottom = 17.0
-custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color = Color( 0.355469, 0.27771, 0.27771, 1 )
-custom_colors/font_color_shadow = Color( 0.71875, 0.598022, 0.539062, 1 )
-custom_constants/shadow_offset_x = 0
-custom_constants/shadow_offset_y = 1
-text = "MON"
-align = 1
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="date" type="Label" parent="garden_clock_hud/date_info"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 56.0
-margin/top = 5.0
-margin/right = 81.0
-margin/bottom = 17.0
-custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color = Color( 0.355469, 0.27771, 0.27771, 1 )
-custom_colors/font_color_shadow = Color( 0.71875, 0.598022, 0.539062, 1 )
-custom_constants/shadow_offset_x = 0
-custom_constants/shadow_offset_y = 1
-text = "21st"
-align = 1
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="month_inset" type="Control" parent="garden_clock_hud/date_info"]
-
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 38.0
-margin/top = 4.0
-margin/right = 53.0
-margin/bottom = 17.0
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="image" type="Sprite" parent="garden_clock_hud/date_info/month_inset"]
-
-texture = ExtResource( 4 )
-centered = false
-vframes = 4
-hframes = 2
-
-[node name="weather_circle" type="TextureFrame" parent="garden_clock_hud"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = -39.0
-margin/top = 18.0
-margin/right = -23.0
-margin/bottom = 34.0
-texture = ExtResource( 5 )
-stretch_mode = 0
-
-[node name="event_circle" type="TextureFrame" parent="garden_clock_hud"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = -54.0
-margin/top = 18.0
-margin/right = -38.0
-margin/bottom = 34.0
-texture = ExtResource( 5 )
-stretch_mode = 0
-
-[node name="clock" type="TextureFrame" parent="garden_clock_hud"]
-
-anchor/left = 1
-anchor/right = 1
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 29.0
+theme/theme = ExtResource( 2 )
+margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
-margin/bottom = 44.0
-texture = ExtResource( 6 )
-stretch_mode = 0
-script/script = SubResource( 5 )
+margin/bottom = 0.0
 
-[node name="hand" type="Sprite" parent="garden_clock_hud/clock"]
+[node name="title_menu" type="VButtonArray" parent="title"]
 
-transform/pos = Vector2( 15, 15 )
-texture = ExtResource( 7 )
-vframes = 4
-hframes = 3
-region_rect = Rect2( 0, 0, 19, 19 )
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 48.0
+margin/top = 0.0
+margin/right = -48.0
+margin/bottom = -66.0
+custom_constants/button_separator = 2
+flat = false
+button/count = 3
+button/min_button_size = 20.0
+button/align = 0
+button/0/text = "Load Game"
+button/0/tooltip = ""
+button/0/icon = null
+button/1/text = "New Game"
+button/1/tooltip = ""
+button/1/icon = null
+button/2/text = "Options"
+button/2/tooltip = ""
+button/2/icon = null
+button/selected = 0
+script/script = SubResource( 1 )
 
-[node name="pendulum" type="Sprite" parent="garden_clock_hud/clock"]
+[node name="save_list" parent="title" instance=ExtResource( 4 )]
 
-transform/pos = Vector2( 15, 35 )
-texture = ExtResource( 8 )
-vframes = 2
-hframes = 2
-region_rect = Rect2( 0, 10, 11, 10 )
+theme/theme = null
 
-[node name="cursor" parent="." instance=ExtResource( 9 )]
+[node name="main_menu" type="Control" parent="."]
 
-[connection signal="pressed" from="debug/fullscreen" to="debug/fullscreen" method="_on_pressed"]
-
-[connection signal="pressed" from="debug/spawn" to="debug/spawn" method="_on_pressed"]
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 2 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
 
 

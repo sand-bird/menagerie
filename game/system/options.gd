@@ -1,7 +1,7 @@
 extends Node
 
-const ControlMode = Globals.ControlMode
-const ScrollMode = Globals.ScrollMode
+var ControlMode = Constants.ControlMode
+var ScrollMode = Constants.ScrollMode
 
 # -----------------------------------------------------------
 #                  I N P U T   O P T I O N S
@@ -13,7 +13,7 @@ var keybindings = {
 	camera_up = KEY_W,
 	camera_left = KEY_A,
 	camera_down = KEY_S,
-	camera_right = kEY_D 
+	camera_right = KEY_D 
 } 
 
 # -----------------------------------------------------------
@@ -23,19 +23,19 @@ var keybindings = {
 # these are both the defaults (for now) and all the possible scroll mode options
 # for each control mode; remember to keep track of both these things elsewhere
 var scroll_modes = {
-	ControlMode.MOUSE_AND_KEY = [
+	ControlMode.MOUSE_AND_KEY: [
 		ScrollMode.EDGE_SCROLL, 
 		ScrollMode.DRAG_SCROLL, 
 		ScrollMode.KEY_SCROLL
 	],
-	ControlMode.TOUCH = [
+	ControlMode.TOUCH: [
 		ScrollMode.DRAG_SCROLL
 	],
-	ControlMode.JOYPAD = [
+	ControlMode.JOYPAD: [
 		ScrollMode.JOYSTICK_SCROLL,
 		ScrollMode.EDGE_SCROLL
 	],
-	ControlMode.KEYBOARD_ONLY = [
+	ControlMode.KEYBOARD_ONLY: [
 		ScrollMode.KEY_SCROLL,
 		ScrollMode.EDGE_SCROLL
 	]
@@ -61,17 +61,19 @@ func set_scroll_disabled(mode):
 	if is_scroll_enabled(mode):
 		scroll_modes[control_mode].erase(mode)
 
-func _ready(): pass
-	# load(defaults)
+func _ready(): 
+	pass
+	# deserialize(defaults)
 
-func load(data): pass
+func deserialize(data): 
+	pass
 	# we will be passed just the options dict from game (probably)
 	# json parse it
 	# set our values
 	# also should be compatible with an internal defaults object somehow
 	# remember that control mode should be autodetected, not just loaded
 
-func save(): pass
+func serialize(): pass
 	# make a dict of all our props
 	# json serialize it
 

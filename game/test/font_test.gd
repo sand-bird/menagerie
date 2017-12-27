@@ -16,7 +16,7 @@ const kern_pairs = {
 	'Q': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'R': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'S': ['"', "'", 'T', 'Y', 'b', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
-	'T': ['.', ',', '/', '_', 'O', 'a', 'c', 'd', 'e', 'g', 'o', 's'],
+	'T': ['.', ',', '/', '_', 'O', 'a', 'c', 'd', 'e', 'g', 'h', 'o', 's'],
 	'U': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'V': ['.', ',', '/', '_'],
 	'Y': ['.', ',', '/', '_', 'O', 'a', 'c', 'd', 'e', 'g', 'o', 's'],
@@ -24,7 +24,7 @@ const kern_pairs = {
 	'X': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'Z': ['"', "'", '~', 'T', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	
-	'a': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
+	'a': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'v', 'w', 'y'],
 	'b': ['"', "'", 'b', 'h', 'k', 'l'],
 	'c': ['"', "'", 'b', 'h', 'k', 'l'],
 	'd': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
@@ -46,14 +46,26 @@ const kern_pairs = {
 	
 	'.': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'~': ['J', 'b', 'h', 'k', 'l']
+#	'-': ['-'],
+#	' ': ['f', 't']
+}
+
+const kern_pairs_2 = {
+	'e': ['v'],
+	'k': 'l'
+}
+
+const kern_pairs_double = {
+#	'l': 'l'
 }
 
 # 'j': ['g' -1]
 
-const font = preload("res://assets/fonts/font.fnt")
-const font_kerned = preload("res://assets/fonts/font_kerned.fnt")
+const font = preload("res://assets/fonts/menagerie_kerned.fnt")
+const font_kerned = preload("res://assets/fonts/menagerie_kerned.fnt")
 
 func _ready():
+	get_node("test_label").add_font_override("font", font)
 	var button = get_node("button")
 	if button:
 		print(button)
@@ -65,7 +77,8 @@ func _ready():
 	
 func switch_fonts():
 	var label = get_node("test_label")
-	label.add_font_override("font", font_kerned)
+	label.add_font_override("font", load("res://assets/fonts/menagerie2.fnt"))
+	
 
 func kern(a, b, value):
 	font.add_kerning_pair(a.ord_at(0), b.ord_at(0), value)
@@ -75,5 +88,13 @@ func process_pairs():
 	for pair_first in kern_pairs:
 		for pair_second in kern_pairs[pair_first]:
 			kern(pair_first, pair_second, 1)
+	for pair_first in kern_pairs_2:
+		for pair_second in kern_pairs_2[pair_first]:
+			if (font.get_kerning_pair(pair_first.ord_at(0), pair_second.ord_at(0))):
+				kern(pair_first, pair_second, 2)
+			else: kern(pair_first, pair_second, 1)
+	for pair_first in kern_pairs_double:
+		for pair_second in kern_pairs_double[pair_first]:
+			kern(pair_first, pair_second, 2)
 	font.update_changes()
-	ResourceSaver.save("res://assets/fonts/font_kerned.fnt", font)
+#	ResourceSaver.save("res://assets/fonts/menagerie_kerned.fnt", font)

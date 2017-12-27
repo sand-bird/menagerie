@@ -7,7 +7,7 @@ signal week_changed
 signal month_changed
 signal year_changed
 
-const ACTUAL_SECONDS_IN_TICK = 0.666
+const ACTUAL_SECONDS_IN_TICK = 0.5
 const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24
 const DAYS_IN_WEEK = 7
@@ -25,7 +25,7 @@ var tick = 0 setget _set_tick
 var hour = 6 setget _set_hour
 var day = 0 setget _set_day
 var day_of_week = 0
-var month = 1 setget _set_month
+var month = 0 setget _set_month
 var year = 0 setget _set_year
 
 func _ready(): set_process(true)
@@ -81,3 +81,9 @@ func get_time(scale):
 		if relations[i]: total_time *= relations[i]
 		else: break
 	return total_time
+
+func stop():
+	set_process(false)
+
+func start():
+	set_process(true)

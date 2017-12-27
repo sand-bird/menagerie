@@ -6,7 +6,9 @@ extends Node
 # IDEAL_SIZE determines the zoom level used in large 
 # resolutions, where multiple levels of zoom are valid
 const IDEAL_SIZE = Vector2(400, 280)
-const MIN_SIZE = Vector2(320, 240)
+# TOFIX: screen clipping in fullscreen when min sizes
+# are inconsistent with the aspect ratio constraints
+const MIN_SIZE = Vector2(320, 192)
 const MAX_SIZE = Vector2(480, 360)
 
 const MIN_ASPECT = 9.0/16.0
@@ -73,6 +75,6 @@ func get_primary(i):
 			   MIN_SIZE[i])
 
 func get_secondary(i, low_val, high_val):
-	return clamp(win_size[i] / scale, 
-				 max(low_val, MIN_SIZE[i]), 
+	return clamp(floor(win_size[i] / scale),
+				 max(low_val, MIN_SIZE[i]),
 				 min(high_val, MAX_SIZE[i]))

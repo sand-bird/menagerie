@@ -1,12 +1,43 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=5 format=1]
 
-[ext_resource path="res://system/game.gd" type="Script" id=1]
-[ext_resource path="res://garden/garden.tscn" type="PackedScene" id=2]
-[ext_resource path="res://assets/fonts/font_theme.tres" type="Theme" id=3]
-[ext_resource path="res://assets/images/piggy_pink_6.png" type="Texture" id=4]
-[ext_resource path="res://ui/ui.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
+[ext_resource path="res://system/game.gd" type="Script" id=2]
+[ext_resource path="res://assets/images/title.png" type="Texture" id=3]
+[ext_resource path="res://ui/ui.tscn" type="PackedScene" id=4]
 
 [node name="game" type="Control"]
+
+process/pause_mode = 2
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 2 )
+
+[node name="screen" type="Node" parent="."]
+
+[node name="title" type="Control" parent="screen"]
+
+editor/display_folded = true
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="ColorFrame" type="ColorFrame" parent="screen/title"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -18,468 +49,23 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-script/script = ExtResource( 1 )
+color = Color( 0.556863, 0.788235, 0.776471, 1 )
 
-[node name="garden" parent="." instance=ExtResource( 2 )]
-
-[node name="toplevel" type="Control" parent="."]
-
-editor/display_folded = true
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-
-[node name="TRAIN" type="Button" parent="toplevel"]
+[node name="TextureFrame" type="TextureFrame" parent="screen/title"]
 
 anchor/left = 3
-anchor/top = 3
 anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 29.0
-margin/top = 30.0
-margin/right = -27.0
-margin/bottom = 14.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "TRAIN"
-flat = false
-
-[node name="GIVE" type="Button" parent="toplevel"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 85.0
-margin/top = 0.0
-margin/right = 29.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "GIVE"
-flat = false
-
-[node name="INFO" type="Button" parent="toplevel"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 29.0
-margin/top = -30.0
-margin/right = -27.0
-margin/bottom = -46.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "INFO"
-flat = false
-
-[node name="DIRECT" type="Button" parent="toplevel"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = -27.0
-margin/top = 0.0
-margin/right = -83.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "DIRECT"
-flat = false
-
-[node name="discipline1" type="Control" parent="."]
-
-editor/display_folded = true
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-
-[node name="Sprite" type="TextureFrame" parent="discipline1"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 11.0
-margin/top = 0.0
-margin/right = -12.0
-margin/bottom = -20.0
-texture = ExtResource( 4 )
+margin/left = 125.0
+margin/top = 24.0
+margin/right = -125.0
+margin/bottom = 85.0
+texture = ExtResource( 3 )
 stretch_mode = 0
 
-[node name="PRAISE" type="Button" parent="discipline1"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 32.0
-margin/top = 30.0
-margin/right = -32.0
-margin/bottom = 14.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PRAISE"
-flat = false
-
-[node name="SCOLD" type="Button" parent="discipline1"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 32.0
-margin/top = -30.0
-margin/right = -32.0
-margin/bottom = -46.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "SCOLD"
-flat = false
-
-[node name="HIT" type="Button" parent="discipline1"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = -30.0
-margin/top = 0.0
-margin/right = -82.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "HIT"
-flat = false
-
-[node name="PET" type="Button" parent="discipline1"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 82.0
-margin/top = 0.0
-margin/right = 30.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PET"
-flat = false
-
-[node name="discipline" type="Control" parent="."]
-
-editor/display_folded = true
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-
-[node name="Sprite1" type="TextureFrame" parent="discipline"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 11.0
-margin/top = 0.0
-margin/right = -12.0
-margin/bottom = -20.0
-texture = ExtResource( 4 )
-stretch_mode = 0
-
-[node name="PRAISE" type="Button" parent="discipline"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 30.0
-margin/top = 34.0
-margin/right = -26.0
-margin/bottom = 18.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PRAISE"
-flat = false
-
-[node name="SCOLD" type="Button" parent="discipline"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 92.0
-margin/top = 0.0
-margin/right = 36.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "SCOLD"
-flat = false
-
-[node name="HIT" type="Button" parent="discipline"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 30.0
-margin/top = -34.0
-margin/right = -26.0
-margin/bottom = -50.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "HIT"
-flat = false
-
-[node name="PET" type="Button" parent="discipline"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = -34.0
-margin/top = 0.0
-margin/right = -90.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PET"
-flat = false
-
-[node name="item" type="Control" parent="."]
-
-editor/display_folded = true
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-
-[node name="Sprite1" type="TextureFrame" parent="item"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 11.0
-margin/top = 0.0
-margin/right = -12.0
-margin/bottom = -20.0
-texture = ExtResource( 4 )
-stretch_mode = 0
-
-[node name="PICK UP" type="Button" parent="item"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 34.0
-margin/top = 34.0
-margin/right = -30.0
-margin/bottom = 18.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PICK UP"
-flat = false
-
-[node name="SCOLD" type="Button" parent="item"]
-
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 92.0
-margin/top = 0.0
-margin/right = 36.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "SCOLD"
-flat = false
-
-[node name="PUT AWAY" type="Button" parent="item"]
-
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = 34.0
-margin/top = -34.0
-margin/right = -30.0
-margin/bottom = -50.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PUT AWAY"
-flat = false
-clip_text = true
-
-[node name="PET" type="Button" parent="item"]
-
-visibility/visible = false
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-theme/theme = ExtResource( 3 )
-margin/left = -34.0
-margin/top = 0.0
-margin/right = -90.0
-margin/bottom = -16.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "PET"
-flat = false
-
-[node name="ui" parent="." instance=ExtResource( 5 )]
+[node name="ui" parent="." instance=ExtResource( 4 )]
 
 

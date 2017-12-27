@@ -39,7 +39,7 @@ static func vrandi(vec):
 	return Vector2(randi_qty(int(vec.x)), randi_qty(int(vec.y)))
 
 static func vabs(vec):
-	return vec * Utils.vsign(vec)
+	return vec * vsign(vec)
 
 static func vlerp(a, b, w):
 	return Vector2(lerp(a.x, b.x, w), lerp(a.y, b.y, w))

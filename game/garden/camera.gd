@@ -1,10 +1,10 @@
 extends Camera2D
 
-const ScrollMode = Globals.ScrollMode
+var ScrollMode = Constants.ScrollMode
 
 # options used for drag scroll
 var FLICK_DISTANCE = Options.camera_flick_distance
-var FLICK_SPEED = Options.camera_flick_speed
+var FLICK_SPEED = Options.camera_flick_speed # 1.0
 
 # options used for edge scroll
 var EDGE_SIZE = Options.camera_edge_size
@@ -124,7 +124,8 @@ func _fixed_process(delta): pass
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
 	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
-	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_button_scroll()
+	# (not sure if these will be here or in _process_input)
+	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
 	
 	# clamp target to camera bounds

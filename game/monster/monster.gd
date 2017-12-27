@@ -136,13 +136,8 @@ func update_z():
 
 # -----------------------------------------------------------
 
-func test():
-	print("test connect success!!!")
-
-# -----------------------------------------------------------
-
-func done_test():
-	print("done test success!!")
+func highlight(): pass
+#	print("i am selected!")
 
 # -----------------------------------------------------------
 

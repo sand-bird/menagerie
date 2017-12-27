@@ -1,6 +1,6 @@
 # class BaseAction
 
-const Status = Globals.ActionStatus
+var Status = Constants.ActionStatus
 
 # todo: see if this works
 var id setget , 'get_instance_ID'

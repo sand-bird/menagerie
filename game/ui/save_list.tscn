@@ -1,0 +1,498 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/images/coin_icon.png" type="Texture" id=2]
+[ext_resource path="res://assets/images/monster_icon.png" type="Texture" id=3]
+
+
+
+
+[node name="save_list" type="Panel"]
+
+visibility/self_opacity = 0.0
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 100.0
+margin/top = 80.0
+margin/right = -100.0
+margin/bottom = -80.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 3
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = -2.0
+margin/bottom = 0.0
+scroll/horizontal = false
+scroll/vertical = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 3
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 192.0
+margin/bottom = 158.0
+custom_constants/separation = 1
+alignment = 0
+
+[node name="panel" type="Panel" parent="ScrollContainer/VBoxContainer"]
+
+visibility/visible = false
+rect/min_size = Vector2( 192, 36 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 1
+size_flags/vertical = 0
+margin/left = 6.0
+margin/top = 0.0
+margin/right = 198.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/panel"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+theme/theme = ExtResource( 1 )
+margin/left = 8.0
+margin/top = 9.0
+margin/right = 198.0
+margin/bottom = 17.0
+text = "Michelle `"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="date" type="Label" parent="ScrollContainer/VBoxContainer/panel"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 8.0
+margin/top = 21.0
+margin/right = 198.0
+margin/bottom = 29.0
+text = "6:35 pm, Tempest 3, Year 1"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="money" type="Label" parent="ScrollContainer/VBoxContainer/panel"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 97.0
+margin/top = 9.0
+margin/right = 17.0
+margin/bottom = 17.0
+text = "1,152,328"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel/money"]
+
+transform/pos = Vector2( 81, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="monsters" type="Label" parent="ScrollContainer/VBoxContainer/panel"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 100.0
+margin/top = 21.0
+margin/right = 20.0
+margin/bottom = 29.0
+text = "24"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel/monsters"]
+
+transform/pos = Vector2( 82, 0 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="panel3" type="Panel" parent="ScrollContainer/VBoxContainer"]
+
+rect/min_size = Vector2( 192, 52 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 1
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 192.0
+margin/bottom = 52.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/panel3"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+theme/theme = ExtResource( 1 )
+margin/left = 8.0
+margin/top = 9.0
+margin/right = 198.0
+margin/bottom = 19.0
+text = "Michelle"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="garden" type="Label" parent="ScrollContainer/VBoxContainer/panel3"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 8.0
+margin/top = 21.0
+margin/right = 198.0
+margin/bottom = 31.0
+text = "Sunshine"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="money" type="Label" parent="ScrollContainer/VBoxContainer/panel3"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 97.0
+margin/top = 9.0
+margin/right = 17.0
+margin/bottom = 19.0
+text = "1,152,328"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel3/money"]
+
+transform/pos = Vector2( 81, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="date" type="Label" parent="ScrollContainer/VBoxContainer/panel3"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 20.0
+margin/top = 35.0
+margin/right = 178.0
+margin/bottom = 45.0
+text = "1:15 am, Sol 1, Year 1"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel3/date"]
+
+transform/pos = Vector2( -12, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="monsters" type="Label" parent="ScrollContainer/VBoxContainer/panel3"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 100.0
+margin/top = 21.0
+margin/right = 20.0
+margin/bottom = 31.0
+text = "24"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel3/monsters"]
+
+transform/pos = Vector2( 82, 0 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="panel4" type="Panel" parent="ScrollContainer/VBoxContainer"]
+
+rect/min_size = Vector2( 192, 52 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 1
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 53.0
+margin/right = 192.0
+margin/bottom = 105.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/panel4"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+theme/theme = ExtResource( 1 )
+margin/left = 8.0
+margin/top = 9.0
+margin/right = 198.0
+margin/bottom = 19.0
+text = "Michelle"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="garden" type="Label" parent="ScrollContainer/VBoxContainer/panel4"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 8.0
+margin/top = 21.0
+margin/right = 198.0
+margin/bottom = 31.0
+text = "Sunshine"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="money" type="Label" parent="ScrollContainer/VBoxContainer/panel4"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 97.0
+margin/top = 9.0
+margin/right = 17.0
+margin/bottom = 19.0
+text = "1,152,328"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel4/money"]
+
+transform/pos = Vector2( 81, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="date" type="Label" parent="ScrollContainer/VBoxContainer/panel4"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 20.0
+margin/top = 35.0
+margin/right = 178.0
+margin/bottom = 45.0
+text = "1:15 am, Sol 1, Year 1"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel4/date"]
+
+transform/pos = Vector2( -12, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="monsters" type="Label" parent="ScrollContainer/VBoxContainer/panel4"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 100.0
+margin/top = 21.0
+margin/right = 20.0
+margin/bottom = 31.0
+text = "24"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel4/monsters"]
+
+transform/pos = Vector2( 82, 0 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="panel5" type="Panel" parent="ScrollContainer/VBoxContainer"]
+
+rect/min_size = Vector2( 192, 52 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 1
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 106.0
+margin/right = 192.0
+margin/bottom = 158.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/panel5"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+theme/theme = ExtResource( 1 )
+margin/left = 8.0
+margin/top = 9.0
+margin/right = 198.0
+margin/bottom = 19.0
+text = "Michelle"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="garden" type="Label" parent="ScrollContainer/VBoxContainer/panel5"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 8.0
+margin/top = 21.0
+margin/right = 198.0
+margin/bottom = 31.0
+text = "Sunshine"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="money" type="Label" parent="ScrollContainer/VBoxContainer/panel5"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 97.0
+margin/top = 9.0
+margin/right = 17.0
+margin/bottom = 19.0
+text = "1,152,328"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel5/money"]
+
+transform/pos = Vector2( 81, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="date" type="Label" parent="ScrollContainer/VBoxContainer/panel5"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 20.0
+margin/top = 35.0
+margin/right = 178.0
+margin/bottom = 45.0
+text = "1:15 am, Sol 1, Year 1"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel5/date"]
+
+transform/pos = Vector2( -12, 0 )
+texture = ExtResource( 2 )
+centered = false
+hframes = 2
+frame = 1
+
+[node name="monsters" type="Label" parent="ScrollContainer/VBoxContainer/panel5"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 100.0
+margin/top = 21.0
+margin/right = 20.0
+margin/bottom = 31.0
+text = "24"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="sprite" type="Sprite" parent="ScrollContainer/VBoxContainer/panel5/monsters"]
+
+transform/pos = Vector2( 82, 0 )
+texture = ExtResource( 3 )
+centered = false
+
+
