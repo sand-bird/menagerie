@@ -21,15 +21,14 @@ func _ready():
 	connect("item_rect_changed", self, "reset_anim")
 	area.connect("body_enter", self, "stick")
 	area.connect("body_exit", self, "unstick")
-	grab_mouse()
-
-func grab_mouse():
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	set_process(true)
 
-func release_mouse():
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	set_process(false)
+func _notification(n):
+	if n == NOTIFICATION_UNPAUSED:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	if n == NOTIFICATION_PAUSED:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func stick(body):
 	is_free = false

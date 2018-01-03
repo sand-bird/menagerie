@@ -29,7 +29,7 @@ var min_pos
 var max_pos
 
 # mouse info, used for both
-var last_mouse_pos = get_local_mouse_pos()
+onready var last_mouse_pos = get_local_mouse_pos()
 var target_pos= Vector2()
 
 

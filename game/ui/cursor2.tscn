@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/images/cursor.png" type="Texture" id=1]
 
-[sub_resource type="GDScript" id=5]
+[sub_resource type="GDScript" id=1]
 
 resource/name = "cursor"
 script/source = "extends Sprite
@@ -23,6 +23,6 @@ func _process(delta):
 texture = ExtResource( 1 )
 centered = false
 offset = Vector2( -2, -12 )
-script/script = SubResource( 5 )
+script/script = SubResource( 1 )
 
 

@@ -14,7 +14,7 @@ var keybindings = {
 	camera_left = KEY_A,
 	camera_down = KEY_S,
 	camera_right = KEY_D 
-} 
+}
 
 # -----------------------------------------------------------
 #                 C A M E R A   O P T I O N S
@@ -62,6 +62,9 @@ func set_scroll_disabled(mode):
 		scroll_modes[control_mode].erase(mode)
 
 func _ready(): 
+#	print(InputMap.get_signal_list())
+#	print(InputMap.get_actions())
+#	print(InputMap.get_action_list("ui_focus_next"))
 	pass
 	# deserialize(defaults)
 

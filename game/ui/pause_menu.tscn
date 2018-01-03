@@ -1,6 +1,19 @@
-[gd_scene load_steps=4 format=1]
+[gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://assets/theme.tres" type="Theme" id=1]
+
+[sub_resource type="GDScript" id=3]
+
+resource/name = "pause_menu"
+script/source = "extends VButtonArray
+
+# class member variables go here, for example:
+# var a = 2
+# var b = \"textvar\"
+
+func _ready():
+	pass
+"
 
 [sub_resource type="GDScript" id=1]
 
@@ -59,6 +72,7 @@ button/3/text = "Quit to Title"
 button/3/tooltip = ""
 button/3/icon = null
 button/selected = 0
+script/script = SubResource( 3 )
 
 [node name="debug" type="Control" parent="."]
 

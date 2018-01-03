@@ -1,12 +1,13 @@
-[gd_resource type="Theme" load_steps=4 format=1]
+[gd_resource type="Theme" load_steps=5 format=1]
 
 [ext_resource path="res://assets/images/ui_box.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/images/ui_box_clicked.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/fonts/menagerie_kerned.fnt" type="BitmapFont" id=3]
+[ext_resource path="res://assets/images/ui_box_selected.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/images/ui_box_clicked.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/fonts/menagerie_kerned.fnt" type="BitmapFont" id=4]
 
 [resource]
 
-default_font = ExtResource( 3 )
+default_font = ExtResource( 4 )
 Button/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
 Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
 Button/colors/font_color_hover = Color( 0.4, 0.25098, 0.168627, 1 )
@@ -69,5 +70,5 @@ VButtonArray/fonts/font_selected = null
 VButtonArray/styles/focus = ExtResource( 2 )
 VButtonArray/styles/hover = ExtResource( 1 )
 VButtonArray/styles/normal = ExtResource( 1 )
-VButtonArray/styles/selected = ExtResource( 2 )
+VButtonArray/styles/selected = ExtResource( 3 )
 

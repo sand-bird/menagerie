@@ -1,9 +1,22 @@
-[gd_scene load_steps=3 format=1]
+[gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://assets/theme.tres" type="Theme" id=1]
 [ext_resource path="res://assets/images/piggy_pink_6.png" type="Texture" id=2]
 
-[node name="monster_list" type="VBoxContainer"]
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.933594, 0.849716, 0.849716, 1 )
+light_color = Color( 0.414062, 0.381714, 0.381714, 1 )
+dark_color = Color( 0.339844, 0.285416, 0.285416, 1 )
+border_size = 1
+border_blend = true
+draw_bg = true
+
+[node name="monster_list" type="Panel"]
 
 anchor/left = 3
 anchor/top = 3
@@ -14,13 +27,43 @@ focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
-margin/left = 149.0
-margin/top = 73.0
-margin/right = -149.0
-margin/bottom = -74.0
-alignment = 0
+margin/left = 150.0
+margin/top = 90.0
+margin/right = -150.0
+margin/bottom = -80.0
 
-[node name="row" type="HBoxContainer" parent="."]
+[node name="Label" type="Label" parent="."]
+
+anchor/left = 3
+anchor/right = 3
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 50.0
+margin/top = 10.0
+margin/right = -50.0
+margin/bottom = 0.0
+text = "MONSTERS"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 4.0
+margin/top = 24.0
+margin/right = 298.0
+margin/bottom = 163.0
+scroll/horizontal = false
+scroll/vertical = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
@@ -28,24 +71,37 @@ size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 298.0
+margin/right = 282.0
+margin/bottom = 147.0
+custom_constants/separation = 1
+alignment = 0
+
+[node name="row" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 282.0
 margin/bottom = 36.0
 custom_constants/separation = 2
 alignment = 0
 
-[node name="entry" type="Panel" parent="row"]
+[node name="entry" type="Control" parent="ScrollContainer/VBoxContainer/row"]
 
-rect/min_size = Vector2( 148, 36 )
+rect/min_size = Vector2( 140, 36 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 148.0
+margin/right = 140.0
 margin/bottom = 36.0
 
-[node name="name" type="Label" parent="row/entry"]
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row/entry"]
 
 focus/ignore_mouse = true
 focus/stop_mouse = true
@@ -60,7 +116,632 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="location" type="Label" parent="row/entry"]
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 20.0
+margin/right = 142.0
+margin/bottom = 36.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Workshop (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row/entry"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row/entry/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="entry1" type="Panel" parent="ScrollContainer/VBoxContainer/row"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 142.0
+margin/top = 0.0
+margin/right = 282.0
+margin/bottom = 36.0
+custom_styles/panel = SubResource( 1 )
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Piggus von Pigstein"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 20.0
+margin/right = 142.0
+margin/bottom = 28.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Mages' Tower (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row/entry1"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row/entry1/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="row2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 37.0
+margin/right = 282.0
+margin/bottom = 73.0
+custom_constants/separation = 2
+alignment = 0
+
+[node name="entry" type="Panel" parent="ScrollContainer/VBoxContainer/row2"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 140.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row2/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Mr. Piggles"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row2/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 20.0
+margin/right = 142.0
+margin/bottom = 36.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Workshop (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row2/entry"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row2/entry/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="entry1" type="Panel" parent="ScrollContainer/VBoxContainer/row2"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 142.0
+margin/top = 0.0
+margin/right = 282.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row2/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Piggus von Pigstein"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row2/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 20.0
+margin/right = 142.0
+margin/bottom = 28.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Mages' Tower (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row2/entry1"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row2/entry1/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="row3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 74.0
+margin/right = 282.0
+margin/bottom = 110.0
+custom_constants/separation = 2
+alignment = 0
+
+[node name="entry" type="Panel" parent="ScrollContainer/VBoxContainer/row3"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 140.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row3/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Mr. Piggles"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row3/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 21.0
+margin/right = 142.0
+margin/bottom = 37.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Workshop (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row3/entry"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row3/entry/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="entry1" type="Panel" parent="ScrollContainer/VBoxContainer/row3"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 142.0
+margin/top = 0.0
+margin/right = 282.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row3/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Piggus von Pigstein"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row3/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 21.0
+margin/right = 142.0
+margin/bottom = 29.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Mages' Tower (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row3/entry1"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row3/entry1/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="row4" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 111.0
+margin/right = 282.0
+margin/bottom = 147.0
+custom_constants/separation = 2
+alignment = 0
+
+[node name="entry" type="Panel" parent="ScrollContainer/VBoxContainer/row4"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 140.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row4/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Mr. Piggles"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row4/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 21.0
+margin/right = 142.0
+margin/bottom = 37.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Workshop (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row4/entry"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row4/entry/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="entry1" type="Panel" parent="ScrollContainer/VBoxContainer/row4"]
+
+rect/min_size = Vector2( 140, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 142.0
+margin/top = 0.0
+margin/right = 282.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row4/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Piggus von Pigstein"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row4/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 21.0
+margin/right = 142.0
+margin/bottom = 29.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Mages' Tower (12d)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row4/entry1"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row4/entry1/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="row1" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+
+editor/display_folded = true
+visibility/visible = false
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 34.0
+margin/right = 298.0
+margin/bottom = 70.0
+custom_constants/separation = 2
+alignment = 0
+
+[node name="entry" type="Panel" parent="ScrollContainer/VBoxContainer/row1"]
+
+rect/min_size = Vector2( 148, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 148.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row1/entry"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Mr. Piggles"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row1/entry"]
 
 focus/ignore_mouse = true
 focus/stop_mouse = true
@@ -76,7 +757,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="portrait" type="Polygon2D" parent="row/entry"]
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row1/entry"]
 
 transform/pos = Vector2( 7, 9 )
 polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
@@ -91,7 +772,78 @@ texture/rotation = 0.0
 invert/enable = false
 invert/border = 100.0
 
-[node name="background" type="ColorFrame" parent="row/entry/portrait"]
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row1/entry/portrait"]
+
+visibility/behind_parent = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 16.0
+margin/bottom = 20.0
+color = Color( 0.586395, 0.714844, 0.63356, 1 )
+
+[node name="entry1" type="Panel" parent="ScrollContainer/VBoxContainer/row1"]
+
+rect/min_size = Vector2( 148, 36 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 150.0
+margin/top = 0.0
+margin/right = 298.0
+margin/bottom = 36.0
+
+[node name="name" type="Label" parent="ScrollContainer/VBoxContainer/row1/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 9.0
+margin/right = 131.0
+margin/bottom = 17.0
+text = "Mr. Piggles"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="location" type="Label" parent="ScrollContainer/VBoxContainer/row1/entry1"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 27.0
+margin/top = 21.0
+margin/right = 142.0
+margin/bottom = 29.0
+custom_colors/font_color = Color( 0.503906, 0.379898, 0.379898, 1 )
+text = "Mages' Tower (12 days)"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="portrait" type="Polygon2D" parent="ScrollContainer/VBoxContainer/row1/entry1"]
+
+transform/pos = Vector2( 7, 9 )
+polygon = Vector2Array( 0, 0, 0, 20, 16, 20, 16, 0 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = ExtResource( 2 )
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+
+[node name="background" type="ColorFrame" parent="ScrollContainer/VBoxContainer/row1/entry1/portrait"]
 
 visibility/behind_parent = true
 focus/ignore_mouse = false

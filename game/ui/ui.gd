@@ -1,26 +1,26 @@
 extends CanvasLayer
 
-var menu_stack = []
+onready var fader = get_node("fader")
 
 func open_menu(menu):
-	if menu_stack.find_last(menu) != -1: return
-	menu_stack.append(menu)
+	var anim = fader.get_animation("fade_in")	
 	load_menu(menu)
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	get_tree().set_pause(true)
+	get_node(menu).set_focus_mode(Control.FOCUS_ALL)
+	get_node(menu).grab_focus()
 
-func switch_menu(menu):
-	close_menu()
-	open_menu(menu)
-
-func close_menu():
-	if menu_stack.empty(): return false
-	menu_stack.pop_front()
+func close_menu(menu):
 	# trying to save the node in menu stack to pass it
 	# in here is not working, so let's just do this
-	remove_child(get_children().back())
-	if menu_stack.empty(): get_tree().set_pause(false)
-	return true
+	print("before fade out")
+	fader.fade_out(menu, 1.5)
+	yield(fader, "finished")
+	print("after fade out")
+	remove_child(get_node(menu))
+#	remove_child(get_children().back())
 
 func load_menu(menu):
 	add_child(load("res://ui/" + menu + ".tscn").instance())
+	print("before fade in")
+	fader.fade_in(menu, 0.8)
+	yield(fader, "finished")
+	print("after fade in")
