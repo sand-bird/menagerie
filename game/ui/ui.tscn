@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=1]
+[gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://ui/ui.gd" type="Script" id=1]
 [ext_resource path="res://assets/theme.tres" type="Theme" id=2]
@@ -23,73 +23,6 @@ func _on_button_selected(btn):
 	elif btn == NEW:
 		print(\"start the game\")
 "
-
-[sub_resource type="Animation" id=2]
-
-resource/name = "fade_in"
-length = 1.0
-loop = false
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("..:visibility/opacity")
-tracks/0/interp = 1
-tracks/0/imported = false
-tracks/0/keys = {
-"times": FloatArray( 0, 1 ),
-"transitions": FloatArray( 1, 1 ),
-"update": 0,
-"values": [ 0.0, 1.0 ]
-}
-
-[sub_resource type="Animation" id=4]
-
-resource/name = "fade_out"
-length = 1.0
-loop = false
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("..:visibility/opacity")
-tracks/0/interp = 1
-tracks/0/imported = false
-tracks/0/keys = {
-"times": FloatArray( 0, 1 ),
-"transitions": FloatArray( 1, 1 ),
-"update": 0,
-"values": [ 1.0, 0.0 ]
-}
-
-[sub_resource type="GDScript" id=3]
-
-resource/name = "fader"
-script/source = "extends AnimationPlayer
-
-var curr_target = \"\"
-
-func _ready():
-	connect(\"finished\", self, \"_on_finished\")
-	pass
-
-func set_target(path):
-	#if path == curr_target: return
-	var anim = get_animation(get_current_animation())
-	for track in range(anim.get_track_count()):
-		anim.track_set_path(track, path + \":visibility/opacity\")
-
-func play(path, time):
-	set_target(path)
-	set_speed(1 / time)
-	.play(get_current_animation())
-
-func fade_in(path, time):
-	set_current_animation(\"fade_in\")
-	play(path, time)
-
-func fade_out(path, time):
-	set_current_animation(\"fade_out\")
-	play(path, time)
-
-func _on_finished():
-	print(\"finished anim\")"
 
 [node name="ui" type="CanvasLayer"]
 
@@ -127,6 +60,7 @@ margin/bottom = 2.0
 
 [node name="title_menu" type="VButtonArray" parent="."]
 
+visibility/opacity = 0.0
 anchor/left = 3
 anchor/top = 3
 anchor/right = 3
@@ -155,18 +89,5 @@ button/2/tooltip = ""
 button/2/icon = null
 button/selected = 0
 script/script = SubResource( 1 )
-
-[node name="fader" type="AnimationPlayer" parent="."]
-
-playback/process_mode = 1
-playback/default_blend_time = 0.0
-root/root = NodePath("..")
-anims/fade_in = SubResource( 2 )
-anims/fade_out = SubResource( 4 )
-playback/active = true
-playback/speed = 1.0
-blend_times = [  ]
-autoplay = ""
-script/script = SubResource( 3 )
 
 
