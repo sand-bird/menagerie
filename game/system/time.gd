@@ -7,7 +7,7 @@ signal week_changed
 signal month_changed
 signal year_changed
 
-const ACTUAL_SECONDS_IN_TICK = 0.5
+const ACTUAL_SECONDS_IN_TICK = 0.4
 const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24
 const DAYS_IN_WEEK = 7

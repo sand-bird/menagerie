@@ -1,21 +1,12 @@
-[gd_scene load_steps=5 format=1]
+[gd_scene load_steps=8 format=1]
 
 [ext_resource path="res://assets/theme.tres" type="Theme" id=1]
+[ext_resource path="res://ui/pause_menu.gd" type="Script" id=2]
+[ext_resource path="res://addons/transition_control/control.png" type="Texture" id=3]
+[ext_resource path="res://ui/fade_in.tres" type="Animation" id=4]
+[ext_resource path="res://ui/fade_out.tres" type="Animation" id=5]
 
-[sub_resource type="GDScript" id=3]
-
-resource/name = "pause_menu"
-script/source = "extends VButtonArray
-
-# class member variables go here, for example:
-# var a = 2
-# var b = \"textvar\"
-
-func _ready():
-	pass
-"
-
-[sub_resource type="GDScript" id=1]
+[sub_resource type="GDScript" id=2]
 
 script/source = "# fullscreen button
 
@@ -25,7 +16,7 @@ func _on_pressed():
 	if OS.is_window_fullscreen(): OS.set_window_fullscreen(false)
 	else: OS.set_window_fullscreen(true)"
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id=3]
 
 script/source = "# spawn button
 
@@ -39,40 +30,53 @@ func _on_pressed():
 	new_monster.set_pos(Utils.vrandi(garden.get_size()))
 	garden.add_child(new_monster)"
 
-[node name="pause_menu" type="VButtonArray"]
+[node name="pause_menu" type="Control"]
 
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
+anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 1
 theme/theme = ExtResource( 1 )
-margin/left = 50.0
-margin/top = 108.0
-margin/right = -50.0
-margin/bottom = -108.0
-custom_constants/button_separator = 2
+margin/left = 142.0
+margin/top = 0.0
+margin/right = 142.0
+margin/bottom = 0.0
+script/script = ExtResource( 2 )
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
+enter = ExtResource( 4 )
+exit = ExtResource( 5 )
+
+[node name="VButtonArray" type="VButtonArray" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
 flat = false
 button/count = 4
-button/min_button_size = 20.0
-button/align = 1
-button/0/text = "Main Menu"
+button/min_button_size = 0.0
+button/align = 0
+button/0/text = "Return"
 button/0/tooltip = ""
 button/0/icon = null
-button/1/text = "Save Game"
+button/1/text = "Save"
 button/1/tooltip = ""
 button/1/icon = null
 button/2/text = "Options"
 button/2/tooltip = ""
 button/2/icon = null
-button/3/text = "Quit to Title"
+button/3/text = "Exit"
 button/3/tooltip = ""
 button/3/icon = null
 button/selected = 0
-script/script = SubResource( 3 )
 
 [node name="debug" type="Control" parent="."]
 
@@ -107,7 +111,7 @@ enabled_focus_mode = 0
 shortcut = null
 text = "FS"
 flat = false
-script/script = SubResource( 1 )
+script/script = SubResource( 2 )
 
 [node name="spawn" type="Button" parent="debug"]
 
@@ -125,7 +129,7 @@ enabled_focus_mode = 0
 shortcut = null
 text = "+M"
 flat = false
-script/script = SubResource( 2 )
+script/script = SubResource( 3 )
 
 [connection signal="pressed" from="debug/fullscreen" to="debug/fullscreen" method="_on_pressed"]
 

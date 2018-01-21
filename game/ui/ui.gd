@@ -13,7 +13,7 @@ func print_children():
 func open_menu(menu):
 #	var anim = fader.get_animation("fade_in")
 	load_menu(menu)
-	print_children()
+#	print_children()
 	get_node(menu).set_focus_mode(Control.FOCUS_ALL)
 	get_node(menu).grab_focus()
 
@@ -24,16 +24,23 @@ func close_menu(menu):
 #	fader.fade_out(menu, 1.5)
 #	yield(fader, "finished")
 #	print("after fade out")
-	var fader = get_node(menu + "/fader")
-	fader.play("fade_out")
-	yield(fader, "finished")
-	remove_child(get_node(menu))
-	emit_signal("closed", menu)
+#	var fader = get_node(menu + "/fader")
+#	fader.play("fade_out")
+#	yield(fader, "finished")
+	#remove_child(get_node(menu))
+	var menu_node = get_node(menu)
+	menu_node.connect("closed", self, "_on_child_closed", [menu])
+	menu_node.close()
 #	remove_child(get_children().back())
+
+func _on_child_closed(menu):
+	print("ui: child closed - ", menu)
+	get_node(menu).queue_free()
+	emit_signal("closed", menu)
 
 func load_menu(menu):
 	var new_node = load("res://ui/" + menu + ".tscn").instance()
-	new_node.add_child(load("res://ui/fader.tscn").instance())
+#	new_node.add_child(load("res://ui/fader.tscn").instance())
 	add_child(new_node)
 #	add_child(new_node)
 #	print("before fade in")
