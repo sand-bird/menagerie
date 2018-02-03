@@ -1,7 +1,7 @@
 # class Blackbord
 
-base_memory = {}
-tree_memory = {}
+var base_memory = {}
+var tree_memory = {}
 
 func get_tree_memory(tree_scope):
 	if !tree_memory[tree_scope]:

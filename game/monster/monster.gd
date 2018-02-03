@@ -7,7 +7,7 @@ extends KinematicBody2D
 var mother
 var father
 
-var name
+var pet_name
 var species
 var color
 var birthday
@@ -49,7 +49,7 @@ var social
 # ===========================================================
 #                         T R A I T S
 # -----------------------------------------------------------
-var Trait = preload("res://monster/traits.gd")
+const Trait = preload("res://monster/traits.gd")
 
 # INT -------------------------------------------------------
 var iq = Trait.Iq.new()

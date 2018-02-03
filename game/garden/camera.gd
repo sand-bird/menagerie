@@ -29,7 +29,7 @@ var min_pos
 var max_pos
 
 # mouse info, used for both
-onready var last_mouse_pos = get_local_mouse_pos()
+onready var last_mouse_pos = get_local_mouse_position()
 var target_pos= Vector2()
 
 
@@ -40,11 +40,12 @@ func _ready():
 	get_bounds()
 	
 	# let's start centered
-	set_pos(center_pos)
+	position = center_pos
 	align()
 	target_pos = center_pos
+	position = Vector2(100, 100)
 	
-	set_fixed_process(true)
+	set_physics_process(true)
 #	set_process_input(true) # we'll need this for joystick & button scroll (maybe)
 
 # -----------------------------------------------------------
@@ -87,24 +88,25 @@ func get_bounds():
 func do_drag_scroll():
 	if Input.is_mouse_button_pressed(1):
 		# calculate move delta
-		var mouse_pos = get_local_mouse_pos()
+		var mouse_pos = get_local_mouse_position()
 		var move_delta = last_mouse_pos - mouse_pos
 		# update target position
-		var new_target_pos = get_pos() + move_delta * FLICK_DISTANCE
+		var new_target_pos = position + move_delta * FLICK_DISTANCE
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
+		print("tgt: ", target_pos, "| current: ", position, " | mouse: ", mouse_pos)
 
 # -----------------------------------------------------------
 
 func do_edge_scroll():
 	# calculate move delta
-	var heading = get_local_mouse_pos() - screen_radius
+	var heading = get_local_mouse_position() - screen_radius
 	var direction = Utils.vsign(heading)
 	var abs_heading = Utils.vabs(heading)
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 		var move_delta = abs_heading
 		# update target position
-		var new_target_pos = get_pos() + move_delta * direction * SCROLL_SPEED
+		var new_target_pos = position + move_delta * direction * SCROLL_SPEED
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.1))
 
@@ -120,7 +122,7 @@ func do_joystick_scroll():
 
 # -----------------------------------------------------------
 
-func _fixed_process(delta): pass
+func _physics_process(delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
 	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
@@ -132,11 +134,11 @@ func _fixed_process(delta): pass
 	target_pos = Utils.vround(Utils.vclamp(target_pos, min_pos, max_pos))
 	
 	# lerp camera to target position
-	if get_pos() != target_pos:
-		var new_x = round(lerp(get_pos().x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
-		var new_y = round(lerp(get_pos().y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
-		set_pos(Vector2(new_x, new_y))
+	if position != target_pos:
+		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
+		var new_y = round(lerp(position.y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
+		position = Vector2(new_x, new_y)
 		align()
 	
 	# update saved cursor position (for drag scroll)
-	last_mouse_pos = get_local_mouse_pos()
+	last_mouse_pos = get_local_mouse_position()

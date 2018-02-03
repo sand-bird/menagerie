@@ -1,0 +1,69 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=3
+
+[application]
+
+config/name="Menagerie"
+run/main_scene="res://system/game.tscn"
+name="Menagerie"
+main_scene="res://system/game.tscn"
+icon="res://icon.png"
+
+[autoload]
+
+perfect_scale="*res://system/perfect_scale.gd"
+Constants="*res://system/constants.gd"
+Menu="*res://system/menu.gd"
+Utils="*res://system/utils.gd"
+Time="*res://system/time.gd"
+Options="*res://system/options.gd"
+
+[debug]
+
+indicators_enabled=true
+
+[display]
+
+window/size/width=384
+window/size/height=212
+window/size/test_width=720
+window/size/test_height=480
+window/stretch/mode="viewport"
+window/stretch/shrink="1"
+emulate_touchscreen=true
+stretch_mode="viewport"
+stretch_aspect="ignore"
+test_width=1152
+test_height=648
+width=384
+height=216
+use_2d_pixel_snap=true
+
+[editor_plugins]
+
+enabled=PoolStringArray( "GodotTIE" )
+
+[image_loader]
+
+gen_mipmaps=false
+
+[physics_2d]
+
+motion_fix_enabled=true
+
+[render]
+
+default_clear_color=Color( 0, 0, 0, 1 )
+
+[rendering]
+
+quality/2d/use_pixel_snap=true
+quality/subsurface_scattering/scale=1
+environment/default_clear_color=Color( 0, 0, 0, 1 )
