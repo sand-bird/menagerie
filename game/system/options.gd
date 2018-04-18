@@ -42,8 +42,8 @@ var scroll_modes = {
 }
 
 # options used for drag scroll
-var camera_flick_distance = 8.0
-var camera_flick_speed = 1.0
+var camera_flick_distance = 6.0
+var camera_flick_speed = 0.8
 
 # options used for edge scroll
 var camera_edge_size = 0.05 # percent of total screen width/height

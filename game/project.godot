@@ -18,12 +18,14 @@ icon="res://icon.png"
 
 [autoload]
 
-perfect_scale="*res://system/perfect_scale.gd"
+PerfectScale="*res://system/perfect_scale.gd"
 Constants="*res://system/constants.gd"
-Menu="*res://system/menu.gd"
 Utils="*res://system/utils.gd"
 Time="*res://system/time.gd"
 Options="*res://system/options.gd"
+Player="*res://system/player.gd"
+SaveManager="*res://system/save_manager.gd"
+EventManager="*res://system/event_manager.gd"
 
 [debug]
 
@@ -35,6 +37,7 @@ window/size/width=384
 window/size/height=212
 window/size/test_width=720
 window/size/test_height=480
+window/handheld/emulate_touchscreen=true
 window/stretch/mode="viewport"
 window/stretch/shrink="1"
 emulate_touchscreen=true

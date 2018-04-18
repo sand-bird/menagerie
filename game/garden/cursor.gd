@@ -50,11 +50,6 @@ func unstick(body):
 func reset_anim():
 	anim.seek(0)
 
-func _input_event(event):
-	if (event.type == InputEvent.MOUSE_BUTTON) and event.is_pressed():
-		anim.play("click")
-		anim.queue("cursor_bob")
-
 func _process(delta):
 	area.position = get_global_mouse_position()
 	if is_free: graphic_dest = get_global_mouse_position()

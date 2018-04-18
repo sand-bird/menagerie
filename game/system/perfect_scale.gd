@@ -25,6 +25,7 @@ onready var viewport = get_tree().get_root()
 func _ready():
 	get_tree().connect("screen_resized", self, "update_screen")
 	update_screen()
+	print("win: ", win_size, " | base: ", base_size)
 
 # for pixel perfect, the window size must exactly equal the 
 # base_size times the scale (the scaled_size), or else there 

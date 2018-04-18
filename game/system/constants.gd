@@ -1,8 +1,10 @@
-# class Globals
+# class Constants
 
 extends Node
 
-# ACTIONS 
+# --------- #
+#  ACTIONS  #
+# --------- #
 
 enum ActionStatus { 
 	SUCCESS,
@@ -12,7 +14,9 @@ enum ActionStatus {
 	ERROR 
 }
 
-# OPTIONS
+# --------- #
+#  OPTIONS  #
+# --------- #
 
 enum ControlMode {
 	MOUSE_AND_KEY, # edge, drag, button

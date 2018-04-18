@@ -2,15 +2,12 @@ extends Node
 
 var file = File.new()
 var dir = Directory.new()
-var player_name = "Michelle" # in future this will belong to some Player class
-const SAVE_ROOT = "user://"
+const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
 
 func _ready():
-	get_save_list()
 	pass
-
 
 # -----------------------------------------------------------
 
@@ -22,11 +19,9 @@ func new_save(name):
 	dir.make_dir(new_dir)
 	pass
 
-# --------------;--------------------------------------------
-# get_save_list |
-# --------------'
-# scans the SAVE_ROOT dir for valid save directories.
+# -----------------------------------------------------------
 
+# scans the SAVE_ROOT dir for valid save directories.
 func get_save_list():
 	var saves = []
 	if dir.open(SAVE_ROOT) != OK:
@@ -38,30 +33,46 @@ func get_save_list():
 			print("Found save: ", current)
 			saves.append(current)
 		current = dir.get_next()
-	print(saves)
+	return saves
 
-# --------------;---------------------------------------------
-# get_save_info | string -> dict
-# --------------'
+# ------------------------------------------------------------
+
 # gets the following info for display on the save list menu:
 # - player name
-# - town(?) name
 # - date
 # - player money
 # - player monsters
-
 func get_save_info(save_dir):
 	var save_info = {}
-	var data = read_file(get_path(save_dir, PLAYER))
-	pass
+	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
+	for k in ["player_name", "time", "money", "playtime"]:
+		save_info[k] = data[k]
+	save_info.save_dir = save_dir
+	return save_info
+
+# ------------------------------------------------------------
+
+func get_saves():
+	var saves = []
+	for save in get_save_list():
+		saves.append(get_save_info(save))
+	saves.sort_custom(self, "sort_saves")
+	print(saves)
+	return saves
+
+func get_save_time(save_dir):
+	return file.get_modified_time(get_path(save_dir, PLAYER))
+
 
 # ----------------------------------------------------------- #
 #          S A V I N G   &   L O A D I N G   D A T A          #
 # ----------------------------------------------------------- #
+# eventually, here we will distribute all the save info to the
+# nodes that need it. for now this is only time :(
 
 func save_game(save_dir):
 	var data = {}
-	data.player_name = player_name
+	# data.player_name = player_name
 	data.time = Time.serialize()
 	write_file(get_path(save_dir, PLAYER), data)
 
@@ -69,9 +80,8 @@ func save_game(save_dir):
 
 func load_game(save_dir):
 	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
-	player_name = data.player_name
+	Player.deserialize(data)
 	Time.deserialize(data.time)
-	print(player_name)
 
 # ----------------------------------------------------------- #
 #                       F I L E   I / O                       #
@@ -107,6 +117,15 @@ func get_path(save_dir, file_name):
 
 # -----------------------------------------------------------
 
+# order save info by timestamp, so the most recent save will
+# show first on the save list.
+func sort_save_info(a, b):
+	if get_save_time(a.save_dir) > get_save_time(b.save_dir):
+		return true
+	return false
+
+# -----------------------------------------------------------
+
 # strips numbers and any char not a-z, then lowercases.
 # in future, should convert unicode chars eg. 'e-acute' to
 # their plain ascii counterpart eg. 'e' when possible.
@@ -119,3 +138,6 @@ func format_name(name):
 		if i == ' ':
 			newstr += '_'
 	return newstr.to_lower()
+
+func set_autosave_interval(interval):
+	Time.connect("hour_changed", self, "save_game")

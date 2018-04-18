@@ -2,6 +2,10 @@ extends Camera2D
 
 var ScrollMode = Constants.ScrollMode
 
+# so we can turn off drag scrolling if we are using
+# drag for something else, such as laying tiles.
+var drag_action = "scroll"
+
 # options used for drag scroll
 var FLICK_DISTANCE = Options.camera_flick_distance
 var FLICK_SPEED = Options.camera_flick_speed # 1.0
@@ -28,10 +32,11 @@ var center_pos # global pos to center the view on the parent's center
 var min_pos
 var max_pos
 
-# mouse info, used for both
+# mouse info, used for edge and drag scroll
 onready var last_mouse_pos = get_local_mouse_position()
-var target_pos= Vector2()
+var target_pos = Vector2()
 
+# -----------------------------------------------------------
 
 func _ready():
 	get_tree().connect("screen_resized", self, "_on_screen_resized")
@@ -68,6 +73,14 @@ func get_screen_settings():
 
 # -----------------------------------------------------------
 
+# calculates and stores the properties of the camera's parent 
+# node (the garden) so we can initialize it to the center and 
+# stop it from scrolling too far past the parent's boundaries.
+# no relation to the screen size properties.
+#
+# for now, lets us view a fifth of the parent's size or a
+# quarter of the screen size, whichever's smaller, of space 
+# outside the bounds of the parent (magic numbers below).
 func get_bounds():
 	# set up our member vars
 # 	base_pos = get_parent().get_global_pos() # i guess not???
@@ -85,8 +98,11 @@ func get_bounds():
 
 # -----------------------------------------------------------
 
+# scroll based on touch (or click) input. moves the camera
+# opposite the drag direction and magnitude to create the
+# impression of dragging the screen.
 func do_drag_scroll():
-	if Input.is_mouse_button_pressed(1):
+	if Input.is_mouse_button_pressed(1) && drag_action == "scroll":
 		# calculate move delta
 		var mouse_pos = get_local_mouse_position()
 		var move_delta = last_mouse_pos - mouse_pos
@@ -94,10 +110,13 @@ func do_drag_scroll():
 		var new_target_pos = position + move_delta * FLICK_DISTANCE
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
-		print("tgt: ", target_pos, "| current: ", position, " | mouse: ", mouse_pos)
 
 # -----------------------------------------------------------
 
+# RTS-style scroll based on cursor position, only suitable
+# for mouse input. scrolls the camera when the cursor reaches
+# EDGE_SIZE from the edge of the window, proportionate to
+# the cursor's distance from the absolute edge.
 func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
@@ -112,11 +131,18 @@ func do_edge_scroll():
 
 # -----------------------------------------------------------
 
+# moves the camera up, down, left, and/or right based on key
+# input. suitable for mouse-and-keyboard or keyboard only
+# input schemes. naturally also works for joypad buttons, 
+# since the primary purpose of key-only is for all inputs to 
+# be externally remappable to an unrecognized controller.
 func do_key_scroll():
 	pass
 
 # -----------------------------------------------------------
 
+# scrolls based on joystick axis (-1.0 to 1.0 vertical and
+# horizontal). hopefully identifying joystick axes won't be too bad :(
 func do_joystick_scroll():
 	pass
 
@@ -125,7 +151,7 @@ func do_joystick_scroll():
 func _physics_process(delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
-	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
+	# if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
 	# (not sure if these will be here or in _process_input)
 	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()

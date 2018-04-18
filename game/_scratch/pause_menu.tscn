@@ -1,9 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://addons/transition_control/control.png" type="Texture" id=2]
 
-[node name="pause_menu" type="Control"]
+[node name="pause_menu" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -19,7 +18,7 @@ size_flags_vertical = 1
 theme = ExtResource( 1 )
 _sections_unfolded = [ "Rect", "Theme" ]
 __meta__ = {
-"_editor_icon": ExtResource( 2 )
+"_editor_icon": null
 }
 
 [node name="debug" type="Control" parent="." index="0"]

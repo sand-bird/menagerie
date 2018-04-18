@@ -4,10 +4,10 @@
 
 [resource]
 
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
 texture = ExtResource( 1 )
 region_rect = Rect2( 0, 0, 32, 32 )
 margin_left = 7.0
@@ -20,5 +20,5 @@ expand_margin_top = 0.0
 expand_margin_bottom = 0.0
 modulate_color = Color( 1, 1, 1, 1 )
 draw_center = true
-_sections_unfolded = [ "Margin" ]
+_sections_unfolded = [ "Content Margin", "Expand Margin", "Margin" ]
 

@@ -1,0 +1,42 @@
+{
+  "id": "pufig",
+  "width": 22,
+  "height": 20,
+  "description": "A fluffy pig-like monster with a superb sense of smell. Playful and gentle, Pufig are more intelligent than they appear, and although they can be stubborn, they make great pets for children and families.",
+  "morphs": [
+    {
+      "id": "pink",
+      "condition": {
+        "and": [
+          { 
+            ">": ["@father.iq", 30 ]
+          },
+          { 
+            ">": ["@mother.iq", 30 ]
+          }
+        ]
+      }
+    }
+  ],
+  "evolves_into": [
+    {
+      "id": "pufine",
+      "condition": {
+        ">": ["@patience", "@aggressiveness"]
+      }
+  	},
+  	{
+  	  "id": "pufrit",
+  	  "condition": {
+  	    ">": ["@aggressiveness", "@patience"]
+  	  }
+  	}
+  ],
+  "traits": {
+    "appetite": 2,
+    "iq": 1,
+    "aggressiveness": -1,
+    "openness": 1,
+    "sociability": 1
+  }
+}
