@@ -129,7 +129,7 @@ func to_dict():
 func load_dict(dict):
 	for key in dict.keys():
 		self[key] = dict[key]
-		
+
 # -----------------------------------------------------------
 
 # checks if the input is a time_dict, an integer total_time, 

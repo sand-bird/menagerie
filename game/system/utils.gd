@@ -1,5 +1,9 @@
 extends Node
 
+# --------- #
+#  STRINGS  #
+# --------- #
+
 static func capitalize(string):
 	var new_str = string.to_lower()
 	return  new_str[0].to_upper() + new_str.substr(1, new_str.length())

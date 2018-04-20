@@ -1,8 +1,31 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 
-[node name="title_buttons" type="VBoxContainer" index="0"]
+[sub_resource type="GDScript" id=1]
+
+resource_name = "new_game_button"
+script/source = "extends Button
+
+export(String) var event_emitter = \"EventManager\"
+export(String) var signal_name
+
+var args
+
+onready var event_emitter_node = get_node(\"/root/\" + event_emitter)
+onready var use_signal_name = self.name if signal_name == null else signal_name
+
+func _ready():
+	pass
+
+func _pressed():
+	print(\"pressed: \", use_signal_name, \" | args: \", args)
+	if event_emitter_node.has_signal(use_signal_name):
+		event_emitter_node.emit_signal(use_signal_name)
+	else: print(\"ERROR: signal '\", use_signal_name, \"' does not exist\")"
+_sections_unfolded = [ "Resource" ]
+
+[node name="title_buttons" type="VBoxContainer"]
 
 anchor_left = 0.5
 anchor_top = 1.0
@@ -44,7 +67,10 @@ group = null
 text = "New Game"
 flat = false
 align = 1
+script = SubResource( 1 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+event_emitter = "EventManager"
+signal_name = "test"
 
 [node name="load_game" type="Button" parent="." index="1"]
 

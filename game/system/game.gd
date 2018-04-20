@@ -4,10 +4,12 @@ var garden = load("res://garden/garden.tscn").instance()
 
 func _ready(): 
 	print("game ready!")
-	new_game()
+	EventManager.connect("new_game", self, "new_game")
+	# new_game()
 	pass
 
 func new_game():
+	print("game.gd: starting new game")
 	garden.initialize()
 	add_child(garden)
 
