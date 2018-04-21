@@ -20,6 +20,7 @@ icon="res://icon.png"
 
 PerfectScale="*res://system/perfect_scale.gd"
 Constants="*res://system/constants.gd"
+Data="*res://system/data.gd"
 Utils="*res://system/utils.gd"
 Condition="*res://system/condition.gd"
 Time="*res://system/time.gd"
@@ -52,7 +53,7 @@ use_2d_pixel_snap=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "GodotTIE" )
+enabled=PoolStringArray( "event_button" )
 
 [image_loader]
 

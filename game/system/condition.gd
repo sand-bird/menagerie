@@ -49,7 +49,7 @@ func _ready():
 	sample_monster.mother.iq = 20
 	sample_monster.father = Monster.new()
 	sample_monster.father.iq = 40
-	resolve(sample, sample_monster)
+	# resolve(sample, sample_monster)
 
 # ----------------------------------------------------------- #
 

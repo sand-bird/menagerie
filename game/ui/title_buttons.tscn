@@ -1,29 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-
-[sub_resource type="GDScript" id=1]
-
-resource_name = "new_game_button"
-script/source = "extends Button
-
-export(String) var event_emitter = \"EventManager\"
-export(String) var signal_name
-
-var args
-
-onready var event_emitter_node = get_node(\"/root/\" + event_emitter)
-onready var use_signal_name = self.name if signal_name == null else signal_name
-
-func _ready():
-	pass
-
-func _pressed():
-	print(\"pressed: \", use_signal_name, \" | args: \", args)
-	if event_emitter_node.has_signal(use_signal_name):
-		event_emitter_node.emit_signal(use_signal_name)
-	else: print(\"ERROR: signal '\", use_signal_name, \"' does not exist\")"
-_sections_unfolded = [ "Resource" ]
+[ext_resource path="res://addons/event_button/button.gd" type="Script" id=2]
+[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
 
 [node name="title_buttons" type="VBoxContainer"]
 
@@ -50,9 +29,9 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 4.0
+margin_top = 13.0
 margin_right = 96.0
-margin_bottom = 26.0
+margin_bottom = 35.0
 rect_min_size = Vector2( 96, 22 )
 rect_pivot_offset = Vector2( 0, 0 )
 focus_mode = 2
@@ -67,20 +46,23 @@ group = null
 text = "New Game"
 flat = false
 align = 1
-script = SubResource( 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+script = ExtResource( 2 )
+_sections_unfolded = [ "Rect" ]
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
 event_emitter = "EventManager"
-signal_name = "test"
+signal_name = null
 
-[node name="load_game" type="Button" parent="." index="1"]
+[node name="open_save_list" type="Button" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 30.0
+margin_top = 39.0
 margin_right = 96.0
-margin_bottom = 52.0
+margin_bottom = 61.0
 rect_min_size = Vector2( 96, 22 )
 rect_pivot_offset = Vector2( 0, 0 )
 focus_mode = 2
@@ -95,6 +77,12 @@ group = null
 text = "Load Game"
 flat = false
 align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+script = ExtResource( 2 )
+_sections_unfolded = [ "Rect" ]
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
+event_emitter = "EventManager"
+signal_name = null
 
 

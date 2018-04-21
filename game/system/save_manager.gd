@@ -2,24 +2,14 @@ extends Node
 
 var file = File.new()
 var dir = Directory.new()
+
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
 
-func _ready():
-	pass
-
-# -----------------------------------------------------------
-
-# just for testing
-# (in practice we will initialize our data on "new game" but
-# only save it to file when user first saves or autosaves)
-func new_save(name):
-	var new_dir = format_name(name) + "_" + str(OS.get_unix_time())
-	dir.make_dir(new_dir)
-	pass
-
-# -----------------------------------------------------------
+# ----------------------------------------------------------- #
+#              G E T T I N G   S A V E   I N F O              #
+# ----------------------------------------------------------- #
 
 # scans the SAVE_ROOT dir for valid save directories.
 func get_save_list():
@@ -52,7 +42,12 @@ func get_save_info(save_dir):
 
 # ------------------------------------------------------------
 
-func get_saves():
+func get_save_time(save_dir):
+	return file.get_modified_time(get_path(save_dir, PLAYER))
+
+# ------------------------------------------------------------
+
+func get_save_info_list():
 	var saves = []
 	for save in get_save_list():
 		saves.append(get_save_info(save))
@@ -60,16 +55,21 @@ func get_saves():
 	print(saves)
 	return saves
 
-func get_save_time(save_dir):
-	return file.get_modified_time(get_path(save_dir, PLAYER))
-
-
 # ----------------------------------------------------------- #
 #          S A V I N G   &   L O A D I N G   D A T A          #
 # ----------------------------------------------------------- #
+
+# just for testing
+# (in practice we will initialize our data on "new game" but
+# only save it to file when user first saves or autosaves)
+func new_save(name):
+	var new_dir = format_name(name) + "_" + str(OS.get_unix_time())
+	dir.make_dir(new_dir)
+
+# -----------------------------------------------------------
+
 # eventually, here we will distribute all the save info to the
 # nodes that need it. for now this is only time :(
-
 func save_game(save_dir):
 	var data = {}
 	# data.player_name = player_name

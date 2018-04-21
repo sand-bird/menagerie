@@ -6,7 +6,7 @@ func _ready():
 	print("game ready!")
 	EventManager.connect("new_game", self, "new_game")
 	# new_game()
-	pass
+	$pufig.texture = Data.data.monsters.pufig.sprite
 
 func new_game():
 	print("game.gd: starting new game")

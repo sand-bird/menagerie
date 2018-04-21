@@ -3,7 +3,7 @@ extends Panel
 const SaveItem = preload("res://ui/save_item.tscn")
 
 func _ready():
-	for save_info in SaveManager.get_saves():
+	for save_info in SaveManager.get_save_info_list():
 		add_save_item(save_info)
 
 func add_save_item(save_info):
