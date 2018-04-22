@@ -5,6 +5,7 @@ func _ready():
 
 func initialize():
 	print("init garden")
+	deserialize()
 
 func serialize():
 	pass
@@ -17,6 +18,9 @@ func deserialize(data):
 	pass
 
 func load_terrain(data):
+	for x in data:
+		for y in x:
+			print("(", x, ",", y, "), ")
 	pass
 
 func load_objects(data):

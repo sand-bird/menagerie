@@ -20,6 +20,7 @@ enum Layer {
 var stack = []
 
 func _ready():
+	print("ui connecting to: ", EventManager)
 	EventManager.connect("open_menu", self, "_open_menu")
 	EventManager.connect("close_menu", self, "_close_menu")
 
@@ -40,6 +41,7 @@ func _ready():
 #    the replaced elements should be restored when this
 #    element is closed. defaults to true.
 func _open_menu(args):
+	print("ui._open_menu")
 	# set up vars
 	var item_ref
 	var replace = false
@@ -96,4 +98,4 @@ func replace(item):
 # -----------------------------------------------------------
 
 func load_node(path):
-	load("res://ui/" + path + ".tscn").instance()
+	return load("res://ui/" + path + ".tscn").instance()

@@ -1,23 +1,58 @@
 extends Node
 
+const SAVE_KEYS = [
+	"player_name", "playtime", "level", "money",
+	"encyclopedia", "inventory",
+	"requests", "completed_requests",
+]
+
 var player_name
 var playtime
+var last_update_time # used to update playtime
 var money
-var last_update_time
+var level
+
+# the big boys
+var encyclopedia
+var inventory
+
+# this should store the letter fragments the player has seen,
+# and how often they've occurred (i guess)
+var letters
+
+var requests # "current" is too verbose and should be implied
+var completed_requests
+# expired requests: own category, put them in completed with 
+# a FAILED tag or something, or don't remember them at all? 
+#
+# tracking expired requests implies not allowing them to be 
+# generated again, which might be overly punishing. (could 
+# also be to prevent the same type of request from being 
+# generated too often, which is ok but probably not a big 
+# enough deal to be worth it.)
+
+# not really a huge feature, but npcs should warm up to you
+# as you interact with them and complete requests
+var relationships
+
+# -----------------------------------------------------------
 
 func _ready():
 	pass
 
+# -----------------------------------------------------------
+
 func serialize():
 	var data = {}
-	for k in ["player_name", "playtime", "money"]:
-		data[k] = self[k]
+	update_playtime()
+	for k in SAVE_KEYS: data[k] = self[k]
 	return data
 
 func deserialize(data):
-	for k in ["player_name", "playtime", "money"]:
-		self[k] = data[k]
+	for k in SAVE_KEYS: self[k] = data[k]
 	last_update_time = OS.get_unix_time()
+
+# -----------------------------------------------------------
 
 func update_playtime():
 	var current_time = OS.get_unix_time()
@@ -37,3 +72,5 @@ func get_printable_playtime(time = null):
 	var hour = int(time / 60)
 	var minute = int(time) % 60
 	return str(hour) + ":" + str(minute).pad_zeros(2)
+
+# -----------------------------------------------------------

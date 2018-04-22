@@ -1,13 +1,13 @@
 extends Node
 
-var file = File.new()
+var current_save_dir
 var dir = Directory.new()
 
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
 
-# ----------------------------------------------------------- #
+# =========================================================== #
 #              G E T T I N G   S A V E   I N F O              #
 # ----------------------------------------------------------- #
 
@@ -37,13 +37,15 @@ func get_save_info(save_dir):
 	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data[k]
+	save_info.encyclopedia = Player.get_encylopedia_completion(data.encyclopedia)
+	save_info.monsters = data.monster_count
 	save_info.save_dir = save_dir
 	return save_info
 
 # ------------------------------------------------------------
 
 func get_save_time(save_dir):
-	return file.get_modified_time(get_path(save_dir, PLAYER))
+	return File.new().get_modified_time(get_path(save_dir, PLAYER))
 
 # ------------------------------------------------------------
 
@@ -55,39 +57,37 @@ func get_save_info_list():
 	print(saves)
 	return saves
 
-# ----------------------------------------------------------- #
+
+# =========================================================== #
 #          S A V I N G   &   L O A D I N G   D A T A          #
 # ----------------------------------------------------------- #
 
-# just for testing
-# (in practice we will initialize our data on "new game" but
-# only save it to file when user first saves or autosaves)
-func new_save(name):
-	var new_dir = format_name(name) + "_" + str(OS.get_unix_time())
-	dir.make_dir(new_dir)
+func new_save(pname):
+	current_save_dir = format_name(pname) + "_" + str(OS.get_unix_time())
+	dir.make_dir(current_save_dir)
 
 # -----------------------------------------------------------
 
-# eventually, here we will distribute all the save info to the
-# nodes that need it. for now this is only time :(
-func save_game(save_dir):
-	var data = {}
-	# data.player_name = player_name
-	data.time = Time.serialize()
-	write_file(get_path(save_dir, PLAYER), data)
+func save_game(data, save_dir = current_save_dir):
+	write_file(get_path(save_dir, PLAYER), data.player)
+	write_file(get_path(save_dir, PLAYER), data.garden)
 
 # -----------------------------------------------------------
 
 func load_game(save_dir):
-	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
-	Player.deserialize(data)
-	Time.deserialize(data.time)
+	current_save_dir = save_dir
+	return {
+		"player": parse_json(read_file(get_path(save_dir, PLAYER))),
+		"garden": parse_json(read_file(get_path(save_dir, GARDEN))),
+	}
 
-# ----------------------------------------------------------- #
+
+# =========================================================== #
 #                       F I L E   I / O                       #
 # ----------------------------------------------------------- #
 
 func write_file(path, data):
+	var file = File.new()
 	file.open(path, File.WRITE)
 	print(file.file_exists(path))
 	file.store_string(to_json(data))
@@ -96,6 +96,7 @@ func write_file(path, data):
 # -----------------------------------------------------------
 
 func read_file(path):
+	var file = File.new()
 	file.open(path, File.READ)
 	var data = file.get_as_text()
 	file.close()

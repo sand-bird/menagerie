@@ -30,17 +30,6 @@ var global_vars = {
 	}
 }
 
-var sample = {
-	"and": [
-		{
-			">": ["@father.iq", 30 ]
-		},
-		{ 
-			">": ["@mother.iq", 30 ]
-		}
-	]
-}
-
 # basic test
 func _ready():
 	var Monster = preload("res://monster/monster.gd")
@@ -49,7 +38,8 @@ func _ready():
 	sample_monster.mother.iq = 20
 	sample_monster.father = Monster.new()
 	sample_monster.father.iq = 40
-	# resolve(sample, sample_monster)
+	for morph in Data.data.monsters.pufig.morphs:
+		print(morph.id, ": ", resolve(morph.condition, sample_monster))
 
 # ----------------------------------------------------------- #
 
@@ -72,7 +62,7 @@ static func resolve(data, caller = null):
 	# any other type is a problem
 	else: assert(false) 
 	
-	print("condition ", data, " resolved to ", result)
+#	print("condition ", data, " resolved to ", result)
 	return result
 
 # ----------------------------------------------------------- #
@@ -151,7 +141,7 @@ static func _resolve_arg(arg, caller):
 # -----------------------------------------------------------
 
 static func _eval_local(arg, caller):
-	print("evaluating local var: ", arg)
+#	print("evaluating local var: ", arg)
 	var breadcrumb = arg.split('.')
 	var obj = caller
 	for prop in breadcrumb:

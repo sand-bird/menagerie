@@ -11,8 +11,8 @@ const IDEAL_SIZE = Vector2(400, 280)
 const MIN_SIZE = Vector2(320, 192)
 const MAX_SIZE = Vector2(480, 360)
 
-const MIN_ASPECT = 9.0/16.0
-const MAX_ASPECT = 3.0/4.0
+const MIN_ASPECT = 0.5 # 9.0/16.0
+const MAX_ASPECT = 1 # 3.0/4.0
 
 const MIN_SCALE = 2
 

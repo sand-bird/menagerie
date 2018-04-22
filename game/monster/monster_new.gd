@@ -1,102 +1,53 @@
 extends KinematicBody2D
 
-# ===========================================================
-#                     P R O P E R T I E S
-# -----------------------------------------------------------
+# =========================================================== #
+#                     P R O P E R T I E S                     #
+# ----------------------------------------------------------- #
+
+var id
+var monster_name
+var species
+var morph
+var birthday
 var mother
 var father
 
-var pet_name
-var species
-var color
-var birthday
+# attributes
+# ----------
+# intelligence, vitality, constitution, charm, amiability, 
+# and spirit. full names are used because "int" is reserved
+var attributes
 
-# ===========================================================
-#                     A T T R I B U T E S
-# -----------------------------------------------------------
-var intelligence
-var vitality
-var constitution
-var charm
-var amiability
-var spirit
-
-var attributes = [
-	intelligence, vitality, constitution,
-	charm, amiability, spirit
-]
-
-# ===========================================================
-#                         M E M O R Y
-# -----------------------------------------------------------
-var past_actions = []
+# memory
+# ------
+var past_actions
 var current_action
 var next_action
 
-# ===========================================================
-#                         D R I V E S 
-# -----------------------------------------------------------
+# drives  
+# ------
 var belly
 var mood
 var energy
 var social
 
-# ===========================================================
-#                         T R A I T S
-# -----------------------------------------------------------
-# INT -------------------------------------------------------
-var iq
-var learning
-# VIT -------------------------------------------------------
-var size
-var strength
-var health
-# CON -------------------------------------------------------
-var composure
-var willpower
-var patience
-# CHA -------------------------------------------------------
-var confidence
-var beauty
-var poise
-# AMI -------------------------------------------------------
-var independence
-var empathy
-var kindness
-var arrogance
-var aggressiveness
-# SPR -------------------------------------------------------
-var happiness
-var actualization
-var loyalty
-# N/A -------------------------------------------------------
-var openness
-var appetite
-var sociability
+# traits
+# ------
+# iq, learning, size, strength, health, composure, willpower, 
+# patience, confidence, beauty, poise, independence, empathy, 
+# kindness, arrogance, aggressiveness, happiness, loyalty,
+# actualization, openness, appetite, sociability
+var traits
 
-var traits = [
-	iq, learning, 
-	size, strength, health, 
-	composure, willpower, patience, 
-	confidence, beauty, poise, 
-	independence, empathy, kindness, 
-	arrogance, aggressiveness, 
-	happiness, actualization, loyalty,
-	openness, appetite, sociability
-]
 
-# ===========================================================
-#                        M E T H O D S
-# -----------------------------------------------------------
+# =========================================================== #
+#                        M E T H O D S                        #
+# ----------------------------------------------------------- #
 
-func _ready(): 
-	add_to_group("monsters", true)
-	connect("item_rect_changed", self, "update_z")
-	set_fixed_process(true)
-	update_z()
-	choose_action()
+func _ready():
+	$sprite.texture = Data.data.monsters[species].sprite
 
-# -----------------------------------------------------------
+# ----------------------------------------------------------- #
 
 func serialize():
 	var data = {
@@ -116,21 +67,10 @@ func deserialize(data):
 	for i in data:
 		print(i, ": ", data[i])
 
-#func _init(dad, mom):
-#	if dad: self.father = dad
-#	if mom: self.mother = mom
-#	birth()
-#	pass
-
 # -----------------------------------------------------------
 
 func update_z():
 	set_z(get_pos().y + get_item_rect().size.y)
-
-# -----------------------------------------------------------
-
-func highlight(): pass
-#	print("i am selected!")
 
 # -----------------------------------------------------------
 
@@ -139,17 +79,6 @@ func _fixed_process(delta):
 		var action_status = current_action.execute()
 		if action_status == Action.FINISHED:
 			_on_action_finished()
-	# if !Utils.veq(get_pos(), dest): walk(dest)
-	# else: wait(time)
-
-# -----------------------------------------------------------
-
-func birth():
-	print("A NEW BABY IS BORN!")
-	for trait in traits:
-		trait.calc_initial_value(self)
-	print("----------------------")
-	pass
 
 # -----------------------------------------------------------
 
@@ -165,8 +94,8 @@ func choose_action():
 
 # -----------------------------------------------------------
 
-func update_status():
-	# updates the pet's status meters (mood, hunger, etc)
+func update_drives():
+	# updates the pet's drive meters (mood, hunger, etc)
 	pass
 
 # -----------------------------------------------------------
@@ -177,14 +106,21 @@ func update_preferences():
 
 # -----------------------------------------------------------
 
-func update_attributes(): 
-	# INT, VIT, CON... via all sorts of stuff
+func recalc_attributes(): 
+	# INT, VIT, CON... these are supposed to depend directly
+	# on the traits that feed into them
 	pass
 
 # -----------------------------------------------------------
 
-func walk(dest):
-	move(Utils.vlerp(get_pos(), dest, 0.5))
+func _on_highlight():
+	# possibly a third (or rather first) interaction state:
+	# the highlight, for when the cursor is in "snapping"
+	# range of the monster but the focus delay hasn't elapsed
+	# yet (or for players using a "careful" (or whatever) 
+	# targeting scheme, where they must press action to focus
+	# and then again to select)
+	pass
 
 # -----------------------------------------------------------
 
@@ -239,9 +175,7 @@ func _on_discipline(discipline_type):
 # -----------------------------------------------------------
 
 func _on_action_finished():
-#	print("action finished!")
-#	update_status()
-#	update_attributes()
+	print("action finished!")
 	past_actions.append(current_action)
 	if past_actions.size() > 5:
 		past_actions.pop_front()
@@ -249,17 +183,3 @@ func _on_action_finished():
 		current_action = next_action
 		next_action = null
 	else: choose_action()
-
-# -----------------------------------------------------------
-
-func _on_state_changed(state):
-	update_status()
-	pass
-
-# -----------------------------------------------------------
-	
-func _on_status_changed():
-	# here we will probably have to decide if we need to
-	# stop actions or enter some special state, if action
-	# falls below certain trigger
-	pass
