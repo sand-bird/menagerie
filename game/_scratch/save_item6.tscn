@@ -11,7 +11,7 @@
 [ext_resource path="res://assets/ui/encyclopedia_icon.png" type="Texture" id=9]
 [ext_resource path="res://assets/ui/clock_icon.png" type="Texture" id=10]
 
-[node name="save_item" type="Button"]
+[node name="save_item" type="Button" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -40,7 +40,7 @@ align = 1
 script = ExtResource( 5 )
 _sections_unfolded = [ "Focus", "Mouse", "Rect", "Textures", "Theme", "custom_styles" ]
 
-[node name="player_name" type="TextureRect" parent="." index="0"]
+[node name="player_name" type="HBoxContainer" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -48,7 +48,28 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 14.0
+margin_right = 81.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_constants/separation = 3
+alignment = 0
+_sections_unfolded = [ "Focus", "Margin", "Mouse", "Rect", "custom_constants" ]
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="icon" type="TextureRect" parent="player_name" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 1.0
+margin_right = 6.0
+margin_bottom = 9.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -58,38 +79,56 @@ texture = ExtResource( 6 )
 stretch_mode = 0
 _sections_unfolded = [ "Anchor", "Hint", "Margin", "Rect" ]
 
-[node name="label" type="Label" parent="player_name" index="0"]
+[node name="label" type="Label" parent="player_name" index="1"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 3.0
-margin_top = -1.0
-margin_right = 67.0
-margin_bottom = 10.0
+margin_left = 9.0
+margin_right = 73.0
+margin_bottom = 11.0
 rect_min_size = Vector2( 64, 0 )
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_colors/font_color = Color( 0.742188, 0.318909, 0.537162, 1 )
 text = "Michelle"
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_colors" ]
+_sections_unfolded = [ "Rect", "custom_colors" ]
 
-[node name="monsters" type="TextureRect" parent="." index="1"]
+[node name="monsters" type="HBoxContainer" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 7.0
-margin_top = 23.0
-margin_right = 17.0
+margin_top = 22.0
+margin_right = 47.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_constants/separation = 3
+alignment = 0
+_sections_unfolded = [ "Margin", "Mouse", "Rect", "custom_constants" ]
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="icon" type="TextureRect" parent="monsters" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 10.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -99,15 +138,14 @@ texture = ExtResource( 7 )
 stretch_mode = 0
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="label" type="Label" parent="monsters" index="0"]
+[node name="label" type="Label" parent="monsters" index="1"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 3.0
-margin_top = -1.0
-margin_right = 13.0
+margin_left = 13.0
+margin_right = 23.0
 margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
@@ -121,14 +159,35 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="money" type="TextureRect" parent="." index="2"]
+[node name="money" type="HBoxContainer" parent="." index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 42.0
-margin_top = 23.0
+margin_top = 22.0
+margin_right = 106.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_constants/separation = 1
+alignment = 0
+_sections_unfolded = [ "Anchor", "Margin", "Mouse", "Rect", "custom_constants" ]
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="icon" type="TextureRect" parent="money" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 9.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -138,15 +197,15 @@ texture = ExtResource( 8 )
 stretch_mode = 0
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="label" type="Label" parent="money" index="0"]
+[node name="label" type="Label" parent="money" index="1"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 1.0
-margin_top = -1.0
-margin_right = 56.0
+margin_left = 10.0
+margin_right = 51.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -158,47 +217,7 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="encyclopedia" type="TextureRect" parent="." index="3"]
-
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-margin_left = -18.0
-margin_top = 23.0
-margin_right = -8.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 9 )
-stretch_mode = 0
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="label" type="Label" parent="encyclopedia" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = -42.0
-margin_top = -1.0
-margin_right = -2.0
-rect_min_size = Vector2( 40, 0 )
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "56.8%"
-align = 2
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="e" type="HBoxContainer" parent="." index="4"]
+[node name="encyclopedia" type="HBoxContainer" parent="." index="3"]
 
 anchor_left = 1.0
 anchor_top = 0.0
@@ -219,7 +238,46 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="p" type="HBoxContainer" parent="." index="5"]
+[node name="label" type="Label" parent="encyclopedia" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 48.0
+margin_bottom = 11.0
+rect_min_size = Vector2( 48, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "56.8%"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="icon" type="TextureRect" parent="encyclopedia" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 50.0
+margin_right = 60.0
+margin_bottom = 11.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 9 )
+stretch_mode = 0
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="playtime" type="HBoxContainer" parent="." index="4"]
 
 anchor_left = 1.0
 anchor_top = 0.0
@@ -228,7 +286,6 @@ anchor_bottom = 0.0
 margin_left = -67.0
 margin_top = 8.0
 margin_right = -8.0
-margin_bottom = 19.0
 grow_horizontal = 0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
@@ -242,15 +299,36 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="playtime" type="TextureRect" parent="." index="6"]
+[node name="label" type="Label" parent="playtime" index="0"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = -16.0
-margin_top = 8.0
-margin_right = -8.0
+margin_right = 48.0
+margin_bottom = 11.0
+rect_min_size = Vector2( 48, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "20:43"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="icon" type="TextureRect" parent="playtime" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 50.0
+margin_right = 59.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -260,38 +338,32 @@ texture = ExtResource( 10 )
 stretch_mode = 0
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="label" type="Label" parent="playtime" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = -58.0
-margin_top = -1.0
-margin_right = -2.0
-rect_min_size = Vector2( 56, 0 )
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "20:43"
-align = 2
-clip_text = true
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="time" type="TextureRect" parent="." index="7"]
+[node name="time" type="HBoxContainer" parent="." index="5"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 8.0
-margin_top = 36.0
-margin_right = 17.0
+margin_top = 35.0
+margin_right = 161.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_constants/separation = 2
+alignment = 0
+_sections_unfolded = [ "Grow Direction", "Margin", "Mouse", "Rect", "custom_constants" ]
+
+[node name="icon" type="TextureRect" parent="time" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 9.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -301,15 +373,15 @@ texture = ExtResource( 10 )
 stretch_mode = 0
 _sections_unfolded = [ "Margin", "Rect" ]
 
-[node name="label" type="Label" parent="time" index="0"]
+[node name="label" type="Label" parent="time" index="1"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 2.0
-margin_top = -1.0
+margin_left = 11.0
 margin_right = 144.0
+margin_bottom = 11.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -319,6 +391,6 @@ text = "10:45a.m. Aurora 3rd, Year 4"
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+_sections_unfolded = [ "Rect" ]
 
 

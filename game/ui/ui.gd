@@ -20,9 +20,9 @@ enum Layer {
 var stack = []
 
 func _ready():
-	print("ui connecting to: ", EventManager)
-	EventManager.connect("open_menu", self, "_open_menu")
-	EventManager.connect("close_menu", self, "_close_menu")
+	Dispatcher.connect("open_menu", self, "_open_menu")
+	Dispatcher.connect("close_menu", self, "_close_menu")
+	set_process_unhandled_input(true)
 
 # -----------------------------------------------------------
 

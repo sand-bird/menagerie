@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://system/game.gd" type="Script" id=1]
 [ext_resource path="res://ui/ui.tscn" type="PackedScene" id=2]
 [ext_resource path="res://ui/ui.gd" type="Script" id=3]
-[ext_resource path="res://ui/title_screen.tscn" type="PackedScene" id=4]
 
 [node name="game" type="Node"]
 
@@ -13,9 +12,7 @@ script = ExtResource( 1 )
 
 script = ExtResource( 3 )
 
-[node name="title_screen" parent="." index="1" instance=ExtResource( 4 )]
-
-[node name="pufig" type="Sprite" parent="." index="2"]
+[node name="pufig" type="Sprite" parent="." index="1"]
 
 position = Vector2( 24.8566, 22.6951 )
 _sections_unfolded = [ "Animation", "Offset", "Region", "Transform", "Z Index" ]

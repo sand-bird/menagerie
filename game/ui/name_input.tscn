@@ -1,33 +1,50 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
+[ext_resource path="res://addons/event_button/button.gd" type="Script" id=2]
+[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
 
-[node name="Panel" type="Panel"]
+[sub_resource type="GDScript" id=1]
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 144.0
-margin_bottom = 57.0
+resource_name = "name_input"
+script/source = "extends Panel
+
+func _ready():
+	$input_field.connect(\"text_changed\", self, \"_update_button\")
+
+func _update_button(text):
+	$submit_button.args = text"
+_sections_unfolded = [ "Resource" ]
+
+[node name="panel" type="Panel"]
+
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -72.0
+margin_top = -28.0
+margin_right = 72.0
+margin_bottom = 28.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 theme = ExtResource( 1 )
-_sections_unfolded = [ "Rect", "Theme" ]
+script = SubResource( 1 )
+_sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme" ]
 
-[node name="LineEdit" type="LineEdit" parent="." index="0"]
+[node name="input_field" type="LineEdit" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 8.0
-margin_top = 30.0
+margin_top = 29.0
 margin_right = 99.0
-margin_bottom = 47.0
+margin_bottom = 48.0
 rect_pivot_offset = Vector2( 0, 0 )
 focus_mode = 2
 mouse_filter = 0
@@ -42,7 +59,7 @@ caret_blink_speed = 0.65
 caret_position = 0
 _sections_unfolded = [ "Caret", "Placeholder" ]
 
-[node name="Label" type="Label" parent="." index="1"]
+[node name="label" type="Label" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -63,28 +80,36 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Button" type="Button" parent="." index="2"]
+[node name="submit_button" type="Button" parent="." index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 103.0
-margin_top = 28.0
+margin_top = 29.0
 margin_right = 132.0
-margin_bottom = 47.0
+margin_bottom = 48.0
 rect_pivot_offset = Vector2( 0, 0 )
+focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 toggle_mode = false
-enabled_focus_mode = 0
+enabled_focus_mode = 2
 shortcut = null
 group = null
 text = "OK!"
 flat = false
 align = 1
-_sections_unfolded = [ "Anchor", "Focus", "Grow Direction", "Hint", "Margin", "Material", "Rect", "Size Flags", "Theme", "Visibility", "custom_colors", "custom_constants", "custom_fonts", "custom_styles" ]
+script = ExtResource( 2 )
+_sections_unfolded = [ "Rect" ]
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
+emitter = "Dispatcher"
+signal_name = "new_game"
+args = null
 
 

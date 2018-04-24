@@ -20,9 +20,7 @@ var data = {}
 
 func _ready():
 	data = load_dir(BASE_DIR)
-	print("done: ", to_json(data))
-	#for item in data:
-	#	set_meta(item, 1)
+#	print("done: ", to_json(data))
 
 
 func load_dir(dirname):
@@ -54,7 +52,7 @@ func load_file(dirname, path):
 	return data
 
 func process_data(data, basedir):
-	print("process_data: ", data)
+#	print("process_data: ", data)
 	for i in data:
 		#if typeof(data[i]) in [TYPE_ARRAY, TYPE_DICTIONARY]:
 		#	data[i] = process_data(data[i], basedir)

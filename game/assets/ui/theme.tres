@@ -1,10 +1,11 @@
-[gd_resource type="Theme" load_steps=7 format=2]
+[gd_resource type="Theme" load_steps=8 format=2]
 
-[ext_resource path="res://assets/ui/box_border_outset.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/ui/box_border_inset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/ui/box_border_glow.tres" type="StyleBox" id=3]
-[ext_resource path="res://assets/ui/box_inset.tres" type="StyleBox" id=4]
-[ext_resource path="res://assets/ui/menagerie_v3.font" type="BitmapFont" id=5]
+[ext_resource path="res://assets/ui/output_font.font" type="BitmapFont" id=1]
+[ext_resource path="res://assets/ui/box_border_outset.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/ui/box_border_inset.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/ui/box_border_glow.tres" type="StyleBox" id=4]
+[ext_resource path="res://assets/ui/box_inset.tres" type="StyleBox" id=5]
+[ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -16,28 +17,28 @@ _sections_unfolded = [ "Content Margin" ]
 
 [resource]
 
-default_font = ExtResource( 5 )
+default_font = ExtResource( 6 )
 Button/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
 Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
 Button/colors/font_color_hover = Color( 0.4, 0.25098, 0.168627, 1 )
 Button/colors/font_color_pressed = Color( 0.4, 0.25098, 0.168627, 1 )
 Button/constants/hseparation = 0
-Button/fonts/font = null
-Button/styles/disabled = ExtResource( 1 )
+Button/fonts/font = ExtResource( 1 )
+Button/styles/disabled = ExtResource( 2 )
 Button/styles/focus = null
-Button/styles/hover = ExtResource( 1 )
-Button/styles/normal = ExtResource( 1 )
-Button/styles/pressed = ExtResource( 2 )
+Button/styles/hover = ExtResource( 2 )
+Button/styles/normal = ExtResource( 2 )
+Button/styles/pressed = ExtResource( 3 )
 HButtonArray/colors/font_color = Color( 0.4, 0.247059, 0.164706, 1 )
 HButtonArray/colors/font_color_selected = Color( 0.4, 0.247059, 0.164706, 1 )
 HButtonArray/constants/button_separator = 4
 HButtonArray/constants/icon_separator = 2
 HButtonArray/fonts/font = null
 HButtonArray/fonts/font_selected = null
-HButtonArray/styles/focus = ExtResource( 3 )
-HButtonArray/styles/hover = ExtResource( 1 )
-HButtonArray/styles/normal = ExtResource( 1 )
-HButtonArray/styles/selected = ExtResource( 3 )
+HButtonArray/styles/focus = ExtResource( 4 )
+HButtonArray/styles/hover = ExtResource( 2 )
+HButtonArray/styles/normal = ExtResource( 2 )
+HButtonArray/styles/selected = ExtResource( 4 )
 HScrollBar/icons/decrement = null
 HScrollBar/icons/decrement_highlight = null
 HScrollBar/icons/increment = null
@@ -60,13 +61,13 @@ LineEdit/colors/font_color_selected = Color( 0, 0, 0, 1 )
 LineEdit/colors/selection_color = Color( 0.490196, 0.490196, 0.490196, 1 )
 LineEdit/constants/minimum_spaces = 12
 LineEdit/fonts/font = null
-LineEdit/styles/focus = ExtResource( 4 )
-LineEdit/styles/normal = ExtResource( 4 )
+LineEdit/styles/focus = ExtResource( 5 )
+LineEdit/styles/normal = ExtResource( 5 )
 LineEdit/styles/read_only = null
-Panel/styles/panel = ExtResource( 1 )
-Panel/styles/panelf = ExtResource( 1 )
-Panel/styles/panelnc = ExtResource( 1 )
-PanelContainer/styles/panel = ExtResource( 1 )
+Panel/styles/panel = ExtResource( 2 )
+Panel/styles/panelf = ExtResource( 2 )
+Panel/styles/panelnc = ExtResource( 2 )
+PanelContainer/styles/panel = ExtResource( 2 )
 TabContainer/colors/font_color_bg = Color( 0.690196, 0.690196, 0.690196, 1 )
 TabContainer/colors/font_color_fg = Color( 0.941176, 0.941176, 0.941176, 1 )
 TabContainer/constants/hseparation = 4
@@ -81,18 +82,18 @@ TabContainer/icons/increment = null
 TabContainer/icons/increment_hilite = null
 TabContainer/icons/menu = null
 TabContainer/icons/menu_hilite = null
-TabContainer/styles/panel = ExtResource( 3 )
-TabContainer/styles/tab_bg = ExtResource( 1 )
-TabContainer/styles/tab_fg = ExtResource( 3 )
+TabContainer/styles/panel = ExtResource( 4 )
+TabContainer/styles/tab_bg = ExtResource( 2 )
+TabContainer/styles/tab_fg = ExtResource( 4 )
 VButtonArray/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
 VButtonArray/colors/font_color_selected = Color( 0.4, 0.25098, 0.168627, 1 )
 VButtonArray/constants/button_separator = 4
 VButtonArray/constants/icon_separator = 2
 VButtonArray/fonts/font = null
 VButtonArray/fonts/font_selected = null
-VButtonArray/styles/focus = ExtResource( 3 )
-VButtonArray/styles/hover = ExtResource( 1 )
-VButtonArray/styles/normal = ExtResource( 1 )
-VButtonArray/styles/selected = ExtResource( 2 )
-_sections_unfolded = [ "Button", "Button/styles", "Dialogs", "Dialogs/constants", "Fonts", "Fonts/colors", "HButtonArray/colors", "HButtonArray/constants", "HButtonArray/fonts", "HButtonArray/styles", "HScrollBar/icons", "HScrollBar/styles", "LineEdit", "LineEdit/colors", "LineEdit/fonts", "LineEdit/styles", "Panel", "Panel/styles", "PanelContainer", "TabContainer", "TextEdit", "TextEdit/fonts", "VButtonArray" ]
+VButtonArray/styles/focus = ExtResource( 4 )
+VButtonArray/styles/hover = ExtResource( 2 )
+VButtonArray/styles/normal = ExtResource( 2 )
+VButtonArray/styles/selected = ExtResource( 3 )
+_sections_unfolded = [ "Button", "Button/colors", "Button/constants", "Button/fonts", "Button/styles", "Dialogs", "Dialogs/constants", "Fonts", "Fonts/colors", "HButtonArray/colors", "HButtonArray/constants", "HButtonArray/fonts", "HButtonArray/styles", "HScrollBar/icons", "HScrollBar/styles", "LineEdit", "LineEdit/colors", "LineEdit/fonts", "LineEdit/styles", "Panel", "Panel/styles", "PanelContainer", "TabContainer", "TextEdit", "TextEdit/fonts", "VButtonArray" ]
 

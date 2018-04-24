@@ -40,15 +40,9 @@ var target_pos = Vector2()
 
 func _ready():
 	get_tree().connect("screen_resized", self, "_on_screen_resized")
+	$"..".connect("resized", self, "_on_screen_resized")
 	
-	get_screen_settings()
-	get_bounds()
-	
-	# let's start centered
-	position = center_pos
-	align()
-	target_pos = center_pos
-	position = Vector2(100, 100)
+	_on_screen_resized()
 	
 	set_physics_process(true)
 #	set_process_input(true) # we'll need this for joystick & button scroll (maybe)
@@ -62,6 +56,8 @@ func _input(event): pass
 func _on_screen_resized():
 	get_screen_settings()
 	get_bounds()
+	center()
+
 
 # -----------------------------------------------------------
 
@@ -86,7 +82,7 @@ func get_bounds():
 # 	base_pos = get_parent().get_global_pos() # i guess not???
 	base_pos = Vector2(0, 0)
 	parent_size = get_parent().get_size()
-	parent_center = base_pos + Utils.vround(parent_size / 2)
+	parent_center = base_pos + parent_size.floor() / 2
 	center_pos = parent_center - screen_radius
 	
 	# calculate pos values for our bounds
@@ -95,6 +91,13 @@ func get_bounds():
 	var bound_padding = Utils.vmin(parent_size * 0.2, screen_size * 0.25)
 	min_pos = Utils.vmin(Utils.vround(parent_min - bound_padding), center_pos)
 	max_pos = Utils.vmax(Utils.vround(parent_max + bound_padding - screen_size), center_pos)
+
+# -----------------------------------------------------------
+
+func center():
+	position = center_pos
+	target_pos = center_pos
+	align()
 
 # -----------------------------------------------------------
 
@@ -151,7 +154,7 @@ func do_joystick_scroll():
 func _physics_process(delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
-	# if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
+	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
 	# (not sure if these will be here or in _process_input)
 	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
@@ -168,3 +171,14 @@ func _physics_process(delta):
 	
 	# update saved cursor position (for drag scroll)
 	last_mouse_pos = get_local_mouse_position()
+
+# -----------------------------------------------------------
+
+func deserialize(data):
+	for i in ["x", "y"]: 
+		position[i] = data[i]
+		target_pos[i] = data[i]
+		align()
+
+func serialize():
+	return { "x": position.x, "y": position.y }

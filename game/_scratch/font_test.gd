@@ -1,5 +1,3 @@
-# script: hud
-
 extends ReferenceFrame
 
 const kern_pairs = {
@@ -52,20 +50,17 @@ const kern_pairs = {
 
 const kern_pairs_2 = {
 	'e': ['v'],
-	'k': 'l'
+	'k': ['l']
 }
 
-const kern_pairs_double = {
-#	'l': 'l'
-}
+export(String) var base_font = "res://assets/fonts/menagerie_kerned.fnt"
+export(String) var already_kerned = "res://assets/fonts/menagerie_kerned.fnt"
 
-# 'j': ['g' -1]
-
-const font = preload("res://assets/fonts/menagerie_kerned.fnt")
-const font_kerned = preload("res://assets/fonts/menagerie_kerned.fnt")
+onready var font = load(base_font)
+onready var font_kerned = load(already_kerned)
 
 func _ready():
-	get_node("test_label").add_font_override("font", font)
+	$test_label.add_font_override("font", font)
 	var button = get_node("button")
 	if button:
 		print(button)
@@ -76,25 +71,22 @@ func _ready():
 	pass
 	
 func switch_fonts():
-	var label = get_node("test_label")
-	label.add_font_override("font", load("res://assets/fonts/menagerie2.fnt"))
-	
+	$test_label.add_font_override("font", font_kerned)
 
 func kern(a, b, value):
 	font.add_kerning_pair(a.ord_at(0), b.ord_at(0), value)
 	pass
 
 func process_pairs():
+	# apply kernings
 	for pair_first in kern_pairs:
 		for pair_second in kern_pairs[pair_first]:
 			kern(pair_first, pair_second, 1)
+	# second pass: double these if necessary
 	for pair_first in kern_pairs_2:
 		for pair_second in kern_pairs_2[pair_first]:
 			if (font.get_kerning_pair(pair_first.ord_at(0), pair_second.ord_at(0))):
 				kern(pair_first, pair_second, 2)
 			else: kern(pair_first, pair_second, 1)
-	for pair_first in kern_pairs_double:
-		for pair_second in kern_pairs_double[pair_first]:
-			kern(pair_first, pair_second, 2)
 	font.update_changes()
 #	ResourceSaver.save("res://assets/fonts/menagerie_kerned.fnt", font)

@@ -24,9 +24,9 @@ var keybindings = {
 # for each control mode; remember to keep track of both these things elsewhere
 var scroll_modes = {
 	ControlMode.MOUSE_AND_KEY: [
-		ScrollMode.EDGE_SCROLL, 
-		ScrollMode.DRAG_SCROLL, 
-		ScrollMode.KEY_SCROLL
+#		ScrollMode.EDGE_SCROLL, 
+		ScrollMode.DRAG_SCROLL
+#		ScrollMode.KEY_SCROLL
 	],
 	ControlMode.TOUCH: [
 		ScrollMode.DRAG_SCROLL

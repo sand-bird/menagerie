@@ -12,6 +12,7 @@ config_version=3
 
 config/name="Menagerie"
 run/main_scene="res://system/game.tscn"
+config/icon="res://data/monsters/pufig/pufig.png"
 name="Menagerie"
 main_scene="res://system/game.tscn"
 icon="res://icon.png"
@@ -21,13 +22,13 @@ icon="res://icon.png"
 PerfectScale="*res://system/perfect_scale.gd"
 Constants="*res://system/constants.gd"
 Data="*res://system/data.gd"
+Dispatcher="*res://system/dispatcher.gd"
 Utils="*res://system/utils.gd"
 Condition="*res://system/condition.gd"
 Time="*res://system/time.gd"
 Options="*res://system/options.gd"
 Player="*res://system/player.gd"
 SaveManager="*res://system/save_manager.gd"
-EventManager="*res://system/event_manager.gd"
 
 [debug]
 
@@ -37,8 +38,8 @@ indicators_enabled=true
 
 window/size/width=384
 window/size/height=212
-window/size/test_width=720
-window/size/test_height=480
+window/size/test_width=1152
+window/size/test_height=648
 window/handheld/emulate_touchscreen=true
 window/stretch/mode="viewport"
 window/stretch/shrink="1"

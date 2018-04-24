@@ -57,9 +57,6 @@ static func vround(vec):
 static func vceil(vec):
 	return Vector2(ceil(vec.x), ceil(vec.y))
 
-static func vfloor(vec):
-	return Vector2(floor(vec.x), floor(vec.y))
-
 
 # ------ #
 #  MATH  #

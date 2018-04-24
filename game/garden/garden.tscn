@@ -1,14 +1,14 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://garden/garden.gd" type="Script" id=1]
-[ext_resource path="res://garden/camera.tscn" type="PackedScene" id=2]
-[ext_resource path="res://assets/garden/terrains.png" type="Texture" id=3]
-[ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=4]
+[ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=2]
+[ext_resource path="res://garden/camera.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/garden/terrains.png" type="Texture" id=4]
 
 [sub_resource type="TileSet" id=1]
 
 0/name = ""
-0/texture = ExtResource( 3 )
+0/texture = ExtResource( 4 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
 0/region = Rect2( 0, 0, 16, 16 )
@@ -17,7 +17,7 @@
 0/navigation_offset = Vector2( 0, 0 )
 0/shapes = [  ]
 1/name = ""
-1/texture = ExtResource( 3 )
+1/texture = ExtResource( 4 )
 1/tex_offset = Vector2( 0, 0 )
 1/modulate = Color( 1, 1, 1, 1 )
 1/region = Rect2( 0, 16, 16, 16 )
@@ -27,7 +27,42 @@
 1/shapes = [  ]
 _sections_unfolded = [ "0", "1", "Resource" ]
 
-[node name="garden" type="Control"]
+[node name="garden" type="Control" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 384.0
+margin_bottom = 212.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 1 )
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="bg" type="TextureRect" parent="." index="0"]
+
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -272.0
+margin_top = -395.0
+margin_right = 1008.0
+margin_bottom = 885.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 2 )
+stretch_mode = 0
+
+[node name="ColorRect" type="ColorRect" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -38,12 +73,16 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+color = Color( 1, 1, 1, 1 )
+_sections_unfolded = [ "Anchor", "Margin" ]
 
-[node name="camera" parent="." index="0" instance=ExtResource( 2 )]
+[node name="camera" parent="." index="2" instance=ExtResource( 3 )]
 
-[node name="terrain" type="TileMap" parent="." index="1"]
+drag_margin_h_enabled = false
+drag_margin_v_enabled = false
+_sections_unfolded = [ "Editor", "Limit" ]
+
+[node name="terrain" type="TileMap" parent="." index="3"]
 
 mode = 0
 tile_set = SubResource( 1 )
@@ -63,24 +102,5 @@ occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray(  )
 _sections_unfolded = [ "Cell" ]
-
-[node name="bg" type="TextureRect" parent="." index="2"]
-
-visible = false
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = -272.0
-margin_top = -395.0
-margin_right = 1008.0
-margin_bottom = 885.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 4 )
-stretch_mode = 0
 
 

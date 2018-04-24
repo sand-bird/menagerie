@@ -1,12 +1,15 @@
 extends Node
 
 func _ready(): 
-	EventManager.connect("new_game", self, "new_game")
-	EventManager.connect("load_game", self, "load_game")
-	EventManager.connect("save_game", self, "save_game")
+	Dispatcher.connect("new_game", self, "new_game")
+	Dispatcher.connect("load_game", self, "load_game")
+	Dispatcher.connect("save_game", self, "save_game")
+	Dispatcher.connect("quit_game", self, "quit_game")
 	
 	# testing data parsing. like magic!
 	$pufig.texture = Data.data.monsters.pufig.sprite
+#	Dispatcher.emit_signal("open_menu", "title_screen")
+	Dispatcher.emit_signal("load_game", "test_1524444746")
 
 
 # =========================================================== #
@@ -69,3 +72,8 @@ func save_player():
 
 func save_garden():
 	return $garden.serialize()
+
+# -----------------------------------------------------------
+
+func quit_game():
+	get_tree().quit()

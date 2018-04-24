@@ -1,11 +1,14 @@
 extends Node
 
-var current_save_dir
-var dir = Directory.new()
-
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
+const NEW_SAVE = "res://system/new_save.data"
+
+var current_save_dir
+# probably not the best idea, but seems to work fine for now
+var dir = Directory.new()
+
 
 # =========================================================== #
 #              G E T T I N G   S A V E   I N F O              #
@@ -37,7 +40,7 @@ func get_save_info(save_dir):
 	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data[k]
-	save_info.encyclopedia = Player.get_encylopedia_completion(data.encyclopedia)
+	save_info.encyclopedia = data.encyclopedia.completion
 	save_info.monsters = data.monster_count
 	save_info.save_dir = save_dir
 	return save_info
@@ -63,14 +66,22 @@ func get_save_info_list():
 # ----------------------------------------------------------- #
 
 func new_save(pname):
-	current_save_dir = format_name(pname) + "_" + str(OS.get_unix_time())
+	# load fresh save data
+	var new_save = parse_json(read_file(NEW_SAVE))
+	new_save.player.player_name = pname
+	
+	# create new save
+	current_save_dir = create_dirname(pname)
 	dir.make_dir(current_save_dir)
+	save_game(new_save)
+	
+	return current_save_dir
 
 # -----------------------------------------------------------
 
 func save_game(data, save_dir = current_save_dir):
 	write_file(get_path(save_dir, PLAYER), data.player)
-	write_file(get_path(save_dir, PLAYER), data.garden)
+	write_file(get_path(save_dir, GARDEN), data.garden)
 
 # -----------------------------------------------------------
 
@@ -102,7 +113,8 @@ func read_file(path):
 	file.close()
 	return data
 
-# ----------------------------------------------------------- #
+
+# =========================================================== #
 #              U T I L I T Y   F U N C T I O N S              #
 # ----------------------------------------------------------- #
 
@@ -128,17 +140,23 @@ func sort_save_info(a, b):
 # -----------------------------------------------------------
 
 # strips numbers and any char not a-z, then lowercases.
-# in future, should convert unicode chars eg. 'e-acute' to
-# their plain ascii counterpart eg. 'e' when possible.
-# only used once, when creating a new save directory
-func format_name(name):
+# (in future, should convert unicode chars eg. 'e-acute' to
+# their plain ascii counterpart eg. 'e' when possible.)
+#
+# then appends the current unix time to the formatted result
+# to ensure a unique directory name.
+#
+# only used once, when creating a new save directory.
+func create_dirname(name):
 	var newstr = ""
 	for i in name:
 		if (i >= 'a' and i <= 'z') or (i >= 'A' and i <= 'Z'):
 			newstr += i
 		if i == ' ':
 			newstr += '_'
-	return newstr.to_lower()
+	return newstr.to_lower() + "_" + str(OS.get_unix_time())
+
+# -----------------------------------------------------------
 
 func set_autosave_interval(interval):
 	Time.connect("hour_changed", self, "save_game")
