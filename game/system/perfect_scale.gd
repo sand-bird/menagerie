@@ -55,7 +55,7 @@ func get_new_size():
 		get_scale("x")
 		new_x = get_primary("x")
 		new_y = get_secondary("y", new_x * MIN_ASPECT, new_x * MAX_ASPECT)
-	base_size = Vector2(floor(new_x), floor(new_y))
+	base_size = Vector2(round(new_x), round(new_y))
 
 # the scale is found using IDEAL_SIZE, then clamped to
 # the minimum and maximum possible scale just in case.

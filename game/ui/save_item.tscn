@@ -198,51 +198,7 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="e" type="HBoxContainer" parent="." index="4"]
-
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-margin_left = -69.0
-margin_top = 22.0
-margin_right = -9.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-custom_constants/separation = 2
-alignment = 0
-_sections_unfolded = [ "Anchor", "Margin", "Mouse", "Rect", "custom_constants" ]
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="p" type="HBoxContainer" parent="." index="5"]
-
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-margin_left = -67.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = 19.0
-grow_horizontal = 0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-custom_constants/separation = 2
-alignment = 0
-_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Mouse", "Size Flags", "custom_constants" ]
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="playtime" type="TextureRect" parent="." index="6"]
+[node name="playtime" type="TextureRect" parent="." index="4"]
 
 anchor_left = 1.0
 anchor_top = 0.0
@@ -283,7 +239,7 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="time" type="TextureRect" parent="." index="7"]
+[node name="time" type="TextureRect" parent="." index="5"]
 
 anchor_left = 0.0
 anchor_top = 0.0

@@ -10,10 +10,10 @@
       "condition": {
         "and": [
           { 
-            ">": ["@father.iq", 30 ]
+            ">": ["@father.traits.iq", 30 ]
           },
           { 
-            ">": ["@mother.iq", 30 ]
+            ">": ["@mother.traits.iq", 30 ]
           }
         ]
       }

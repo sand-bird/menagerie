@@ -4,7 +4,7 @@
 [ext_resource path="res://ui/ui.tscn" type="PackedScene" id=2]
 [ext_resource path="res://ui/ui.gd" type="Script" id=3]
 
-[node name="game" type="Node"]
+[node name="game" type="Node" index="0"]
 
 script = ExtResource( 1 )
 
@@ -15,6 +15,7 @@ script = ExtResource( 3 )
 [node name="pufig" type="Sprite" parent="." index="1"]
 
 position = Vector2( 24.8566, 22.6951 )
+z_index = 999
 _sections_unfolded = [ "Animation", "Offset", "Region", "Transform", "Z Index" ]
 
 

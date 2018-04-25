@@ -16,7 +16,7 @@ var father
 # ----------
 # intelligence, vitality, constitution, charm, amiability, 
 # and spirit. full names are used because "int" is reserved
-var attributes
+var attributes = {}
 
 # memory
 # ------
@@ -37,7 +37,11 @@ var social
 # patience, confidence, beauty, poise, independence, empathy, 
 # kindness, arrogance, aggressiveness, happiness, loyalty,
 # actualization, openness, appetite, sociability
-var traits
+var traits = {}
+
+# preferences
+# -----------
+var preferences = {}
 
 
 # =========================================================== #
@@ -51,9 +55,9 @@ func _ready():
 
 func serialize():
 	var data = {
-		pet_name = pet_name,
+		monster_name = monster_name,
 		species = species,
-		color = color,
+		morph = morph,
 		birthday = birthday,
 		traits = {}
 	}
@@ -77,8 +81,8 @@ func update_z():
 func _fixed_process(delta): 
 	if current_action: 
 		var action_status = current_action.execute()
-		if action_status == Action.FINISHED:
-			_on_action_finished()
+#		if action_status == Action.FINISHED:
+#			_on_action_finished()
 
 # -----------------------------------------------------------
 
@@ -89,7 +93,7 @@ func choose_action():
 	# var duration = 12
 	# current_action = Action.new(Action.IDLE_ACTION, duration)
 	randomize()
-	current_action = Action.new(Utils.randi_range(2, 8) * 100)
+#	current_action = Action.new(Utils.randi_range(2, 8) * 100)
 	pass
 
 # -----------------------------------------------------------

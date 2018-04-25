@@ -23,7 +23,7 @@ func deserialize(data):
 	load_objects(data.objects)
 	load_monsters(data.monsters)
 	load_items(data.items)
-#	$camera.deserialize(data.camera)
+	if data.has("camera"): $camera.deserialize(data.camera)
 
 func load_terrain(data):
 	for y in data.size():
