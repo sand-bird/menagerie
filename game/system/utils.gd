@@ -1,5 +1,13 @@
 extends Node
 
+# for event buttons (or dispatch buttons or whatever) we need
+# to pack 1+ arguments into an array, so here is an argument
+# unpacker that i'm too lazy to write more than once
+static func unpack(arg):
+	if typeof(arg) == TYPE_ARRAY and arg.size() == 1:
+		return arg[0]
+	else: return arg
+
 # --------- #
 #  STRINGS  #
 # --------- #

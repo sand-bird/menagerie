@@ -8,9 +8,10 @@ func _ready():
 	
 	# testing data parsing. like magic!
 	$pufig.texture = Data.data.monsters.pufig.sprite
-#	Dispatcher.emit_signal("open_menu", "title_screen")
+#	Dispatcher.emit_signal("ui_open", "title_screen")
 #	Dispatcher.emit_signal("load_game", "test_1524444746")
-	Dispatcher.emit_signal("load_game", "gayton_1524538240")
+#	Dispatcher.emit_signal("load_game", "gayton_1524538240")
+	Dispatcher.emit_signal("menu_open", "inventory")
 
 
 # =========================================================== #

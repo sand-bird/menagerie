@@ -5,8 +5,10 @@ signal load_game
 signal save_game
 signal quit_game
 
-signal open_menu(args)
-signal close_menu
+signal ui_open(args)
+signal ui_close
+
+signal menu_open(args)
 
 func _ready():
 	print("Dispatcher loaded!")

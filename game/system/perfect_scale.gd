@@ -8,7 +8,7 @@ extends Node
 const IDEAL_SIZE = Vector2(400, 280)
 # TOFIX: screen clipping in fullscreen when min sizes
 # are inconsistent with the aspect ratio constraints
-const MIN_SIZE = Vector2(320, 192)
+const MIN_SIZE = Vector2(320, 196)
 const MAX_SIZE = Vector2(480, 360)
 
 const MIN_ASPECT = 0.5 # 9.0/16.0
