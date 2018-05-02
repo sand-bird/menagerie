@@ -1,8 +1,9 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/other/old/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://addons/event_button/button.gd" type="Script" id=2]
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
+
 
 
 [sub_resource type="GDScript" id=1]

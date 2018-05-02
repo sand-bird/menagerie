@@ -13,6 +13,17 @@ const DATA_EXTENSION = ".data"
 # if multiple files are found with the same path, we do our 
 # best to merge them.
 
+var EntityType = Constants.EntityType
+
+var lookup = {
+	EntityType.MONSTER: "monsters",
+	EntityType.ITEM: "items",
+	EntityType.OBJECT: "objects",
+	EntityType.NPC: "npcs",
+	EntityType.LOCATION: "locations",
+	EntityType.GARDEN: "garden"
+}
+
 func _enter_tree():
 	set_meta("test", 1)
 

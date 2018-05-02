@@ -2,8 +2,15 @@ extends Node
 
 var ControlMode = Constants.ControlMode
 var ScrollMode = Constants.ScrollMode
+var InventorySize = Constants.InventorySize
 
+# ===========================================================
+#              I N V E N T O R Y   O P T I O N S
 # -----------------------------------------------------------
+
+var inventory_size = InventorySize.LARGE
+
+# ===========================================================
 #                  I N P U T   O P T I O N S
 # -----------------------------------------------------------
 
@@ -16,7 +23,7 @@ var keybindings = {
 	camera_right = KEY_D 
 }
 
-# -----------------------------------------------------------
+# ===========================================================
 #                 C A M E R A   O P T I O N S
 # -----------------------------------------------------------
 

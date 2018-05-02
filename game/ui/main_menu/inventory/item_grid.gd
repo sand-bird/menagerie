@@ -1,15 +1,25 @@
 extends TextureRect
 
-# class member variables go here, for example:
-# var a = 2
-# var b = "textvar"
+var InventorySize = Constants.InventorySize
+onready var Item = Utils.load_relative(filename, "grid_item")
+var props # passed from big mama inventory scene
 
-func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+func _ready(): pass
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+func initialize():
+	$items.columns = props.columns
+	texture = Utils.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
+	$items.rect_position = props.grid_offset
+
+func load_items(items):
+	for i in items.size():
+		var item = Item.instance()
+		var item_data = items[i]
+		item.initialize(i, item_data, props)
+		$items.add_child(item)
+
+func show_quantity(index, show):
+	var item = $items.get_child(index)
+	var qty = item.get_node("quantity")
+	if show && item.qty && item.qty > 1: qty.show()
+	else: qty.hide()

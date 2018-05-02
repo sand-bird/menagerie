@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://assets/other/old/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/main_menu.gd" type="Script" id=2]
 [ext_resource path="res://assets/ui/elements/book.png" type="Texture" id=3]
 [ext_resource path="res://assets/other/old/arrow_big.png" type="Texture" id=4]

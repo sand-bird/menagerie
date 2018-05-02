@@ -13,8 +13,259 @@ var money
 var level
 
 # the big boys
-var encyclopedia
-var inventory
+var encyclopedia = {}
+var inventory = [
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 1
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 2
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 3
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 4
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 5
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 6
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 7
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 8
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 9
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 10
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 11
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 12
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 13
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 14
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 15
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 16
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 17
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 18
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 19
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 20
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 21
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 22
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 23
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 24
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 25
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 26
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 27
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 28
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 29
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 30
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 31
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 32
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 33
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 34
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 35
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 36
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 37
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 38
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 39
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 40
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 41
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 42
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 43
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 44
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 45
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 46
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 47
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 48
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 49
+	},
+	{
+		type = Constants.EntityType.ITEM,
+		id = "fluffy_tuft",
+		qty = 50
+	}
+]
 
 # this should store the letter fragments the player has seen,
 # and how often they've occurred (i guess)

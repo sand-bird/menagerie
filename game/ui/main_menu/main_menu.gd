@@ -15,7 +15,7 @@ var current_scene
 const icon_dir = "res://assets/ui/icons/"
 const menu_dir = "res://ui/main_menu/"
 
-const MenuTab = preload("res://ui/main_menu/menu_tab.tscn")
+onready var MenuTab = Utils.load_relative(filename, "menu_tab")
 
 const menu_pages = {
 	monsters = {
@@ -47,6 +47,8 @@ const menu_pages = {
 func _ready():
 	Dispatcher.connect("menu_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
+	Dispatcher.connect("update_menu_page_display", self, "update_page_display")
+	Dispatcher.connect("update_menu_title_display", self, "update_title_display")
 	for page in menu_pages:
 		new_tab(page, menu_pages[page])
 	pass
@@ -73,8 +75,6 @@ func open(input_page):
 	
 	# initialize new scene
 	var new_scene = load(menu_pages[page].scene).instance()
-	new_scene.connect("update_page_display", self, "update_page_display")
-	new_scene.connect("update_title_display", self, "update_title_display")
 	
 	# update current scene (and destroy old scene)
 	if (current_scene): 

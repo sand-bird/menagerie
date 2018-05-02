@@ -8,6 +8,25 @@ static func unpack(arg):
 		return arg[0]
 	else: return arg
 
+# related scenes should be kept close to each other. a scene
+# knows its own filepath, so we can find related scenes from
+# that, rather than using THE TERRIBLE, HORRIBLE, NO GOOD
+# ABSOLUTE FILEPATH. (rip preload, but it's better this way)
+static func load_relative(own_fn, sib_fn, ext = "tscn"):
+	return load(own_fn.get_base_dir().plus_file(sib_fn + "." + ext))
+
+static func load_resource(res_path, res_fn, ext = "png"):
+	var path = res_path.plus_file(res_fn + "." + ext)
+	print("load_resource: ", path)
+	return ResourceLoader.load(path)
+
+# honestly can't believe i have to implement this
+static func slice(array, first, size):
+	var subarray = []
+	var actual_size = min(array.size() - first, size)
+	for i in actual_size: subarray.push_back(array[first + i])
+	return subarray
+
 # --------- #
 #  STRINGS  #
 # --------- #

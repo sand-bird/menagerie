@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://assets/other/old/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://assets/other/old/box_outset_light.tres" type="StyleBox" id=2]
 [ext_resource path="res://assets/other/old/box_inset.tres" type="StyleBox" id=3]
 [ext_resource path="res://assets/other/old/box_outset.tres" type="StyleBox" id=4]
@@ -10,6 +10,7 @@
 [ext_resource path="res://assets/other/old/coin.png" type="Texture" id=8]
 [ext_resource path="res://assets/other/old/encyclopedia_icon.png" type="Texture" id=9]
 [ext_resource path="res://assets/other/old/clock_icon.png" type="Texture" id=10]
+
 
 
 

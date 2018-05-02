@@ -1,11 +1,12 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/other/old/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/save_list/save_item.gd" type="Script" id=2]
 [ext_resource path="res://assets/other/old/clock_icon.png" type="Texture" id=3]
 [ext_resource path="res://assets/other/old/coin.png" type="Texture" id=4]
 [ext_resource path="res://assets/other/old/monster_icon.png" type="Texture" id=5]
 [ext_resource path="res://assets/other/old/heart.png" type="Texture" id=6]
+
 
 
 
