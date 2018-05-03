@@ -20,6 +20,14 @@ enum EntityType {
 	GARDEN = 5
 }
 
+enum EntitySubtype {
+	RESOURCE
+	POTION
+	FLOWER
+	SEED
+	TREE
+}
+
 # --------- #
 #  ACTIONS  #
 # --------- #

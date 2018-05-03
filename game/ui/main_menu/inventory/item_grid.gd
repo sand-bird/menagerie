@@ -19,7 +19,4 @@ func load_items(items):
 		$items.add_child(item)
 
 func show_quantity(index, show):
-	var item = $items.get_child(index)
-	var qty = item.get_node("quantity")
-	if show && item.qty && item.qty > 1: qty.show()
-	else: qty.hide()
+	$items.get_child(index).show_quantity(show)

@@ -1,9 +1,16 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/grid_item.gd" type="Script" id=2]
 [ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=3]
 [ext_resource path="res://assets/ui/panels/item_quantity.png" type="Texture" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
 
 [sub_resource type="StyleBoxTexture" id=1]
 
@@ -40,6 +47,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 theme = ExtResource( 1 )
+custom_styles/focus = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -47,7 +55,7 @@ group = null
 flat = true
 align = 1
 script = ExtResource( 2 )
-_sections_unfolded = [ "Rect", "Theme" ]
+_sections_unfolded = [ "Rect", "Theme", "custom_styles" ]
 
 [node name="icon" type="TextureRect" parent="." index="0"]
 

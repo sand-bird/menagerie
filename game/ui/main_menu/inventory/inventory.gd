@@ -33,7 +33,7 @@ var page_count = 0
 # -----------------------------------------------------------
 
 func _ready():
-	title = "Inventory" # parent class property
+	title = "Inventory"
 	Dispatcher.connect("item_selected", self, "update_current_item")
 	initialize()
 
@@ -42,10 +42,14 @@ func initialize():
 	init_self()
 	init_item_grid()
 	init_selector()
+	update_current_item(current_item)
 
 func init_self():
 	columns = props.columns
 	page_count = Player.inventory.size() / (columns * columns)
+	if Player.inventory.size() % (columns * columns) > 0: page_count += 1
+	update_page_display()
+	update_title_display()
 
 func init_item_grid():
 	$item_grid.props = props
@@ -69,10 +73,14 @@ func get_items():
 func update_current_page(new_page):
 	current_page = new_page
 	update_page_display()
+	update_title_display()
 
 func update_page_display():
 	var new_display = str(current_page + 1) + " / " + str(page_count)
-	Dispatcher.emit_signal("update_menu_page_display", new_display)
+	emit_signal("update_page_display", new_display)
+
+func update_title_display():
+	emit_signal("update_title_display", title)
 
 # -----------------------------------------------------------
 
@@ -82,9 +90,27 @@ func update_current_item(index):
 	$item_grid.show_quantity(prev_item, true)
 	$item_grid.show_quantity(current_item, false)
 	move_selector(index)
+	update_item_details(index)
 
-func update_item_info(item_id, item_type):
-	pass #var item_data = 
+func get_item(index):
+	var actual_index = current_page * columns * columns + index
+	return Player.inventory[actual_index]
+
+func update_item_details(index):
+	var item_info = get_item(index)
+	var data_type = Data.lookup[item_info.type]
+	var item_data = Data.data[data_type][item_info.id]
+	
+	$item_name/label.text = item_data.name
+	$item_description/label.text = item_data.description
+	
+	var qty = item_info.qty
+	if qty == 1: $item_icon/quantity.hide()
+	else:
+		$item_icon/quantity.show()
+		$item_icon/quantity.text = str(qty)
+		var min_size = $item_icon/quantity.get_minimum_size().x
+		$item_icon/quantity.margin_left = -7 - min_size
 
 # -----------------------------------------------------------
 

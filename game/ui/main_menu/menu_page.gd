@@ -6,8 +6,5 @@ signal update_title_display(text)
 var title
 
 func initialize():
-	emit_signal("update_page_display", get_page_display())
 	emit_signal("update_title_display", title)
-
-func get_page_display():
-	return "98 / 99"
+	emit_signal("update_page_display", "\u2727 \u2726 \u2727")

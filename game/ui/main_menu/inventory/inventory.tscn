@@ -1,10 +1,34 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=3]
-[ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=4]
-[ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=5]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
+[ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
+[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=5]
+[ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/panels/item_quantity_detail.png" type="Texture" id=7]
+[ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=8]
+[ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=9]
+
+[sub_resource type="StyleBoxTexture" id=1]
+
+content_margin_left = 4.0
+content_margin_right = 3.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+texture = ExtResource( 7 )
+region_rect = Rect2( 0, 0, 8, 11 )
+margin_left = 4.0
+margin_right = 4.0
+margin_top = 5.0
+margin_bottom = 6.0
+expand_margin_left = 0.0
+expand_margin_right = 0.0
+expand_margin_top = 0.0
+expand_margin_bottom = 0.0
+modulate_color = Color( 1, 1, 1, 1 )
+draw_center = true
+_sections_unfolded = [ "Content Margin", "Margin" ]
 
 [node name="inventory" type="Control" index="0"]
 
@@ -17,8 +41,9 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+_sections_unfolded = [ "Rect", "Theme" ]
 
 [node name="item_name" type="Panel" parent="." index="0"]
 
@@ -35,8 +60,28 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-custom_styles/panel = ExtResource( 2 )
+custom_styles/panel = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Rect", "Theme", "custom_styles" ]
+
+[node name="label" type="Label" parent="item_name" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "abcd"
+align = 1
+valign = 1
+autowrap = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin" ]
 
 [node name="item_properties" type="Panel" parent="." index="1"]
 
@@ -53,8 +98,67 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-custom_styles/panel = ExtResource( 2 )
+custom_styles/panel = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme", "custom_styles" ]
+
+[node name="subtype" type="Label" parent="item_properties" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_right = 72.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Ingredient"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin" ]
+
+[node name="value" type="Label" parent="item_properties" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 72.0
+margin_right = -18.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "45"
+align = 2
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin" ]
+
+[node name="aster" type="TextureRect" parent="item_properties/value" index="0"]
+
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 1.0
+margin_top = -4.0
+margin_bottom = -0.5
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 4 )
+stretch_mode = 0
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="item_description" type="Panel" parent="." index="2"]
 
@@ -71,8 +175,30 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-custom_styles/panel = ExtResource( 2 )
+custom_styles/panel = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme", "custom_styles" ]
+
+[node name="label" type="Label" parent="item_description" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 3.0
+margin_right = -6.0
+margin_bottom = -3.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_constants/line_spacing = 1
+autowrap = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = 6
+_sections_unfolded = [ "Anchor", "Hint", "Margin", "custom_constants" ]
 
 [node name="item_icon" type="TextureRect" parent="." index="3"]
 
@@ -89,10 +215,56 @@ mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-texture = ExtResource( 3 )
+theme = ExtResource( 1 )
+texture = ExtResource( 5 )
 stretch_mode = 0
+_sections_unfolded = [ "Theme" ]
 
-[node name="item_grid" parent="." index="4" instance=ExtResource( 4 )]
+[node name="icon" type="TextureRect" parent="item_icon" index="0"]
+
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -9.0
+margin_top = -9.0
+rect_min_size = Vector2( 16, 16 )
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 6 )
+expand = true
+stretch_mode = 6
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="quantity" type="Label" parent="item_icon" index="1"]
+
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -27.0
+margin_top = -17.0
+margin_right = -7.0
+margin_bottom = -6.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = true
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_styles/normal = SubResource( 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
+text = "211"
+align = 2
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_colors", "custom_styles" ]
+
+[node name="item_grid" parent="." index="4" instance=ExtResource( 8 )]
 
 _sections_unfolded = [ "Rect", "Size Flags" ]
 
@@ -110,7 +282,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 stretch_mode = 0
-script = ExtResource( 5 )
+script = ExtResource( 9 )
 _sections_unfolded = [ "Mouse" ]
 __meta__ = {
 "_edit_lock_": true

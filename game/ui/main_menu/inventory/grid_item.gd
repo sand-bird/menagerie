@@ -1,16 +1,10 @@
 extends Control
 
-var InventorySize = Constants.InventorySize
-const LARGE_SIZE = Vector2(27, 27)
-const SMALL_SIZE = Vector2(23, 23)
-
 var qty
-var id
 var index
 
 func _ready():
 	connect("focus_entered", self, "_pressed")
-	pass
 
 # the notion of an inventory "item" is a bit misleading in
 # our terminology, since an Item is already a kind of thing
@@ -28,16 +22,20 @@ func initialize(i, item_info, props):
 	var item_type = Data.lookup[item_info.type]
 	$icon.texture = Data.data[item_type][item_info.id].icon
 
-func set_qty(item_qty):
-	qty = item_qty
-	if qty == 1: $quantity.hide()
-	else: 
-		$quantity.text = str(qty)
-		$quantity.margin_left = -$quantity.get_minimum_size().x
-
 func set_size(size):
 	rect_min_size = size
 	rect_size = size
 
+func set_qty(item_qty):
+	qty = item_qty
+	if qty == 1: $quantity.hide()
+	else:
+		$quantity.text = str(qty)
+		$quantity.margin_left = -$quantity.get_minimum_size().x
+
 func _pressed():
 	Dispatcher.emit_signal("item_selected", index)
+
+func show_quantity(show):
+	if show && qty > 1: $quantity.show()
+	else: $quantity.hide()
