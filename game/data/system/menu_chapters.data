@@ -1,0 +1,26 @@
+{
+	"monsters": {
+		"icon": "~/icons/monster.png",
+		"scene": menu_dir + "monsters/monsters.tscn"
+	},
+	"inventory": {
+		"icon": icon_dir + "inventory.png",
+		scene = menu_dir + "inventory/inventory.tscn"
+	},
+	"town_map": {
+		icon = icon_dir + "town.png",
+		scene = menu_dir + "town_map/town_map.tscn"
+	},
+	"calendar": {
+		icon = icon_dir + "calendar.png",
+		scene = menu_dir + "calendar/calendar.tscn"
+	},
+	"encyclopedia": {
+		icon = icon_dir + "encyclopedia.png",
+		scene = menu_dir + "encyclopedia/encyclopedia.tscn"
+	},
+	"options": {
+		icon = icon_dir + "options.png",
+		scene = menu_dir + "options/options.tscn"
+	}
+}
