@@ -1,5 +1,11 @@
 extends Node
 
+# class Player
+# ------------
+# since there's only one player at a time, Player basically
+# functions as a store for game state. pretty much everything
+# here is saved to and loaded from the `player.save` file.
+
 const SAVE_KEYS = [
 	"player_name", "playtime", "level", "money",
 	"encyclopedia", "inventory",
@@ -16,252 +22,252 @@ var level
 var encyclopedia = {}
 var inventory = [
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 1
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 2
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 3
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 4
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 5
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 6
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 7
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 8
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 9
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 10
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 11
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 12
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 13
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 14
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 15
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 16
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 17
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 18
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 19
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 20
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 21
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 22
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 23
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 24
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 25
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 26
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 27
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 28
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 29
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 30
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 31
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 32
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 33
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 34
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 35
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 36
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 37
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 38
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 39
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 40
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 41
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 42
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 43
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 44
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 45
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 46
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 47
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 48
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 49
 	},
 	{
-		type = Constants.EntityType.ITEM,
+		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 50
 	}
@@ -285,6 +291,15 @@ var completed_requests
 # not really a huge feature, but npcs should warm up to you
 # as you interact with them and complete requests
 var relationships
+
+# -----------------------------------------------------------
+
+# ui elements are loaded and unloaded as needed, so they
+# can't hold state (and shouldn't anyway). but we do want to
+# remember some state info, like what page we were on and
+# what we had selected, so we should save that here.
+var current_inventory_page = 0
+var current_inventory_item = 5
 
 # -----------------------------------------------------------
 

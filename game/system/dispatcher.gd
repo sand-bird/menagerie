@@ -17,5 +17,5 @@ func _ready():
 	print("Dispatcher loaded!")
 
 func _unhandled_input(e):
-	if e.is_action_type():
-		print(e)
+	if e.is_action("ui_menu"): emit_signal("menu_open")
+	elif e.is_action("ui_menu_monsters"): emit_signal("menu_open", "monsters")

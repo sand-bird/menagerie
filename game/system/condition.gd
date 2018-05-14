@@ -4,35 +4,53 @@
 
 extends Node
 
-onready var globals = {
-	"garden": {
-		"monsters": {
-			12345: {
-				"preferences": {
-					"monsters": {
-						77777: 10
-					}
-				}
-			},
-			67890: {
-				"preferences": {
-					"monsters": {
-						77777: 33
-					}
-				}
-			}
-		}
-	} 
-}
-
-const operators = {
+# not a typo: actually a portmanteau of "separators" and
+# "operators". these apply to condition arguments
+const seperators = {
 	".": "get",
 	":": "map"
 }
 
+# dictionary of operators to the functions used to evaluate
+# them, accessed via GDScript's handy call() method.
+const lookup_func = {
+	# comparators
+	"and": "_and",
+	"or": "_or",
+	"==": "_equals",
+	"!=": "_not_equals",
+	">": "_greater_than",
+	"<": "_less_than",
+	">=": "_greater_than_equals",
+	"<=": "_less_than_equals",
+	"in": "_in",
+	
+	# separator operators
+	"map": "_map",
+	"get": "_get",
+	
+	# collection operators
+	"filter": "_filter",
+	"max": "_max",
+	"min": "_min",
+	"total": "_total",
+	"first": "_first",
+	"last": "_last"
+}
+
+var globals = {
+	"player": Player,
+	"time": Time,
+	"data": Data.data,
+	#"garden": get_node("/root/game/garden"),
+	"TYPE": Constants.Type
+}
+
+# -----------------------------------------------------------
 
 # basic test
 func _ready():
+	return
 	var Monster = preload("res://monster/monster_new.gd")
 	var sample_monster = Monster.new()
 	sample_monster.mother = Monster.new()
@@ -67,7 +85,7 @@ func resolve(data, caller = null, parent = null):
 		assert(key in lookup_func)
 		result = call(lookup_func[key], data[key], caller, parent)
 	# any other type is a problem
-	else: assert(false) 
+	else: assert(false)
 #	print("condition ", data, " resolved to ", result)
 	return result
 
@@ -75,30 +93,8 @@ func resolve(data, caller = null, parent = null):
 #                      O P E R A T O R S                      #
 # ----------------------------------------------------------- #
 
-const lookup_func = {
-	# comparators
-	"and": "_and",
-	"or": "_or",
-	"==": "_equals",
-	"!=": "_not_equals",
-	">": "_greater_than",
-	"<": "_less_than",
-	">=": "_greater_than_equals",
-	"<=": "_less_than_equals",
-	"in": "_in",
-	
-	# separator operators
-	"map": "_map",
-	"get": "_get",
-	
-	# collection operators
-	"filter": "_filter",
-	"max": "_max",
-	"min": "_min",
-	"total": "_total",
-	"first": "_first",
-	"last": "_last"
-}
+#                       b o o l e a n s                    
+# ----------------------------------------------------------- 
 
 # accepts an ARRAY with AT LEAST 2 members
 # returns true if all members resolve to true
@@ -113,6 +109,9 @@ func _or(data, caller, parent):
 	for condition in data:
 		if resolve(condition, caller, parent): return true
 	return false
+
+#                    c o m p a r a t o r s                    
+# ----------------------------------------------------------- 
 
 # accepts an ARRAY with EXACTLY 2 members
 func _equals(data, caller, parent):
@@ -150,7 +149,8 @@ func _in(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] in args[1]
 
-# -----------------------------------------------------------
+#                d a t a   o p e r a t o r s                 
+# ----------------------------------------------------------- 
 
 # accepts an ARRAY with EXACTLY 2 members, where the first is 
 # a dictionary or object and the second is a valid index or 
@@ -163,6 +163,8 @@ func _get(args, caller, parent):
 	var key = eval_arg(args[1], caller, parent) # no parent i think
 #	print("get (after): ", to_json([data, key]))
 	return data[key]
+
+# ----------------------------------------------------------- 
 
 # accepts an ARRAY with EXACTLY 2 members, where the first 
 # is a dictionary or array, and the second is a valid index 
@@ -217,7 +219,7 @@ func eval_args(data, caller, parent):
 	return resolved_data
 
 # this is called from anybody who might get an argment with
-# separators in it. expands the arg, then resolves it.
+# seperators in it. expands the arg, then resolves it.
 func eval_arg(arg, caller = null, parent = null):
 	var expanded = expand_ops(arg)
 	if typeof(expanded) == TYPE_DICTIONARY:
@@ -226,9 +228,10 @@ func eval_arg(arg, caller = null, parent = null):
 		return eval_sigil(expanded, caller, parent)
 	else: return expanded
 
+#                         s i g i l s                        
 # -----------------------------------------------------------
 
-# accepts an ATOMIC (no separators) string argument that may
+# accepts an ATOMIC (no seperators) string argument that may
 # or may not have a sigil.
 func eval_sigil(arg, caller, parent):
 	if arg[0] == '$': return globals[strip_sigil(arg)]
@@ -241,26 +244,41 @@ func eval_sigil(arg, caller, parent):
 func strip_sigil(s):
 	return s.substr(1, s.length() - 1)
 
+#                     s e p e r a t o r s                    
 # -----------------------------------------------------------
 
+# expands an argument string with separator operators, aka
+# seperators (see the const up top), into actual "condition"
+# objects that our regular resolve logic knows how to handle.
+# the seperator becomes the key, and the rest of the string
+# is split around it to become the arguments, which are then
+# expanded themselves.
 func expand_ops(arg):
 	if typeof(arg) != TYPE_STRING: return arg
 	var op_pos = find_op(arg)
 	if op_pos:
 		var op = op_pos[0]
 		var pos = op_pos[1]
-		return { operators[op]: [
+		return { seperators[op]: [
 			expand_ops(arg.left(pos)), 
 			expand_ops(arg.right(pos + 1))
 		] }
 	else: return arg
 
-# get all operator positions in the argument string, and
-# return the largest one.
+# gets all operator positions in the argument string, and
+# returns the largest one as an array[2] with the operator
+# at 0 and its position at 1. 
+#
+# the rfind is VERY IMPORTANT for our argument to expand in 
+# the correct order. resolve recurses from the inside out, 
+# so the "top level" of the expansion must be the innermost 
+# nested operator. meanwhile, expand_ops recurses from the
+# outside in, so we have to start at the END of the string 
+# to obtain the correct structure.
 func find_op(arg):
 	var op_pos
 	var max_pos = 0
-	for op in operators:
+	for op in seperators:
 		var pos = arg.rfind(op)
 		if pos > max_pos: 
 			max_pos = pos

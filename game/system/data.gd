@@ -13,15 +13,14 @@ const DATA_EXTENSION = ".data"
 # if multiple files are found with the same path, we do our 
 # best to merge them.
 
-var EntityType = Constants.EntityType
+var EntityType = Constants.Type
 
 var lookup = {
 	EntityType.MONSTER: "monsters",
 	EntityType.ITEM: "items",
 	EntityType.OBJECT: "objects",
 	EntityType.NPC: "npcs",
-	EntityType.LOCATION: "locations",
-	EntityType.GARDEN: "garden"
+	EntityType.LOCATION: "locations"
 }
 
 func _enter_tree():
@@ -67,9 +66,12 @@ func process_data(data, basedir):
 	for i in data:
 		#if typeof(data[i]) in [TYPE_ARRAY, TYPE_DICTIONARY]:
 		#	data[i] = process_data(data[i], basedir)
-		if typeof(data[i]) == TYPE_STRING and data[i][0] == '!':
-			print("! found!!")
-			# we have an image (or other link) we should process
-			data[i] = ResourceLoader.load(basedir.plus_file(data[i].substr(1, 
-					data[i].length() - 1)))
+		if typeof(data[i]) == TYPE_STRING:
+			match data[i][0]:
+				'~': # we have an image (or other link) we should process
+					data[i] = ResourceLoader.load(
+							basedir.plus_file(data[i].substr(1, 
+							data[i].length() - 1)))
+				'$': # we have an enum we need to resolve
+					data[i] = Condition.eval_arg(data[i])
 	return data

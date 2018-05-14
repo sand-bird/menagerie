@@ -1,4 +1,4 @@
-extends "res://ui/main_menu/menu_page.gd"
+extends "res://ui/main_menu/menu_chapter.gd"
 
 var InventorySize = Constants.InventorySize
 
@@ -24,11 +24,6 @@ var properties = {
 onready var props = properties[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
 onready var columns = props.columns
-
-var prev_item = 0
-var current_item = 0
-var current_page = 0 setget update_current_page
-var page_count = 0
 
 # -----------------------------------------------------------
 
@@ -70,17 +65,6 @@ func get_items():
 	var start = current_page * page_size
 	return Utils.slice(Player.inventory, start, page_size)
 
-func update_current_page(new_page):
-	current_page = new_page
-	update_page_display()
-	update_title_display()
-
-func update_page_display():
-	var new_display = str(current_page + 1) + " / " + str(page_count)
-	emit_signal("update_page_display", new_display)
-
-func update_title_display():
-	emit_signal("update_title_display", title)
 
 # -----------------------------------------------------------
 
@@ -103,6 +87,8 @@ func update_item_details(index):
 	
 	$item_name/label.text = item_data.name
 	$item_description/label.text = item_data.description
+	$item_properties/type.text = Constants.text_keys[item_data.type]
+	$item_properties/value.text = Utils.comma(item_data.value)
 	
 	var qty = item_info.qty
 	if qty == 1: $item_icon/quantity.hide()

@@ -48,6 +48,14 @@ static func ordinalize(num):
 		else: ord = "th"
 	return str(num) + ord
 
+static func comma(num):
+	var strnum = str(num)
+	var i = strnum.length() - 3
+	while i > 0:
+		strnum = strnum.insert(i, ",")
+		i -= 3
+	return strnum
+
 # --------- #
 #  VECTORS  #
 # --------- #

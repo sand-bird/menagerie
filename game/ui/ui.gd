@@ -29,7 +29,7 @@ func _ready():
 	Dispatcher.connect("ui_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
 	Dispatcher.connect("menu_open", self, "open_menu")
-	set_process_unhandled_input(true)
+	# set_process_unhandled_input(true)
 
 # -----------------------------------------------------------
 
@@ -57,7 +57,7 @@ func open(args):
 	print("ui.open: ", args)
 	# set up vars
 	var item_ref
-	var layer_value = null
+	var open_type = null
 	var restore_on_close = true
 	if typeof(args) == TYPE_STRING:
 		item_ref = args
@@ -65,71 +65,39 @@ func open(args):
 		item_ref = args[0]
 		# optional arguments
 		if args.size() > 1:
-			layer_value = args[1]
+			open_type = args[1]
 		if args.size() > 2:
 			restore_on_close = args[2]
 	
-	# evaluate layer_value
-	match (layer_value):
-		null:
-			var node = load_node(item_ref)
-			if "layer" in node:
-				layer_value = node.layer
-			else: 
-				layer_value = get_next_layer()
-		-1:
-			layer_value = get_next_layer()
-		var custom:
-			layer_value = custom
+	var layer_value = get_layer_value(open_type, item_ref)
 	
 	var item = {
 		"ref": item_ref,
 		"layer": layer_value
 	}
-	
 	if restore_on_close:
 		item.restore = []
 	
 	print("pushing: ", item)
 	return push(item)
 
-# OPEN (OLD)
-# ----------
-# can happen in a few different ways, depending on values 
-# passed by the caller when it triggers the signal.
-# accepts a single argument: either a STRING representing
-# the item_ref of the ui element to open (implying default
-# for the others), or an ARRAY with the following elements:
-# 0: item_ref (string), required
-# 1: replace (boolean), optional - if given, indicates that 
-#    the new element will REPLACE ALL existing ui elements.
-#    defaults to false.
-# 2: restore_on_close (boolean), optional - indicates whether
-#    the replaced elements should be restored when this
-#    element is closed. defaults to true.
-func open_old(args):
-	print("ui.open")
-	# set up vars
-	var item_ref
-	var replace = false
-	var restore_on_close = true
-	if typeof(args) == TYPE_STRING:
-		item_ref = args
-	elif typeof(args) == TYPE_ARRAY:
-		item_ref = args[0]
-		if args.size() > 1:
-			replace = args[1]
-		if args.size() > 2:
-			restore_on_close = args[2]
-	var item = {
-		"ref": item_ref
-	}
-	# replace if necesary
-	if replace:
-		if restore_on_close: item.restore = stack
-		replace(item)
-	else:
-		push(item)
+# -----------------------------------------------------------
+
+# the "layer value" of a ui element determines which elements
+# it will replace (those with an equal or greater value) and
+# which it will overlay. here we look up the layer value for
+# our new element based on the open_type property that was 
+# passed to open() by whoever emitted the signal (see above).
+func get_layer_value(open_type, item_ref):
+	if open_type == null:
+		var node = load_node(item_ref)
+		if "layer" in node: return node.layer
+		else: return get_next_layer()
+	elif open_type == -1:
+		return get_next_layer()
+	else: return open_type
+
+# -----------------------------------------------------------
 
 func open_menu(arg = null):
 	# figure out which menu page we're opening

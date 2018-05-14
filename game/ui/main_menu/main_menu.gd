@@ -1,23 +1,9 @@
 extends Control
 
-enum menu_pages_enum {
-	MONSTERS = 0,
-	INVENTORY = 1,
-	MAP = 2,
-	CALENDAR = 3,
-	ENCYCLOPEDIA = 4,
-	OPTIONS = 5
-}
-
-var current_page setget set_current_page
-var current_scene
-
 const icon_dir = "res://assets/ui/icons/"
 const menu_dir = "res://ui/main_menu/"
 
-onready var MenuTab = Utils.load_relative(filename, "menu_tab")
-
-const menu_pages = {
+const chapters = {
 	monsters = {
 		icon = icon_dir + "monster.png",
 		scene = menu_dir + "monsters/monsters.tscn"
@@ -44,37 +30,46 @@ const menu_pages = {
 	}
 }
 
+onready var MenuTab = Utils.load_relative(filename, "menu_tab")
+
+var current setget set_current
+var current_scene
+
 func _ready():
 	Dispatcher.connect("menu_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
-	# Dispatcher.connect("update_menu_page_display", self, "update_page_display")
-	# Dispatcher.connect("update_menu_title_display", self, "update_title_display")
-	for page in menu_pages:
-		new_tab(page, menu_pages[page])
+	for id in chapters:
+		new_tab(id, chapters[id])
 	pass
 
-func new_tab(page, data):
+# -----------------------------------------------------------
+
+func new_tab(id, data):
 	var tab = MenuTab.instance()
-	print(page)
-	tab.load_info(page, data)
+	print(id)
+	tab.load_info(id, data)
 	$content/tabs.add_child(tab)
 
-func set_current_page(val):
-	if current_page == val: return # already current
-	current_page = val
-	print("current page: ", current_page)
-	for tab in $content/tabs.get_children():
-		tab.is_current = (tab.id == current_page)
+# -----------------------------------------------------------
 
-func open(input_page):
-	var page = Utils.unpack(input_page)
+func set_current(val):
+	if current == val: return # already current
+	current = val
+	print("current page: ", current)
+	for tab in $content/tabs.get_children():
+		tab.is_current = (tab.id == current)
+
+# -----------------------------------------------------------
+
+func open(input):
+	var chapter = Utils.unpack(input)
 	# update current_page (this is the page's string id)
-	print("opening: ", page, " | current: ", current_page)
-	if page == current_page or !(page in menu_pages.keys()): return
-	set_current_page(page) # also updates tab z-indices
+	print("opening: ", chapter, " | current: ", current)
+	if chapter == current or !(chapter in chapters.keys()): return
+	set_current(chapter) # also updates tab z-indices
 	
 	# initialize new scene
-	var new_scene = load(menu_pages[page].scene).instance()
+	var new_scene = load(chapters[chapter].scene).instance()
 	new_scene.connect("update_page_display", self, "update_page_display")
 	new_scene.connect("update_title_display", self, "update_title_display")
 	
@@ -86,8 +81,10 @@ func open(input_page):
 	$content/book.add_child(current_scene)
 
 func close():
-	current_page = null
+	current = null
 	queue_free()
+
+# -----------------------------------------------------------
 
 func update_page_display(text):
 	$content/book/pages.text = text

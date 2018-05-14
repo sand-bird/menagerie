@@ -8,7 +8,7 @@ const months = [ "verne", "tempest", "zenith",
 
 signal tick_changed
 signal hour_changed
-signal day_changed
+signal date_changed
 signal week_changed
 signal month_changed
 signal year_changed
@@ -16,7 +16,7 @@ signal year_changed
 # qualifiers for get_total_time
 const YEAR = "year"
 const MONTH = "month"
-const DAY = "day"
+const DATE = "date"
 const HOUR = "hour"
 const TICK = "tick"
 
@@ -30,8 +30,8 @@ const MONTHS_IN_YEAR = 8
 var actual_seconds = 0
 var tick = 0 setget _set_tick
 var hour = 0 setget _set_hour
+var date = 0 setget _set_date
 var day = 0 setget _set_day
-var day_of_week = 0 setget _set_day_of_week
 var month = 0 setget _set_month
 var year = 0 setget _set_year
 
@@ -59,17 +59,17 @@ func _set_tick(new):
 	emit_signal("tick_changed", tick)
 
 func _set_hour(new):
-	hour = int(try_rollover(new, HOURS_IN_DAY, "day"))
+	hour = int(try_rollover(new, HOURS_IN_DAY, "date"))
 	emit_signal("hour_changed", hour)
 
-func _set_day(new):
-	day = int(try_rollover(new, DAYS_IN_MONTH, "month"))
-	_set_day_of_week()
-	emit_signal("day_changed", day)
+func _set_date(new):
+	date = int(try_rollover(new, DAYS_IN_MONTH, "month"))
+	_set_day()
+	emit_signal("date_changed", date)
 
-func _set_day_of_week(new = 0):
-	# print("set weekday | total days: ", get_total_time("day"))
-	day_of_week = get_day_of_week()
+func _set_day(new = 0):
+	# print("set weekdate | total days: ", get_total_time("date"))
+	day = get_day()
 
 func _set_month(new):
 	month = int(try_rollover(new, MONTHS_IN_YEAR, "year"))
@@ -89,10 +89,10 @@ func try_rollover(new_value, units_per_next_unit, next_unit):
 
 # -----------------------------------------------------------
 
-# to ensure that the day of the week remains consistent, it
+# to ensure that the date of the week remains consistent, it
 # is calculated from the total elapsed days.
-func get_day_of_week(input = null):
-	var total_days = get_total_time(input, "day")
+func get_day(input = null):
+	var total_days = get_total_time(input, "date")
 	return int(total_days) % DAYS_IN_WEEK
 
 # ----------------------------------------------------------- #
@@ -122,7 +122,7 @@ func deserialize(time):
 
 func to_dict():
 	var dict = {}
-	for key in ["tick", "hour", "day", "month", "year"]:
+	for key in ["tick", "hour", "date", "month", "year"]:
 		dict[key] = self[key]
 	return dict
 
@@ -159,7 +159,7 @@ func get_total_time(dict = null, unit = "tick"):
 		unit = dict
 		dict = to_dict()
 	
-	var units = ["year", "month", "day", "hour", "tick"]
+	var units = ["year", "month", "date", "hour", "tick"]
 	var relations = [MONTHS_IN_YEAR, DAYS_IN_MONTH, HOURS_IN_DAY, TICKS_IN_HOUR]
 	var scale = units.find(unit)
 	var total_time = 0
@@ -178,7 +178,7 @@ func get_total_time(dict = null, unit = "tick"):
 
 func parse_total_time(time, unit = "year"):
 	var dict = {}
-	var units = ["tick", "hour", "day", "month", "year"]
+	var units = ["tick", "hour", "date", "month", "year"]
 	var relations = [TICKS_IN_HOUR, HOURS_IN_DAY, DAYS_IN_MONTH, MONTHS_IN_YEAR]
 	var scale = units.find(unit)
 	for i in scale + 1:
@@ -187,8 +187,8 @@ func parse_total_time(time, unit = "year"):
 			time = time / relations[i]
 		else:
 			dict[units[i]] = int(time)
-		if units[i] == "day":
-			dict["day_of_week"] = int(time) % DAYS_IN_WEEK
+		if units[i] == "date":
+			dict["day"] = int(time) % DAYS_IN_WEEK
 	return dict
 
 # ----------------------------------------------------------- #
@@ -208,15 +208,15 @@ func get_printable_hour(input = null):
 	return (str(ampm_hour) + ":" + str(minutes).pad_zeros(2) + ampm)
 
 func get_printable_date(input = null):
-	var d = check_dict(input, "day")
+	var d = check_dict(input, "date")
 	return Utils.ordinalize(d + 1)
 
-func get_printable_day_of_week(input = null):
-	var d_of_w = get_day_of_week(input)
+func get_printable_day(input = null):
+	var d_of_w = get_day(input)
 	return days[d_of_w].capitalize()
 
-func get_printable_day_of_week_abbr(input = null):
-	var d_of_w = get_day_of_week(input)
+func get_printable_day_abbr(input = null):
+	var d_of_w = get_day(input)
 	return days[d_of_w].substr(0, 3).to_upper()
 
 func get_printable_month(input = null):
@@ -239,6 +239,6 @@ func get_printable_time(dict = null):
 
 func log_time():
 	print("CURRENT TIME || tick: ", str(tick), " | hour: ",  str(hour),  
-			" | day: ", str(day),  " (", str(day_of_week), ": ", 
-			get_printable_day_of_week(), ")", " | month: ", str(month), 
+			" | date: ", str(date),  " (", str(day), ": ", 
+			get_printable_day(), ")", " | month: ", str(month), 
 			" (", get_printable_month(), ")", " | year: ", str(year))

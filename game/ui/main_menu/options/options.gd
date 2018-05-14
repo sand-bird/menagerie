@@ -1,4 +1,4 @@
-extends "res://ui/main_menu/menu_page.gd"
+extends "res://ui/main_menu/menu_chapter.gd"
 
 func _ready():
 	title = "Options"
