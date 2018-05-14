@@ -12,6 +12,7 @@ func initialize():
 	$items.rect_position = props.grid_offset
 
 func load_items(items):
+	clear_items()
 	for i in items.size():
 		var item = Item.instance()
 		var item_data = items[i]
@@ -20,3 +21,7 @@ func load_items(items):
 
 func show_quantity(index, show):
 	$items.get_child(index).show_quantity(show)
+
+func clear_items():
+	for item in $items.get_children():
+		item.queue_free()

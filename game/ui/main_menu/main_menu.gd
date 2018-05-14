@@ -34,13 +34,14 @@ onready var MenuTab = Utils.load_relative(filename, "menu_tab")
 
 var current setget set_current
 var current_scene
+var next
+var prev
 
 func _ready():
 	Dispatcher.connect("menu_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
 	for id in chapters:
 		new_tab(id, chapters[id])
-	pass
 
 # -----------------------------------------------------------
 
@@ -55,9 +56,15 @@ func new_tab(id, data):
 func set_current(val):
 	if current == val: return # already current
 	current = val
-	print("current page: ", current)
-	for tab in $content/tabs.get_children():
-		tab.is_current = (tab.id == current)
+	print("current chapter: ", current)
+	var tabs = $content/tabs.get_children()
+	for i in tabs.size():
+		if tabs[i].id == current:
+			tabs[i].is_current = true
+			next = tabs[i + 1].id if i < tabs.size() - 1 else tabs[0].id
+			prev = tabs[i - 1].id if i > 0 else tabs[tabs.size() - 1].id
+		else: tabs[i].is_current = false
+
 
 # -----------------------------------------------------------
 
@@ -80,6 +87,7 @@ func open(input):
 	current_scene = new_scene
 	$content/book.add_child(current_scene)
 
+
 func close():
 	current = null
 	queue_free()
@@ -91,3 +99,11 @@ func update_page_display(text):
 
 func update_title_display(text):
 	$content/book/title.text = text
+
+# -----------------------------------------------------------
+
+func _input(e):
+	if e.is_action_pressed("ui_focus_prev"): open(prev)
+	elif e.is_action_pressed("ui_focus_next"): open(next)
+	else: return
+	accept_event()
