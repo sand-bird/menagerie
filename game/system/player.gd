@@ -298,8 +298,8 @@ var relationships
 # can't hold state (and shouldn't anyway). but we do want to
 # remember some state info, like what page we were on and
 # what we had selected, so we should save that here.
-var current_inventory_page = 0
 var current_inventory_item = 5
+var current_inventory_filter = {}
 
 # -----------------------------------------------------------
 

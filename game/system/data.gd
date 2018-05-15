@@ -83,6 +83,21 @@ func load_file(dirname, fname = null):
 
 # -----------------------------------------------------------
 
+# TODO: eventually, we want to load resources referenced in 
+# datafiles intelligently (eg. ResourceLoader for .png files,
+# process_data() for .data files, etc). also not 100% sold on
+# ~ syntax, since it doesn't do a great job of conveying that
+# the value must be specially annotated as a file reference -
+# especially since we might want to be able to load resources
+# from the base res:// dir, and ~ has basically the opposite
+# implication. otoh, we could treat ! paths like normal unix 
+# filepaths, eg !path for relative, !/path for absolute, etc.
+# 
+# also worth considering: differentiating paths to user://...
+# from paths to res://... from datafiles in the user://mods/
+# directory. i guess ideally we'd resolve these paths in the
+# same way we resolve files, with user://mods, res://../mods, 
+# and res:// tried in that order for a match.
 func process_data(data, basedir):
 #	print("process_data: ", data)
 	for i in data:

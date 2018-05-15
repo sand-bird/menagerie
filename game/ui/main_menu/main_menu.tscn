@@ -1,50 +1,12 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/main_menu.gd" type="Script" id=2]
 [ext_resource path="res://assets/ui/elements/book.png" type="Texture" id=3]
-[ext_resource path="res://assets/other/old/arrow_big.png" type="Texture" id=4]
-[ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=5]
+[ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=4]
+[ext_resource path="res://ui/main_menu/arrows.tscn" type="PackedScene" id=5]
 [ext_resource path="res://addons/event_button/button.gd" type="Script" id=6]
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=7]
-
-[sub_resource type="Animation" id=1]
-
-resource_name = "bob"
-length = 1.0
-loop = true
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( 1, 0 ), Vector2( 0, 0 ) ]
-}
-
-[sub_resource type="Animation" id=2]
-
-resource_name = "bob"
-length = 1.0
-loop = true
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( -1, 0 ), Vector2( 0, 0 ) ]
-}
 
 [node name="main_menu" type="Control"]
 
@@ -97,89 +59,7 @@ texture = ExtResource( 3 )
 stretch_mode = 0
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="arrow_right" type="Button" parent="content/book" index="0"]
-
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = -14.0
-margin_top = -16.0
-margin_bottom = -16.0
-rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="sprite" type="Sprite" parent="content/book/arrow_right" index="0"]
-
-texture = ExtResource( 4 )
-centered = false
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
-
-[node name="anim" type="AnimationPlayer" parent="content/book/arrow_right/sprite" index="0"]
-
-root_node = NodePath("..")
-autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
-playback_speed = 0.6
-anims/bob = SubResource( 1 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
-
-[node name="arrow_left" type="Button" parent="content/book" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.5
-anchor_right = 0.0
-anchor_bottom = 0.5
-margin_left = -6.0
-margin_top = -16.0
-rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="sprite" type="Sprite" parent="content/book/arrow_left" index="0"]
-
-texture = ExtResource( 4 )
-centered = false
-flip_h = true
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
-
-[node name="anim" type="AnimationPlayer" parent="content/book/arrow_left/sprite" index="0"]
-
-root_node = NodePath("..")
-autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
-playback_speed = 0.6
-anims/bob = SubResource( 2 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
-
-[node name="title" type="Label" parent="content/book" index="2"]
+[node name="title" type="Label" parent="content/book" index="0"]
 
 anchor_left = 0.25
 anchor_top = 0.0
@@ -194,7 +74,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = ExtResource( 5 )
+custom_styles/normal = ExtResource( 4 )
 text = "Inventory"
 align = 1
 valign = 1
@@ -204,7 +84,7 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_styles" ]
 
-[node name="pages" type="Label" parent="content/book" index="3"]
+[node name="pages" type="Label" parent="content/book" index="1"]
 
 anchor_left = 0.75
 anchor_top = 0.0
@@ -219,7 +99,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = ExtResource( 5 )
+custom_styles/normal = ExtResource( 4 )
 text = "98 / 99"
 align = 1
 valign = 1
@@ -228,6 +108,10 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
+
+[node name="arrows" parent="content/book" index="2" instance=ExtResource( 5 )]
+
+visible = false
 
 [node name="tabs" type="HBoxContainer" parent="content" index="1"]
 
@@ -242,7 +126,7 @@ mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-custom_constants/separation = 12
+custom_constants/separation = 10
 alignment = 1
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Visibility", "custom_constants" ]
 

@@ -26,5 +26,4 @@ func update_page_display():
 func update_title_display():
 	emit_signal("update_title_display", title)
 
-func update_page_count(new_page_count):
-	
+func update_page_count(new_page_count): pass

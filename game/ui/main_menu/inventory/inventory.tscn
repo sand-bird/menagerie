@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://assets/ui/panels/item_quantity_detail.png" type="Texture" id=8]
 [ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=10]
+[ext_resource path="res://ui/main_menu/arrows.tscn" type="PackedScene" id=11]
 
 [sub_resource type="StyleBoxTexture" id=1]
 
@@ -48,6 +49,7 @@ _sections_unfolded = [ "Rect", "Theme" ]
 
 [node name="item_name" type="Panel" parent="." index="0"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -76,7 +78,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "abcd"
+text = "name"
 align = 1
 valign = 1
 autowrap = true
@@ -87,6 +89,7 @@ _sections_unfolded = [ "Anchor", "Margin", "Theme", "custom_colors", "custom_sty
 
 [node name="item_properties" type="Panel" parent="." index="1"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -117,7 +120,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "Food"
+text = "type"
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -137,7 +140,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "45"
+text = "value"
 align = 2
 valign = 1
 percent_visible = 1.0
@@ -165,6 +168,7 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="item_description" type="Panel" parent="." index="2"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -206,6 +210,7 @@ _sections_unfolded = [ "Anchor", "Hint", "Margin", "custom_constants" ]
 
 [node name="item_icon" type="TextureRect" parent="." index="3"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -291,5 +296,7 @@ _sections_unfolded = [ "Mouse" ]
 __meta__ = {
 "_edit_lock_": true
 }
+
+[node name="arrows" parent="." index="6" instance=ExtResource( 11 )]
 
 

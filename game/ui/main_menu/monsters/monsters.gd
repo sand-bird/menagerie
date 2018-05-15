@@ -7,6 +7,3 @@ func _ready():
 func initialize():
 	.initialize()
 	# specific stuff goes here
-
-func get_page_display():
-	return "mon"

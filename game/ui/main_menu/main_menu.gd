@@ -8,7 +8,11 @@ const chapters = {
 		icon = icon_dir + "monster.png",
 		scene = menu_dir + "monsters/monsters.tscn"
 	},
-	inventory = {
+	items = {
+		icon = icon_dir + "inventory.png",
+		scene = menu_dir + "inventory/inventory.tscn"
+	},
+	objects = {
 		icon = icon_dir + "inventory.png",
 		scene = menu_dir + "inventory/inventory.tscn"
 	},

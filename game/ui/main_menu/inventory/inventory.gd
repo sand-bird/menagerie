@@ -21,11 +21,15 @@ var properties = {
 	}
 }
 
+var items
+
 onready var props = properties[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
 onready var columns = props.columns
 
-# -----------------------------------------------------------
+# =========================================================== #
+#                 I N I T I A L I Z A T I O N                 #
+# ----------------------------------------------------------- #
 
 func _ready():
 	title = "Inventory"
@@ -60,10 +64,17 @@ func init_selector():
 	
 # -----------------------------------------------------------
 
+func filter_items(prop):
+	pass
+
 func get_items():
 	var page_size = columns * columns
 	var start = current_page * page_size
 	return Utils.slice(Player.inventory, start, page_size)
+
+func get_item(index):
+	var actual_index = current_page * columns * columns + index
+	return Player.inventory[actual_index]
 
 # -----------------------------------------------------------
 
@@ -79,10 +90,6 @@ func update_current_page(page):
 	.update_current_page(page)
 	current_page = page
 	$item_grid.load_items(get_items())
-
-func get_item(index):
-	var actual_index = current_page * columns * columns + index
-	return Player.inventory[actual_index]
 
 func update_item_details(index):
 	var item_info = get_item(index)
