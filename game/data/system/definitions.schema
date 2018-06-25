@@ -78,10 +78,33 @@
     "maxValue": 8,
     "minValue": 1
   },
-  "text": {
+  "text16": {
     "type": "object",
     "patternProperties": {
-      "^[a-z]{2}$": {"type": "string"}
+      "^[a-z]{2}$": {
+        "type": "string",
+        "maxLength": 16
+      }
+    },
+    "additionalProperties": false
+  },
+  "text32": {
+    "type": "object",
+    "patternProperties": {
+      "^[a-z]{2}$": {
+        "type": "string",
+        "maxLength": 32
+      }
+    },
+    "additionalProperties": false
+  },
+  "text128": {
+    "type": "object",
+    "patternProperties": {
+      "^[a-z]{2}$": {
+        "type": "string",
+        "maxLength": 128
+      }
     },
     "additionalProperties": false
   },

@@ -10,8 +10,8 @@
       "type": "string",
       "enum": ["monster"]
     },
-    "name": {"$ref": "definitions.schema#/text"},
-    "description": {"$ref": "definitions.schema#/text"},
+    "name": {"$ref": "definitions.schema#/text16"},
+    "description": {"$ref": "definitions.schema#/text128"},
     "gender_balance": {
       "type": "number",
       "minimum": 0,
@@ -23,16 +23,18 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "name": {"$ref": "definitions.schema#/text"},
+          "name": {"$ref": "definitions.schema#/text16"},
           "if": {"$ref": "definitions.schema#/condition"},
           "weight": {"$ref": "definitions.schema#/weight"},
           "sprites": {}
-        }
+        },
+        "required": ["name", "sprites"]
       },
       "minProperties": 1
     },
     "evolves_into": {
       "type": "object",
+      "description": "key should be a valid id of another monster; should warn otherwise."
       "additionalProperties": {
         "type": "object",
         "properties": {

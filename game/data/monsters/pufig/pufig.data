@@ -1,14 +1,33 @@
 {
   "id": "pufig",
   "type": "monster",
-  "name": {"en": "Pufig"},
-  "description": {"en": "A fluffy pig-like monster with a superb sense of smell. Playful, gentle, and brighter than they appear, Pufig make great pets for children and families."},
+  "name": {
+    "en": "Pufig"
+  },
+  "description": {
+    "en": "A fluffy pig-like monster with a superb sense of smell. Playful, gentle, and brighter than they appear, Pufig make great pets for children and families."
+  },
   "gender_ratio": 0.5,
   "morphs": {
     "pink": {
-      "if": true,
-      "weight": 3,
-      "name": {"en": "Pink"},
+      "name": {
+        "en": "Pink"
+      },
+      "animations": {
+        "idle_front": [
+          {
+            "spritesheet": "!pufig_idle1_front.png",
+            "vframes": 2,
+            "hframes": 2
+          },
+          {
+            "spritesheet": "!pufig_idle2_front.png",
+            "rows": 2,
+            "columns": 2
+            // some sort of positional info
+          }
+        ]
+      }
       "sprites": {
         "standing": {
           "resource": "!pufig.png",
@@ -42,5 +61,8 @@
     "aggressiveness": -1,
     "openness": 1,
     "sociability": 1
+  },
+  "counters": {
+    "times_sick": [{"==": ["@status", "#status.sick"]}, 1]
   }
 }
