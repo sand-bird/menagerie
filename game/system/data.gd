@@ -23,17 +23,66 @@ var lookup = {
 	EntityType.LOCATION: "locations"
 }
 
-# apparently there is NO WAY AROUND accessing all of our data
-# by Data.data.whatever, as stupid as that is, since we can't
-# populate class properties at runtime. if you can think of a
-# better name for this silly dict i'm all ears!!
-var data = {}
+var monsters = {}
+var items = {}
+var objects = {}
+var npcs = {}
+var locations = {}
+
+var data
 
 func _ready(): # do the thing
+	list_dir("res://")
 	data = load_dir(BASE_DIR)
-	# DEBUG: print(to_json(data))
+	print(to_json(data))
 
 # -----------------------------------------------------------
+
+# if we find multiple instances of some data, we should try
+# to intelligently merge them. the second argument, the "mod"
+# dict, takes precedence over the first. we do the following:
+# - keys that do not appear in the base dict are added
+# - keys that lead to dicts in the base dict *and* in the mod
+#   dict are dealt with recursively. the goal is to prevent
+#   loss of data whenever possible, so the game ideally never
+#   misses something it's expecting (like a sub-subproperty).
+#   if the mod dict is trying to replace a dictionary 
+#   property with something else, it's probably user error.
+# - for keys that lead to arrays in the base dict, whatever's
+#   in the mod dict is appended to them. there is no type
+#   checking here, obviously, so if we were expecting an 
+#   array of dicts and the mod doesn't conform, we're SOL.
+func merge(base, mod):
+	for k in mod:
+		if !base.has(k): base[k] = mod[k]
+		else:
+			if (typeof(base[k]) == TYPE_DICTIONARY 
+					&& typeof(mod[k]) == TYPE_DICTIONARY):
+				update_dict(base[k], mod[k])
+			elif typeof(base[k]) == TYPE_ARRAY:
+				if typeof(mod[k]) == TYPE_ARRAY:
+					for item in mod[k]: base[k].append(item)
+				else: base[k].append(mod[k])
+			else: base[k] = mod[k]
+
+# -----------------------------------------------------------
+
+func list_dir(dirname):
+	print("==========================")
+	print("listing dir: ", dirname)
+	print("--------------------------")
+	var dir = Directory.new()
+	dir.open(dirname)
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		print(current)
+		current = dir.get_next()
+	print("--------------------------")
+
+#func load_data():
+#	for type in types:
+#		print(type)
 
 # if we find a directory with an identically-named datafile
 # inside (eg pufig/pufig.data), we should take that file to
@@ -53,11 +102,13 @@ func load_dir(dirname):
 	dir.list_dir_begin(true)
 	var current = dir.get_next()
 	while (current != ""):
+		print("current: ", current)
 		# do the following for each dir found:
 		if dir.current_is_dir():
-			var default_path = get_default_path(current)
+			var default_path = dirname.plus_file(get_default(current))
+			print("default_path: ", default_path)
 			if dir.file_exists(default_path):
-				data[current] = load_file(dirname.plus_file(default_path))
+				data[current] = load_file(default_path)
 			else:
 				var child_dir = load_dir(dirname.plus_file(current))
 				if child_dir: data[current] = child_dir
@@ -74,6 +125,7 @@ func load_dir(dirname):
 # the filename, or as a single arg containing the full path.
 func load_file(dirname, fname = null):
 	var path = dirname.plus_file(fname) if fname else dirname
+	print("load_file: ", path)
 	var file = File.new()
 	file.open(path, File.READ)
 	var data = parse_json(file.get_as_text())
@@ -120,5 +172,5 @@ func process_data(data, basedir):
 # dirname/dirname.data (or dirname/dirname + DATA_EXT),
 # literally just because the relevant line in load_dir() 
 # would've been too long otherwise.
-func get_default_path(dirname):
+func get_default(dirname):
 	return dirname.plus_file(dirname.get_file() + "." + DATA_EXTENSION)

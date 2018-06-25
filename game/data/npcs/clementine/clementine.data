@@ -1,0 +1,30 @@
+{
+  "id": "clementine",
+  "type": "npc",
+  "name": {
+    "en": "Clementine",
+  },
+  "locations": {
+    "magetower": {
+      "when": [
+        {">": ["$time.hour", 6]},
+        {"<": ["$time.hour", 18]}
+      ],
+      "priority": 0
+    },
+    "portal": {
+     "when": [
+        {"==": ["$world.portal_open", true]},
+        {"==": [{"mod": ["$time.week", 2]}, 0]}
+      ],
+      "priority": 1
+    }
+  },
+  "dialogue": {
+    "greeting_1": {
+      "text": {
+        "en": "Hello!"
+      }
+    }
+  }
+}

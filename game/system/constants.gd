@@ -6,6 +6,10 @@ extends Node
 #  TYPES  #
 # ------- #
 
+enum DataType {
+	
+}
+
 enum Type {
 	MONSTER
 	ITEM

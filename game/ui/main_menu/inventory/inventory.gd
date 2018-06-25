@@ -90,6 +90,12 @@ func update_current_page(page):
 	.update_current_page(page)
 	current_page = page
 	$item_grid.load_items(get_items())
+	if current_page < page_count - 1:
+		$arrows/right.show()
+	else: $arrows/right.hide()
+	if current_page > 0:
+		$arrows/left.show()
+	else: $arrows/left.hide()
 
 func update_item_details(index):
 	var item_info = get_item(index)

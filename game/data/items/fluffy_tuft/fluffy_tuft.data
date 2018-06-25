@@ -1,9 +1,13 @@
 {
   "id": "fluffy_tuft",
-  "name": "Fluffy Tuft",
-  "icon": "~/fluffy_tuft.png",
-  "description": "Soft, springy fur from a Pufig's fluffy tail. It's rumored that stuffing a pillow with it will bring good dreams.",
-  "value": 45,
-  "type": "$TYPE.RESOURCE"
-  }
+  "type": "item",
+  "category": "resource",
+  "name": {
+    "en": "Fluffy Tuft"
+  },
+  "description": {
+    "en": "Soft, springy fur from a Pufig's fluffy tail. It's rumored that stuffing a pillow with it will bring good dreams."
+  },
+  "icon": "!fluffy_tuft.png",
+  "value": 45
 }

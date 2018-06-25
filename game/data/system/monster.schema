@@ -1,0 +1,48 @@
+{
+  "title": "Monster",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "type": {
+      "type": "string",
+      "enum": ["monster"]
+    },
+    "name": {"$ref": "definitions.schema#/text"},
+    "description": {"$ref": "definitions.schema#/text"},
+    "gender_balance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.5
+    },
+    "morphs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {"$ref": "definitions.schema#/text"},
+          "if": {"$ref": "definitions.schema#/condition"},
+          "weight": {"$ref": "definitions.schema#/weight"},
+          "sprites": {}
+        }
+      },
+      "minProperties": 1
+    },
+    "evolves_into": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "if": {"$ref": "definitions.schema#/condition"},
+          "weight": {"$ref": "definitions.schema#/weight"}
+        }
+      }
+    }
+  },
+  "required": [
+    "id", "type", "name", "description", "morphs"
+  ]
+}

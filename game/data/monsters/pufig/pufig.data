@@ -1,38 +1,41 @@
 {
   "id": "pufig",
-  "width": 22,
-  "height": 20,
-  "sprite": "~/pufig.png",
-  "description": "A fluffy pig-like monster with a superb sense of smell. Playful and gentle, Pufig are more intelligent than they appear, and although they can be stubborn, they make great pets for children and families.",
-  "morphs": [
-    {
-      "id": "pink",
-      "condition": {
-        "and": [
-          { 
-            ">": ["@father.traits.iq", 30 ]
-          },
-          { 
-            ">": ["@mother.traits.iq", 30 ]
-          }
-        ]
+  "type": "monster",
+  "name": {"en": "Pufig"},
+  "description": {"en": "A fluffy pig-like monster with a superb sense of smell. Playful, gentle, and brighter than they appear, Pufig make great pets for children and families."},
+  "gender_ratio": 0.5,
+  "morphs": {
+    "pink": {
+      "if": true,
+      "weight": 3,
+      "name": {"en": "Pink"},
+      "sprites": {
+        "standing": {
+          "resource": "!pufig.png",
+          "rows": 2,
+          "columns": 2
+        },
+        "walking_front": {
+          "resource": "!pufig.png",
+          "rows": 2,
+          "columns": 4
+        },
+        "walking_back": {
+          "resource": "!pufig.png",
+          "rows": 2,
+          "columns": 4
+        }
       }
     }
-  ],
-  "evolves_into": [
-    {
-      "id": "pufine",
-      "condition": {
-        ">": ["@patience", "@aggressiveness"]
-      }
+  },
+  "evolves_into": {
+    "pufine": {
+      "if": {">": ["@patience", "@aggressiveness"]}
   	},
-  	{
-  	  "id": "pufrit",
-  	  "condition": {
-  	    ">": ["@aggressiveness", "@patience"]
-  	  }
+  	"pufrit": {
+  	  "if": {">": ["@aggressiveness", "@patience"]}
   	}
-  ],
+  },
   "traits": {
     "appetite": 2,
     "iq": 1,
