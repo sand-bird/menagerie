@@ -63,11 +63,11 @@ func _ready():
 	#print(eval_arg("$garden"))
 	#print(to_json(expand_ops(test_str)))
 	#print("eval_arg: ", to_json(eval_arg(test_str, sample_monster)))
-	print(resolve(test_cond, sample_monster))
+	Log.info(self, resolve(test_cond, sample_monster))
 	#eval_string("@mother.iq", sample_monster)
 	#eval_string("@mother", sample_monster)
 	for morph in Data.data.monsters.pufig.morphs:
-		print(morph.id, ": ", resolve(morph.condition, sample_monster))
+		Log.info(self, [morph.id, ": ", resolve(morph.condition, sample_monster)])
 
 # ----------------------------------------------------------- #
 
@@ -86,7 +86,7 @@ func resolve(data, caller = null, parent = null):
 		result = call(lookup_func[key], data[key], caller, parent)
 	# any other type is a problem
 	else: assert(false)
-#	print("condition ", data, " resolved to ", result)
+	Log.verbose(self, ["condition ", data, " resolved to ", result])
 	return result
 
 # =========================================================== #

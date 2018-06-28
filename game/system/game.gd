@@ -5,7 +5,6 @@ func _ready():
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
-	
 	# testing data parsing. like magic!
 	#for k in Data.data.monsters.pufig:
 	#	print(k, ": ", Data.id("pufig")[k])
@@ -33,7 +32,7 @@ func _ready():
 # that normally relies on save data, anyway, so might as well 
 # do it all in one place.
 func new_game(player_name):
-	print("game.gd: starting new game")
+	Log.info(self, ["Starting new game: ", player_name])
 	var new_save = SaveManager.new_save(player_name)
 	load_game(new_save)
 

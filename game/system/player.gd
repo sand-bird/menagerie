@@ -6,13 +6,6 @@ extends Node
 # functions as a store for game state. pretty much everything
 # here is saved to and loaded from the `player.save` file.
 
-const SAVE_KEYS = [
-	"player_name", "playtime", "level", "money",
-	"encyclopedia", "inventory",
-	"requests", "completed_requests",
-]
-
-var player_name
 var playtime
 var last_update_time # used to update playtime
 var money
@@ -308,6 +301,12 @@ func _ready():
 
 # -----------------------------------------------------------
 
+const SAVE_KEYS = [
+	"name", "playtime", "level", "money",
+	"encyclopedia", "inventory",
+	"requests", "completed_requests",
+]
+
 func serialize():
 	var data = {}
 	update_playtime()
@@ -323,9 +322,9 @@ func deserialize(data):
 func update_playtime():
 	var current_time = OS.get_unix_time()
 	var playtime_difference = current_time - last_update_time
-	print(playtime_difference)
 	playtime += playtime_difference
-	print(playtime)
+	Log.info(self, ["Updated playtime: ", playtime, 
+			" (difference: ", playtime_difference, ")"])
 	last_update_time = current_time
 
 func get_printable_playtime(time = null):

@@ -14,7 +14,7 @@ signal menu_open(args)
 signal item_selected(item_info)
 
 func _ready():
-	print("Dispatcher loaded!")
+	Log.info(self, "Dispatcher loaded!")
 
 func _unhandled_input(e):
 	if e.is_action("ui_menu"): emit_signal("menu_open")

@@ -23,7 +23,7 @@ func get_save_list():
 	var current = dir.get_next()
 	while (current != ""):
 		if is_save(current):
-			print("Found save: ", current)
+			Log.debug(self, ["Found save: ", current])
 			saves.append(current)
 		current = dir.get_next()
 	return saves
@@ -37,7 +37,7 @@ func get_save_list():
 # - player monsters
 func get_save_info(save_dir):
 	var save_info = {}
-	var data = parse_json(read_file(get_path(save_dir, PLAYER)))
+	var data = read_file(get_path(save_dir, PLAYER))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data[k]
 	save_info.encyclopedia = data.encyclopedia.completion
@@ -57,7 +57,7 @@ func get_save_info_list():
 	for save in get_save_list():
 		saves.append(get_save_info(save))
 	saves.sort_custom(self, "sort_saves")
-	print(saves)
+	Log.debug(self, saves)
 	return saves
 
 
@@ -67,8 +67,8 @@ func get_save_info_list():
 
 func new_save(pname):
 	# load fresh save data
-	var new_save = parse_json(read_file(NEW_SAVE))
-	new_save.player.player_name = pname
+	var new_save = read_file(NEW_SAVE)
+	new_save.player.name = pname
 	
 	# create new save
 	current_save_dir = create_dirname(pname)
@@ -88,8 +88,8 @@ func save_game(data, save_dir = current_save_dir):
 func load_game(save_dir):
 	current_save_dir = save_dir
 	return {
-		"player": parse_json(read_file(get_path(save_dir, PLAYER))),
-		"garden": parse_json(read_file(get_path(save_dir, GARDEN))),
+		"player": read_file(get_path(save_dir, PLAYER)),
+		"garden": read_file(get_path(save_dir, GARDEN)),
 	}
 
 
@@ -100,7 +100,6 @@ func load_game(save_dir):
 func write_file(path, data):
 	var file = File.new()
 	file.open(path, File.WRITE)
-	print(file.file_exists(path))
 	file.store_string(to_json(data))
 	file.close()
 
@@ -108,8 +107,9 @@ func write_file(path, data):
 
 func read_file(path):
 	var file = File.new()
+	if !file.file_exists(path): return null
 	file.open(path, File.READ)
-	var data = file.get_as_text()
+	var data = parse_json(file.get_as_text())
 	file.close()
 	return data
 

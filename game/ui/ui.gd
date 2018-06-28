@@ -54,7 +54,7 @@ func _ready():
 #    the replaced elements, if there are any, should be 
 #    restored when this element is closed. defaults to true.
 func open(args):
-	print("ui.open: ", args)
+	Log.debug(self, ["ui.open: ", args])
 	# set up vars
 	var item_ref
 	var open_type = null
@@ -78,7 +78,7 @@ func open(args):
 	if restore_on_close:
 		item.restore = []
 	
-	print("pushing: ", item)
+	Log.debug(self, ["pushing: ", item])
 	return push(item)
 
 # -----------------------------------------------------------
@@ -107,10 +107,10 @@ func open_menu(arg = null):
 	
 	last_menu_page = page
 	
-	print("UI: open menu '", page, "'")
+	Log.debug(self, ["open menu '", page, "'"])
 	match stack:
 		[{"ref": "main_menu/main_menu", ..}, ..]:
-			print("UI: main menu already open, we're good")
+			Log.debug(self, "main menu already open, we're good")
 			return
 	
 	var menu = open("main_menu/main_menu")
@@ -139,7 +139,7 @@ func push(item):
 	item.node = node
 	stack.push_back(item)
 	add_child(node)
-	print("pushed: ", item, " | stack: ", stack)
+	Log.debug(self, ["pushed: ", item, " | stack: ", stack])
 	return node
 
 func pop(i = null):
@@ -150,7 +150,7 @@ func pop(i = null):
 	else: item = stack.pop_back()
 	
 	var node = item.node
-	print("popped: ", item, " | stack: ", stack)
+	Log.debug(self, ["popped: ", item, " | stack: ", stack])
 	node.queue_free()
 	return item
 

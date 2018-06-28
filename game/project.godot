@@ -19,16 +19,17 @@ icon="res://assets/ui/icons/thumbnail.png"
 
 [autoload]
 
+Log="*res://system/logger.gd"
 PerfectScale="*res://system/perfect_scale.gd"
 Constants="*res://system/constants.gd"
-Data="*res://system/data.gd"
-Dispatcher="*res://system/dispatcher.gd"
 Utils="*res://system/utils.gd"
-Condition="*res://system/condition.gd"
-Time="*res://system/time.gd"
-Options="*res://system/options.gd"
-Player="*res://system/player.gd"
 SaveManager="*res://system/save_manager.gd"
+Data="*res://system/data.gd"
+Options="*res://system/options.gd"
+Dispatcher="*res://system/dispatcher.gd"
+Condition="*res://system/condition.gd"
+Player="*res://system/player.gd"
+Time="*res://system/time.gd"
 
 [debug]
 

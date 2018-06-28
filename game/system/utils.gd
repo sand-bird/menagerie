@@ -17,7 +17,7 @@ static func load_relative(own_fn, sib_fn, ext = "tscn"):
 
 static func load_resource(res_path, res_fn, ext = "png"):
 	var path = res_path.plus_file(res_fn + "." + ext)
-	print("load_resource: ", path)
+	Log.debug(Utils, ["load_resource: ", path])
 	return ResourceLoader.load(path)
 
 # honestly can't believe i have to implement this

@@ -25,7 +25,7 @@ onready var viewport = get_tree().get_root()
 func _ready():
 	get_tree().connect("screen_resized", self, "update_screen")
 	update_screen()
-	print("win: ", win_size, " | base: ", base_size)
+	Log.info(self, ["win: ", win_size, " | base: ", base_size])
 
 # for pixel perfect, the window size must exactly equal the 
 # base_size times the scale (the scaled_size), or else there 
@@ -36,7 +36,7 @@ func update_screen():
 	get_new_size()
 	var scaled_size = base_size * scale
 	viewport.set_size(base_size)
-	print(viewport.size)
+	Log.info(self, ["viewport: ", viewport.size])
 	if OS.is_window_maximized() or OS.is_window_fullscreen():
 		var gutter = ((OS.get_window_size() - scaled_size) / 2).floor()
 		viewport.set_attach_to_screen_rect(Rect2(gutter, scaled_size))

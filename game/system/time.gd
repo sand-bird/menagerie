@@ -37,7 +37,9 @@ var year = 0 setget _set_year
 
 # -----------------------------------------------------------
 
-func _ready(): set_process(true)
+func _ready(): 
+	log_time()
+	set_process(true)
 
 func _process(delta):
 	actual_seconds += delta
@@ -120,7 +122,7 @@ func deserialize(time):
 # is given, they should use the current values from the Time
 # class itself.
 
-func to_dict():
+func get_dict():
 	var dict = {}
 	for key in ["tick", "hour", "date", "month", "year"]:
 		dict[key] = self[key]
@@ -136,14 +138,14 @@ func load_dict(dict):
 # or neither, and processes it accordingly. if a unit is 
 # given, returns only the value for that unit. otherwise, it
 # returns a time_dict.
-func check_dict(dict, unit = null):
+func to_dict(dict, unit = null):
 	if dict == null:
-		dict = to_dict()
+		dict = get_dict()
 	elif typeof(dict) == TYPE_STRING:
 		unit = dict
-		dict = to_dict()
+		dict = get_dict()
 	elif typeof(dict) != TYPE_DICTIONARY:
-		dict = parse_total_time(dict, unit)
+		dict = parse_total_time(dict, unit) if unit else parse_total_time(dict)
 	
 	if dict.has(unit):
 		return dict[unit]
@@ -154,10 +156,10 @@ func check_dict(dict, unit = null):
 
 func get_total_time(dict = null, unit = "tick"):
 	if dict == null:
-		dict = to_dict()
+		dict = get_dict()
 	elif typeof(dict) == TYPE_STRING:
 		unit = dict
-		dict = to_dict()
+		dict = get_dict()
 	
 	var units = ["year", "month", "date", "hour", "tick"]
 	var relations = [MONTHS_IN_YEAR, DAYS_IN_MONTH, HOURS_IN_DAY, TICKS_IN_HOUR]
@@ -196,19 +198,19 @@ func parse_total_time(time, unit = "year"):
 # ----------------------------------------------------------- #
 # each takes an optional input, either a time_dict or a
 # total_time integer. if no input is given, it uses the 
-# current time instead (see check_dict).
+# current time instead (see to_dict).
 
 func get_printable_hour(input = null):
-	var h = check_dict(input, "hour")
+	var h = to_dict(input, "hour")
 	var ampm = "a.m." if h < 12 else "p.m."
 	var ampm_hour = h if h < 12 else h - 12
 	if ampm_hour == 0: ampm_hour = 12
-	var t = check_dict(input, "tick")
+	var t = to_dict(input, "tick")
 	var minutes = t * 60 / TICKS_IN_HOUR
 	return (str(ampm_hour) + ":" + str(minutes).pad_zeros(2) + ampm)
 
 func get_printable_date(input = null):
-	var d = check_dict(input, "date")
+	var d = to_dict(input, "date")
 	return Utils.ordinalize(d + 1)
 
 func get_printable_day(input = null):
@@ -220,11 +222,11 @@ func get_printable_day_abbr(input = null):
 	return days[d_of_w].substr(0, 3).to_upper()
 
 func get_printable_month(input = null):
-	var m = check_dict(input, "month")
+	var m = to_dict(input, "month")
 	return months[m].capitalize()
 
 func get_printable_year(input = null):
-	var y = check_dict(input, "year")
+	var y = to_dict(input, "year")
 	return "Year " + str(y + 1)
 
 # -----------------------------------------------------------
@@ -238,7 +240,7 @@ func get_printable_time(dict = null):
 	return printable_time
 
 func log_time():
-	print("CURRENT TIME || tick: ", str(tick), " | hour: ",  str(hour),  
-			" | date: ", str(date),  " (", str(day), ": ", 
-			get_printable_day(), ")", " | month: ", str(month), 
-			" (", get_printable_month(), ")", " | year: ", str(year))
+	Log.info(self, ["CURRENT TIME || tick: ", tick, " | hour: ",  hour,  
+			" | date: ", date,  " (", day, ": ", 
+			get_printable_day(), ")", " | month: ", month, 
+			" (", get_printable_month(), ")", " | year: ", year])
