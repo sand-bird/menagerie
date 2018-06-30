@@ -8,6 +8,13 @@ static func unpack(arg):
 		return arg[0]
 	else: return arg
 
+# for functions that use argument arrays as bootleg varargs,
+# because boxing a lone argument in an array[1] is a crime
+# against fashion
+static func pack(arg):
+	if typeof(arg) == TYPE_ARRAY: return arg
+	else: return [arg]
+
 # related scenes should be kept close to each other. a scene
 # knows its own filepath, so we can find related scenes from
 # that, rather than using THE TERRIBLE, HORRIBLE, NO GOOD

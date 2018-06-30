@@ -21,7 +21,18 @@ var properties = {
 	}
 }
 
-var items
+# as in "inventory item", not as in Item (the specific type
+# of game entity). unfortunately ambiguous, but i couldn't 
+# come up with any decent alternatives :(
+# 
+# represents the subset of the player's inventory that we can
+# SEE & INTERACT WITH. possible reasons an inventory item 
+# doesn't show up in this list:
+# - it's being filtered out by our current filter settings
+# - the data for its entity id was not found; an uncommon but
+#   expected case, eg. if an entity belongs to a mod that's 
+#   currently disabled.
+var items = {}
 
 onready var props = properties[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
@@ -39,14 +50,14 @@ func _ready():
 func initialize():
 	.initialize()
 	init_self()
-	init_item_grid()
-	init_selector()
-	update_current_item(current_item)
+	#init_item_grid()
+	#init_selector()
+	#update_current_item(current_item)
 
 func init_self():
 	columns = props.columns
-	page_count = Player.inventory.size() / (columns * columns)
-	if Player.inventory.size() % (columns * columns) > 0: page_count += 1
+	page_count = items.size() / (columns * columns)
+	if items.size() % (columns * columns) > 0: page_count += 1
 	update_page_display()
 	update_title_display()
 
@@ -56,6 +67,7 @@ func init_item_grid():
 	$item_grid.load_items(get_items())
 
 func init_selector():
+	if items.empty(): return
 	$selector.texture = Utils.load_resource(
 			Constants.UI_ELEMENT_PATH, props.selector)
 	var selector_pos = get_selector_dest(current_item)
@@ -99,8 +111,7 @@ func update_current_page(page):
 
 func update_item_details(index):
 	var item_info = get_item(index)
-	var data_type = Data.lookup[item_info.type]
-	var item_data = Data.data[data_type][item_info.id]
+	var item_data = Data.get(["monsters", item_info.id])
 	
 	$item_name/label.text = item_data.name
 	$item_description/label.text = item_data.description

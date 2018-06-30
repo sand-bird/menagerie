@@ -17,6 +17,22 @@ enum Layer {
 	POPUP = 3
 }
 
+const UI_PATH = "res://ui/"
+const EXT = ".tscn"
+# just a placeholder string man (r is for "replace")
+# ...i know, i know, but it's so nice and short :I
+const R = "{REF}" 
+const REFS = [ 
+	R,
+	R + EXT,
+	UI_PATH + R,
+	UI_PATH + R + EXT,
+	R + "/" + R,
+	R + "/" + R + EXT,
+	UI_PATH + R + "/" + R,
+	UI_PATH + R + "/" + R + EXT
+]
+
 const DEFAULT_MENU_PAGE = "options"
 # we can't count on our main_menu node always being
 # instantiated, but we still want to remember the last
@@ -54,7 +70,7 @@ func _ready():
 #    the replaced elements, if there are any, should be 
 #    restored when this element is closed. defaults to true.
 func open(args):
-	Log.debug(self, ["ui.open: ", args])
+	Log.debug(self, ["opening: ", args])
 	# set up vars
 	var item_ref
 	var open_type = null
@@ -69,17 +85,32 @@ func open(args):
 		if args.size() > 2:
 			restore_on_close = args[2]
 	
-	var layer_value = get_layer_value(open_type, item_ref)
+	var path = process_ref(item_ref)
+	if !path:
+		Log.error(self, ["could not open '", item_ref, "': file not found."])
+		return
+	
+	var layer_value = get_layer_value(open_type, path)
 	
 	var item = {
-		"ref": item_ref,
+		"path": path,
 		"layer": layer_value
 	}
 	if restore_on_close:
 		item.restore = []
 	
-	Log.debug(self, ["pushing: ", item])
+	Log.debug(self, ["pushing to ui stack: ", item])
 	return push(item)
+
+# -----------------------------------------------------------
+
+func process_ref(ref):
+	# first we try the ref 
+	var file = File.new()
+	for template in REFS:
+		var path = template.replace(R, ref)
+		if file.file_exists(path): return path
+	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
 
 # -----------------------------------------------------------
 
@@ -88,9 +119,9 @@ func open(args):
 # which it will overlay. here we look up the layer value for
 # our new element based on the open_type property that was 
 # passed to open() by whoever emitted the signal (see above).
-func get_layer_value(open_type, item_ref):
+func get_layer_value(open_type, path):
 	if open_type == null:
-		var node = load_node(item_ref)
+		var node = load_node(path)
 		if "layer" in node: return node.layer
 		else: return get_next_layer()
 	elif open_type == -1:
@@ -99,21 +130,24 @@ func get_layer_value(open_type, item_ref):
 
 # -----------------------------------------------------------
 
+# executed when we hear a 'menu_open' signal. the main menu
+# scene listens for the signal on its own, so if it's already
+# loaded it will handle it - but if not, we need to add it to 
+# the ui stack and then call its open function manually.
+# we also take this opportunity to update last_menu_page.
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
 	if !page: page = last_menu_page
 	if !page: page = DEFAULT_MENU_PAGE
-	
 	last_menu_page = page
 	
-	Log.debug(self, ["open menu '", page, "'"])
-	match stack:
-		[{"ref": "main_menu/main_menu", ..}, ..]:
-			Log.debug(self, "main menu already open, we're good")
-			return
+	var menu_path = process_ref("main_menu")
 	
-	var menu = open("main_menu/main_menu")
+	match stack:
+		[{"path": menu_path, ..}, ..]: return
+	
+	var menu = open(menu_path)
 	menu.open(page)
 
 # CLOSE
@@ -135,11 +169,12 @@ func push(item):
 			if item.has("restore"): item.restore.push_back(stack[i])
 			pop(i) # todo: test if we can remove while iterating
 	
-	var node = load_node(item.ref)
+	var node = load_node(item.path)
 	item.node = node
 	stack.push_back(item)
 	add_child(node)
-	Log.debug(self, ["pushed: ", item, " | stack: ", stack])
+	Log.verbose(self, ["pushed: ", item])
+	Log.verbose(self, ["stack: ", stack])
 	return node
 
 func pop(i = null):
@@ -150,7 +185,8 @@ func pop(i = null):
 	else: item = stack.pop_back()
 	
 	var node = item.node
-	Log.debug(self, ["popped: ", item, " | stack: ", stack])
+	Log.verbose(self, ["popped: ", item])
+	Log.verbose(self, ["stack: ", stack])
 	node.queue_free()
 	return item
 
@@ -161,7 +197,7 @@ func replace(item):
 # -----------------------------------------------------------
 
 func load_node(path):
-	return load("res://ui/" + path + ".tscn").instance()
+	return load(path).instance()
 
 func get_next_layer():
 	var max_layer = 0

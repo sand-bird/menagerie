@@ -1,10 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://addons/event_button/button.gd" type="Script" id=2]
-[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
-
-
+[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=2]
 
 [sub_resource type="GDScript" id=1]
 
@@ -12,11 +9,25 @@ resource_name = "name_input"
 script/source = "extends Panel
 
 func _ready():
+	Dispatcher.connect(\"new_game\", self, \"close_self\")
+	$submit_button.args = \"\"
+	$submit_button.disabled = true
 	$input_field.connect(\"text_changed\", self, \"_update_button\")
 
 func _update_button(text):
-	$submit_button.args = text"
+	$submit_button.args = text
+	$submit_button.disabled = text.length() < 1
+
+func close_self(arg):
+	Dispatcher.emit_signal(\"ui_close\")"
 _sections_unfolded = [ "Resource" ]
+
+[sub_resource type="GDScript" id=2]
+
+script/source = "extends \"res://ui/event_button.gd\"
+
+func _ready(): 
+	signal_name = \"new_game\""
 
 [node name="panel" type="Panel"]
 
@@ -105,13 +116,10 @@ group = null
 text = "OK!"
 flat = false
 align = 1
-script = ExtResource( 2 )
+script = SubResource( 2 )
 _sections_unfolded = [ "Rect" ]
 __meta__ = {
-"_editor_icon": ExtResource( 3 )
+"_editor_icon": ExtResource( 2 )
 }
-emitter = "Dispatcher"
-signal_name = "new_game"
-args = null
 
 

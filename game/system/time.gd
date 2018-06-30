@@ -37,8 +37,7 @@ var year = 0 setget _set_year
 
 # -----------------------------------------------------------
 
-func _ready(): 
-	log_time()
+func _ready():
 	set_process(true)
 
 func _process(delta):
@@ -112,7 +111,7 @@ func deserialize(time):
 	if typeof(time) != TYPE_DICTIONARY:
 		time = parse_total_time(time)
 	load_dict(time)
-	# log_time()
+	log_time()
 
 # ----------------------------------------------------------- #
 #                T I M E   F O R M A T T I N G                #

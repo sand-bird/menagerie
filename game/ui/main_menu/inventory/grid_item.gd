@@ -15,12 +15,11 @@ func _ready():
 # we need to look up the type of each "item" in order to set
 # our properties. `Data.lookup` holds a map of EntityTypes 
 # to directory-names-as-data-keys (eg. "monsters", "items").
-func initialize(i, item_info, props):
+func initialize(i, item, props):
 	index = i
 	set_size(props.item_size)
-	set_qty(item_info.qty)
-	var item_type = Data.lookup[item_info.type]
-	$icon.texture = Data.data[item_type][item_info.id].icon
+	set_qty(item.qty)
+	$icon.texture = Data.get([item.id, "icon"])
 
 func set_size(size):
 	rect_min_size = size
@@ -34,7 +33,7 @@ func set_qty(item_qty):
 		$quantity.margin_left = -$quantity.get_minimum_size().x
 
 func _pressed():
-	Dispatcher.emit_signal("item_selected", index)
+	Dispatcher.emit("item_selected", index)
 
 func show_quantity(show):
 	if show && qty > 1: $quantity.show()

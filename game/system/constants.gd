@@ -58,6 +58,8 @@ const UI_ELEMENT_PATH = "res://assets/ui/elements"
 const UI_PANEL_PATH = "res://assets/ui/panels"
 const UI_ICON_PATH = "res://assets/ui/icons"
 
+const EVENT_BUTTON_PATH = "res://ui/event_button.gd"
+
 # --------- #
 #  ACTIONS  #
 # --------- #

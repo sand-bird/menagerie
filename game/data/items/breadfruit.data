@@ -1,0 +1,13 @@
+{
+  "id": "breadfruit",
+  "type": "item",
+  "category": "food",
+  "name": {
+    "en": "Breadfruit"
+  },
+  "description": {
+    "en": ""
+  },
+  "icon": "breadfruit.png",
+  "value": 18
+}

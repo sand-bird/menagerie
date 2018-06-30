@@ -9,7 +9,6 @@
 [ext_resource path="res://assets/ui/elements/indicator_circle.png" type="Texture" id=7]
 [ext_resource path="res://assets/ui/icons/weather.png" type="Texture" id=8]
 
-
 [sub_resource type="GDScript" id=1]
 
 resource_name = "date_info"

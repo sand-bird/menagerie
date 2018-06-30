@@ -23,5 +23,4 @@ onready var use_signal_name = signal_name if (signal_name != null) else self.nam
 # - signals can only accept their predefined number of args
 func _pressed():
 	print(emitter_node.name, ": ", use_signal_name, " (", args, ")")
-	if args: emitter_node.emit_signal(use_signal_name, args)
-	else: emitter_node.emit_signal(use_signal_name)
+	emitter_node.emit(use_signal_name, args)

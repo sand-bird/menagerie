@@ -6,6 +6,7 @@ extends Node
 # functions as a store for game state. pretty much everything
 # here is saved to and loaded from the `player.save` file.
 
+var player_name
 var playtime
 var last_update_time # used to update playtime
 var money
@@ -302,7 +303,7 @@ func _ready():
 # -----------------------------------------------------------
 
 const SAVE_KEYS = [
-	"name", "playtime", "level", "money",
+	"player_name", "playtime", "level", "money",
 	"encyclopedia", "inventory",
 	"requests", "completed_requests",
 ]

@@ -3,7 +3,7 @@ extends Node
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
-const NEW_SAVE = "res://system/new_save.data"
+const NEW_SAVE = "res://data/system/new_save.data"
 
 var current_save_dir
 # probably not the best idea, but seems to work fine for now
@@ -68,7 +68,7 @@ func get_save_info_list():
 func new_save(pname):
 	# load fresh save data
 	var new_save = read_file(NEW_SAVE)
-	new_save.player.name = pname
+	new_save.player.player_name = pname
 	
 	# create new save
 	current_save_dir = create_dirname(pname)
@@ -98,6 +98,8 @@ func load_game(save_dir):
 # ----------------------------------------------------------- #
 
 func write_file(path, data):
+	Log.info(self, ["writing file: ", path])
+	Log.verbose(self, data)
 	var file = File.new()
 	file.open(path, File.WRITE)
 	file.store_string(to_json(data))
@@ -106,11 +108,13 @@ func write_file(path, data):
 # -----------------------------------------------------------
 
 func read_file(path):
+	Log.info(self, ["reading file: ", path])
 	var file = File.new()
 	if !file.file_exists(path): return null
 	file.open(path, File.READ)
 	var data = parse_json(file.get_as_text())
 	file.close()
+	Log.verbose(self, data)
 	return data
 
 

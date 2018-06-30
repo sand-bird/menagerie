@@ -14,7 +14,7 @@ var inventory_size = InventorySize.LARGE
 #                  I N P U T   O P T I O N S
 # -----------------------------------------------------------
 
-var control_mode = ControlMode.MOUSE_AND_KEY
+var control_mode = ControlMode.TOUCH
 
 var keybindings = {
 	camera_up = KEY_W,

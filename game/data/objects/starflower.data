@@ -1,0 +1,36 @@
+{
+  "id": "starflower",
+  "type": "object",
+  "category": "plant",
+  "name": {
+    "en": "Starflower"
+  },
+  "description": {
+    "en": ""
+  },
+  "states": {
+    "seed": {
+      "sprite": "planted_seed.png",
+      "next": {
+        "growing": {
+          "if": {},
+          "priority": 1
+        }
+      }
+    },
+    "growing": {
+      "sprite": "starflower_growing.png",
+      "next": {
+        "flowering": {
+          "if": {""}
+        }
+      }
+    },
+    "flowering": {
+      "next": {}
+    },
+    "wilted": {
+      "next": {}
+    }
+  }
+}

@@ -1,0 +1,38 @@
+DATA FILES
+----------
+- $time.season
+- "mod" operator for conditions
+- $locations (world global? weather, location state, events, etc)
+- animations/spritestate representations in .data
+- object state transitions in .data
+
+
+UI
+--
+- add another open_type: a reference to another node, either
+  the node object or a ref-string we can use to look up the
+  node's path. if the node is found on the stack, we want to
+  replace it (and anything above it). optionally, if the node
+  is not in the stack but we have its path, we could even 
+  load it, check its layer property, and use that for our
+  layer value instead. (that might be overkill, though.)
+
+- add parameters to ui_close:
+  - godot node reference (eg passing self), or a ref-string
+    we can use to find a node in the stack - closes that
+    node (and all above it)
+  - integer representing a layer - closes that layer (and all
+    above it)
+  - (maybe) negative integer representing x layers down in
+    addition to the current layer, like an end-of-array index?
+
+
+INVENTORY
+---------
+- make sure empty loading works
+- inv "items" should basically be pointers to indices in the
+  player's inventory; it could literally be an array of ints
+- consider options for sorting the inventory as well as
+  filtering - it's not super important and might not be 
+  necessary at all, but should at least be possible w/o major
+  refactoring

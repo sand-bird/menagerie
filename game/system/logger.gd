@@ -150,14 +150,14 @@ const FILE_BUFFER_SIZE = 30
 ##=============##
 
 # Configuration
-var output_level = INFO
+var output_level = DEBUG
 # TODO: Find (or implement in Godot) a more clever way to achieve that
 var output_strategies = STRATEGY_PRINT + STRATEGY_FILE
 var logfile_path = "user://%s.log" % ProjectSettings.get_setting("application/name")
 var configfile_path = "user://%s.cfg" % PLUGIN_NAME
 
 # e.g. "[INFO] [main] The young alpaca started growing a goatie."
-var output_format = "{DATE} | {NODE} [{LVL}] {MSG}"
+var output_format = "{DATE} {LVL} [{NODE}] {MSG}"
 
 # Specific to STRATEGY_MEMORY
 var max_memory_size = 30
@@ -239,15 +239,17 @@ static func get_date():
 	return output
 
 func format_message(message):
-	if typeof(message) == TYPE_STRING: return message
-	elif typeof(message) == TYPE_ARRAY:
+	if typeof(message) == TYPE_ARRAY:
 		var formatted_message = ""
 		for arg in message:
-			if typeof(arg) == TYPE_STRING:
-				formatted_message += arg
-			else: formatted_message += str(arg)
+			formatted_message += format_arg(arg)
 		return formatted_message
-	else: return str(message)
+	else: return format_arg(message)
+
+func format_arg(arg):
+	if typeof(arg) == TYPE_STRING: return arg
+	# elif typeof(arg) == TYPE_DICTIONARY: return to_json(arg)
+	else: return str(arg)
 
 static func format(template, level, nodename, message):
 	var output = template.replace(FORMAT_IDS.date, get_date())

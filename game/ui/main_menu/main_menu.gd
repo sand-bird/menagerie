@@ -51,7 +51,6 @@ func _ready():
 
 func new_tab(id, data):
 	var tab = MenuTab.instance()
-	print(id)
 	tab.load_info(id, data)
 	$content/tabs.add_child(tab)
 
@@ -60,7 +59,7 @@ func new_tab(id, data):
 func set_current(val):
 	if current == val: return # already current
 	current = val
-	Log.debug(self, ["current chapter: ", current])
+	Log.debug(self, ["setting current chapter: ", current])
 	var tabs = $content/tabs.get_children()
 	for i in tabs.size():
 		if tabs[i].id == current:
@@ -75,7 +74,8 @@ func set_current(val):
 func open(input):
 	var chapter = Utils.unpack(input)
 	# update current_page (this is the page's string id)
-	Log.debug(self, ["opening: ", chapter, " | current: ", current])
+	Log.debug(self, ["opening chapter: ", chapter, ", current: ", 
+			current if current else "(none)"])
 	if chapter == current or !(chapter in chapters.keys()): return
 	set_current(chapter) # also updates tab z-indices
 	

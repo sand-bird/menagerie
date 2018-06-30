@@ -3,7 +3,6 @@ extends Button
 func _ready():
 	connect("mouse_entered", self, "grab_focus")
 	connect("mouse_exited", self, "release_focus")
-	pass
 
 var save_dir
 
@@ -18,4 +17,4 @@ func load_info(save_info):
 
 func _pressed():
 	Dispatcher.emit_signal("load_game", save_dir)
-	Dispatcher.emit_signal("close_menu")
+	Dispatcher.emit_signal("ui_close")

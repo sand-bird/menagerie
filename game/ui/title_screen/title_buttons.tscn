@@ -1,10 +1,31 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/title_screen/title_buttons.gd" type="Script" id=2]
-[ext_resource path="res://addons/event_button/button.gd" type="Script" id=3]
-[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=4]
+[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
 
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends \"res://ui/event_button.gd\"
+
+func _ready():
+	signal_name = \"ui_open\"
+	args = \"save_list\""
+
+[sub_resource type="GDScript" id=2]
+
+script/source = "extends \"res://ui/event_button.gd\"
+
+func _ready():
+	signal_name = \"ui_open\"
+	args = [\"name_input\", 1, false]"
+
+[sub_resource type="GDScript" id=3]
+
+script/source = "extends \"res://ui/event_button.gd\"
+
+func _ready(): 
+	signal_name = \"quit_game\""
 
 [node name="title_buttons" type="VBoxContainer"]
 
@@ -49,13 +70,10 @@ group = null
 text = "Load Game"
 flat = false
 align = 1
-script = ExtResource( 3 )
+script = SubResource( 1 )
 __meta__ = {
-"_editor_icon": ExtResource( 4 )
+"_editor_icon": ExtResource( 3 )
 }
-emitter = "Dispatcher"
-signal_name = "ui_open"
-args = [ "title/save_list" ]
 
 [node name="new_game" type="Button" parent="." index="1"]
 
@@ -79,14 +97,11 @@ group = null
 text = "New Game"
 flat = false
 align = 1
-script = ExtResource( 3 )
+script = SubResource( 2 )
 _sections_unfolded = [ "Theme" ]
 __meta__ = {
-"_editor_icon": ExtResource( 4 )
+"_editor_icon": ExtResource( 3 )
 }
-emitter = "Dispatcher"
-signal_name = "ui_open"
-args = [ "name_input" ]
 
 [node name="quit_game" type="Button" parent="." index="2"]
 
@@ -111,13 +126,10 @@ text = "Exit"
 flat = false
 clip_text = true
 align = 1
-script = ExtResource( 3 )
+script = SubResource( 3 )
 _sections_unfolded = [ "Margin" ]
 __meta__ = {
-"_editor_icon": ExtResource( 4 )
+"_editor_icon": ExtResource( 3 )
 }
-emitter = "Dispatcher"
-signal_name = "quit_game"
-args = null
 
 

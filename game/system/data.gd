@@ -1,7 +1,9 @@
 extends Node
 
 const BASE_DIR = "res://data"
+const MOD_DIR = "res://mods"
 const DATA_EXTENSION = "data"
+const SCHEMA_EXTENSION = "schema"
 
 # -----------------------------------------------------------
 
@@ -9,19 +11,8 @@ const DATA_EXTENSION = "data"
 # for a mod we must look for [path] in *every subfolder* of:
 # - user://mods/
 # - res://mods/
-#
-# if multiple files are found with the same path, we do our 
-# best to merge them. (this is TODO and will be for a while)
 
 var EntityType = Constants.Type
-
-var lookup = {
-	EntityType.MONSTER: "monsters",
-	EntityType.ITEM: "items",
-	EntityType.OBJECT: "objects",
-	EntityType.NPC: "npcs",
-	EntityType.LOCATION: "locations"
-}
 
 var monsters = {}
 var items = {}
@@ -30,11 +21,75 @@ var npcs = {}
 var locations = {}
 
 var data
+var metadata # temp holder for contentpack metadata
+var modconfig
 
 func _ready(): # do the thing
-	list_dir("res://")
-	data = load_dir(BASE_DIR)
-	print(to_json(data))
+	load_modconfig()
+	update_modconfig()
+	data = {}
+	#list_dir(MOD_DIR)
+	#data = load_dir(BASE_DIR)
+	# Log.verbose(self, to_json(data))
+
+func load_modconfig():
+	modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
+	if !modconfig: modconfig = {
+		"load_order": [],
+		"mods": {}
+	}
+
+func get(args):
+	Utils.pack(args)
+	Log.info(self, ["get ", args])
+	var result = data
+	for arg in args:
+		if !result.has(arg):
+			Log.error(self, ["no such property ", arg, " in Data.", 
+					PoolStringArray(args).join(".")]) 
+			return null
+		else: result = result[arg]
+	return result
+
+func update_modconfig():
+	var dir = Directory.new()
+	dir.open(MOD_DIR)
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		var path = MOD_DIR.plus_file(current)
+		var modinfo = SaveManager.read_file(
+				path.plus_file("meta.data"))
+		if modinfo:
+			if modconfig.mods.has(modinfo.id):
+				check_modinfo(modinfo.id)
+			else: add_modinfo(path, modinfo)
+		current = dir.get_next()
+	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+
+func check_modinfo(mod_id):
+	Log.verbose(self, ["found entry for ", mod_id, " in modconfig"])
+	var path = modconfig.mods[mod_id].path
+	if is_current(modconfig.mods[mod_id].last_modified, path):
+		Log.verbose(self, ["mod ", mod_id, " is up to date"])
+	else:
+		Log.info(self, ["mod ", mod_id, " has been modified!"])
+		modconfig.mods[mod_id].last_modified = get_modified_time(path)
+		modconfig.mods[mod_id].is_modified = true
+		modconfig.mods[mod_id].is_valid = false
+
+func add_modinfo(path, modinfo):
+	Log.debug(self, "modconfig does not have thing")
+	modconfig.mods[modinfo.id] = {
+		"path": path,
+		"last_modified": get_modified_time(path),
+		"is_new": true,
+		"is_modified": false,
+		"is_valid": false,
+		"is_enabled": true,
+		"schemas": {}
+	}
+	modconfig.load_order.append(modinfo.id)
 
 # -----------------------------------------------------------
 
@@ -68,55 +123,41 @@ func merge(base, mod):
 # -----------------------------------------------------------
 
 func list_dir(dirname):
-	print("==========================")
-	print("listing dir: ", dirname)
-	print("--------------------------")
+	Log.info(self, "==========================")
+	Log.info(self, ["listing dir: ", dirname])
+	Log.info(self, "--------------------------")
 	var dir = Directory.new()
 	dir.open(dirname)
 	dir.list_dir_begin(true)
 	var current = dir.get_next()
 	while (current != ""):
-		print(current)
+		Log.info(self, current)
 		current = dir.get_next()
-	print("--------------------------")
+	Log.info(self, "--------------------------")
 
 #func load_data():
 #	for type in types:
 #		print(type)
 
-# if we find a directory with an identically-named datafile
-# inside (eg pufig/pufig.data), we should take that file to
-# represent the directory in the data structure, with the
-# expectation that it's the main data file, and if any others
-# exist in the directory it will reference them as it needs.
-#
-# if there is no name-matching datafile, we should create a 
-# dictionary for the directory in Data.data, and give each
-# data file we find its own entry inside. (eg. system.types,
-# system.menu_chapters, etc.)
+# -----------------------------------------------------------
+
 func load_dir(dirname):
-	var data = {}
 	var dir = Directory.new()
 	assert(dir.open(dirname) == OK)
 	# start iterating through directories
 	dir.list_dir_begin(true)
 	var current = dir.get_next()
 	while (current != ""):
-		print("current: ", current)
-		# do the following for each dir found:
+		Log.verbose(self, ["current dir: ", current])
 		if dir.current_is_dir():
-			var default_path = dirname.plus_file(get_default(current))
-			print("default_path: ", default_path)
-			if dir.file_exists(default_path):
-				data[current] = load_file(default_path)
-			else:
-				var child_dir = load_dir(dirname.plus_file(current))
-				if child_dir: data[current] = child_dir
-		elif current.get_extension() == DATA_EXTENSION:
-			data[current.get_basename()] = load_file(dirname, current)
-		# increment iterator
+			load_dir(dirname.plus_file(current))
+		else: 
+			match current.get_extension():
+				DATA_EXTENSION:
+					load_file(dirname, current)
+				SCHEMA_EXTENSION:
+					load_file(dirname, current)
 		current = dir.get_next()
-	return data
 
 # -----------------------------------------------------------
 
@@ -124,53 +165,63 @@ func load_dir(dirname):
 # accepts the path either in two arguments, the directory and
 # the filename, or as a single arg containing the full path.
 func load_file(dirname, fname = null):
+	return
 	var path = dirname.plus_file(fname) if fname else dirname
-	print("load_file: ", path)
+	Log.verbose(self, ["load_file: ", path])
 	var file = File.new()
 	file.open(path, File.READ)
-	var data = parse_json(file.get_as_text())
-	if data: data = process_data(data, path.get_base_dir())
+	var filedata = parse_json(file.get_as_text())
 	file.close()
-	return data
+	if filedata: process_data(filedata, path.get_base_dir())
 
 # -----------------------------------------------------------
 
-# TODO: eventually, we want to load resources referenced in 
-# datafiles intelligently (eg. ResourceLoader for .png files,
-# process_data() for .data files, etc). also not 100% sold on
-# ~ syntax, since it doesn't do a great job of conveying that
-# the value must be specially annotated as a file reference -
-# especially since we might want to be able to load resources
-# from the base res:// dir, and ~ has basically the opposite
-# implication. otoh, we could treat ! paths like normal unix 
-# filepaths, eg !path for relative, !/path for absolute, etc.
-# 
-# also worth considering: differentiating paths to user://...
-# from paths to res://... from datafiles in the user://mods/
-# directory. i guess ideally we'd resolve these paths in the
-# same way we resolve files, with user://mods, res://../mods, 
-# and res:// tried in that order for a match.
+# TODO: we want to resolve 
 func process_data(data, basedir):
-#	print("process_data: ", data)
+	Log.verbose(self, ["process_data: ", data])
 	for i in data:
-		#if typeof(data[i]) in [TYPE_ARRAY, TYPE_DICTIONARY]:
-		#	data[i] = process_data(data[i], basedir)
+		if typeof(data[i]) in [TYPE_ARRAY, TYPE_DICTIONARY]:
+			data[i] = process_data(data[i], basedir)
 		if typeof(data[i]) == TYPE_STRING:
 			match data[i][0]:
-				'~': # we have an image (or other link) we should process
+				'!': # we have an image (or other link) we should process
 					data[i] = ResourceLoader.load(
 							basedir.plus_file(data[i].substr(1, 
 							data[i].length() - 1)))
 				'$': # we have an enum we need to resolve
 					data[i] = Condition.eval_arg(data[i])
+				'#': # we have an enum we need to resolve
+					data[i] = Condition.eval_arg(data[i])
 	return data
 
 # -----------------------------------------------------------
 
-# dumb little utility function to get the relative filepath 
-# for the "default" datafile (for lack of a better term),
-# dirname/dirname.data (or dirname/dirname + DATA_EXT),
-# literally just because the relevant line in load_dir() 
-# would've been too long otherwise.
-func get_default(dirname):
-	return dirname.plus_file(dirname.get_file() + "." + DATA_EXTENSION)
+func get_modified_time(dirname):
+	var modtime = 0
+	var file = File.new()
+	var dir = Directory.new()
+	assert(dir.open(dirname) == OK)
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		if dir.current_is_dir():
+			modtime = max(modtime, 
+				get_modified_time(dirname.plus_file(current)))
+		else:
+			modtime = max(modtime, 
+				file.get_modified_time(dirname.plus_file(current)))
+		current = dir.get_next()
+	return modtime
+
+func is_current(time, dirname):
+	var file = File.new()
+	var dir = Directory.new()
+	assert(dir.open(dirname) == OK)
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		if (dir.current_is_dir() && !is_current(time, dirname.plus_file(current))
+				or file.get_modified_time(dirname.plus_file(current)) > time):
+			return false
+		current = dir.get_next()
+	return true
