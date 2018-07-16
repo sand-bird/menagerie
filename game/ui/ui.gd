@@ -45,7 +45,6 @@ func _ready():
 	Dispatcher.connect("ui_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
 	Dispatcher.connect("menu_open", self, "open_menu")
-	# set_process_unhandled_input(true)
 
 # -----------------------------------------------------------
 
@@ -205,4 +204,4 @@ func get_next_layer():
 		for element in stack:
 			if element.layer > max_layer: 
 				max_layer = element.layer
-	return max_layer
+	return max_layer + 1
