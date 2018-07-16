@@ -4,13 +4,13 @@
 [ext_resource path="res://ui/ui.tscn" type="PackedScene" id=2]
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id=1]
 
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): signal_name = \"menu_open\""
 
-[sub_resource type="GDScript" id=1]
+[sub_resource type="GDScript" id=2]
 
 script/source = "extends Button
 
@@ -26,7 +26,7 @@ func _pressed():
 		Options.inventory_size = InventorySize.LARGE
 	print(\"inventory size toggled! is now \", size)"
 
-[node name="game" type="Node"]
+[node name="game" type="Node" index="0"]
 
 script = ExtResource( 1 )
 
@@ -41,7 +41,6 @@ _sections_unfolded = [ "Animation", "Offset", "Region", "Transform", "Z Index" ]
 
 [node name="EventButton" type="Button" parent="." index="2"]
 
-visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -63,7 +62,7 @@ group = null
 text = "MENU"
 flat = false
 align = 1
-script = SubResource( 2 )
+script = SubResource( 1 )
 _sections_unfolded = [ "custom_constants" ]
 __meta__ = {
 "_editor_icon": ExtResource( 3 )
@@ -71,7 +70,6 @@ __meta__ = {
 
 [node name="EventButton2" type="Button" parent="." index="3"]
 
-visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -93,6 +91,6 @@ group = null
 text = "TOGGLE SIZE"
 flat = false
 align = 1
-script = SubResource( 1 )
+script = SubResource( 2 )
 
 

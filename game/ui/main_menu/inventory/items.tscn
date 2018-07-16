@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://ui/main_menu/inventory/inventory.tscn" type="PackedScene" id=1]
+
+[sub_resource type="GDScript" id=1]
+
+resource_name = "items"
+script/source = "extends \"res://ui/main_menu/inventory/inventory.gd\"
+
+func _ready():
+	title = \"Items\"
+	.initialize()"
+_sections_unfolded = [ "Resource" ]
+
+[node name="inventory" index="0" instance=ExtResource( 1 )]
+
+script = SubResource( 1 )
+
+

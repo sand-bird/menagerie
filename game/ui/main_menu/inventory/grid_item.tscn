@@ -1,36 +1,16 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/grid_item.gd" type="Script" id=2]
 [ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=3]
-[ext_resource path="res://assets/ui/panels/item_quantity.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=4]
 
-[sub_resource type="StyleBoxEmpty" id=2]
+[sub_resource type="StyleBoxEmpty" id=1]
 
 content_margin_left = -1.0
 content_margin_right = -1.0
 content_margin_top = -1.0
 content_margin_bottom = -1.0
-
-[sub_resource type="StyleBoxTexture" id=1]
-
-content_margin_left = 2.0
-content_margin_right = 1.0
-content_margin_top = 0.0
-content_margin_bottom = 0.0
-texture = ExtResource( 4 )
-region_rect = Rect2( 0, 0, 4, 7 )
-margin_left = 2.0
-margin_right = 2.0
-margin_top = 3.0
-margin_bottom = 3.0
-expand_margin_left = 0.0
-expand_margin_right = 0.0
-expand_margin_top = 0.0
-expand_margin_bottom = 0.0
-modulate_color = Color( 1, 1, 1, 1 )
-draw_center = true
-_sections_unfolded = [ "Axis Stretch", "Content Margin", "Expand Margin", "Margin", "Modulate" ]
 
 [node name="item" type="Button"]
 
@@ -42,12 +22,13 @@ margin_right = 20.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 20, 20 )
 rect_pivot_offset = Vector2( 0, 0 )
+focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 theme = ExtResource( 1 )
-custom_styles/focus = SubResource( 2 )
+custom_styles/focus = SubResource( 1 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -85,6 +66,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -9.0
+margin_right = 16.0
 margin_bottom = 2.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = true
@@ -92,7 +74,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = SubResource( 1 )
+custom_styles/normal = ExtResource( 4 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
 text = "211"
 align = 2

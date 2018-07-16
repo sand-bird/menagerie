@@ -25,6 +25,7 @@ var properties = {
 # of game entity). unfortunately ambiguous, but i couldn't 
 # come up with any decent alternatives :(
 # 
+# an array of ints, each an index within Player.inventory.
 # represents the subset of the player's inventory that we can
 # SEE & INTERACT WITH. possible reasons an inventory item 
 # doesn't show up in this list:
@@ -32,7 +33,7 @@ var properties = {
 # - the data for its entity id was not found; an uncommon but
 #   expected case, eg. if an entity belongs to a mod that's 
 #   currently disabled.
-var items = {}
+var items = []
 
 onready var props = properties[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
@@ -42,13 +43,10 @@ onready var columns = props.columns
 #                 I N I T I A L I Z A T I O N                 #
 # ----------------------------------------------------------- #
 
-func _ready():
-	title = "Inventory"
-	Dispatcher.connect("item_selected", self, "update_current_item")
-	initialize()
-
 func initialize():
+	Dispatcher.connect("item_selected", self, "update_current_item")
 	.initialize()
+	filter_items({"type": "object"})
 	init_self()
 	#init_item_grid()
 	#init_selector()
@@ -64,7 +62,7 @@ func init_self():
 func init_item_grid():
 	$item_grid.props = props
 	$item_grid.initialize()
-	$item_grid.load_items(get_items())
+	$item_grid.load_items(get_page_items())
 
 func init_selector():
 	if items.empty(): return
@@ -76,17 +74,28 @@ func init_selector():
 	
 # -----------------------------------------------------------
 
-func filter_items(prop):
-	pass
+func filter_items(filter):
+	for i in Player.inventory.size():
+		var id = Player.inventory[i].id
+		var data = Data.get(id)
+		if !data: continue  # dw, Data.get already logged it
+		var matches = true
+		for key in filter.keys():
+			if !data.has(key) or data[key] != filter[key]:
+				matches = false
+				break
+		if matches:
+			Log.info(self, [id, " passed filter!"])
+			items.append(i)
 
-func get_items():
+func get_page_items():
 	var page_size = columns * columns
 	var start = current_page * page_size
-	return Utils.slice(Player.inventory, start, page_size)
+	return Utils.slice(items, start, page_size)
 
 func get_item(index):
 	var actual_index = current_page * columns * columns + index
-	return Player.inventory[actual_index]
+	return Player.inventory[items[actual_index]]
 
 # -----------------------------------------------------------
 
@@ -101,7 +110,7 @@ func update_current_item(index):
 func update_current_page(page):
 	.update_current_page(page)
 	current_page = page
-	$item_grid.load_items(get_items())
+	$item_grid.load_items(get_page_items())
 	if current_page < page_count - 1:
 		$arrows/right.show()
 	else: $arrows/right.hide()
@@ -111,7 +120,7 @@ func update_current_page(page):
 
 func update_item_details(index):
 	var item_info = get_item(index)
-	var item_data = Data.get(["monsters", item_info.id])
+	var item_data = Data.get(item_info.id)
 	
 	$item_name/label.text = item_data.name
 	$item_description/label.text = item_data.description

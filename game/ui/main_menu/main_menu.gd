@@ -10,11 +10,11 @@ const chapters = {
 	},
 	items = {
 		icon = icon_dir + "items.png",
-		scene = menu_dir + "inventory/inventory.tscn"
+		scene = menu_dir + "inventory/items.tscn"
 	},
-	inventory = {
+	objects = {
 		icon = icon_dir + "inventory.png",
-		scene = menu_dir + "inventory/inventory.tscn"
+		scene = menu_dir + "inventory/objects.tscn"
 	},
 	town_map = {
 		icon = icon_dir + "town.png",

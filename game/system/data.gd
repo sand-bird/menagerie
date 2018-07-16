@@ -14,23 +14,61 @@ const SCHEMA_EXTENSION = "schema"
 
 var EntityType = Constants.Type
 
+var schemas = {}
+
+var data = {
+	"fluffy_tuft": {
+		"value": 1,
+		"type": "item",
+		"name": {
+			"en": "Fluffy Tuft"
+		}
+	},
+	"an_object": {
+		"type": "object",
+		"name": {
+			"en": "An Object"
+		}
+	}
+}
+
 var monsters = {}
-var items = {}
-var objects = {}
+var items = {
+	"fluffy_tuft": data.fluffy_tuft
+}
+var objects = {
+	"an_object": data.an_object
+}
 var npcs = {}
 var locations = {}
 
-var data
+
 var metadata # temp holder for contentpack metadata
 var modconfig
 
-func _ready(): # do the thing
-	load_modconfig()
-	update_modconfig()
-	data = {}
+func _ready():
+#	load_data()  # loads schemas and datafiles from data/
+	load_modconfig()  # reads .modconfig file into var modconfig
+	update_modconfig()  
 	#list_dir(MOD_DIR)
 	#data = load_dir(BASE_DIR)
 	# Log.verbose(self, to_json(data))
+
+# -----------------------------------------------------------
+
+func get(args):
+	args = Utils.pack(args)
+	Log.debug(self, ["get ", args])
+	var result = data
+	for arg in args:
+		if !result.has(arg):
+			Log.warn(self, ["could not find data for ", arg, 
+					": ", PoolStringArray(args).join(".")]) 
+			return null
+		else: result = result[arg]
+	return result
+
+# -----------------------------------------------------------
 
 func load_modconfig():
 	modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
@@ -39,18 +77,10 @@ func load_modconfig():
 		"mods": {}
 	}
 
-func get(args):
-	Utils.pack(args)
-	Log.info(self, ["get ", args])
-	var result = data
-	for arg in args:
-		if !result.has(arg):
-			Log.error(self, ["no such property ", arg, " in Data.", 
-					PoolStringArray(args).join(".")]) 
-			return null
-		else: result = result[arg]
-	return result
+# -----------------------------------------------------------
 
+# checks mod directory against modconfig for any new or
+# changed mods.
 func update_modconfig():
 	var dir = Directory.new()
 	dir.open(MOD_DIR)
@@ -58,14 +88,18 @@ func update_modconfig():
 	var current = dir.get_next()
 	while (current != ""):
 		var path = MOD_DIR.plus_file(current)
-		var modinfo = SaveManager.read_file(
-				path.plus_file("meta.data"))
+		if !dir.current_is_dir(): 
+			current = dir.get_next()
+			continue
+		var modinfo = SaveManager.read_file(path.plus_file("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
 				check_modinfo(modinfo.id)
 			else: add_modinfo(path, modinfo)
 		current = dir.get_next()
 	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+
+# -----------------------------------------------------------
 
 func check_modinfo(mod_id):
 	Log.verbose(self, ["found entry for ", mod_id, " in modconfig"])
@@ -74,9 +108,22 @@ func check_modinfo(mod_id):
 		Log.verbose(self, ["mod ", mod_id, " is up to date"])
 	else:
 		Log.info(self, ["mod ", mod_id, " has been modified!"])
-		modconfig.mods[mod_id].last_modified = get_modified_time(path)
 		modconfig.mods[mod_id].is_modified = true
-		modconfig.mods[mod_id].is_valid = false
+		update_modinfo(mod_id)
+
+# -----------------------------------------------------------
+
+enum Status {
+	
+}
+
+func update_modinfo(mod_id):
+	modconfig.mods[mod_id].last_modified = get_modified_time(
+			modconfig.mods[mod_id].path)
+	modconfig.mods[mod_id].is_valid = false
+	modconfig.mods[mod_id].is_enabled = false
+
+# -----------------------------------------------------------
 
 func add_modinfo(path, modinfo):
 	Log.debug(self, "modconfig does not have thing")
@@ -85,7 +132,6 @@ func add_modinfo(path, modinfo):
 		"last_modified": get_modified_time(path),
 		"is_new": true,
 		"is_modified": false,
-		"is_valid": false,
 		"is_enabled": true,
 		"schemas": {}
 	}
@@ -194,7 +240,9 @@ func process_data(data, basedir):
 					data[i] = Condition.eval_arg(data[i])
 	return data
 
-# -----------------------------------------------------------
+# =========================================================== #
+#                  M O D I F I E D   T I M E                  #
+# ----------------------------------------------------------- #
 
 func get_modified_time(dirname):
 	var modtime = 0
@@ -212,6 +260,8 @@ func get_modified_time(dirname):
 				file.get_modified_time(dirname.plus_file(current)))
 		current = dir.get_next()
 	return modtime
+
+# -----------------------------------------------------------
 
 func is_current(time, dirname):
 	var file = File.new()

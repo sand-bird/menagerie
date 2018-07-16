@@ -5,22 +5,17 @@ func _ready():
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
-	# testing data parsing. like magic!
-	#for k in Data.data.monsters.pufig:
-	#	print(k, ": ", Data.id("pufig")[k])
+#	$pufig.texture = Data.id["pufig"].sprite
 	
-	#$pufig.texture = Data.id["pufig"].sprite
-	
-	#Data.filter({from = "game"})
+#	Data.filter({from = "game"})
 #	Data.get("pufig").sprite
 #	Data.id("pufig").sprite
 #	Data.type("monsters").sprite
 	
 	#Data.monsters["pufig"].sprite
-	Dispatcher.emit_signal("ui_open", "title_screen")
-#	Dispatcher.emit("load_game", "test_1524444746")
-#	Dispatcher.emit("load_game", "gayton_1524538240")
-#	Dispatcher.emit("menu_open", "inventory")
+	Dispatcher.emit_signal("ui_open", "garden/clock_hud")
+	Time.start()
+#	Dispatcher.emit_signal("ui_open", "title_screen")
 
 
 # =========================================================== #
@@ -54,7 +49,7 @@ func load_player(data):
 
 func load_garden(data):
 	# proces the garden data. garden is an instanced node,
-	# unlike player and time, and it must instantiate its
+	# unlike player and time, and it must instantiate its own
 	# children depending on the contents of the save file.
 	var garden = load("res://garden/garden.tscn").instance()
 	add_child(garden)

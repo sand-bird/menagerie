@@ -16,6 +16,20 @@ var level
 var encyclopedia = {}
 var inventory = [
 	{
+		id = "fluffy_tuft",
+		qty = 50
+	},
+	{
+		id = "an_object",
+		qty = 1
+	},
+	{
+		id = "test_not_found",
+		qty = 1
+	}
+]
+var inventory2 = [
+	{
 		type = Constants.Type.ITEM,
 		id = "fluffy_tuft",
 		qty = 1
@@ -284,6 +298,10 @@ var completed_requests
 
 # not really a huge feature, but npcs should warm up to you
 # as you interact with them and complete requests
+# (note: should this be a property of the npc instance? makes
+# sense intuitively, but in practice it's probably better to
+# centralize that info here, especially since it comes from 
+#player.save)
 var relationships
 
 # -----------------------------------------------------------
@@ -300,7 +318,9 @@ var current_inventory_filter = {}
 func _ready():
 	pass
 
-# -----------------------------------------------------------
+# =========================================================== #
+#                  S E R I A L I Z A T I O N                  #
+# ----------------------------------------------------------- #
 
 const SAVE_KEYS = [
 	"player_name", "playtime", "level", "money",
