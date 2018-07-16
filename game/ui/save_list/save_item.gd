@@ -6,7 +6,7 @@ func _ready():
 
 var save_dir
 
-func load_info(save_info):
+func load_info(index, save_info):
 	save_dir = save_info.save_dir
 	$player_name/label.text = save_info.player_name
 	$monsters/label.text = str(save_info.monsters)
@@ -14,6 +14,7 @@ func load_info(save_info):
 	$encyclopedia/label.text = str(save_info.encyclopedia, '%')
 	$playtime/label.text = Player.get_printable_playtime(save_info.playtime)
 	$time/label.text = Time.get_printable_time(save_info.time)
+	$index.text = str(index)
 
 func _pressed():
 	Dispatcher.emit_signal("load_game", save_dir)
