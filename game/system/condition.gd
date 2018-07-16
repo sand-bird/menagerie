@@ -194,9 +194,9 @@ func _map(args, caller, parent):
 # dictionary or array, and the second is a condition object.
 # returns a dictionary or array containing the elements of
 # the former for which the latter resolves to true.
-func _filter(args, caller):
+func _filter(args, caller, parent):
 	var results = []
-	var data = eval_arg(args[0], caller)
+	var data = eval_arg(args[0], caller, parent)
 	var condition = args[1]
 	for item in data:
 		if resolve(condition, caller, item): 
