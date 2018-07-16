@@ -20,7 +20,7 @@ const DATE = "date"
 const HOUR = "hour"
 const TICK = "tick"
 
-const ACTUAL_SECONDS_IN_TICK = 0.4
+const ACTUAL_SECONDS_IN_TICK = 0.8
 const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24
 const DAYS_IN_WEEK = 7
@@ -37,19 +37,18 @@ var year = 0 setget _set_year
 
 # -----------------------------------------------------------
 
-func _ready():
-	set_process(true)
+# time only moves in the garden, so it should be stopped on
+# init, and starting & stopping it should be managed by the
+# garden scene.
+func _ready(): stop()
+
+func start(): set_process(true)
+func stop(): set_process(false)
 
 func _process(delta):
 	actual_seconds += delta
 	if try_rollover(actual_seconds, ACTUAL_SECONDS_IN_TICK, "tick") == 0:
-		actual_seconds -= 1
-
-func stop():
-	set_process(false)
-
-func start():
-	set_process(true)
+		actual_seconds -= ACTUAL_SECONDS_IN_TICK
 
 # ----------------------------------------------------------- #
 #                U N I T   M A N A G E M E N T                #
@@ -69,7 +68,6 @@ func _set_date(new):
 	emit_signal("date_changed", date)
 
 func _set_day(new = 0):
-	# print("set weekdate | total days: ", get_total_time("date"))
 	day = get_day()
 
 func _set_month(new):
@@ -82,6 +80,11 @@ func _set_year(new):
 
 # ----------------------------------------------------------- #
 
+# self[unit] += 1 will call the setget setter for self.unit 
+# (and it lets us pass the variable name as a string). each
+# tier of unit, when modified, calls try_rollover for the 
+# next; in this way, the last tick of year 1 will trigger a
+# cascade of rollovers that ends by incrementing year to 2. 
 func try_rollover(new_value, units_per_next_unit, next_unit):
 	if new_value >= units_per_next_unit:
 		self[next_unit] += 1
@@ -96,7 +99,7 @@ func get_day(input = null):
 	var total_days = get_total_time(input, "date")
 	return int(total_days) % DAYS_IN_WEEK
 
-# ----------------------------------------------------------- #
+# =========================================================== #
 #                  S E R I A L I Z A T I O N                  #
 # ----------------------------------------------------------- #
 # methods to format and return class data for saving to file, 
@@ -113,7 +116,7 @@ func deserialize(time):
 	load_dict(time)
 	log_time()
 
-# ----------------------------------------------------------- #
+# =========================================================== #
 #                T I M E   F O R M A T T I N G                #
 # ----------------------------------------------------------- #
 # public Time methods should accept an optional input time,
