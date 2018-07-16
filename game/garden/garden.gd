@@ -6,7 +6,7 @@ func _ready():
 	pass
 
 func initialize():
-	print("init garden")
+	Log.info(self, "initializing!")
 	deserialize()
 
 func serialize():
@@ -30,7 +30,7 @@ func load_terrain(data):
 		for x in data[y].size():
 			$terrain.set_cell(x, y, data[y][x])
 	rect_size = Vector2(data[0].size(), data.size()) * $terrain.cell_size
-	print("garden size: ", rect_size)
+	Log.debug(self, ["garden size: ", rect_size])
 
 func print_terrain(data):
 	print(data.size(), "x", data[0].size())
