@@ -1,1 +1,1 @@
-{"load_order":["my_mod"],"mods":{"my_mod":{"is_enabled":true,"is_modified":false,"is_new":true,"is_valid":false,"last_modified":1530154583,"path":"res://mods/my_mod","schemas":{}}}}
+{"load_order":["my_mod"],"mods":{"my_mod":{"is_enabled":true,"is_new":true,"path":"res://mods/my_mod","schemas":{},"version":"1.0.0"}}}

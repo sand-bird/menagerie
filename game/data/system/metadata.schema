@@ -1,0 +1,31 @@
+{
+  "title": "Metadata",
+  "type": "object",
+  "properties": {
+    "id": {"$ref": "definitions.schema#/id"},
+    "type": {
+      "type": "string",
+      "enum": ["metadata"]
+    },
+    "name": {"$ref": "definitions.schema#/name"},
+    "author": {"type": "string"},
+    "date": {"type": "date"},
+    "version": {
+      "type": "string",
+      "_": "must be a valid version - dd.dd.dd? TODO: come up with a regex for this"
+    },
+    "description": {"$ref": "definitions.schema#/description"},
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "schemas": {
+      "type": "object",
+      "additionalProperties": {
+        "_": "must be a valid filepath.",
+        "type": "string"
+      }
+    }
+  },
+  "required": ["id", "type", "name", "author", "version", "description"]
+}

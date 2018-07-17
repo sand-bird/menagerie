@@ -1,9 +1,17 @@
 {
   "id": "my_mod",
-  "name": "My Mod",
+  "type": "metadata",
+  "name": {
+    "en": "My Mod"
+  },
   "author": "me",
   "date": "2018-06-23",
   "version": "1.0.0",
-  "description": "This is my mod!",
-  "tags": ["monsters", "morphs"]
+  "description": {
+    "en": "This is my mod!"
+  },
+  "tags": ["monsters", "morphs"],
+  "schemas": {
+    "monster": "./monster.schema"
+  }
 }

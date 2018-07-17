@@ -14,7 +14,9 @@ const SCHEMA_EXTENSION = "schema"
 
 var EntityType = Constants.Type
 
-var schemas = {}
+var schemas = {
+	
+}
 
 var data = {
 	"fluffy_tuft": {
@@ -49,27 +51,46 @@ var modconfig
 func _ready():
 #	load_data()  # loads schemas and datafiles from data/
 	load_modconfig()  # reads .modconfig file into var modconfig
-	update_modconfig()  
+	update_modconfig()  # checks & updates modconfig against mod folder
+	Log.info(self, to_json(get("an_object")))
 	#list_dir(MOD_DIR)
 	#data = load_dir(BASE_DIR)
 	# Log.verbose(self, to_json(data))
 
 # -----------------------------------------------------------
 
-func get(args):
-	args = Utils.pack(args)
+func get(a):
+	var args = Utils.pack(a)
 	Log.debug(self, ["get ", args])
-	var result = data
+	
+	var result
+	if args.size() > 0 and args[0] in self:
+		Log.verbose(self, ["arg `", args[0], "` is a property of Data!"])
+		result = self[args[0]]
+		args.pop_front() # args[0] is resolved, don't use it again
+	else: result = data
+	
 	for arg in args:
 		if !result.has(arg):
 			Log.warn(self, ["could not find data for ", arg, 
 					": ", PoolStringArray(args).join(".")]) 
 			return null
 		else: result = result[arg]
+	
 	return result
 
 # -----------------------------------------------------------
 
+# oh boy
+func validate (obj, schema):
+	pass
+
+# =========================================================== #
+#                     . M O D C O N F I G                     #
+# ----------------------------------------------------------- #
+
+# fetches modconfig from the place where we keep it. if there
+# is no modconfig, we make one (duh).
 func load_modconfig():
 	modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
 	if !modconfig: modconfig = {
@@ -77,10 +98,13 @@ func load_modconfig():
 		"mods": {}
 	}
 
+func save_modconfig():
+	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+
 # -----------------------------------------------------------
 
-# checks mod directory against modconfig for any new or
-# changed mods.
+# checks mod directory against modconfig for any new mods.
+# if we find a new mod, we call add_modinfo on it.
 func update_modconfig():
 	var dir = Directory.new()
 	dir.open(MOD_DIR)
@@ -94,46 +118,53 @@ func update_modconfig():
 		var modinfo = SaveManager.read_file(path.plus_file("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
-				check_modinfo(modinfo.id)
-			else: add_modinfo(path, modinfo)
+				check_modinfo(modinfo, path)
+			else: add_modinfo(modinfo, path)
 		current = dir.get_next()
 	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
 
 # -----------------------------------------------------------
 
-func check_modinfo(mod_id):
-	Log.verbose(self, ["found entry for ", mod_id, " in modconfig"])
-	var path = modconfig.mods[mod_id].path
-	if is_current(modconfig.mods[mod_id].last_modified, path):
-		Log.verbose(self, ["mod ", mod_id, " is up to date"])
-	else:
-		Log.info(self, ["mod ", mod_id, " has been modified!"])
-		modconfig.mods[mod_id].is_modified = true
-		update_modinfo(mod_id)
-
-# -----------------------------------------------------------
-
-enum Status {
+# used to look through the entire mod directory to see if any
+# of the files inside had a more recent date_modified. now it
+# checks the version in the mod's meta.data against the one
+# known to our modconfig. right now this is mostly relevant
+# for updating the schema list.
+#
+# ALSO i just realized that we need to make sure the mod's
+# directory is what we expect it to be. phew, BUG AVERTED
+#
+# note: if we're here, it means we've already validated that
+# the passed-in modinfo's id exists in modconfig.mods.
+func check_modinfo(modinfo, path):
+	var mod_id = modinfo.id
+	var saved_info = modconfig.mods[mod_id]
+	Log.verbose(self, ["found entry for `", mod_id, 
+			"` in modconfig: ", saved_info])
 	
-}
-
-func update_modinfo(mod_id):
-	modconfig.mods[mod_id].last_modified = get_modified_time(
-			modconfig.mods[mod_id].path)
-	modconfig.mods[mod_id].is_valid = false
-	modconfig.mods[mod_id].is_enabled = false
+	if saved_info.path != path:
+		Log.info(self, ["looks like mod `", mod_id, 
+				"` was moved. new path: `", path, "`"])
+		saved_info.path = path
+	
+	if saved_info.version != modinfo.version:
+		Log.info(self, ["mod `", mod_id, "` has been updated! version: ",
+				saved_info.version, " -> ", modinfo.version])
+		saved_info.schemas = modinfo.schemas
+		saved_info.version = modinfo.version
 
 # -----------------------------------------------------------
 
-func add_modinfo(path, modinfo):
-	Log.debug(self, "modconfig does not have thing")
+# new mod! yay!
+func add_modinfo(modinfo, path):
+	Log.debug(self, ["new mod found! adding to modconfig: `",
+			modinfo.id, "`"])
 	modconfig.mods[modinfo.id] = {
 		"path": path,
-		"last_modified": get_modified_time(path),
+		"version": modinfo.version,
 		"is_new": true,
-		"is_modified": false,
 		"is_enabled": true,
-		"schemas": {}
+		"schemas": modinfo.schemas if modinfo.has("schemas") else {}
 	}
 	modconfig.load_order.append(modinfo.id)
 
@@ -240,9 +271,12 @@ func process_data(data, basedir):
 					data[i] = Condition.eval_arg(data[i])
 	return data
 
+
 # =========================================================== #
 #                  M O D I F I E D   T I M E                  #
 # ----------------------------------------------------------- #
+# we're not using these right now, but there's nothing wrong
+# with them so we might as well leave em in.
 
 func get_modified_time(dirname):
 	var modtime = 0

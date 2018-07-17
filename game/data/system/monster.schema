@@ -2,10 +2,7 @@
   "title": "Monster",
   "type": "object",
   "properties": {
-    "id": {
-      "type": "string",
-      "maxLength": 100
-    },
+    "id": {"$ref": "definitions.schema#/id"},
     "type": {
       "type": "string",
       "enum": ["monster"]
@@ -34,7 +31,7 @@
     },
     "evolves_into": {
       "type": "object",
-      "description": "key should be a valid id of another monster; should warn otherwise."
+      "_": "key should be a valid id of another monster; should warn otherwise.",
       "additionalProperties": {
         "type": "object",
         "properties": {
