@@ -1,1 +1,17 @@
-{"load_order":["my_mod"],"mods":{"my_mod":{"is_enabled":true,"is_new":true,"path":"res://mods/my_mod","schemas":{},"version":"1.0.0"}}}
+{"load_order":["my_mod", "your_mod"],
+ "mods":{
+  "my_mod":{
+   "is_enabled":true,
+   "is_new":true,
+   "path":"res://mods/my_mod",
+   "schemas":{},
+   "name": "My Mod",
+   "author": "steve",
+   "version":"1.0.0"
+  },
+  "your_mod":{
+   "path":"res://mods/your_mod",
+   "version":"1.0.0"
+  }
+ }
+}

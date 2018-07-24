@@ -234,10 +234,12 @@ func eval_arg(arg, caller = null, parent = null):
 # accepts an ATOMIC (no seperators) string argument that may
 # or may not have a sigil.
 func eval_sigil(arg, caller, parent):
-	if arg[0] == '$': return globals[strip_sigil(arg)]
-	if arg[0] == '@': return caller[strip_sigil(arg)]
-	if arg[0] == '*': return parent
-	else: return arg
+	match arg[0]:
+		'$': return globals[strip_sigil(arg)]
+		'#': return Constants[strip_sigil(arg).capitalize().replace(' ', '')]
+		'@': return caller[strip_sigil(arg)]
+		'*': return parent
+	return arg
 
 # just returns the string minus the first char
 # maybe todo: double-check if sigil before trying to strip

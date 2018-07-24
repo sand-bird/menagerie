@@ -2,8 +2,8 @@ extends Node
 
 const BASE_DIR = "res://data"
 const MOD_DIR = "res://mods"
-const DATA_EXTENSION = "data"
-const SCHEMA_EXTENSION = "schema"
+const DATA_EXT= "data"
+const SCHEMA_EXT = "schema"
 
 # -----------------------------------------------------------
 
@@ -12,50 +12,41 @@ const SCHEMA_EXTENSION = "schema"
 # - user://mods/
 # - res://mods/
 
+# 1. load base schemas
+# 2. load base data
+# 3. load/update modinfo
+# 4. load mod schemas
+# 5. load mod data
+# 6. validate
+
 var EntityType = Constants.Type
 
-var schemas = {
-	
-}
-
-var data = {
-	"fluffy_tuft": {
-		"value": 1,
-		"type": "item",
-		"name": {
-			"en": "Fluffy Tuft"
-		}
-	},
-	"an_object": {
-		"type": "object",
-		"name": {
-			"en": "An Object"
-		}
-	}
-}
-
-var monsters = {}
-var items = {
-	"fluffy_tuft": data.fluffy_tuft
-}
-var objects = {
-	"an_object": data.an_object
-}
-var npcs = {}
-var locations = {}
-
-
-var metadata # temp holder for contentpack metadata
-var modconfig
+var schemas = {}
+var data = {}
 
 func _ready():
-#	load_data()  # loads schemas and datafiles from data/
-	load_modconfig()  # reads .modconfig file into var modconfig
-	update_modconfig()  # checks & updates modconfig against mod folder
-	Log.info(self, to_json(get("an_object")))
-	#list_dir(MOD_DIR)
-	#data = load_dir(BASE_DIR)
-	# Log.verbose(self, to_json(data))
+	# loads schemas and datafiles from data/
+	var sourceinfo = {
+		"id": "menagerie", 
+		"version": "0.1.0",  # todo: a real version
+	}
+	var base_data = load_data(BASE_DIR, sourceinfo)
+	data = base_data.data
+	schemas = base_data.schemas
+
+	# reads .modconfig file into var modconfig
+	var modconfig = load_modconfig()
+	# checks & updates modconfig against mod folder
+	update_modconfig(modconfig)  
+#	save_modconfig(modconfig)
+	
+#	load_mod_schemas(modconfig)
+#	load_mod_data(modconfig)
+	
+	validate()
+	
+	Log.info(self, ["data: ", data.keys()])
+	Log.info(self, ["schemas: ", schemas.keys()])
 
 # -----------------------------------------------------------
 
@@ -79,11 +70,6 @@ func get(a):
 	
 	return result
 
-# -----------------------------------------------------------
-
-# oh boy
-func validate (obj, schema):
-	pass
 
 # =========================================================== #
 #                     . M O D C O N F I G                     #
@@ -92,20 +78,28 @@ func validate (obj, schema):
 # fetches modconfig from the place where we keep it. if there
 # is no modconfig, we make one (duh).
 func load_modconfig():
-	modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
+	var modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
 	if !modconfig: modconfig = {
 		"load_order": [],
 		"mods": {}
 	}
+	return modconfig
 
-func save_modconfig():
+# -----------------------------------------------------------
+
+func save_modconfig(modconfig):
 	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
 
 # -----------------------------------------------------------
 
 # checks mod directory against modconfig for any new mods.
-# if we find a new mod, we call add_modinfo on it.
-func update_modconfig():
+# we call either check_modinfo or add_modinfo for every mod
+# found, depending on whether it's in modconfig already.
+# important: both of these functions add a temporary flag to
+# that mod's info, "found", to be used by clean_modconfig,
+# which wipes the flag when it is done. this is why we call
+# clean_modconfig from here, rather than from _ready.
+func update_modconfig(modconfig):
 	var dir = Directory.new()
 	dir.open(MOD_DIR)
 	dir.list_dir_begin(true)
@@ -118,14 +112,37 @@ func update_modconfig():
 		var modinfo = SaveManager.read_file(path.plus_file("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
-				check_modinfo(modinfo, path)
-			else: add_modinfo(modinfo, path)
+				check_modinfo(modconfig, modinfo, path)
+			else: add_modinfo(modconfig, modinfo, path)
 		current = dir.get_next()
-	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+	clean_modconfig(modconfig)
 
 # -----------------------------------------------------------
 
-# used to look through the entire mod directory to see if any
+# looks for the presence of a "found" key, which is set by 
+# add_modinfo and check_modinfo, in each entry in modconfig.
+# since update_modconfig crawls the mod directory and calls
+# one of those for each valid mod it finds, we can expect it
+# to be set for all mods ~*found*~ in the directory. we clear
+# the "found" key after we've seen it. 
+#
+# fyi, we do these shenanigans so we don't have to crawl the
+# directory all over again in search of missing mods.
+func clean_modconfig(modconfig):
+	for i in modconfig.load_order.size():
+		var id = modconfig.load_order[i]
+		var modinfo = modconfig.mods[id]
+		if modinfo.has("found") and modinfo.found:
+			modinfo.erase("found")
+		else: 
+			Log.warn(self, ["mod `", id, 
+					"` not found. its data will be erased from modconfig."])
+			modconfig.mods.erase(id)
+			modconfig.load_order.remove(i)
+
+# -----------------------------------------------------------
+
+# formerly it checked the entire mod directory to see if any
 # of the files inside had a more recent date_modified. now it
 # checks the version in the mod's meta.data against the one
 # known to our modconfig. right now this is mostly relevant
@@ -136,7 +153,7 @@ func update_modconfig():
 #
 # note: if we're here, it means we've already validated that
 # the passed-in modinfo's id exists in modconfig.mods.
-func check_modinfo(modinfo, path):
+func check_modinfo(modconfig, modinfo, path):
 	var mod_id = modinfo.id
 	var saved_info = modconfig.mods[mod_id]
 	Log.verbose(self, ["found entry for `", mod_id, 
@@ -152,11 +169,13 @@ func check_modinfo(modinfo, path):
 				saved_info.version, " -> ", modinfo.version])
 		saved_info.schemas = modinfo.schemas
 		saved_info.version = modinfo.version
+	
+	saved_info.found = true
 
 # -----------------------------------------------------------
 
 # new mod! yay!
-func add_modinfo(modinfo, path):
+func add_modinfo(modconfig, modinfo, path):
 	Log.debug(self, ["new mod found! adding to modconfig: `",
 			modinfo.id, "`"])
 	modconfig.mods[modinfo.id] = {
@@ -164,9 +183,120 @@ func add_modinfo(modinfo, path):
 		"version": modinfo.version,
 		"is_new": true,
 		"is_enabled": true,
-		"schemas": modinfo.schemas if modinfo.has("schemas") else {}
+		"schemas": modinfo.schemas if modinfo.has("schemas") else {},
+		"found": true
 	}
 	modconfig.load_order.append(modinfo.id)
+
+
+# =========================================================== #
+#                   L O A D I N G   D A T A                   #
+# ----------------------------------------------------------- #
+
+func load_mod_schemas(modconfig):
+	for mod in modconfig.load_order:
+		Log.debug(self, ["loading schemas for mod: `", mod, "`..."])
+		if !modconfig.mods[mod].has("schemas") or !modconfig.mods[mod].schemas:
+			Log.debug(self, ["`", mod, "` has no schemas!"])
+			break
+		for schema in modconfig.mods[mod].schemas:
+			Log.info(self, ["mod: `", mod, "` | schema: `", schema, "`"])
+			# load schema
+
+# -----------------------------------------------------------
+
+func load_mod_data(modconfig):
+	for id in modconfig.load_order:
+		var sourceinfo = {
+			"id": id, 
+			"version": modconfig.mods[id].version,
+		}
+		load_data(modconfig.mods[id].path, sourceinfo)
+	pass
+
+# -----------------------------------------------------------
+
+func load_data(dirname, sourceinfo):
+	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
+	var loaded = {"data": {}, "schemas": {}}
+	var dir = Directory.new()
+	if dir.open(dirname) != OK:
+		Log.error(self, ["could not open `", dirname, "`!"])
+		return
+	# start iterating through directories
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		Log.verbose(self, ["current: ", current])
+		if dir.current_is_dir():
+			var child = load_data(dirname.plus_file(current), sourceinfo)
+			if child: loaded = merge(loaded, child)
+		elif current.get_extension() == DATA_EXT:
+			var fdata = load_datafile(dirname.plus_file(current), sourceinfo)
+			if fdata: loaded.data = merge(loaded.data, fdata)
+		elif current.get_extension() == SCHEMA_EXT:
+			var sdata = load_schemafile(dirname.plus_file(current), sourceinfo)
+			if sdata: loaded.schemas = merge(loaded.schemas, sdata)
+		current = dir.get_next()
+	Log.verbose(self, ["results:\n--------------\nLOADED: ", loaded, "\n-----------------"])
+	return loaded
+
+# -----------------------------------------------------------
+
+# basically file i/o boilerplate so we can call process_data.
+# accepts the path either in two arguments, the directory and
+# the filename, or as a single arg containing the full path.
+func load_datafile(path, sourceinfo):
+	Log.debug(self, ["loading data from file: `", path, "`"])
+	var filedata = SaveManager.read_file(path)
+	if !filedata:
+		Log.error(self, ["error loading data from `", path, "`!"])
+		return
+	if !filedata.has("id"):
+		Log.error(self, ["the datafile at `", path, "` is missing an id"])
+		return
+#	filedata = process_data(filedata, path.get_base_dir())
+	filedata.sources = [sourceinfo]
+	return { filedata.id: filedata }
+
+# -----------------------------------------------------------
+
+func load_schemafile(path, sourceinfo):
+	Log.debug(self, ["loading schema from file: `", path, "`"])
+	var schema = SaveManager.read_file(path)
+	if !schema:
+		Log.error(self, ["error loading schema from `", path, "`!"])
+		return
+	schema.sources = [sourceinfo]
+	return { path.get_basename().get_file(): schema }
+
+
+# =========================================================== #
+#                P R O C E S S I N G   D A T A                #
+# ----------------------------------------------------------- #
+
+# okay, new plan. we don't want to resolve sigils on LOAD;
+# that would make validation (which should happen once, post-
+# load) a big headache, and open us up to a bunch of fatal
+# errors from stuff not getting found, which is exactly what
+# all this validation nonsense is supposed to prevent. plus,
+# we can't resolve @ sigils (instance properties) right now 
+# anyway, for obvious reasons.
+# 
+# on resource refs (! sigil): 
+func process_data(data, basedir):
+	Log.verbose(self, ["processing data: ", data])
+	var collection = data.size() if typeof(data) == TYPE_ARRAY else data
+	for i in collection:
+		if typeof(data[i]) == TYPE_ARRAY or typeof(data[i]) == TYPE_DICTIONARY:
+			data[i] = process_data(data[i], basedir)
+		elif data[i] and typeof(data[i]) == TYPE_STRING:
+			match data[i][0]:
+				'!': # we have an image (or other link) we should process
+					data[i] = ResourceLoader.load(
+							basedir.plus_file(data[i].substr(1, 
+							data[i].length() - 1)))
+	return data
 
 # -----------------------------------------------------------
 
@@ -185,91 +315,25 @@ func add_modinfo(modinfo, path):
 #   checking here, obviously, so if we were expecting an 
 #   array of dicts and the mod doesn't conform, we're SOL.
 func merge(base, mod):
+	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
 	for k in mod:
-		if !base.has(k): base[k] = mod[k]
+		if mod[k] and !base.has(k): base[k] = mod[k]
 		else:
-			if (typeof(base[k]) == TYPE_DICTIONARY 
-					&& typeof(mod[k]) == TYPE_DICTIONARY):
-				update_dict(base[k], mod[k])
+			if (mod[k] and typeof(base[k]) == TYPE_DICTIONARY 
+					and typeof(mod[k]) == TYPE_DICTIONARY):
+				merge(base[k], mod[k])
 			elif typeof(base[k]) == TYPE_ARRAY:
 				if typeof(mod[k]) == TYPE_ARRAY:
 					for item in mod[k]: base[k].append(item)
 				else: base[k].append(mod[k])
 			else: base[k] = mod[k]
+	return base
 
 # -----------------------------------------------------------
 
-func list_dir(dirname):
-	Log.info(self, "==========================")
-	Log.info(self, ["listing dir: ", dirname])
-	Log.info(self, "--------------------------")
-	var dir = Directory.new()
-	dir.open(dirname)
-	dir.list_dir_begin(true)
-	var current = dir.get_next()
-	while (current != ""):
-		Log.info(self, current)
-		current = dir.get_next()
-	Log.info(self, "--------------------------")
-
-#func load_data():
-#	for type in types:
-#		print(type)
-
-# -----------------------------------------------------------
-
-func load_dir(dirname):
-	var dir = Directory.new()
-	assert(dir.open(dirname) == OK)
-	# start iterating through directories
-	dir.list_dir_begin(true)
-	var current = dir.get_next()
-	while (current != ""):
-		Log.verbose(self, ["current dir: ", current])
-		if dir.current_is_dir():
-			load_dir(dirname.plus_file(current))
-		else: 
-			match current.get_extension():
-				DATA_EXTENSION:
-					load_file(dirname, current)
-				SCHEMA_EXTENSION:
-					load_file(dirname, current)
-		current = dir.get_next()
-
-# -----------------------------------------------------------
-
-# basically file i/o boilerplate so we can call process_data.
-# accepts the path either in two arguments, the directory and
-# the filename, or as a single arg containing the full path.
-func load_file(dirname, fname = null):
-	return
-	var path = dirname.plus_file(fname) if fname else dirname
-	Log.verbose(self, ["load_file: ", path])
-	var file = File.new()
-	file.open(path, File.READ)
-	var filedata = parse_json(file.get_as_text())
-	file.close()
-	if filedata: process_data(filedata, path.get_base_dir())
-
-# -----------------------------------------------------------
-
-# TODO: we want to resolve 
-func process_data(data, basedir):
-	Log.verbose(self, ["process_data: ", data])
-	for i in data:
-		if typeof(data[i]) in [TYPE_ARRAY, TYPE_DICTIONARY]:
-			data[i] = process_data(data[i], basedir)
-		if typeof(data[i]) == TYPE_STRING:
-			match data[i][0]:
-				'!': # we have an image (or other link) we should process
-					data[i] = ResourceLoader.load(
-							basedir.plus_file(data[i].substr(1, 
-							data[i].length() - 1)))
-				'$': # we have an enum we need to resolve
-					data[i] = Condition.eval_arg(data[i])
-				'#': # we have an enum we need to resolve
-					data[i] = Condition.eval_arg(data[i])
-	return data
+# oh boy
+func validate ():
+	return true
 
 
 # =========================================================== #
@@ -309,3 +373,19 @@ func is_current(time, dirname):
 			return false
 		current = dir.get_next()
 	return true
+
+#                 o t h e r   s t u f f
+# -----------------------------------------------------------
+
+func list_dir(dirname):
+	Log.info(self, "==========================")
+	Log.info(self, ["listing dir: ", dirname])
+	Log.info(self, "--------------------------")
+	var dir = Directory.new()
+	dir.open(dirname)
+	dir.list_dir_begin(true)
+	var current = dir.get_next()
+	while (current != ""):
+		Log.info(self, current)
+		current = dir.get_next()
+	Log.info(self, "--------------------------")

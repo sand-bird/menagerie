@@ -25,6 +25,13 @@ class Logfile:
 			path = _path
 		queue_mode = _queue_mode
 		buffer.resize(FILE_BUFFER_SIZE)
+		var err = file.open(path, File.WRITE)
+		if err:
+			print("[ERROR] [logger] Could not open the '%s' log file; exited with error %d." \
+					% [path, err])
+			return
+		file.store_string("")
+		file.close()
 
 	func get_path():
 		return path
@@ -150,7 +157,7 @@ const FILE_BUFFER_SIZE = 30
 ##=============##
 
 # Configuration
-var output_level = DEBUG
+var output_level = VERBOSE
 # TODO: Find (or implement in Godot) a more clever way to achieve that
 var output_strategies = STRATEGY_PRINT + STRATEGY_FILE
 var logfile_path = "user://%s.log" % ProjectSettings.get_setting("application/name")
@@ -248,7 +255,7 @@ func format_message(message):
 
 func format_arg(arg):
 	if typeof(arg) == TYPE_STRING: return arg
-	# elif typeof(arg) == TYPE_DICTIONARY: return to_json(arg)
+	elif typeof(arg) == TYPE_DICTIONARY: return to_json(arg)
 	else: return str(arg)
 
 static func format(template, level, nodename, message):

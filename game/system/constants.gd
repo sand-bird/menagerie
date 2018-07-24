@@ -6,6 +6,11 @@ extends Node
 #  TYPES  #
 # ------- #
 
+enum Status {
+	HEALTHY
+	SICK
+}
+
 enum DataType {
 	
 }

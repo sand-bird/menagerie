@@ -110,7 +110,9 @@ func write_file(path, data):
 func read_file(path):
 	Log.info(self, ["reading file: ", path])
 	var file = File.new()
-	if !file.file_exists(path): return null
+	if !file.file_exists(path): 
+		Log.warn(self, ["could not load `", path, "`: file does not exist!"])
+		return null
 	file.open(path, File.READ)
 	var data = parse_json(file.get_as_text())
 	file.close()

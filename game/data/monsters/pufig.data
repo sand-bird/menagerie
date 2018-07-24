@@ -16,18 +16,17 @@
       "animations": {
         "idle_front": [
           {
-            "spritesheet": "!pufig_idle1_front.png",
+            "spritesheet": "!pufig/pufig_idle1_front.png",
             "vframes": 2,
             "hframes": 2
           },
           {
-            "spritesheet": "!pufig_idle2_front.png",
+            "spritesheet": "!pufig/pufig_idle2_front.png",
             "rows": 2,
             "columns": 2
-            // some sort of positional info
           }
         ]
-      }
+      },
       "sprites": {
         "standing": {
           "resource": "!pufig.png",
