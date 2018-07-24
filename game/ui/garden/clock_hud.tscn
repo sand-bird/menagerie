@@ -15,12 +15,12 @@ resource_name = "date_info"
 script/source = "extends TextureRect
 
 func _ready():
-	Time.connect(\"day_changed\", self, \"update_day\")
-	Time.connect(\"month_changed\", self, \"update_month\")
-	update_day(Time.day)
+	Dispatcher.connect(\"date_changed\", self, \"update_date\")
+	Dispatcher.connect(\"month_changed\", self, \"update_month\")
+	update_date(Time.date)
 	update_month(Time.month)
 
-func update_day(day):
+func update_date(date):
 	$week_day.set_text(Time.get_printable_day_abbr())
 	$date.set_text(Time.get_printable_date())
 
@@ -33,8 +33,8 @@ _sections_unfolded = [ "Resource" ]
 script/source = "extends TextureRect
 
 func _ready():
-	Time.connect(\"hour_changed\", self, \"move_hand\")
-	Time.connect(\"tick_changed\", self, \"move_pendulum\")
+	Dispatcher.connect(\"hour_changed\", self, \"move_hand\")
+	Dispatcher.connect(\"tick_changed\", self, \"move_pendulum\")
 	move_hand(Time.hour)
 	move_pendulum(Time.tick)
 

@@ -6,13 +6,6 @@ const days = [ "monday", "tuesday", "wednesday",
 const months = [ "verne", "tempest", "zenith", 
 	"sol", "hearth", "hallow", "aurora", "rime" ]
 
-signal tick_changed
-signal hour_changed
-signal date_changed
-signal week_changed
-signal month_changed
-signal year_changed
-
 # qualifiers for get_total_time
 const YEAR = "year"
 const MONTH = "month"
@@ -56,27 +49,27 @@ func _process(delta):
 
 func _set_tick(new):
 	tick = int(try_rollover(new, TICKS_IN_HOUR, "hour"))
-	emit_signal("tick_changed", tick)
+	Dispatcher.emit_signal("tick_changed", tick, false)
 
 func _set_hour(new):
 	hour = int(try_rollover(new, HOURS_IN_DAY, "date"))
-	emit_signal("hour_changed", hour)
+	Dispatcher.emit_signal("hour_changed", hour, false)
 
 func _set_date(new):
 	date = int(try_rollover(new, DAYS_IN_MONTH, "month"))
 	_set_day()
-	emit_signal("date_changed", date)
+	Dispatcher.emit_signal("date_changed", date)
 
 func _set_day(new = 0):
 	day = get_day()
 
 func _set_month(new):
 	month = int(try_rollover(new, MONTHS_IN_YEAR, "year"))
-	emit_signal("month_changed", month)
+	Dispatcher.emit_signal("month_changed", month)
 
 func _set_year(new):
 	year = int(new)
-	emit_signal("year_changed", year)
+	Dispatcher.emit_signal("year_changed", year)
 
 # ----------------------------------------------------------- #
 
