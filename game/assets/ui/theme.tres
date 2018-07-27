@@ -1,8 +1,8 @@
 [gd_resource type="Theme" load_steps=8 format=2]
 
 [ext_resource path="res://assets/ui/output_font.font" type="BitmapFont" id=1]
-[ext_resource path="res://assets/other/old/box_border_outset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/other/old/box_border_inset.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/ui/panels/box_border_outset_light.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=3]
 [ext_resource path="res://assets/other/old/box_border_glow.tres" type="StyleBox" id=4]
 [ext_resource path="res://assets/other/old/box_inset.tres" type="StyleBox" id=5]
 [ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=6]
@@ -80,5 +80,5 @@ VButtonArray/styles/focus = ExtResource( 4 )
 VButtonArray/styles/hover = ExtResource( 2 )
 VButtonArray/styles/normal = ExtResource( 2 )
 VButtonArray/styles/selected = ExtResource( 3 )
-_sections_unfolded = [ "Button", "Button/colors", "Button/fonts", "Button/styles", "Dialogs", "Dialogs/constants", "Fonts", "Fonts/colors", "HButtonArray/colors", "HButtonArray/constants", "HButtonArray/fonts", "HButtonArray/styles", "HScrollBar/icons", "HScrollBar/styles", "Label", "Label/colors", "Label/constants", "Label/fonts", "LineEdit", "LineEdit/colors", "LineEdit/fonts", "LineEdit/styles", "Panel", "Panel/colors", "Panel/styles", "PanelContainer", "TabContainer", "TabContainer/icons", "TabContainer/styles", "TextEdit", "TextEdit/fonts", "VButtonArray", "VButtonArray/colors", "VButtonArray/constants", "VButtonArray/fonts", "VButtonArray/styles" ]
+_sections_unfolded = [ "Button", "Button/fonts", "Button/styles", "Dialogs", "Dialogs/constants", "Fonts", "Fonts/colors", "HButtonArray/colors", "HButtonArray/constants", "HButtonArray/fonts", "HButtonArray/styles", "HScrollBar/icons", "HScrollBar/styles", "Label", "Label/colors", "Label/constants", "Label/fonts", "LineEdit", "LineEdit/colors", "LineEdit/fonts", "LineEdit/styles", "Panel", "Panel/colors", "Panel/styles", "PanelContainer", "TabContainer", "TabContainer/icons", "TabContainer/styles", "TextEdit", "TextEdit/fonts", "VButtonArray", "VButtonArray/colors", "VButtonArray/constants", "VButtonArray/fonts", "VButtonArray/styles" ]
 

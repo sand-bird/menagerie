@@ -1,45 +1,67 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/book_panel.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/panels/panel_frame.png" type="Texture" id=2]
 [ext_resource path="res://ui/save_list/save_list.gd" type="Script" id=3]
-[ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=4]
-[ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=5]
-[ext_resource path="res://assets/ui/icons/arrow.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/panels/panel_background.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=5]
+[ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=6]
+[ext_resource path="res://assets/ui/icons/arrow.png" type="Texture" id=7]
+[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=8]
 
 [sub_resource type="StyleBoxTexture" id=1]
 
-content_margin_left = 10.0
-content_margin_right = 10.0
-content_margin_top = 2.0
-content_margin_bottom = 6.0
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
 texture = ExtResource( 2 )
-region_rect = Rect2( 0, 0, 28, 34 )
-margin_left = 9.0
-margin_right = 9.0
-margin_top = 25.0
-margin_bottom = 5.0
+region_rect = Rect2( 0, 0, 33, 43 )
+margin_left = 16.0
+margin_right = 16.0
+margin_top = 16.0
+margin_bottom = 16.0
+expand_margin_left = 0.0
+expand_margin_right = 0.0
+expand_margin_top = 0.0
+expand_margin_bottom = 0.0
+axis_stretch_vertical = 1
+modulate_color = Color( 1, 1, 1, 1 )
+draw_center = false
+_sections_unfolded = [ "Axis Stretch", "Expand Margin", "Margin" ]
+
+[sub_resource type="StyleBoxTexture" id=2]
+
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 10, 17 )
+margin_left = 0.0
+margin_right = 0.0
+margin_top = 15.0
+margin_bottom = 0.0
 expand_margin_left = 0.0
 expand_margin_right = 0.0
 expand_margin_top = 0.0
 expand_margin_bottom = 0.0
 axis_stretch_horizontal = 1
-axis_stretch_vertical = 1
 modulate_color = Color( 1, 1, 1, 1 )
 draw_center = true
-_sections_unfolded = [ "Axis Stretch", "Content Margin", "Expand Margin", "Margin" ]
+_sections_unfolded = [ "Axis Stretch", "Content Margin", "Expand Margin", "Margin", "Modulate" ]
 
-[node name="save_list" type="Panel"]
+[node name="save_list" type="Panel" index="0"]
 
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -101.0
+margin_left = -104.0
 margin_top = -96.0
-margin_right = 105.0
-margin_bottom = 86.0
-rect_min_size = Vector2( 206, 180 )
+margin_right = 104.0
+margin_bottom = 96.0
+rect_min_size = Vector2( 208, 180 )
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -48,25 +70,44 @@ size_flags_vertical = 1
 theme = ExtResource( 1 )
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Scroll", "custom_styles" ]
+_sections_unfolded = [ "Anchor", "Margin", "Rect", "Scroll", "Theme", "custom_styles" ]
 
-[node name="title" type="Label" parent="." index="0"]
+[node name="Panel" type="Panel" parent="." index="0"]
+
+show_behind_parent = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -4.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_styles/panel = SubResource( 2 )
+_sections_unfolded = [ "Anchor", "Focus", "Hint", "Margin", "Mouse", "Rect", "Size Flags", "Theme", "Visibility", "custom_styles" ]
+
+[node name="title" type="Label" parent="." index="1"]
 
 anchor_left = 0.5
 anchor_top = 0.0
 anchor_right = 0.5
 anchor_bottom = 0.0
-margin_left = -32.0
+margin_left = -48.0
 margin_top = 6.0
-margin_right = 32.0
+margin_right = 48.0
 margin_bottom = 20.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = ExtResource( 4 )
-text = "1 / 2"
+custom_styles/normal = ExtResource( 5 )
+text = "Records"
 align = 1
 valign = 1
 uppercase = true
@@ -75,23 +116,22 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
-[node name="pages" type="Label" parent="." index="1"]
+[node name="pages" type="Label" parent="." index="2"]
 
-visible = false
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 margin_left = -24.0
-margin_top = -17.0
+margin_top = -18.0
 margin_right = 24.0
-margin_bottom = -4.0
+margin_bottom = -5.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = ExtResource( 5 )
+custom_styles/normal = ExtResource( 6 )
 text = "1 / 2"
 align = 1
 valign = 1
@@ -101,16 +141,16 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_styles" ]
 
-[node name="container" type="VBoxContainer" parent="." index="2"]
+[node name="container" type="VBoxContainer" parent="." index="3"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 11.0
-margin_top = 27.0
+margin_left = 8.0
+margin_top = 23.0
 margin_right = 11.0
-margin_bottom = 27.0
+margin_bottom = 23.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -120,23 +160,100 @@ custom_constants/separation = 2
 alignment = 0
 _sections_unfolded = [ "Anchor", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Rect", "custom_constants" ]
 
-[node name="TextureRect" type="TextureRect" parent="." index="3"]
+[node name="arrow" type="TextureRect" parent="." index="4"]
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 145.0
-margin_top = 4.0
-margin_right = 163.0
-margin_bottom = 23.0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 28.0
+margin_top = -21.0
+margin_right = 10.0
+margin_bottom = -21.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-texture = ExtResource( 6 )
+texture = ExtResource( 7 )
 stretch_mode = 0
-_sections_unfolded = [ "Rect" ]
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="Panel2" type="Panel" parent="." index="5"]
+
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 5.0
+margin_top = 22.0
+margin_right = 203.0
+margin_bottom = 71.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_styles/panel = ExtResource( 8 )
+_sections_unfolded = [ "Theme", "custom_styles" ]
+
+[node name="Panel3" type="Panel" parent="." index="6"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 5.0
+margin_top = 72.0
+margin_right = 203.0
+margin_bottom = 121.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_styles/panel = ExtResource( 8 )
+_sections_unfolded = [ "Theme", "custom_styles" ]
+
+[node name="arrow2" type="TextureRect" parent="." index="7"]
+
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -107.0
+margin_top = -154.0
+margin_right = -89.0
+margin_bottom = -135.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 7 )
+stretch_mode = 0
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="dither" type="TextureRect" parent="." index="8"]
+
+visible = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 200.0
+margin_bottom = 21.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 0
+size_flags_vertical = 1
+texture = ExtResource( 4 )
+stretch_mode = 2
+_sections_unfolded = [ "Anchor", "Grow Direction", "Material", "Rect", "Size Flags", "Theme", "Visibility" ]
 
 

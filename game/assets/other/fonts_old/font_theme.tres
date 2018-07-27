@@ -1,8 +1,10 @@
 [gd_resource type="Theme" load_steps=4 format=2]
 
-[ext_resource path="res://assets/other/old/box_border_outset.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/other/old/box_border_inset.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/ui/panels/box_border_outset.tres" type="StyleBox" id=1]
+[ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=2]
 [ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=3]
+
+
 
 
 
