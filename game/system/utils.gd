@@ -38,6 +38,12 @@ static func slice(array, first, size):
 #  STRINGS  #
 # --------- #
 
+# just returns the string minus the first char
+# maybe todo: double-check if sigil before trying to strip
+static func strip_sigil(s):
+	return s.substr(1, s.length() - 1)
+
+# turns out godot's string class already has this, oh well
 static func capitalize(string):
 	var new_str = string.to_lower()
 	return  new_str[0].to_upper() + new_str.substr(1, new_str.length())
@@ -78,21 +84,23 @@ static func vmin(a, b):
 static func vmax(a, b):
 	return Vector2(max(a.x, b.x), max(a.y, b.y))
 
-static func vclamp(vec, vmin, vmax):
-	return Vector2(clamp(vec.x, vmin.x, vmax.x), clamp(vec.y, vmin.y, vmax.y))
-
 static func vrandi(vec):
 	return Vector2(randi_qty(int(vec.x)), randi_qty(int(vec.y)))
 
-static func vabs(vec):
-	return vec * vsign(vec)
+# Vector2.clamped() clamps the vector's length, but we want to
+# clamp the vector between a min vector and a max one
+static func vclamp(a, b, c):
+	return Vector2(clamp(a.x, b.x, c.x), clamp(a.y, b.y, c.y))
 
+# godot has Vector2.linear_interpolate(Vector2, float) - but
+# dang, what a mouthful
 static func vlerp(a, b, w):
-	return Vector2(lerp(a.x, b.x, w), lerp(a.y, b.y, w))
+	return a.linear_interpolate(b, w)
 
 static func vsign(vec):
 	return Vector2(sign(vec.x), sign(vec.y))
 
+# note: Vector2 has floor() but not round() or ceil()
 static func vround(vec):
 	return Vector2(round(vec.x), round(vec.y))
 

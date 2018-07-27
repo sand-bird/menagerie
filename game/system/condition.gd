@@ -41,9 +41,8 @@ const lookup_func = {
 var globals = {
 	"player": Player,
 	"time": Time,
-	"data": Data.data,
+	"data": Data.data
 	#"garden": get_node("/root/game/garden"),
-	"TYPE": Constants.Type
 }
 
 # -----------------------------------------------------------
@@ -241,10 +240,6 @@ func eval_sigil(arg, caller, parent):
 		'*': return parent
 	return arg
 
-# just returns the string minus the first char
-# maybe todo: double-check if sigil before trying to strip
-func strip_sigil(s):
-	return s.substr(1, s.length() - 1)
 
 #                     s e p e r a t o r s                    
 # -----------------------------------------------------------

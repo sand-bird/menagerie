@@ -1,10 +1,12 @@
 extends Node
 
-func _ready(): 
+func _ready():
 	Dispatcher.connect("new_game", self, "new_game")
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
+	
+	Data.init()
 #	$pufig.texture = Data.id["pufig"].sprite
 	
 #	Data.filter({from = "game"})
@@ -13,9 +15,9 @@ func _ready():
 #	Data.type("monsters").sprite
 	
 	#Data.monsters["pufig"].sprite
-	Dispatcher.emit_signal("ui_open", "garden/clock_hud")
-	Time.start()
-#	Dispatcher.emit_signal("ui_open", "title_screen")
+#	Dispatcher.emit_signal("ui_open", "garden/clock_hud")
+#	Time.start()
+	Dispatcher.emit_signal("ui_open", "title_screen")
 
 
 # =========================================================== #

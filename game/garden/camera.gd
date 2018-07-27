@@ -164,9 +164,10 @@ func _physics_process(delta):
 	
 	# lerp camera to target position
 	if position != target_pos:
-		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
-		var new_y = round(lerp(position.y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
-		position = Vector2(new_x, new_y)
+#		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
+#		var new_y = round(lerp(position.y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
+#		position = Vector2(new_x, new_y)
+		position = Utils.vlerp(position, target_pos, FLICK_SPEED / FLICK_DISTANCE)
 		align()
 	
 	# update saved cursor position (for drag scroll)

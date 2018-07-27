@@ -30,6 +30,7 @@ _sections_unfolded = [ "Resource" ]
 
 [sub_resource type="GDScript" id=2]
 
+resource_name = "clock"
 script/source = "extends TextureRect
 
 func _ready():
@@ -45,7 +46,7 @@ func move_pendulum(tick):
 	$pendulum.set_frame((tick + 1) % 4)"
 _sections_unfolded = [ "Resource" ]
 
-[node name="garden_clock_hud" type="ReferenceRect" index="0"]
+[node name="garden_clock_hud" type="ReferenceRect"]
 
 anchor_left = 1.0
 anchor_top = 0.0

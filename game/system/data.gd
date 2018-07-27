@@ -24,7 +24,10 @@ var EntityType = Constants.Type
 var schemas = {}
 var data = {}
 
-func _ready():
+func _ready(): pass
+#	init()
+
+func init():
 	# loads schemas and datafiles from data/
 	var sourceinfo = {
 		"id": "menagerie", 
@@ -38,15 +41,17 @@ func _ready():
 	var modconfig = load_modconfig()
 	# checks & updates modconfig against mod folder
 	update_modconfig(modconfig)  
-#	save_modconfig(modconfig)
+	save_modconfig(modconfig)
 	
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
 	
 	validate()
 	
-	Log.info(self, ["data: ", data.keys()])
-	Log.info(self, ["schemas: ", schemas.keys()])
+	Log.debug(self, ["data: ", data.keys()])
+	Log.verbose(self, data)
+	Log.debug(self, ["schemas: ", schemas.keys()])
+	Log.verbose(self, schemas)
 
 # -----------------------------------------------------------
 
@@ -70,6 +75,12 @@ func get(a):
 	
 	return result
 
+# -----------------------------------------------------------
+
+func filter(a):
+	var filtered = {}
+	match data:
+		a: Log.info("hello")
 
 # =========================================================== #
 #                     . M O D C O N F I G                     #
@@ -218,7 +229,7 @@ func load_mod_data(modconfig):
 
 func load_data(dirname, sourceinfo):
 	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
-	var loaded = {"data": {}, "schemas": {}}
+	var loaded = {}
 	var dir = Directory.new()
 	if dir.open(dirname) != OK:
 		Log.error(self, ["could not open `", dirname, "`!"])
@@ -227,18 +238,19 @@ func load_data(dirname, sourceinfo):
 	dir.list_dir_begin(true)
 	var current = dir.get_next()
 	while (current != ""):
-		Log.verbose(self, ["current: ", current])
+		var current_path = dirname.plus_file(current)
 		if dir.current_is_dir():
-			var child = load_data(dirname.plus_file(current), sourceinfo)
+			var child = load_data(current_path, sourceinfo)
 			if child: loaded = merge(loaded, child)
 		elif current.get_extension() == DATA_EXT:
-			var fdata = load_datafile(dirname.plus_file(current), sourceinfo)
-			if fdata: loaded.data = merge(loaded.data, fdata)
+			var d = load_datafile(current_path, sourceinfo)
+			if !loaded.has("data"): loaded.data = {}
+			loaded.data = merge(loaded.data, d)
 		elif current.get_extension() == SCHEMA_EXT:
-			var sdata = load_schemafile(dirname.plus_file(current), sourceinfo)
-			if sdata: loaded.schemas = merge(loaded.schemas, sdata)
+			var s = load_schemafile(current_path, sourceinfo)
+			if !loaded.has("schemas"): loaded.schemas = {}
+			loaded.schemas = merge(loaded.schemas, s)
 		current = dir.get_next()
-	Log.verbose(self, ["results:\n--------------\nLOADED: ", loaded, "\n-----------------"])
 	return loaded
 
 # -----------------------------------------------------------
@@ -255,7 +267,7 @@ func load_datafile(path, sourceinfo):
 	if !filedata.has("id"):
 		Log.error(self, ["the datafile at `", path, "` is missing an id"])
 		return
-#	filedata = process_data(filedata, path.get_base_dir())
+	filedata = process_data(filedata, path.get_base_dir())
 	filedata.sources = [sourceinfo]
 	return { filedata.id: filedata }
 
@@ -283,19 +295,16 @@ func load_schemafile(path, sourceinfo):
 # we can't resolve @ sigils (instance properties) right now 
 # anyway, for obvious reasons.
 # 
-# on resource refs (! sigil): 
+# as for fileref sigils, we should resolve the sigil to the
+# full filepath (this is the only time we will know what it
+# is), but don't load the resource yet for the reasons above.
 func process_data(data, basedir):
-	Log.verbose(self, ["processing data: ", data])
 	var collection = data.size() if typeof(data) == TYPE_ARRAY else data
 	for i in collection:
 		if typeof(data[i]) == TYPE_ARRAY or typeof(data[i]) == TYPE_DICTIONARY:
 			data[i] = process_data(data[i], basedir)
-		elif data[i] and typeof(data[i]) == TYPE_STRING:
-			match data[i][0]:
-				'!': # we have an image (or other link) we should process
-					data[i] = ResourceLoader.load(
-							basedir.plus_file(data[i].substr(1, 
-							data[i].length() - 1)))
+		elif data[i] and typeof(data[i]) == TYPE_STRING and data[i][0] == '~':
+			data[i] = basedir.plus_file(Utils.strip_sigil(data[i]))
 	return data
 
 # -----------------------------------------------------------
@@ -315,18 +324,24 @@ func process_data(data, basedir):
 #   checking here, obviously, so if we were expecting an 
 #   array of dicts and the mod doesn't conform, we're SOL.
 func merge(base, mod):
+	if !mod: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
-	for k in mod:
-		if mod[k] and !base.has(k): base[k] = mod[k]
-		else:
-			if (mod[k] and typeof(base[k]) == TYPE_DICTIONARY 
-					and typeof(mod[k]) == TYPE_DICTIONARY):
-				merge(base[k], mod[k])
-			elif typeof(base[k]) == TYPE_ARRAY:
+	
+	for key in mod:
+		var k = key
+		var replace = false
+		if k[0] == '!':
+			replace = true
+			k = Condition.strip_sigil(key)
+		if base.has(k) and !replace:
+			if typeof(base[k]) == TYPE_ARRAY:
 				if typeof(mod[k]) == TYPE_ARRAY:
 					for item in mod[k]: base[k].append(item)
 				else: base[k].append(mod[k])
-			else: base[k] = mod[k]
+			elif (typeof(base[k]) == TYPE_DICTIONARY 
+					and typeof(mod[k]) == TYPE_DICTIONARY):
+				merge(base[k], mod[k])
+		else: base[k] = mod[k]
 	return base
 
 # -----------------------------------------------------------
