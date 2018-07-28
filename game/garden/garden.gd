@@ -1,13 +1,49 @@
 extends Control
 
-func _ready():
-	$terrain.set_cell(0, 0, 0)
-	$terrain.set_cell(0, 1, 1)
+var color_night = Color("66588c")
+var color_dawn = Color("db9ab4")
+var color_morning = Color("dbc2b8")
+var color_noon = Color("fbffe6")
+var color_afternoon = Color("fcdec3")
+var color_evening = Color("e48b9a")
+var color_dusk = Color("b268dc")
+
+var colors = {
+	6: color_dawn,
+	8: color_morning,
+	11: color_noon,
+	14: color_afternoon,
+	18: color_evening,
+	20: color_dusk
+}
+
+func get_anim_duration(hour):
+	
 	pass
 
-func initialize():
+func _ready():
+#	$terrain.set_cell(0, 0, 0)
+#	$terrain.set_cell(0, 1, 1)
+	pass
+
+func init(data):
 	Log.info(self, "initializing!")
-	deserialize()
+	deserialize(data)
+	Dispatcher.emit_signal("ui_open", ["garden/clock_hud", 0, false])
+#	print("tint color: ", $tint.color)
+#	$tint.color = color1
+	Time.start()
+	Dispatcher.connect("hour_changed", self, "update_color")
+	$tint/anim.play("tint")
+
+func update_color(hour):
+	var anim = $tint/anim.get_animation("tint")
+	anim.track_set_key_value(0, 0, $tint.color)
+	anim.set_length(1)
+	anim.track_insert_key(0, 1, Color(randf(), randf(), randf()))
+	
+	$tint/anim.play("tint")
+
 
 func serialize():
 	return {

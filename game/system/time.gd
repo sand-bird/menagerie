@@ -13,7 +13,7 @@ const DATE = "date"
 const HOUR = "hour"
 const TICK = "tick"
 
-const ACTUAL_SECONDS_IN_TICK = 0.8
+const ACTUAL_SECONDS_IN_TICK = 0.5
 const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24
 const DAYS_IN_WEEK = 7

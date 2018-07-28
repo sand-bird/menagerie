@@ -5,18 +5,8 @@ func _ready():
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
-	
+
 	Data.init()
-#	$pufig.texture = Data.id["pufig"].sprite
-	
-#	Data.filter({from = "game"})
-#	Data.get("pufig").sprite
-#	Data.id("pufig").sprite
-#	Data.type("monsters").sprite
-	
-	#Data.monsters["pufig"].sprite
-#	Dispatcher.emit_signal("ui_open", "garden/clock_hud")
-#	Time.start()
 	Dispatcher.emit_signal("ui_open", "title_screen")
 
 
@@ -55,7 +45,7 @@ func load_garden(data):
 	# children depending on the contents of the save file.
 	var garden = load("res://garden/garden.tscn").instance()
 	add_child(garden)
-	garden.deserialize(data)
+	garden.init(data)
 
 
 # =========================================================== #

@@ -11,7 +11,7 @@ func _ready():
 	load_page(0)
 
 func add_save_item(index, save_info):
-	print("adding save item: ", save_info)
+	Log.verbose(self, ["adding save item: ", save_info])
 	var save_item = SaveItem.instance()
 	save_item.load_info(index, save_info)
 	$container.add_child(save_item)
@@ -24,6 +24,5 @@ func load_page(pagenum):
 	
 	var start = SAVES_PER_PAGE * pagenum
 	for i in SAVES_PER_PAGE:
-		print(i)
 		if start + i < saves.size():
 			add_save_item(i + 1, saves[i + start])

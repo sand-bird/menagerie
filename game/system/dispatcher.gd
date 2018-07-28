@@ -46,8 +46,10 @@ func _ready():
 	Log.info(self, "ready!")
 
 func _unhandled_input(e):
-	if e.is_action("ui_menu"): emit_signal("menu_open")
-	elif e.is_action("ui_menu_monsters"): emit_signal("menu_open", "monsters")
+	if e.is_action_pressed("ui_menu"): 
+		emit_signal("menu_open")
+	elif e.is_action_pressed("ui_menu_monsters"): 
+		emit_signal("menu_open", "monsters")
 
 # we have to explicitly emit an argumentless signal if args
 # is null (meaning we want no arguments), because:
@@ -57,5 +59,5 @@ func _unhandled_input(e):
 func emit_signal(sig, args = null, log_it = true):
 	if log_it: Log.debug(self, ["emitting signal: `", sig, 
 			"`, args: ", Utils.pack(args) if args != null else "(none)"])
-	if args: .emit_signal(sig, args)
+	if args != null: .emit_signal(sig, args)
 	else: .emit_signal(sig)

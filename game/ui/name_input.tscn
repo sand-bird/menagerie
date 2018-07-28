@@ -9,17 +9,13 @@ resource_name = "name_input"
 script/source = "extends Panel
 
 func _ready():
-	Dispatcher.connect(\"new_game\", self, \"close_self\")
 	$submit_button.args = \"\"
 	$submit_button.disabled = true
 	$input_field.connect(\"text_changed\", self, \"_update_button\")
 
 func _update_button(text):
 	$submit_button.args = text
-	$submit_button.disabled = text.length() < 1
-
-func close_self(arg):
-	Dispatcher.emit_signal(\"ui_close\")"
+	$submit_button.disabled = text.length() < 1"
 _sections_unfolded = [ "Resource" ]
 
 [sub_resource type="GDScript" id=2]
@@ -29,7 +25,7 @@ script/source = "extends \"res://ui/event_button.gd\"
 func _ready(): 
 	signal_name = \"new_game\""
 
-[node name="panel" type="Panel"]
+[node name="panel" type="Panel" index="0"]
 
 anchor_left = 0.5
 anchor_top = 0.5

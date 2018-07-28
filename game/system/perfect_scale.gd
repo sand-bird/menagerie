@@ -5,7 +5,7 @@ extends Node
 # set screen size constraints here.
 # IDEAL_SIZE determines the zoom level used in large 
 # resolutions, where multiple levels of zoom are valid
-const IDEAL_SIZE = Vector2(400, 280)
+const IDEAL_SIZE = Vector2(460, 320)
 # TOFIX: screen clipping in fullscreen when min sizes
 # are inconsistent with the aspect ratio constraints
 const MIN_SIZE = Vector2(320, 196)

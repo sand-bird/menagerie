@@ -46,11 +46,11 @@ func _ready():
 	Dispatcher.connect("ui_close", self, "close")
 	Dispatcher.connect("menu_open", self, "open_menu")
 
-# -----------------------------------------------------------
 
+# =========================================================== #
+#                S I G N A L   H A N D L I N G                #
+# ----------------------------------------------------------- #
 
-# OPEN
-# ----
 # can happen in a few different ways, depending on values 
 # passed by the caller when it triggers the signal.
 # accepts a single argument: either a STRING representing
@@ -103,29 +103,16 @@ func open(args):
 
 # -----------------------------------------------------------
 
-func process_ref(ref):
-	# first we try the ref 
-	var file = File.new()
-	for template in REFS:
-		var path = template.replace(R, ref)
-		if file.file_exists(path): return path
-	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
-
-# -----------------------------------------------------------
-
-# the "layer value" of a ui element determines which elements
-# it will replace (those with an equal or greater value) and
-# which it will overlay. here we look up the layer value for
-# our new element based on the open_type property that was 
-# passed to open() by whoever emitted the signal (see above).
-func get_layer_value(open_type, path):
-	if open_type == null:
-		var node = load_node(path)
-		if "layer" in node: return node.layer
-		else: return get_next_layer()
-	elif open_type == -1:
-		return get_next_layer()
-	else: return open_type
+# TODO: here we should accept a node pointer (or maybe an
+# item_ref) indicating that we want to close a specific node.
+# we search the stack for this node, pop it (and everything
+# above it) if we find it, or quit if we don't (meaning it
+# was already removed). this will help with cases that can't
+# be handled elegantly using layer values.
+func close(arg = null):
+	var item = pop()
+	if item.has("restore") and item.restore:
+		for stack_item in item.restore: push(stack_item)
 
 # -----------------------------------------------------------
 
@@ -149,24 +136,36 @@ func open_menu(arg = null):
 	var menu = open(menu_path)
 	menu.open(page)
 
-# CLOSE
-# -----
-# arg is optional; we are assuming that we want to close the
-# topmost item. in the future, we may want to allow for an
-# identifier to be passed, and additionally close all items 
-# above it in the stack.
-func close(arg = null):
-	var item = pop()
-	if item.has("restore"):
-		for stack_item in item.restore: push(stack_item)
 
-# -----------------------------------------------------------
+# =========================================================== #
+#               S T A C K   O P E R A T I O N S               #
+# ----------------------------------------------------------- #
 
 func push(item):
+	var pop_from
+	# look through the stack for items that match or exceed the
+	# layer value of our current item. these would have layered
+	# above our new item, so they need to be removed.
 	for i in stack.size():
-		if stack[i].layer >= item.layer:
-			if item.has("restore"): item.restore.push_back(stack[i])
-			pop(i) # todo: test if we can remove while iterating
+		if stack[i].layer < item.layer: continue
+		if pop_from == null: pop_from = i
+		if !item.has("restore"): break
+		# we want everything but the noderef, since
+		# the node will be deleted anyway.
+		var restore_item = {
+			layer = stack[i].layer,
+			path = stack[i].path,
+		}
+		if stack[i].has("restore"):
+			restore_item.restore = stack[i].restore
+		Log.verbose(self, ["(push) adding item to our restore stack: ", 
+				restore_item])
+		item.restore.push_back(restore_item)
+	
+	if pop_from != null:
+		Log.verbose(self, ["(push) popping the stack at index: ", 
+				pop_from, " (stack size: ", stack.size() , ")"])
+		pop(pop_from)
 	
 	var node = load_node(item.path)
 	item.node = node
@@ -174,29 +173,74 @@ func push(item):
 	add_child(node)
 	Log.verbose(self, ["pushed: ", item])
 	Log.verbose(self, ["stack: ", stack])
+	
 	return node
 
-func pop(i = null):
-	var item
-	if i:
-		item = stack[i]
-		stack.remove(i)
-	else: item = stack.pop_back()
+# -----------------------------------------------------------
+
+# currently only accepts an index to the stack. that's
+# probably fine; in future we will want to handle a noderef
+# argument for ui_close, so that nodes can close themselves,
+# but this can be handled in close() instead of here.
+func pop(i = null, restore = true):
+	if !stack or (i and i >= stack.size()):
+		Log.warn(self, "stack is empty!")
+		return
 	
+	if i == null: i = stack.size() - 1
+	
+	# if we're trying to pop something that isn't at the top
+	# of the stack, we have to pop everything above it first.
+	# we throw away any restore data for those items (for now)
+	if i < stack.size() - 1:
+		Log.verbose(self, ["(pop) clearing items between our index (",
+				i, ") and the top index (", stack.size() - 1, ")"])
+		for j in range(i + 1, stack.size()):
+			pop(null, false)
+	
+	var item = stack[i]
 	var node = item.node
-	Log.verbose(self, ["popped: ", item])
+	stack.remove(i)
+	Log.verbose(self, ["popping: ", item])
 	Log.verbose(self, ["stack: ", stack])
 	node.queue_free()
 	return item
 
-func replace(item):
-	for i in stack: pop()
-	push(item)
+
+# =========================================================== #
+#            A U X I L I A R Y   F U N C T I O N S            #
+# ----------------------------------------------------------- #
+
+func process_ref(ref):
+	# first we try the ref 
+	var file = File.new()
+	for template in REFS:
+		var path = template.replace(R, ref)
+		if file.file_exists(path): return path
+	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
 
 # -----------------------------------------------------------
 
 func load_node(path):
 	return load(path).instance()
+
+# -----------------------------------------------------------
+
+# the "layer value" of a ui element determines which elements
+# it will replace (those with an equal or greater value) and
+# which it will overlay. here we look up the layer value for
+# our new element based on the open_type property that was 
+# passed to open() by whoever emitted the signal (see above).
+func get_layer_value(open_type, path):
+	if open_type == null:
+		var node = load_node(path)
+		if "layer" in node: return node.layer
+		else: return get_next_layer()
+	elif open_type == -1:
+		return get_next_layer()
+	else: return open_type
+
+# -----------------------------------------------------------
 
 func get_next_layer():
 	var max_layer = 0

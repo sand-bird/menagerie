@@ -2,6 +2,7 @@ extends Control
 
 const icon_dir = "res://assets/ui/icons/"
 const menu_dir = "res://ui/main_menu/"
+const layer = 1
 
 const chapters = {
 	monsters = {
@@ -74,8 +75,8 @@ func set_current(val):
 func open(input):
 	var chapter = Utils.unpack(input)
 	# update current_page (this is the page's string id)
-	Log.debug(self, ["opening chapter: ", chapter, ", current: ", 
-			current if current else "(none)"])
+	Log.debug(self, ["opening chapter: `", chapter, "`, current: ", 
+			("`" + current + "`") if current else "(none)"])
 	if chapter == current or !(chapter in chapters.keys()): return
 	set_current(chapter) # also updates tab z-indices
 	

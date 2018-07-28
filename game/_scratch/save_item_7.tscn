@@ -1,12 +1,12 @@
 [gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=1]
-[ext_resource path="res://assets/other/old/box_outset_light.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=2]
 [ext_resource path="res://assets/other/old/box_inset.tres" type="StyleBox" id=3]
-[ext_resource path="res://assets/other/old/box_outset.tres" type="StyleBox" id=4]
+[ext_resource path="res://assets/ui/panels/box_outset_dark.tres" type="StyleBox" id=4]
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=5]
 [ext_resource path="res://ui/save_list/save_item.gd" type="Script" id=6]
-[ext_resource path="res://assets/ui/icons/player2.png" type="Texture" id=7]
+[ext_resource path="res://assets/ui/icons/player.png" type="Texture" id=7]
 [ext_resource path="res://assets/ui/icons/town.png" type="Texture" id=8]
 [ext_resource path="res://assets/ui/icons/monster.png" type="Texture" id=9]
 [ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=10]
@@ -15,15 +15,18 @@
 [ext_resource path="res://assets/ui/icons/calendar.png" type="Texture" id=13]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=14]
 
+
+
+
 [node name="save_item" type="Button"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 192.0
+margin_right = 184.0
 margin_bottom = 48.0
-rect_min_size = Vector2( 192, 48 )
+rect_min_size = Vector2( 184, 48 )
 rect_pivot_offset = Vector2( 0, 0 )
 focus_mode = 2
 mouse_filter = 0
@@ -50,7 +53,7 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 9.0
+margin_left = 10.0
 margin_top = 6.0
 margin_right = 16.0
 margin_bottom = 14.0
@@ -88,14 +91,14 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_colors" ]
 
 [node name="town_name" type="TextureRect" parent="." index="1"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = -18.0
-margin_top = 6.0
-margin_right = -17.0
-margin_bottom = 14.0
+margin_left = 7.0
+margin_top = 19.0
+margin_right = 17.0
+margin_bottom = 27.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -107,13 +110,13 @@ _sections_unfolded = [ "Anchor", "Hint", "Margin", "Rect" ]
 
 [node name="label" type="Label" parent="town_name" index="0"]
 
-anchor_left = 0.0
+anchor_left = 1.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = -80.0
+margin_left = 3.0
 margin_top = -1.0
-margin_right = -2.0
+margin_right = 102.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 64, 0 )
 rect_pivot_offset = Vector2( 0, 0 )
@@ -123,7 +126,6 @@ size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_colors/font_color = Color( 0.0392157, 0.596078, 0.67451, 1 )
 text = "Sunshine"
-align = 2
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
@@ -131,14 +133,14 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_colors" ]
 
 [node name="monsters" type="TextureRect" parent="." index="2"]
 
-anchor_left = 0.0
+anchor_left = 1.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = 50.0
-margin_top = 20.0
-margin_right = 60.0
-margin_bottom = 28.0
+margin_left = -19.0
+margin_top = 19.0
+margin_right = -20.0
+margin_bottom = 27.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -150,20 +152,21 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="label" type="Label" parent="monsters" index="0"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 3.0
+margin_left = -16.0
 margin_top = -1.0
-margin_right = 17.0
-margin_bottom = 11.0
+margin_right = -2.0
+margin_bottom = 10.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "99"
+text = "33"
+align = 2
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
@@ -171,14 +174,14 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_colors", "custom_font
 
 [node name="money" type="TextureRect" parent="." index="3"]
 
-anchor_left = 0.0
+anchor_left = 1.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = 80.0
-margin_top = 20.0
-margin_right = 88.0
-margin_bottom = 28.0
+margin_left = -56.0
+margin_top = 19.0
+margin_right = -56.0
+margin_bottom = 27.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -190,13 +193,13 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="label" type="Label" parent="money" index="0"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 3.0
+margin_left = -48.0
 margin_top = -1.0
-margin_right = 56.0
+margin_right = -2.0
 margin_bottom = 10.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
@@ -204,6 +207,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 text = "1,487,690"
+align = 2
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
@@ -211,14 +215,14 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="encyclopedia" type="TextureRect" parent="." index="4"]
 
-anchor_left = 0.0
+anchor_left = 1.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = 8.0
-margin_top = 20.0
-margin_right = 18.0
-margin_bottom = 28.0
+margin_left = -19.0
+margin_top = 6.0
+margin_right = -19.0
+margin_bottom = 14.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -230,13 +234,13 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="label" type="Label" parent="encyclopedia" index="0"]
 
-anchor_left = 1.0
+anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 3.0
+margin_left = -42.0
 margin_top = -1.0
-margin_right = 43.0
+margin_right = -2.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 40, 0 )
 rect_pivot_offset = Vector2( 0, 0 )
@@ -244,7 +248,8 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "58.9%"
+text = "56%"
+align = 2
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
@@ -256,10 +261,10 @@ anchor_left = 1.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = -16.0
-margin_top = 20.0
-margin_right = -8.0
-margin_bottom = 28.0
+margin_left = -56.0
+margin_top = 6.0
+margin_right = -56.0
+margin_bottom = 14.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
@@ -285,7 +290,7 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "1020:43"
+text = "20:43"
 align = 2
 clip_text = true
 percent_visible = 1.0
@@ -299,10 +304,10 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 8.0
-margin_top = 33.0
-margin_right = 18.0
-margin_bottom = 41.0
+margin_left = 7.0
+margin_top = 32.0
+margin_right = 17.0
+margin_bottom = 40.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0

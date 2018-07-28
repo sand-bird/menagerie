@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/other/old/box_outset_light.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=2]
 [ext_resource path="res://assets/other/old/box_inset.tres" type="StyleBox" id=3]
-[ext_resource path="res://assets/other/old/box_outset.tres" type="StyleBox" id=4]
+[ext_resource path="res://assets/ui/panels/box_outset_dark.tres" type="StyleBox" id=4]
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=5]
 [ext_resource path="res://ui/save_list/save_item.gd" type="Script" id=6]
 [ext_resource path="res://assets/ui/icons/player.png" type="Texture" id=7]
@@ -13,6 +13,9 @@
 [ext_resource path="res://assets/other/old/clock_icon.png" type="Texture" id=11]
 [ext_resource path="res://assets/ui/icons/calendar.png" type="Texture" id=12]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=13]
+
+
+
 
 [node name="save_item" type="Button"]
 
