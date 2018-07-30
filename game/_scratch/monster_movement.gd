@@ -1,18 +1,9 @@
 extends KinematicBody2D
 
-enum Speed {
-	AMBLE = 30
-	STROLL = 40
-	WALK = 50
-	TROT = 65
-	JOG = 80
-	RUN = 100
-	DASH = 130
-	SPRINT = 180
-}
+var Speed = Constants.Speed
 
-var collider #whatever we're about to hit next
-var collision #whatever we've just hit
+var collider # whatever we're about to hit next
+var collision # whatever we've just hit
 
 var destination
 var max_speed = Speed.WALK
