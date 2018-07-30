@@ -2,6 +2,17 @@
 
 extends Node
 
+enum Speed {
+	AMBLE = 30
+	STROLL = 40
+	WALK = 50
+	TROT = 65
+	JOG = 80
+	RUN = 100
+	DASH = 130
+	SPRINT = 180
+}
+
 # ------- #
 #  TYPES  #
 # ------- #

@@ -129,9 +129,12 @@ func open_menu(arg = null):
 	last_menu_page = page
 	
 	var menu_path = process_ref("main_menu")
+	Log.debug(self, ["opening menu. stack: ", stack])
 	
 	match stack:
-		[{"path": menu_path, ..}, ..]: return
+		[_, {"path": menu_path, ..}, ..]:
+			Log.debug(self, "menu already present in stack!")
+			return
 	
 	var menu = open(menu_path)
 	menu.open(page)

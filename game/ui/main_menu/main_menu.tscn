@@ -20,7 +20,7 @@ func update_visibility(control_mode):
 	if control_mode == Constants.ControlMode.TOUCH: show()
 	else: hide()"
 
-[node name="main_menu" type="Control" index="0"]
+[node name="main_menu" type="Control"]
 
 anchor_left = 0.0
 anchor_top = 0.0

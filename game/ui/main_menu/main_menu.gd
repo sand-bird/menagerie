@@ -72,8 +72,9 @@ func set_current(val):
 
 # -----------------------------------------------------------
 
-func open(input):
+func open(input = null):
 	var chapter = Utils.unpack(input)
+	if chapter == null: chapter = current
 	# update current_page (this is the page's string id)
 	Log.debug(self, ["opening chapter: `", chapter, "`, current: ", 
 			("`" + current + "`") if current else "(none)"])

@@ -1,5 +1,5 @@
 extends Control
-
+"""
 var color_night = Color("66588c")
 var color_dawn = Color("db9ab4")
 var color_morning = Color("dbc2b8")
@@ -16,14 +16,12 @@ var colors = {
 	18: color_evening,
 	20: color_dusk
 }
+"""
 
 func get_anim_duration(hour):
-	
 	pass
 
 func _ready():
-#	$terrain.set_cell(0, 0, 0)
-#	$terrain.set_cell(0, 1, 1)
 	pass
 
 func init(data):
