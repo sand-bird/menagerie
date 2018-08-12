@@ -20,8 +20,8 @@ var is_enabled = true
 func _ready():
 	$anim.play("cursor_bob")
 	connect("item_rect_changed", self, "reset_anim")
-	$area.connect("body_entered", self, "stick")
-	$area.connect("body_exited", self, "unstick")
+	$stick_area.connect("body_entered", self, "stick")
+	$unstick_area.connect("body_exited", self, "unstick")
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	set_process(true)
 
@@ -41,8 +41,9 @@ func _notification(n):
 # -----------------------------------------------------------
 
 func stick(body):
-	is_free = false
+	if (curr_body and curr_body != body): unstick(curr_body)
 	curr_body = body
+	is_free = false
 	var sprite_size = body.get_node("sprite").texture.get_size()
 	graphic_dest = body.position + Vector2(0, floor(sprite_size.y / 2))
 	hand_height = sprite_size.y + VERTICAL_HAND_OFFSET
@@ -54,11 +55,14 @@ func unstick(body):
 	if body == curr_body:
 		hand_height = DEFAULT_HAND_HEIGHT
 		is_free = true
+		curr_body = null
 
 # -----------------------------------------------------------
 
 func _process(delta):
-	$area.position = get_global_mouse_position()
+	$stick_area.position = get_global_mouse_position()
+	$unstick_area.position = $stick_area.position
+	
 	if is_free: 
 		graphic_dest = Utils.vround(get_global_mouse_position())
 	

@@ -50,7 +50,7 @@ var globals = {
 # basic test
 func _ready():
 	return
-	var Monster = preload("res://monster/monster_new.gd")
+	var Monster = preload("res://monster/monster.gd")
 	var sample_monster = Monster.new()
 	sample_monster.mother = Monster.new()
 	sample_monster.mother.traits["iq"] = 20

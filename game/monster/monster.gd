@@ -49,32 +49,13 @@ var preferences = {}
 # ----------------------------------------------------------- #
 
 func _ready():
-	$sprite.texture = Data.data.monsters[species].sprite
-
-# ----------------------------------------------------------- #
-
-func serialize():
-	var data = {
-		monster_name = monster_name,
-		species = species,
-		morph = morph,
-		birthday = birthday,
-		traits = {}
-	}
-	for i in traits:
-		data.traits[i.name] = i.serialize()
-	return data
-
-# -----------------------------------------------------------
-
-func deserialize(data):
-	for i in data:
-		print(i, ": ", data[i])
+#	connect("draw", self, "update_z")
+	Dispatcher.connect("tick_changed", self, "update_drives")
 
 # -----------------------------------------------------------
 
 func update_z():
-	set_z(get_pos().y + get_item_rect().size.y)
+	z_index = position.y + $sprite.texture.get_height() / 2
 
 # -----------------------------------------------------------
 
@@ -98,7 +79,7 @@ func choose_action():
 
 # -----------------------------------------------------------
 
-func update_drives():
+func update_drives(tick):
 	# updates the pet's drive meters (mood, hunger, etc)
 	pass
 
@@ -117,18 +98,19 @@ func recalc_attributes():
 
 # -----------------------------------------------------------
 
-func _on_highlight():
+func highlight():
 	# possibly a third (or rather first) interaction state:
 	# the highlight, for when the cursor is in "snapping"
 	# range of the monster but the focus delay hasn't elapsed
 	# yet (or for players using a "careful" (or whatever) 
 	# targeting scheme, where they must press action to focus
 	# and then again to select)
+	print("hi im highlighted")
 	pass
 
 # -----------------------------------------------------------
 
-func _on_focus():
+func focus():
 	# touch input: first tap
 	# mouse and gamepad: hover (make sure to add a short delay)
 	# cursor will snap to pet - this effect should be greater for
@@ -148,7 +130,7 @@ func _on_focus():
 
 # -----------------------------------------------------------
 
-func _on_select(): 
+func select():
 	# touch: second tap
 	# gamepad: push select button; mouse: click
 	
@@ -157,7 +139,7 @@ func _on_select():
 
 # -----------------------------------------------------------
 
-func _on_unfocus():
+func unfocus():
 	# touch: tap outside of pet
 	# mouse and keyboard: hover off after delay
 	
@@ -187,3 +169,29 @@ func _on_action_finished():
 		current_action = next_action
 		next_action = null
 	else: choose_action()
+
+
+# =========================================================== #
+#                  S E R I A L I Z A T I O N                  #
+# ----------------------------------------------------------- #
+
+func serialize():
+	var data = {
+		monster_name = monster_name,
+		species = species,
+		morph = morph,
+		birthday = birthday,
+		traits = traits.duplicate(),
+		attributes = attributes.duplicate()
+	}
+	# if we decide to use objects for traits (and attributes),
+	# we will need to give them serialize methods.
+#	for i in traits:
+#		data.traits[i.name] = i.serialize()
+	return data
+
+# -----------------------------------------------------------
+
+func deserialize(data):
+	for i in data:
+		print(i, ": ", data[i])

@@ -124,7 +124,7 @@ func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
 	var direction = Utils.vsign(heading)
-	var abs_heading = Utils.vabs(heading)
+	var abs_heading = heading.abs()
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 		var move_delta = abs_heading
 		# update target position

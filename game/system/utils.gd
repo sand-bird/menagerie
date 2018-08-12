@@ -147,10 +147,10 @@ static func randi_thresh(anchor, threshold):
 	return randi_range(anchor - raw_thresh, anchor + raw_thresh)
 
 static func randi_range(minimum, maximum):
-	return minimum + randi() % (maximum - minimum + 1)
+	return minimum + randi() % (int(maximum) - int(minimum) + 1)
 
 static func randi_qty(maximum):
-	return randi() % (maximum + 1)
+	return randi() % (int(maximum) + 1)
 
 static func rand_tri(a, b, c):
 	var u = randf()

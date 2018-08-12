@@ -1,12 +1,13 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://garden/garden.gd" type="Script" id=1]
 [ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=2]
 [ext_resource path="res://garden/camera.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/garden/terrains.png" type="Texture" id=4]
-[ext_resource path="res://monster/monster.tscn" type="PackedScene" id=5]
+[ext_resource path="res://garden/cursor.tscn" type="PackedScene" id=5]
 [ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=6]
-[ext_resource path="res://garden/cursor.tscn" type="PackedScene" id=7]
+[ext_resource path="res://monster/monster.tscn" type="PackedScene" id=7]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=8]
 
 [sub_resource type="TileSet" id=1]
 
@@ -30,14 +31,8 @@
 1/shapes = [  ]
 _sections_unfolded = [ "0", "1", "Resource" ]
 
-[sub_resource type="CircleShape2D" id=3]
-
-custom_solver_bias = 0.0
-radius = 5.0
-
 [sub_resource type="Animation" id=2]
 
-resource_name = "tint"
 length = 1.0
 loop = false
 step = 0.1
@@ -54,7 +49,35 @@ tracks/0/keys = {
 "values": [ Color( 0.400681, 0.34639, 0.550781, 1 ) ]
 }
 
-[node name="garden" type="Control"]
+[sub_resource type="CircleShape2D" id=3]
+
+custom_solver_bias = 0.0
+radius = 5.0
+
+[sub_resource type="GDScript" id=4]
+
+resource_name = "add_monster_button"
+script/source = "extends Button
+
+# class member variables go here, for example:
+# var a = 2
+# var b = \"textvar\"
+
+func _ready():
+	# Called every time the node is added to the scene.
+	# Initialization here
+	pass
+
+func _pressed():
+	var g = get_parent().get_parent()
+	for i in range(10):
+		var m = load(\"res://monster/monster.tscn\").instance()
+		m.position = Vector2(Utils.randi_qty(g.rect_size.x), 
+				Utils.randi_qty(g.rect_size.y))
+		g.get_node(\"entities\").add_child(m)"
+_sections_unfolded = [ "Resource" ]
+
+[node name="garden" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -72,6 +95,7 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="bg" type="TextureRect" parent="." index="0"]
 
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -96,7 +120,6 @@ _sections_unfolded = [ "Editor", "Limit" ]
 
 [node name="terrain" type="TileMap" parent="." index="2"]
 
-visible = false
 mode = 0
 tile_set = SubResource( 1 )
 cell_size = Vector2( 16, 16 )
@@ -116,13 +139,44 @@ format = 1
 tile_data = PoolIntArray(  )
 _sections_unfolded = [ "Cell" ]
 
-[node name="monster" parent="." index="3" instance=ExtResource( 5 )]
+[node name="tint" type="CanvasModulate" parent="." index="3"]
 
-position = Vector2( 206, 143 )
+editor/display_folded = true
+color = Color( 0.930977, 0.72876, 0.9375, 1 )
+_sections_unfolded = [ "Transform", "Z Index" ]
+__meta__ = {
+"_edit_lock_": true
+}
 
-[node name="item" type="RigidBody2D" parent="." index="4"]
+[node name="anim" type="AnimationPlayer" parent="tint" index="0"]
 
-position = Vector2( 224, 177 )
+root_node = NodePath("..")
+autoplay = ""
+playback_process_mode = 1
+playback_default_blend_time = 0.0
+playback_speed = 1.0
+anims/tint = SubResource( 2 )
+blend_times = [  ]
+_sections_unfolded = [ "Playback Options" ]
+
+[node name="cursor" parent="." index="4" instance=ExtResource( 5 )]
+
+[node name="entities" type="Control" parent="." index="5"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+_sections_unfolded = [ "Anchor", "Hint", "Margin" ]
+
+[node name="item" type="RigidBody2D" parent="entities" index="0"]
+
+position = Vector2( 229, 154 )
 input_pickable = false
 collision_layer = 1
 collision_mask = 1
@@ -142,51 +196,56 @@ linear_damp = -1.0
 angular_velocity = 0.0
 angular_damp = -1.0
 _sections_unfolded = [ "Angular", "Applied Forces", "Linear" ]
+__meta__ = {
+"_edit_group_": true
+}
 
-[node name="sprite" type="Sprite" parent="item" index="0"]
+[node name="sprite" type="Sprite" parent="entities/item" index="0"]
 
 texture = ExtResource( 6 )
 _sections_unfolded = [ "Animation", "Offset", "Region" ]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="item" index="1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="entities/item" index="1"]
 
 shape = SubResource( 3 )
 
-[node name="ColorRect" type="ColorRect" parent="." index="5"]
+[node name="monster" parent="entities" index="1" instance=ExtResource( 7 )]
 
-visible = false
-anchor_left = 0.0
-anchor_top = 0.0
+position = Vector2( 206, 143 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." index="6"]
+
+layer = 1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="Button" type="Button" parent="CanvasLayer" index="0"]
+
+anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = -34.0
+margin_top = -27.0
+margin_right = -7.0
+margin_bottom = -7.0
 rect_pivot_offset = Vector2( 0, 0 )
+focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-color = Color( 0.75, 0.307617, 0.307617, 1 )
-_sections_unfolded = [ "Anchor", "Margin" ]
-
-[node name="tint" type="CanvasModulate" parent="." index="6"]
-
-visible = false
-color = Color( 0.390076, 0.563663, 0.648438, 1 )
-_sections_unfolded = [ "Transform", "Z Index" ]
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="anim" type="AnimationPlayer" parent="tint" index="0"]
-
-root_node = NodePath("..")
-autoplay = ""
-playback_process_mode = 1
-playback_default_blend_time = 0.0
-playback_speed = 1.0
-anims/tint = SubResource( 2 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
-
-[node name="cursor" parent="." index="7" instance=ExtResource( 7 )]
+theme = ExtResource( 8 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "+10"
+flat = false
+align = 1
+script = SubResource( 4 )
+_sections_unfolded = [ "Anchor", "Theme", "Visibility" ]
 
 
