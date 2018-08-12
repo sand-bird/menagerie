@@ -33,7 +33,7 @@ var properties = {
 # - the data for its entity id was not found; an uncommon but
 #   expected case, eg. if an entity belongs to a mod that's 
 #   currently disabled.
-var items = []
+onready var items = []
 
 onready var props = properties[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
@@ -43,14 +43,15 @@ onready var columns = props.columns
 #                 I N I T I A L I Z A T I O N                 #
 # ----------------------------------------------------------- #
 
-func initialize():
+func _ready():
 	Dispatcher.connect("item_selected", self, "update_current_item")
-	.initialize()
-	filter_items({"type": "object"})
+
+func initialize():
 	init_self()
-	#init_item_grid()
-	#init_selector()
+	init_item_grid()
+	init_selector()
 	#update_current_item(current_item)
+	.initialize()
 
 func init_self():
 	columns = props.columns
@@ -74,7 +75,11 @@ func init_selector():
 	
 # -----------------------------------------------------------
 
+func init_items(filter):
+	items = filter_items(filter)
+
 func filter_items(filter):
+	var results = []
 	for i in Player.inventory.size():
 		var id = Player.inventory[i].id
 		var data = Data.get(id)
@@ -86,7 +91,8 @@ func filter_items(filter):
 				break
 		if matches:
 			Log.info(self, [id, " passed filter!"])
-			items.append(i)
+			results.append(i)
+	return results
 
 func get_page_items():
 	var page_size = columns * columns

@@ -15,8 +15,7 @@ func load_items(items):
 	clear_items()
 	for i in items.size():
 		var item = Item.instance()
-		var item_data = items[i]
-		item.initialize(i, item_data, props)
+		item.initialize(i, items[i], props)
 		$items.add_child(item)
 
 func show_quantity(index, show):

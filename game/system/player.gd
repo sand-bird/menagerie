@@ -17,7 +17,11 @@ var encyclopedia = {}
 var inventory = [
 	{
 		id = "fluffy_tuft",
-		qty = 50
+		qty = 1
+	},
+		{
+		id = "fluffy_tuft",
+		qty = 2
 	},
 	{
 		id = "an_object",

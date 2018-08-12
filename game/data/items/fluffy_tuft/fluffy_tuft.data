@@ -8,6 +8,6 @@
   "description": {
     "en": "Soft, springy fur from a Pufig's fluffy tail. It's rumored that stuffing a pillow with it will bring good dreams."
   },
-  "icon": "fluffy_tuft.png",
+  "icon": "~/fluffy_tuft.png",
   "value": 45
 }

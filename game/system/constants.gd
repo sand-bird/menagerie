@@ -110,3 +110,8 @@ enum InventorySize {
 	LARGE # 5x5 (meant for touch)
 	SMALL # 6x6
 }
+
+enum Language {
+	ENGLISH
+	PORTUGUESE
+}
