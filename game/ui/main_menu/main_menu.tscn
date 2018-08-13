@@ -27,6 +27,7 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -47,6 +48,7 @@ margin_right = 158.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 316, 190 )
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -63,6 +65,7 @@ margin_left = -158.0
 margin_top = 17.0
 margin_right = 158.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -83,12 +86,12 @@ margin_right = 48.0
 margin_bottom = 21.0
 rect_min_size = Vector2( 96, 14 )
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_styles/normal = ExtResource( 4 )
-text = "Inventory"
 align = 1
 valign = 1
 uppercase = true
@@ -105,15 +108,16 @@ anchor_right = 0.75
 anchor_bottom = 0.0
 margin_left = -28.0
 margin_top = 7.0
+margin_right = 28.0
 margin_bottom = 21.0
 rect_min_size = Vector2( 56, 14 )
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_styles/normal = ExtResource( 4 )
-text = "98 / 99"
 align = 1
 valign = 1
 uppercase = true
@@ -124,7 +128,13 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
 [node name="arrows" parent="content/book" index="2" instance=ExtResource( 5 )]
 
-visible = false
+anchor_left = 0.75
+anchor_right = 0.75
+margin_left = -34.0
+margin_top = 7.0
+margin_right = 34.0
+margin_bottom = 21.0
+_sections_unfolded = [ "Anchor", "Margin" ]
 
 [node name="tabs" type="HBoxContainer" parent="content" index="1"]
 
@@ -135,6 +145,7 @@ anchor_right = 1.0
 anchor_bottom = 0.0
 margin_bottom = 20.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -145,16 +156,16 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect", "Visibility", "custom_constan
 
 [node name="close_button" type="Button" parent="." index="1"]
 
-visible = false
-anchor_left = 0.0
+anchor_left = 1.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
-margin_left = 331.0
+margin_left = -53.0
 margin_top = 21.0
-margin_right = 353.0
+margin_right = -31.0
 margin_bottom = 40.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -168,6 +179,7 @@ text = " X "
 flat = false
 align = 1
 script = SubResource( 1 )
+_sections_unfolded = [ "Anchor" ]
 __meta__ = {
 "_editor_icon": ExtResource( 6 )
 }

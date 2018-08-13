@@ -26,7 +26,7 @@ func _pressed():
 		Options.inventory_size = InventorySize.LARGE
 	print(\"inventory size toggled! is now \", size)"
 
-[node name="game" type="Node" index="0"]
+[node name="game" type="Node"]
 
 script = ExtResource( 1 )
 
@@ -53,6 +53,7 @@ margin_top = 124.0
 margin_right = 223.0
 margin_bottom = 144.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -83,6 +84,7 @@ margin_top = 152.0
 margin_right = 230.0
 margin_bottom = 172.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0

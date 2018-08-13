@@ -25,7 +25,7 @@ func get_lang():
 #              I N V E N T O R Y   O P T I O N S              #
 # ----------------------------------------------------------- #
 
-var inventory_size = InventorySize.LARGE
+var inventory_size = InventorySize.SMALL
 
 # =========================================================== #
 #                  I N P U T   O P T I O N S                  #

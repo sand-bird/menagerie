@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
@@ -6,13 +6,11 @@
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=4]
 [ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=5]
 [ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=6]
-[ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=7]
-[ext_resource path="res://assets/ui/panels/qty_label.tres" type="StyleBox" id=8]
-[ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=9]
-[ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=10]
-[ext_resource path="res://assets/other/old/arrow_big.png" type="Texture" id=11]
+[ext_resource path="res://assets/ui/panels/qty_label.tres" type="StyleBox" id=7]
+[ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=8]
+[ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=9]
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=1]
 
 resource_name = "item_name"
 script/source = "extends Label
@@ -22,51 +20,14 @@ func set_text(t):
 		text = t[Options.get_lang()]"
 _sections_unfolded = [ "Resource" ]
 
-[sub_resource type="Animation" id=1]
-
-resource_name = "bob"
-length = 1.0
-loop = true
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( 1, 0 ), Vector2( 0, 0 ) ]
-}
-
-[sub_resource type="Animation" id=2]
-
-resource_name = "bob"
-length = 1.0
-loop = true
-step = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( -1, 0 ), Vector2( 0, 0 ) ]
-}
-
-[node name="inventory" type="Control"]
+[node name="inventory" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -77,6 +38,7 @@ _sections_unfolded = [ "Rect", "Theme" ]
 
 [node name="item_name" type="Panel" parent="." index="0"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -86,6 +48,7 @@ margin_top = 26.0
 margin_right = 149.0
 margin_bottom = 55.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -101,18 +64,18 @@ anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "name"
 align = 1
 valign = 1
 autowrap = true
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
-script = SubResource( 3 )
+script = SubResource( 1 )
 _sections_unfolded = [ "Anchor", "Margin", "Theme", "custom_colors", "custom_styles" ]
 
 [node name="item_properties" type="Panel" parent="." index="1"]
@@ -127,6 +90,7 @@ margin_top = 60.0
 margin_right = 149.0
 margin_bottom = 77.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -135,7 +99,7 @@ theme = ExtResource( 3 )
 custom_styles/panel = ExtResource( 4 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme", "custom_styles" ]
 
-[node name="type" type="Label" parent="item_properties" index="0"]
+[node name="category" type="Label" parent="item_properties" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -144,11 +108,11 @@ anchor_bottom = 1.0
 margin_left = 10.0
 margin_right = 72.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "type"
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -164,20 +128,21 @@ anchor_bottom = 1.0
 margin_left = 72.0
 margin_right = -18.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-text = "value"
 align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin" ]
+_sections_unfolded = [ "Anchor", "Margin", "custom_colors" ]
 
 [node name="aster" type="TextureRect" parent="item_properties/value" index="0"]
 
+visible = false
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -186,6 +151,7 @@ margin_left = 1.0
 margin_top = -4.0
 margin_bottom = -0.5
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -196,7 +162,6 @@ _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="item_description" type="Panel" parent="." index="2"]
 
-editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -206,6 +171,7 @@ margin_top = 80.0
 margin_right = 149.0
 margin_bottom = 159.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -225,19 +191,21 @@ margin_top = 3.0
 margin_right = -6.0
 margin_bottom = -3.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_constants/line_spacing = 1
+custom_constants/line_spacing = 2
 autowrap = true
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = 6
-_sections_unfolded = [ "Anchor", "Hint", "Margin", "custom_constants" ]
+_sections_unfolded = [ "Anchor", "Hint", "Margin", "Rect", "custom_constants" ]
 
 [node name="item_icon" type="TextureRect" parent="." index="3"]
 
+editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -247,6 +215,7 @@ margin_top = 22.0
 margin_right = 50.0
 margin_bottom = 62.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -266,17 +235,18 @@ margin_left = -9.0
 margin_top = -9.0
 rect_min_size = Vector2( 16, 16 )
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-texture = ExtResource( 7 )
 expand = true
 stretch_mode = 6
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
 [node name="quantity" type="Label" parent="item_icon" index="1"]
 
+visible = false
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -291,17 +261,17 @@ mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
-custom_styles/normal = ExtResource( 8 )
+custom_styles/normal = ExtResource( 7 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
-text = "211"
 align = 2
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_colors", "custom_styles" ]
 
-[node name="item_grid" parent="." index="4" instance=ExtResource( 9 )]
+[node name="item_grid" parent="." index="4" instance=ExtResource( 8 )]
 
+rect_clip_content = false
 _sections_unfolded = [ "Rect", "Size Flags" ]
 
 [node name="selector" type="TextureRect" parent="." index="5"]
@@ -313,115 +283,16 @@ anchor_bottom = 0.0
 margin_right = 40.0
 margin_bottom = 40.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 stretch_mode = 0
-script = ExtResource( 10 )
+script = ExtResource( 9 )
 _sections_unfolded = [ "Mouse" ]
 __meta__ = {
 "_edit_lock_": true
 }
-
-[node name="arrows" type="Control" parent="." index="6"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 40.0
-margin_bottom = 40.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-
-[node name="right" type="Button" parent="arrows" index="0"]
-
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = 262.0
-margin_top = 50.0
-margin_right = 282.0
-margin_bottom = 69.0
-rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="sprite" type="Sprite" parent="arrows/right" index="0"]
-
-position = Vector2( -29.0385, -65.3488 )
-texture = ExtResource( 11 )
-centered = false
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
-
-[node name="anim" type="AnimationPlayer" parent="arrows/right/sprite" index="0"]
-
-root_node = NodePath("..")
-autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
-playback_speed = 0.6
-anims/bob = SubResource( 1 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
-
-[node name="left" type="Button" parent="arrows" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.5
-anchor_right = 0.0
-anchor_bottom = 0.5
-margin_left = 183.0
-margin_top = -15.0
-margin_right = 203.0
-margin_bottom = 4.0
-rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="sprite" type="Sprite" parent="arrows/left" index="0"]
-
-texture = ExtResource( 11 )
-centered = false
-flip_h = true
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
-
-[node name="anim" type="AnimationPlayer" parent="arrows/left/sprite" index="0"]
-
-root_node = NodePath("..")
-autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
-playback_speed = 0.6
-anims/bob = SubResource( 2 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
 
 

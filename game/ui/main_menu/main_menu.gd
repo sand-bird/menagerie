@@ -7,15 +7,18 @@ const layer = 1
 const chapters = {
 	monsters = {
 		icon = icon_dir + "monster.png",
-		scene = menu_dir + "monsters/monsters.tscn"
+		scene = menu_dir + "monsters/monsters.tscn",
+#		condition = {"not": {"empty": "$garden.monsters"}}
 	},
 	items = {
 		icon = icon_dir + "items.png",
-		scene = menu_dir + "inventory/items.tscn"
+		scene = menu_dir + "inventory/items.tscn",
+#		condition = {"in": ["an_object", "$player.inventory:id"]}
 	},
 	objects = {
 		icon = icon_dir + "inventory.png",
-		scene = menu_dir + "inventory/objects.tscn"
+		scene = menu_dir + "inventory/objects.tscn",
+#		condition = {"in": ["an_object", "$player.inventory:id"]}
 	},
 	town_map = {
 		icon = icon_dir + "town.png",
@@ -46,7 +49,9 @@ func _ready():
 	Dispatcher.connect("menu_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
 	for id in chapters:
-		new_tab(id, chapters[id])
+		if (!chapters[id].has("condition") or 
+				Condition.resolve(chapters[id].condition)):
+			new_tab(id, chapters[id])
 
 # -----------------------------------------------------------
 
