@@ -1,5 +1,38 @@
 extends Node
 
+# TODO: add some logging here (though we don't receive any
+# identifying info for the trans object, so maybe rethink
+# this at some point)
+func trans(t):
+	if typeof(t) == TYPE_STRING:
+		return t
+	elif typeof(t) == TYPE_DICTIONARY:
+		if t.has(Options.get_lang()):
+			return t[Options.get_lang()]
+		elif t.has(Options.fallback_lang):
+			return t[Options.fallback_lang]
+	return ""
+
+# -------------- #
+#  FILE LOADING  #
+# -------------- #
+
+# related scenes should be kept close to each other. a scene
+# knows its own filepath, so we can find related scenes from
+# that, rather than using THE TERRIBLE, HORRIBLE, NO GOOD
+# ABSOLUTE FILEPATH. (rip preload, but it's better this way)
+static func load_relative(own_fn, sib_fn, ext = "tscn"):
+	return load(own_fn.get_base_dir().plus_file(sib_fn + "." + ext))
+
+static func load_resource(res_path, res_fn, ext = "png"):
+	var path = res_path.plus_file(res_fn + "." + ext)
+	Log.debug(Utils, ["load_resource: ", path])
+	return ResourceLoader.load(path)
+
+# -------- #
+#  ARRAYS  #
+# -------- #
+
 # for event buttons (or dispatch buttons or whatever) we need
 # to pack 1+ arguments into an array, so here is an argument
 # unpacker that i'm too lazy to write more than once
@@ -14,18 +47,6 @@ static func unpack(arg):
 static func pack(arg):
 	if typeof(arg) == TYPE_ARRAY: return arg
 	else: return [arg]
-
-# related scenes should be kept close to each other. a scene
-# knows its own filepath, so we can find related scenes from
-# that, rather than using THE TERRIBLE, HORRIBLE, NO GOOD
-# ABSOLUTE FILEPATH. (rip preload, but it's better this way)
-static func load_relative(own_fn, sib_fn, ext = "tscn"):
-	return load(own_fn.get_base_dir().plus_file(sib_fn + "." + ext))
-
-static func load_resource(res_path, res_fn, ext = "png"):
-	var path = res_path.plus_file(res_fn + "." + ext)
-	Log.debug(Utils, ["load_resource: ", path])
-	return ResourceLoader.load(path)
 
 # honestly can't believe i have to implement this
 static func slice(array, first, size):

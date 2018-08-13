@@ -14,9 +14,12 @@ const seperators = {
 # dictionary of operators to the functions used to evaluate
 # them, accessed via GDScript's handy call() method.
 const lookup_func = {
-	# comparators
+	# booleans
 	"and": "_and",
 	"or": "_or",
+	"not": "_not",
+	
+	# comparators
 	"==": "_equals",
 	"!=": "_not_equals",
 	">": "_greater_than",
@@ -35,7 +38,8 @@ const lookup_func = {
 	"min": "_min",
 	"total": "_total",
 	"first": "_first",
-	"last": "_last"
+	"last": "_last",
+	"empty": "_empty"
 }
 
 var globals = {
@@ -109,6 +113,9 @@ func _or(data, caller, parent):
 		if resolve(condition, caller, parent): return true
 	return false
 
+func _not(data, caller, parent):
+	return !resolve(data, caller, parent)
+
 #                    c o m p a r a t o r s                    
 # ----------------------------------------------------------- 
 
@@ -161,7 +168,8 @@ func _get(args, caller, parent):
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
 #	print("get (after): ", to_json([data, key]))
-	return data[key]
+	if data.has_method("get"): return data.get(key)
+	else: return data[key]
 
 # ----------------------------------------------------------- 
 
@@ -202,6 +210,15 @@ func _filter(args, caller, parent):
 			results.push_back(item)
 	return results
 
+# accepts a single member, assumed to be an array or a dict.
+func _empty(arg, caller, parent):
+	var data = eval_arg(arg, caller, parent).empty()
+	if typeof(data) == TYPE_ARRAY or typeof(data) == TYPE_DICTIONARY:
+		return data.empty()
+	else:
+		Log.error(self, "(_empty) argument is not a collection!") 
+		return true
+
 
 # =========================================================== #
 #                      A R G U M E N T S                      #
@@ -234,9 +251,10 @@ func eval_arg(arg, caller = null, parent = null):
 # or may not have a sigil.
 func eval_sigil(arg, caller, parent):
 	match arg[0]:
-		'$': return globals[strip_sigil(arg)]
-		'#': return Constants[strip_sigil(arg).capitalize().replace(' ', '')]
-		'@': return caller[strip_sigil(arg)]
+		'$': return globals[Utils.strip_sigil(arg)]
+		'#': return Constants[Utils.strip_sigil(arg
+				).capitalize().replace(' ', '')]
+		'@': return caller[Utils.strip_sigil(arg)]
 		'*': return parent
 	return arg
 

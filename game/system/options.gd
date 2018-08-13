@@ -14,7 +14,9 @@ var lang_codes = {
 	Language.PORTUGUESE: "pr"
 }
 
+# TODO: this should match the project settings instead
 var language = Language.ENGLISH
+const fallback_lang = "en"  # ugly but it'll do for now
 
 func get_lang():
 	return lang_codes[language]
