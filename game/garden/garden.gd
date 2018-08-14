@@ -142,7 +142,7 @@ func save_monsters():
 	var data = {}
 	for uid in monsters:
 		data[uid] = monsters[uid].serialize()
-	return data
+	print(data)
 
 func load_monsters(data):
 	for uid in data:

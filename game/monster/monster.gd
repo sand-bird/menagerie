@@ -6,7 +6,7 @@ extends KinematicBody2D
 
 var id
 var monster_name
-var species
+var type
 var morph
 var birthday
 var mother
@@ -20,7 +20,7 @@ var attributes = {}
 
 # memory
 # ------
-var past_actions
+var past_actions = []
 var current_action
 var next_action
 
@@ -51,6 +51,16 @@ var preferences = {}
 func _ready():
 #	connect("draw", self, "update_z")
 	Dispatcher.connect("tick_changed", self, "update_drives")
+	update_z()
+
+# -----------------------------------------------------------
+
+func initialize(data):
+	deserialize(data)
+	var sprite_data = data.sprite
+	$sprite.texture = Data.get_resource([type, "morphs", morph, 
+			"sprites", sprite_data.id, "resource"])
+	$sprite.flip_h = sprite_data.flip
 
 # -----------------------------------------------------------
 
@@ -106,6 +116,7 @@ func highlight():
 	# targeting scheme, where they must press action to focus
 	# and then again to select)
 	print("hi im highlighted")
+	print(to_json(serialize()))
 	pass
 
 # -----------------------------------------------------------
@@ -176,14 +187,17 @@ func _on_action_finished():
 # ----------------------------------------------------------- #
 
 func serialize():
-	var data = {
-		monster_name = monster_name,
-		species = species,
-		morph = morph,
-		birthday = birthday,
-		traits = traits.duplicate(),
-		attributes = attributes.duplicate()
-	}
+	var keys = [
+		"monster_name", "type", "morph", 
+		"birthday", "mother", "father",
+		"traits", "preferences",
+		"belly", "mood", "energy", "social",
+		"past_actions", "current_action", "next_action"
+	]
+	var data = {}
+	for key in keys:
+		data[key] = self[key]
+	data.position = {x = position.x, y = position.y}
 	# if we decide to use objects for traits (and attributes),
 	# we will need to give them serialize methods.
 #	for i in traits:
@@ -193,5 +207,14 @@ func serialize():
 # -----------------------------------------------------------
 
 func deserialize(data):
-	for i in data:
-		print(i, ": ", data[i])
+	var keys = [
+		"monster_name", "type", "morph", 
+		"birthday", "mother", "father",
+		"traits", "preferences",
+		"belly", "mood", "energy", "social",
+		"past_actions", "current_action", "next_action"
+	]
+	for key in keys:
+		self[key] = data[key]
+	position.x = data.position.x
+	position.y = data.position.y

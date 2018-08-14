@@ -15,7 +15,7 @@ custom_solver_bias = 0.0
 radius = 72.0
 _sections_unfolded = [ "Resource" ]
 
-[node name="monster" type="KinematicBody2D"]
+[node name="monster" type="KinematicBody2D" index="0"]
 
 input_pickable = false
 collision_layer = 1
@@ -27,6 +27,7 @@ _sections_unfolded = [ "Transform", "Z Index" ]
 [node name="sprite" type="Sprite" parent="." index="0"]
 
 texture = ExtResource( 2 )
+flip_h = true
 _sections_unfolded = [ "Animation", "Offset", "Region", "Transform", "Z Index" ]
 
 [node name="shape" type="CollisionShape2D" parent="." index="1"]

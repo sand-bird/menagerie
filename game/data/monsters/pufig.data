@@ -29,7 +29,7 @@
       },
       "sprites": {
         "standing": {
-          "resource": "~pufig.png",
+          "resource": "~pufig/pufig.png",
           "rows": 2,
           "columns": 2
         },
