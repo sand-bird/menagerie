@@ -26,7 +26,13 @@ func get_save_list():
 			Log.debug(self, ["Found save: ", current])
 			saves.append(current)
 		current = dir.get_next()
+	saves.sort_custom(self, "sort_by_date")
 	return saves
+
+func sort_by_date(a, b):
+	var file = File.new()
+	return (file.get_modified_time(get_path(a, PLAYER)) 
+			> file.get_modified_time(get_path(b, PLAYER)))
 
 # ------------------------------------------------------------
 

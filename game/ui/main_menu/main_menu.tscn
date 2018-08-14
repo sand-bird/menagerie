@@ -4,8 +4,9 @@
 [ext_resource path="res://ui/main_menu/main_menu.gd" type="Script" id=2]
 [ext_resource path="res://assets/ui/elements/book.png" type="Texture" id=3]
 [ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=4]
-[ext_resource path="res://ui/main_menu/arrows.tscn" type="PackedScene" id=5]
+[ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=5]
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=6]
+
 
 [sub_resource type="GDScript" id=1]
 
