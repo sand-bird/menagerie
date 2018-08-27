@@ -2,7 +2,7 @@ extends Control
 
 const icon_dir = "res://assets/ui/icons/"
 const menu_dir = "res://ui/main_menu/"
-const layer = 1
+# const layer = 3
 
 const chapters = {
 	monsters = {

@@ -7,6 +7,7 @@ func _ready():
 	Dispatcher.connect("quit_game", self, "quit_game")
 
 	Data.init()
+	UI.ui_node = get_node("ui")
 	Dispatcher.emit_signal("ui_open", "title_screen")
 
 
@@ -41,12 +42,13 @@ func load_player(data):
 # -----------------------------------------------------------
 
 func load_garden(data):
-	# proces the garden data. garden is an instanced node,
+	# process the garden data. garden is an instanced node,
 	# unlike player and time, and it must instantiate its own
 	# children depending on the contents of the save file.
 	var garden = load("res://garden/garden.tscn").instance()
 	add_child(garden)
 	garden.init(data)
+	Dispatcher.emit_signal("ui_close", 0)
 
 
 # =========================================================== #

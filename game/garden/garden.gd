@@ -36,11 +36,13 @@ var objects = {}
 
 func _ready():
 	Dispatcher.connect("entity_highlighted", self, "highlight")
+	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
+	Dispatcher.connect("menu_open", self, "pause")
 
 func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
-	Dispatcher.emit_signal("ui_open", ["garden/clock_hud", 0, false])
+#	Dispatcher.emit_signal("ui_open", ["garden/clock_hud", 0, false])
 #	print("tint color: ", $tint.color)
 #	$tint.color = color1
 	Time.start()
@@ -52,16 +54,23 @@ func init(data):
 # if we're using a cursor, it'll trigger the "highlighted"
 # dispatch when it bumps into an entity. it also give us the
 # node pointer. when we're using touch, somebody else has to
-# handle that input, and it will probably be the us.
+# handle that input, and it will probably be us.
 #
 # we don't want our entities listening to the dispatches for
 # *everyone* (at least for now? maybe someday they should, 
-# and get jealous of each other or something?), so we 
+# and get jealous of each other or something?), so we listen
+# and delegate from the garden.
 func highlight(entity):
 	print("(garden) entity ", entity, " has been highlighted!")
 	if entity.has_method("highlight"): entity.highlight()
+	$ui/select_hud.update(entity)
+
+func unhighlight(entity):
+	print("unhighlighted!")
+	$ui/select_hud.update()
 
 # -----------------------------------------------------------
+# color stuff
 
 func get_anim_duration(hour):
 	pass

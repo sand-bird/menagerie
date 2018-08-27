@@ -26,13 +26,16 @@ enum DataType {
 	
 }
 
-enum Type {
+enum EntityType {
 	MONSTER
 	ITEM
 	OBJECT
 	NPC
 	LOCATION
 	EVENT
+}
+
+enum Category {
 	RESOURCE
 	TOY
 	FOOD
@@ -46,26 +49,6 @@ enum Type {
 	FLOORING
 }
 
-var text_keys = {
-	Type.MONSTER: "MONSTER",
-	Type.ITEM: "ITEM",
-	Type.OBJECT: "OBJECT",
-	Type.NPC: "NPC", 
-	Type.LOCATION: "LOCATION",
-	Type.EVENT: "EVENT",
-	Type.RESOURCE: "RESOURCE",
-	Type.TOY: "TOY",
-	Type.FOOD: "FOOD",
-	Type.POTION: "POTION",
-	Type.SEED: "SEED",
-	Type.MUSHROOM: "MUSHROOM",
-	Type.FRUIT: "FRUIT",
-	Type.FLOWER: "FLOWER",
-	Type.TREE: "TREE",
-	Type.DECORATION: "DECORATION",
-	Type.FLOORING: "FLOORING"
-}
-
 # ------- #
 #  PATHS  #
 # ------- #
@@ -75,6 +58,9 @@ const UI_PANEL_PATH = "res://assets/ui/panels"
 const UI_ICON_PATH = "res://assets/ui/icons"
 
 const EVENT_BUTTON_PATH = "res://ui/event_button.gd"
+
+const MONSTER_PATH = "res://monster/monster.tscn"
+# const ITEM_PATH = "res://item/item.tscn"
 
 # --------- #
 #  ACTIONS  #

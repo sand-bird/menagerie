@@ -56,6 +56,7 @@ func unstick(body):
 		hand_height = DEFAULT_HAND_HEIGHT
 		is_free = true
 		curr_body = null
+		Dispatcher.emit_signal("entity_unhighlighted", body)
 
 # -----------------------------------------------------------
 

@@ -1,0 +1,17 @@
+[gd_resource type="Theme" load_steps=2 format=2]
+
+[ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=1]
+
+[resource]
+
+default_font = ExtResource( 1 )
+Label/colors/font_color = Color( 0.439216, 0.254902, 0.231373, 1 )
+Label/colors/font_color_shadow = Color( 0.768627, 0.592157, 0.509804, 1 )
+Label/constants/line_spacing = 3
+Label/constants/shadow_as_outline = 0
+Label/constants/shadow_offset_x = 0
+Label/constants/shadow_offset_y = 1
+Label/fonts/font = null
+Label/styles/normal = null
+_sections_unfolded = [ "Label", "Label/colors", "Label/constants", "Label/fonts" ]
+

@@ -8,8 +8,6 @@
 
 config_version=3
 
-res=null
-
 [application]
 
 config/name="Menagerie"
@@ -32,6 +30,7 @@ PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Time="*res://system/time.gd"
 Condition="*res://system/condition.gd"
+UI="*res://ui/ui.gd"
 
 [debug]
 

@@ -28,11 +28,16 @@ func _pressed():
 
 [node name="game" type="Node"]
 
+pause_mode = 2
 script = ExtResource( 1 )
+_sections_unfolded = [ "Pause" ]
 
 [node name="ui" parent="." index="0" instance=ExtResource( 2 )]
 
+pause_mode = 2
 layer = 128
+script = null
+_sections_unfolded = [ "Pause" ]
 
 [node name="pufig" type="Sprite" parent="." index="1"]
 

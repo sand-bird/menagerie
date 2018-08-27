@@ -56,6 +56,7 @@ signal control_mode_changed(control_mode)
 # ----------------------------------------------------------- #
 
 func _ready():
+	pause_mode = Node.PAUSE_MODE_PROCESS
 	Log.info(self, "ready!")
 
 # -----------------------------------------------------------

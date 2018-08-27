@@ -19,7 +19,7 @@ const SCHEMA_EXT = "schema"
 # 5. load mod data
 # 6. validate
 
-var EntityType = Constants.Type
+var EntityType = Constants.EntityType
 
 var schemas = {}
 var data = {}

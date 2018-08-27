@@ -5,7 +5,7 @@
     "en": "Pufig"
   },
   "description": {
-    "en": "A fluffy pig-like monster with a superb sense of smell. Playful, gentle, and brighter than they appear, Pufig make great pets for children and families."
+    "en": "A fluffy pig-like monster with a superb sense of smell. Intelligent and gentle, Pufig make great pets for children and families."
   },
   "gender_ratio": 0.5,
   "morphs": {
@@ -28,21 +28,8 @@
         ]
       },
       "sprites": {
-        "standing": {
-          "resource": "~pufig/pufig.png",
-          "rows": 2,
-          "columns": 2
-        },
-        "walking_front": {
-          "!resource": "~pufig.png",
-          "rows": 2,
-          "columns": 4
-        },
-        "walking_back": {
-          "resource": "~pufig.png",
-          "rows": 2,
-          "columns": 4
-        }
+        "front": "~pufig/pufig.png",
+        "back": "~/pufig/pufig_back.png"
       }
     }
   },

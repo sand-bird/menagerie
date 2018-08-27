@@ -1,5 +1,9 @@
 extends KinematicBody2D
 
+var entity_type = Constants.EntityType.MONSTER
+
+signal drives_changed
+
 # =========================================================== #
 #                     P R O P E R T I E S                     #
 # ----------------------------------------------------------- #
@@ -59,7 +63,7 @@ func initialize(data):
 	deserialize(data)
 	var sprite_data = data.sprite
 	$sprite.texture = Data.get_resource([type, "morphs", morph, 
-			"sprites", sprite_data.id, "resource"])
+			"sprites", "front"])
 	$sprite.flip_h = sprite_data.flip
 
 # -----------------------------------------------------------
@@ -87,10 +91,46 @@ func choose_action():
 #	current_action = Action.new(Utils.randi_range(2, 8) * 100)
 	pass
 
-# -----------------------------------------------------------
+
+# =========================================================== #
+#                         D R I V E S                         #
+# ----------------------------------------------------------- #
 
 func update_drives(tick):
 	# updates the pet's drive meters (mood, hunger, etc)
+	var delta_energy = calc_energy_delta()
+	energy += delta_energy
+	belly += calc_belly_delta(delta_energy)
+#	social += calc_social_delta()
+	emit_signal("drives_changed")
+
+# -----------------------------------------------------------
+
+func calc_energy_delta():
+	var action_val = (current_action.energy_mod / 12.0
+			if current_action else -0.005)
+	var vig_mod = traits.vigor * 2
+	var delta_energy = 0.0
+	if action_val > 0: 
+		delta_energy = action_val * vig_mod
+	else: 
+		delta_energy = action_val * (2.0 - vig_mod)
+	return delta_energy
+
+# -----------------------------------------------------------
+
+func calc_belly_delta(delta_energy):
+	var base_rate = -0.28 # full to starving in ~30h
+	var app_mod = traits.appetite * 2.0
+	# if energy is increasing, decrease belly decay rate.
+	# divide by max energy, then factor in a multiplier
+	var energy_mod = 1 - ((delta_energy / 100.0) * 50.0)
+	var delta_belly = base_rate * app_mod * energy_mod
+	return delta_belly
+
+# -----------------------------------------------------------
+
+func calc_social_delta():
 	pass
 
 # -----------------------------------------------------------
@@ -106,7 +146,10 @@ func recalc_attributes():
 	# on the traits that feed into them
 	pass
 
-# -----------------------------------------------------------
+
+# =========================================================== #
+#                    I N T E R A C T I O N                    #
+# ----------------------------------------------------------- #
 
 func highlight():
 	# possibly a third (or rather first) interaction state:
@@ -116,7 +159,6 @@ func highlight():
 	# targeting scheme, where they must press action to focus
 	# and then again to select)
 	print("hi im highlighted")
-	print(to_json(serialize()))
 	pass
 
 # -----------------------------------------------------------

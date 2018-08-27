@@ -1,13 +1,13 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://garden/garden.gd" type="Script" id=1]
 [ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=2]
 [ext_resource path="res://garden/camera.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/garden/terrains.png" type="Texture" id=4]
 [ext_resource path="res://garden/cursor.tscn" type="PackedScene" id=5]
-[ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture" id=6]
-[ext_resource path="res://monster/monster.tscn" type="PackedScene" id=7]
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=8]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=6]
+[ext_resource path="res://ui/garden/clock_hud.tscn" type="PackedScene" id=7]
+[ext_resource path="res://ui/garden/select_hud.tscn" type="PackedScene" id=8]
 
 [sub_resource type="TileSet" id=1]
 
@@ -49,11 +49,6 @@ tracks/0/keys = {
 "values": [ Color( 0.400681, 0.34639, 0.550781, 1 ) ]
 }
 
-[sub_resource type="CircleShape2D" id=3]
-
-custom_solver_bias = 0.0
-radius = 5.0
-
 [sub_resource type="GDScript" id=4]
 
 resource_name = "add_monster_button"
@@ -80,6 +75,7 @@ _sections_unfolded = [ "Resource" ]
 
 [node name="garden" type="Control"]
 
+pause_mode = 1
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -93,7 +89,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 script = ExtResource( 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+_sections_unfolded = [ "Anchor", "Margin", "Pause", "Rect" ]
 
 [node name="bg" type="TextureRect" parent="." index="0"]
 
@@ -180,45 +176,6 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 _sections_unfolded = [ "Anchor", "Hint", "Margin" ]
 
-[node name="item" type="RigidBody2D" parent="entities" index="0"]
-
-position = Vector2( 229, 154 )
-input_pickable = false
-collision_layer = 1
-collision_mask = 1
-mode = 0
-mass = 1.0
-friction = 1.0
-bounce = 0.0
-gravity_scale = 0.0
-custom_integrator = false
-continuous_cd = 0
-contacts_reported = 0
-contact_monitor = false
-sleeping = false
-can_sleep = true
-linear_velocity = Vector2( 0, 0 )
-linear_damp = -1.0
-angular_velocity = 0.0
-angular_damp = -1.0
-_sections_unfolded = [ "Angular", "Applied Forces", "Linear" ]
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="sprite" type="Sprite" parent="entities/item" index="0"]
-
-texture = ExtResource( 6 )
-_sections_unfolded = [ "Animation", "Offset", "Region" ]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="entities/item" index="1"]
-
-shape = SubResource( 3 )
-
-[node name="monster" parent="entities" index="1" instance=ExtResource( 7 )]
-
-position = Vector2( 206, 143 )
-
 [node name="CanvasLayer" type="CanvasLayer" parent="." index="6"]
 
 layer = 1
@@ -244,7 +201,7 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-theme = ExtResource( 8 )
+theme = ExtResource( 6 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -254,5 +211,19 @@ flat = false
 align = 1
 script = SubResource( 4 )
 _sections_unfolded = [ "Anchor", "Theme", "Visibility" ]
+
+[node name="ui" type="CanvasLayer" parent="." index="7"]
+
+layer = 1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="clock_hud" parent="ui" index="0" instance=ExtResource( 7 )]
+
+[node name="select_hud" parent="ui" index="1" instance=ExtResource( 8 )]
+
+visible = false
 
 

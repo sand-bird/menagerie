@@ -39,9 +39,12 @@ const DEFAULT_MENU_PAGE = "options"
 # open menu page, so we'll keep track of it here instead
 var last_menu_page
 
+var ui_node
+
 var stack = []
 
 func _ready():
+	pause_mode = Node.PAUSE_MODE_PROCESS
 	Dispatcher.connect("ui_open", self, "open")
 	Dispatcher.connect("ui_close", self, "close")
 	Dispatcher.connect("menu_open", self, "open_menu")
@@ -69,6 +72,7 @@ func _ready():
 #    the replaced elements, if there are any, should be 
 #    restored when this element is closed. defaults to true.
 func open(args):
+	get_tree().paused = true
 	Log.debug(self, ["opening: ", args])
 	# set up vars
 	var item_ref
@@ -110,9 +114,11 @@ func open(args):
 # was already removed). this will help with cases that can't
 # be handled elegantly using layer values.
 func close(arg = null):
-	var item = pop()
+	var item = pop(arg) if typeof(arg) == TYPE_INT else pop(find_item(arg))
 	if item.has("restore") and item.restore:
 		for stack_item in item.restore: push(stack_item)
+	if stack.empty():
+		get_tree().paused = false
 
 # -----------------------------------------------------------
 
@@ -124,6 +130,7 @@ func close(arg = null):
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
+	var noarg = true if page == null else false
 	if !page: page = last_menu_page
 	if !page: page = DEFAULT_MENU_PAGE
 	last_menu_page = page
@@ -131,13 +138,21 @@ func open_menu(arg = null):
 	var menu_path = process_ref("main_menu")
 	Log.debug(self, ["opening menu. stack: ", stack])
 	
-	match stack:
-		[_, {"path": menu_path, ..}, ..]:
-			Log.debug(self, "menu already present in stack!")
-			return
+	var menu_index = find_item(menu_path, false)
+	if menu_index != null:
+		Log.debug(self, "menu already present in stack!")
+		if noarg: close(menu_index)
+		return
 	
 	var menu = open(menu_path)
 	menu.open(page)
+
+# -----------------------------------------------------------
+
+func open_select(arg):
+	var selected = Utils.unpack(arg)
+	var select_ui = open(process_ref("garden/select_hud"))
+	select_ui.initialize(selected)
 
 
 # =========================================================== #
@@ -173,7 +188,7 @@ func push(item):
 	var node = load_node(item.path)
 	item.node = node
 	stack.push_back(item)
-	add_child(node)
+	ui_node.add_child(node)
 	Log.verbose(self, ["pushed: ", item])
 	Log.verbose(self, ["stack: ", stack])
 	
@@ -252,3 +267,29 @@ func get_next_layer():
 			if element.layer > max_layer: 
 				max_layer = element.layer
 	return max_layer + 1
+
+# -----------------------------------------------------------
+
+# the `process` argument lets us skip processing the ref if
+# we know it's been processed already (assuming the argument
+# is an item_ref and not a node pointer)
+func find_item(arg, process = true):
+	if arg == null: return
+	elif typeof(arg) == TYPE_STRING:
+		return find_item_by_path(arg, process)
+	elif typeof(arg) == TYPE_OBJECT:
+		return find_item_by_node(arg)
+
+# -----------------------------------------------------------
+
+func find_item_by_path(ref, process = true):
+	var path = process_ref(ref) if process else ref
+	if !path: return
+	for i in stack.size():
+		if stack[i].path == path: return i
+
+# -----------------------------------------------------------
+
+func find_item_by_node(node):
+	for i in stack.size():
+		if stack[i].node == node: return i
