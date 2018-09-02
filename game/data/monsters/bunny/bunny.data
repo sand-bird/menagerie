@@ -1,0 +1,75 @@
+{
+  "id": "bunny",
+  "type": "monster",
+  "name": {
+    "en": "Bunny"
+  },
+  "description": {
+    "en": "It's bunny!"
+  },
+  "gender_ratio": 0.5,
+  "size": {
+    "x": 20,
+    "y": 18
+  },
+  "morphs": {
+    "sprout": {
+      "name": {
+        "en": "Sprout"
+      },
+      "animations": {
+        "idle": {
+          "front":
+          {
+            "sprites": "~idle_front.png",
+            "frames": 4,
+            "fps": 2.0
+          },
+          "back": {
+            "sprites": "~idle_back.png",
+            "frames": 4,
+            "fps": 2.0
+          }
+        },
+        "walk": {
+          "front": {
+            "sprites": "~walk_front.png",
+            "frames": 4,
+            "fps": 4.0
+          },
+          "back": {
+            "sprites": "~walk_back.png",
+            "frames": 4,
+            "fps": 4.0
+          }
+        },
+        "sleep": {
+          "front": {
+            "sprites": "~sleep_front.png",
+            "frames": 4,
+            "fps": 1.5
+          },
+          "back": {
+            "sprites": "~sleep_back.png",
+            "frames": 4,
+            "fps": 1.5
+          }
+        },
+        "lie_down": {
+          "front": {
+            "sprites": "~pre_sleep_front.png",
+            "frames": 4,
+            "fps": 4.0,
+            "loop": false
+          },
+          "back": {
+            "sprites": "~pre_sleep_back.png",
+            "frames": 4,
+            "fps": 4.0,
+            "loop": false
+          }
+        }
+      }
+    }
+  }
+}

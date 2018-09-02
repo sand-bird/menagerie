@@ -15,12 +15,7 @@ var morph
 var birthday
 var mother
 var father
-
-# attributes
-# ----------
-# intelligence, vitality, constitution, charm, amiability, 
-# and spirit. full names are used because "int" is reserved
-var attributes = {}
+#var facing = "front"
 
 # memory
 # ------
@@ -35,13 +30,47 @@ var mood
 var energy
 var social
 
-# traits
-# ------
-# iq, learning, size, strength, health, composure, willpower, 
-# patience, confidence, beauty, poise, independence, empathy, 
-# kindness, arrogance, aggressiveness, happiness, loyalty,
-# actualization, openness, appetite, sociability
-var traits = {}
+
+# personality
+# -----------
+var attributes = {
+	intelligence = 0,
+	vitality = 0,
+	constitution = 0,
+	charm = 0,
+	amiability = 0,
+	spirit = 0
+}
+var traits = {
+	# INT
+	iq = 0,
+	learning = 0,
+	# VIT
+	size = 0,
+	strength = 0,
+	vigor = 0,
+	# CON
+	composure = 0,
+	patience = 0,
+	# CHA
+	confidence = 0,
+	beauty = 0,
+	poise = 0,
+	# AMI
+	kindness = 0,
+	empathy = 0,
+	humility = 0,
+	aggressiveness = 0,
+	# SPI
+	happiness = 0,
+	loyalty = 0,
+	actualization = 0,
+	# N/A
+	openness = 0,
+	appetite = 0,
+	pep = 0,
+	sociability = 0
+}
 
 # preferences
 # -----------
@@ -59,17 +88,59 @@ func _ready():
 
 # -----------------------------------------------------------
 
+#func play_animation(anim_id):
+#	if !$sprite/anim.has_animation(anim_id + "_" + facing):
+#		add_animation(anim_id, facing)
+#	$sprite/anim.play(anim_id + "_" + facing)
+
+# -----------------------------------------------------------
+
 func initialize(data):
 	deserialize(data)
-	var sprite_data = data.sprite
-	$sprite.texture = Data.get_resource([type, "morphs", morph, 
-			"sprites", "front"])
-	$sprite.flip_h = sprite_data.flip
+	var anim_data = Data.get([type, "morphs", morph, "animations"])
+	for anim in anim_data:
+		add_animation(anim, "front")
+		add_animation(anim, "back")
+	
+	$sprite/anim.play("idle_front", 5.0)
+	$sprite/anim.play("walk_front")
+
+# -----------------------------------------------------------
+
+func add_animation(anim_id, facing):
+	var anim_info = Data.get([type, "morphs", morph, 
+			"animations", anim_id, facing])
+#	$sprite_old.hframes = anim_info.frames
+#	$sprite_old.texture = spritesheet
+
+	var anim = Animation.new()
+	anim.step = 1.0 / anim_info.fps
+	anim.length = anim.step * anim_info.frames
+	anim.loop = anim_info.loop if anim_info.has("loop") else true
+	
+	anim.add_track(0)
+	anim.track_set_path(0, ".:texture")
+	var spritesheet = ResourceLoader.load(anim_info.sprites)
+	anim.track_insert_key(0, 0.0, spritesheet)
+	
+	anim.add_track(0)
+	anim.track_set_path(1, ".:hframes")
+	anim.track_insert_key(1, 0.0, anim_info.frames)
+	
+	anim.add_track(0)
+	anim.track_set_path(2, ".:frame")
+	anim.track_set_interpolation_loop_wrap(2, false)
+	for frame in range(anim_info.frames + 1):
+		var time = anim.step * frame
+		anim.track_insert_key(2, time, frame)
+	
+	$sprite/anim.add_animation(anim_id + "_" + facing, anim)
 
 # -----------------------------------------------------------
 
 func update_z():
-	z_index = position.y + $sprite.texture.get_height() / 2
+	pass
+	# z_index = position.y + $sprite.texture.get_height() / 2
 
 # -----------------------------------------------------------
 
@@ -141,7 +212,7 @@ func update_preferences():
 
 # -----------------------------------------------------------
 
-func recalc_attributes(): 
+func update_attributes(): 
 	# INT, VIT, CON... these are supposed to depend directly
 	# on the traits that feed into them
 	pass

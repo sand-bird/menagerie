@@ -8,28 +8,72 @@
     "en": "A fluffy pig-like monster with a superb sense of smell. Intelligent and gentle, Pufig make great pets for children and families."
   },
   "gender_ratio": 0.5,
+  "size": {
+    "x": 20,
+    "y": 18
+  },
   "morphs": {
     "pink": {
       "name": {
         "en": "Pink"
       },
       "animations": {
-        "idle_front": [
-          {
-            "spritesheet": "~pufig/pufig_idle1_front.png",
-            "vframes": 2,
-            "hframes": 2
-          },
-          {
-            "spritesheet": "~/pufig/pufig_idle2_front.png",
-            "rows": 2,
-            "columns": 2
+        "idle": {
+          "front": [
+            {
+              "sprites": "~pink/idle_front_left.png",
+              "frames": 6
+            },
+            {
+              "sprites": "~pink/idle_front_right.png",
+              "frames": 6
+            }
+          ],
+          "back": {
+            "sprites": "~pink/idle_back.png",
+            "frames": 6
           }
-        ]
-      },
-      "sprites": {
-        "front": "~pufig/pufig.png",
-        "back": "~/pufig/pufig_back.png"
+        },
+        "walk": {
+          "front": {
+            "spritesheet": "~pink/walk_front.png",
+            "frames": 6
+          },
+          "back": {
+            "spritesheet": "~pink/walk_back.png",
+            "frames": 6
+          }
+        },
+        "run": {
+          "front": {
+            "spritesheet": "~pink/run_front.png",
+            "frames": 6
+          },
+          "back": {
+            "spritesheet": "~pink/run_back.png",
+            "frames": 6
+          }
+        },
+        "sleep": {
+          "front": {
+            "spritesheet": "~pink/sleep_front.png",
+            "frames": 6
+          },
+          "back": {
+            "spritesheet": "~pink/sleep_back.png",
+            "frames": 6
+          }
+        },
+        "eat": {
+          "front": {
+            "spritesheet": "~pink/eat_front.png",
+            "frames": 6
+          },
+          "back": {
+            "spritesheet": "~pink/eat_back.png",
+            "frames": 6
+          }
+        }
       }
     }
   },
