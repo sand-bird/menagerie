@@ -6,13 +6,6 @@ const days = [ "monday", "tuesday", "wednesday",
 const months = [ "verne", "tempest", "zenith", 
 	"sol", "hearth", "hallow", "aurora", "rime" ]
 
-# qualifiers for get_total_time
-const YEAR = "year"
-const MONTH = "month"
-const DATE = "date"
-const HOUR = "hour"
-const TICK = "tick"
-
 const ACTUAL_SECONDS_IN_TICK = 0.5
 const TICKS_IN_HOUR = 12
 const HOURS_IN_DAY = 24

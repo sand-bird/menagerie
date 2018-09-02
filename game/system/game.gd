@@ -1,15 +1,16 @@
 extends Node
 
+var garden
+
 func _ready():
 	Dispatcher.connect("new_game", self, "new_game")
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
-
+	
 	Data.init()
 	UI.ui_node = get_node("ui")
 	Dispatcher.emit_signal("ui_open", "title_screen")
-
 
 
 # =========================================================== #
@@ -31,6 +32,7 @@ func load_game(save_dir):
 	var data = SaveManager.load_game(save_dir)
 	load_player(data.player)
 	load_garden(data.garden)
+	Dispatcher.connect("date_changed", self, "save_game")
 
 # -----------------------------------------------------------
 
@@ -45,7 +47,7 @@ func load_garden(data):
 	# process the garden data. garden is an instanced node,
 	# unlike player and time, and it must instantiate its own
 	# children depending on the contents of the save file.
-	var garden = load("res://garden/garden.tscn").instance()
+	garden = load("res://garden/garden.tscn").instance()
 	add_child(garden)
 	garden.init(data)
 	Dispatcher.emit_signal("ui_close", 0)
@@ -55,7 +57,7 @@ func load_garden(data):
 #                         S A V I N G                         #
 # ----------------------------------------------------------- #
 
-func save_game():
+func save_game(arg = null):
 	SaveManager.save_game({ 
 		"player": save_player(), 
 		"garden": save_garden()
@@ -66,13 +68,13 @@ func save_game():
 func save_player():
 	var data = Player.serialize()
 	data.time = Time.serialize()
-	#data.monster_count = garden.get_monsters().size()
+	data.monster_count = garden.monsters.size() if garden else 0
 	return data
 
 # -----------------------------------------------------------
 
 func save_garden():
-	return $garden.serialize()
+	if garden: return garden.serialize()
 
 # -----------------------------------------------------------
 

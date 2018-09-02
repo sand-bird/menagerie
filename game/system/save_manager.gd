@@ -167,8 +167,3 @@ func create_dirname(name):
 		if i == ' ':
 			newstr += '_'
 	return newstr.to_lower() + "_" + str(OS.get_unix_time())
-
-# -----------------------------------------------------------
-
-func set_autosave_interval(interval):
-	Time.connect("hour_changed", self, "save_game")

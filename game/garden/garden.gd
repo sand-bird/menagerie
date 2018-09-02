@@ -37,7 +37,6 @@ var objects = {}
 func _ready():
 	Dispatcher.connect("entity_highlighted", self, "highlight")
 	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
-	Dispatcher.connect("menu_open", self, "pause")
 
 func init(data):
 	Log.info(self, "initializing!")
@@ -111,7 +110,7 @@ func deserialize(data):
 # -----------------------------------------------------------
 
 func save_terrain(): 
-	var size = $terrain.get_used_rect()
+	var size = $terrain.get_used_rect().size
 	var data = []
 	data.resize(size.y)
 	for y in range(size.y):
@@ -128,7 +127,7 @@ func load_terrain(data):
 	rect_size = Vector2(data[0].size(), data.size()) * $terrain.cell_size
 	Log.debug(self, ["garden size: ", rect_size])
 	Log.debug(self, ["terrain used rect: ", $terrain.get_used_rect()])
-	Log.debug(self, ["terrain used cells: ", $terrain.get_used_cells()])
+	Log.verbose(self, ["terrain used cells: ", $terrain.get_used_cells()])
 
 # -----------------------------------------------------------
 
@@ -151,7 +150,7 @@ func save_monsters():
 	var data = {}
 	for uid in monsters:
 		data[uid] = monsters[uid].serialize()
-	print(data)
+	return data
 
 func load_monsters(data):
 	for uid in data:

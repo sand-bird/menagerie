@@ -11,8 +11,9 @@ func update(entity = null):
 		hide()
 		return
 	show()
-	target = entity
-	target.connect("drives_changed", self, "update_monster")
+	if target != entity:
+		target = entity
+		target.connect("drives_changed", self, "update_monster")
 	match entity.entity_type:
 		# TODO: connect to monster so we can update on the fly
 		EntityType.MONSTER: update_monster()

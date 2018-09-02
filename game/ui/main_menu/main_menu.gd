@@ -65,7 +65,7 @@ func new_tab(id, data):
 func set_current(val):
 	if current == val: return # already current
 	current = val
-	Log.debug(self, ["setting current chapter: ", current])
+	Log.debug(self, ["setting current chapter: '", current, "'"])
 	var tabs = $content/tabs.get_children()
 	for i in tabs.size():
 		if tabs[i].id == current:
@@ -81,8 +81,8 @@ func open(input = null):
 	var chapter = Utils.unpack(input)
 	if chapter == null: chapter = current
 	# update current_page (this is the page's string id)
-	Log.debug(self, ["opening chapter: `", chapter, "`, current: ", 
-			("`" + current + "`") if current else "(none)"])
+	Log.debug(self, ["opening chapter: '", chapter, "' | current: ", 
+			("'" + current + "'") if current else "(none)"])
 	if chapter == current or !(chapter in chapters.keys()): return
 	set_current(chapter) # also updates tab z-indices
 	

@@ -14,24 +14,7 @@ var level
 
 # the big boys
 var encyclopedia = {}
-var inventory = [
-	{
-		id = "fluffy_tuft",
-		qty = 1
-	},
-		{
-		id = "fluffy_tuft",
-		qty = 2
-	},
-	{
-		id = "an_object",
-		qty = 1
-	},
-	{
-		id = "test_not_found",
-		qty = 1
-	}
-]
+var inventory = []
 
 # this should store the letter fragments the player has seen,
 # and how often they've occurred (i guess)
@@ -53,7 +36,7 @@ var completed_requests
 # (note: should this be a property of the npc instance? makes
 # sense intuitively, but in practice it's probably better to
 # centralize that info here, especially since it comes from 
-#player.save)
+# player.save)
 var relationships
 
 # -----------------------------------------------------------
