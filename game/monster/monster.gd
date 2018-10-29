@@ -102,8 +102,7 @@ func initialize(data):
 		add_animation(anim, "front")
 		add_animation(anim, "back")
 	
-	$sprite/anim.play("idle_front", 5.0)
-	$sprite/anim.play("walk_front")
+	$sprite/anim.play("idle_front")
 
 # -----------------------------------------------------------
 

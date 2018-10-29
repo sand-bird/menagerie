@@ -3,7 +3,7 @@
 var Status = Constants.ActionStatus
 
 # todo: see if this works
-var id setget , 'get_instance_ID'
+# var id setget , 'get_instance_ID'
 
 func _init():
 	initialize()

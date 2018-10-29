@@ -40,8 +40,8 @@ indicators_enabled=true
 
 window/size/width=384
 window/size/height=212
-window/size/test_width=1152
-window/size/test_height=648
+window/size/test_width=640
+window/size/test_height=420
 window/handheld/emulate_touchscreen=true
 window/stretch/mode="viewport"
 window/stretch/shrink="1"
