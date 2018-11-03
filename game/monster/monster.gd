@@ -15,7 +15,6 @@ var morph
 var birthday
 var mother
 var father
-#var facing = "front"
 
 # memory
 # ------
@@ -75,6 +74,15 @@ var traits = {
 # preferences
 # -----------
 var preferences = {}
+
+# movement
+# --------
+var mass # from entity definition
+# position (Vector2): built-in property
+var orientation = Vector2(0, 0) # get "facing" for animations
+var velocity = Vector2(0, 0) # action property?
+# action properties:
+# max_force (scalar), max_speed (scalar)
 
 
 # =========================================================== #
@@ -166,8 +174,9 @@ func choose_action():
 #                         D R I V E S                         #
 # ----------------------------------------------------------- #
 
+# updates the pet's drive meters (mood, hunger, etc). called
+# once per "tick" unit of game time (~0.5 seconds)
 func update_drives(tick):
-	# updates the pet's drive meters (mood, hunger, etc)
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)
@@ -176,10 +185,24 @@ func update_drives(tick):
 
 # -----------------------------------------------------------
 
+const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
+
+# actions are defined with `energy_mod` values that describe
+# how fast a pet loses (or recovers) energy while performing
+# the action. these are in delta energy PER HOUR (positive
+# for recovery, negative for drain), but since the drive is
+# updated every tick, we must first translate `energy_mod`
+# to its per-tick equivalent.
+#
+# vigor is stored as a float from 0 to 1; we translate it to
+# 0 to 2 so we can use it as a multiplier. vigor has a
+# positive effect on energy recovery and an INVERSE effect on
+# energy drain, so we must invert the multiplier if the delta
+# energy will be negative.
 func calc_energy_delta():
-	var action_val = (current_action.energy_mod / 12.0
-			if current_action else -0.005)
-	var vig_mod = traits.vigor * 2
+	var action_val = (current_action.energy_mod / Time.TICKS_IN_HOUR
+			if current_action else DEFAULT_ENERGY_DECAY)
+	var vig_mod = traits.vigor * 2.0
 	var delta_energy = 0.0
 	if action_val > 0: 
 		delta_energy = action_val * vig_mod
@@ -189,13 +212,26 @@ func calc_energy_delta():
 
 # -----------------------------------------------------------
 
+const BASE_BELLY_DECAY = -0.28 # full to starving in ~30h
+const D_ENERGY_FACTOR = 0.5
+
+# unlike delta energy, delta belly is always negative (pets
+# recover belly in chunks, via EAT actions on food items).
+#
+# delta belly is modified by our appetite trait (converted to
+# a multiplier, as with vigor) and our current delta energy,
+# which means delta energy must always be calculated first.
+#
+# if delta energy is positive (recovery), our d_energy_mod
+# multiplier is < 1, causing belly to drain slower; if it's
+# negative, the modifier is > 1, which will drain it faster.
+# we use a magic number to adjust the strength of the effect.
 func calc_belly_delta(delta_energy):
-	var base_rate = -0.28 # full to starving in ~30h
+	var base_rate = BASE_BELLY_DECAY
 	var app_mod = traits.appetite * 2.0
 	# if energy is increasing, decrease belly decay rate.
-	# divide by max energy, then factor in a multiplier
-	var energy_mod = 1 - ((delta_energy / 100.0) * 50.0)
-	var delta_belly = base_rate * app_mod * energy_mod
+	var d_energy_mod = 1.0 - (delta_energy * D_ENERGY_FACTOR)
+	var delta_belly = base_rate * app_mod * d_energy_mod
 	return delta_belly
 
 # -----------------------------------------------------------
@@ -298,16 +334,17 @@ func _on_action_finished():
 #                  S E R I A L I Z A T I O N                  #
 # ----------------------------------------------------------- #
 
+const serial_keys = [
+	"monster_name", "type", "morph", 
+	"birthday", "mother", "father",
+	"traits", "preferences",
+	"belly", "mood", "energy", "social",
+	"past_actions", "current_action", "next_action"
+]
+
 func serialize():
-	var keys = [
-		"monster_name", "type", "morph", 
-		"birthday", "mother", "father",
-		"traits", "preferences",
-		"belly", "mood", "energy", "social",
-		"past_actions", "current_action", "next_action"
-	]
 	var data = {}
-	for key in keys:
+	for key in serial_keys:
 		data[key] = self[key]
 	data.position = {x = position.x, y = position.y}
 	# if we decide to use objects for traits (and attributes),
@@ -319,14 +356,7 @@ func serialize():
 # -----------------------------------------------------------
 
 func deserialize(data):
-	var keys = [
-		"monster_name", "type", "morph", 
-		"birthday", "mother", "father",
-		"traits", "preferences",
-		"belly", "mood", "energy", "social",
-		"past_actions", "current_action", "next_action"
-	]
-	for key in keys:
+	for key in serial_keys:
 		self[key] = data[key]
 	position.x = data.position.x
 	position.y = data.position.y
