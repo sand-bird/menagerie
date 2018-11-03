@@ -7,15 +7,15 @@ func _init():
 	id = generate_uuid()
 
 func tick(target, blackboard):
-	var tick = new Tick(target, blackboard, self)
+	var tick = Tick.new(target, blackboard, self)
 	root.execute(tick)
 	
 	var last_open_actions = blackboard.get('open_actions', self.id)
 	var curr_open_actions = tick.open_actions.slice(0) # ?
 	
 	var start = 0
-	while start < min(last_open_actions.length, curr_open_actions.length)
-			and last_open_actions[start] == curr_open_actions[start]:
+	while (start < min(last_open_actions.length, curr_open_actions.length)
+			and last_open_actions[start] == curr_open_actions[start]):
 		start += 1
 
 #	for i in min(last_open_actions.length, curr_open_actions.length):
