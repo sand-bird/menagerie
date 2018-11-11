@@ -190,13 +190,16 @@ func get_output_strategy(level):
 		TYPE_ARRAY:
 			return output_strategies[level]
 
-func put(level, nodename, message):
+func put(level, node, message):
+	if typeof(node) == TYPE_OBJECT and "name" in node:
+		node = node.name
+	
 	var output_strategy = get_output_strategy(level)
 	
 	if output_strategy == STRATEGY_MUTE or output_level > level:
 		return # Out of scope
 	
-	var output = format(output_format, level, nodename, format_message(message))
+	var output = format(output_format, level, node, format_message(message))
 	
 	if output_strategy & STRATEGY_PRINT:
 		print(output)
@@ -217,19 +220,19 @@ func put(level, nodename, message):
 # -------------------------------
 
 func verbose(node, message):
-	put(VERBOSE, node.name, message)
+	put(VERBOSE, node, message)
 
 func debug(node, message):
-	put(DEBUG, node.name, message)
+	put(DEBUG, node, message)
 
 func info(node, message):
-	put(INFO, node.name, message)
+	put(INFO, node, message)
 
 func warn(node, message):
-	put(WARN, node.name, message)
+	put(WARN, node, message)
 
 func error(node, message):
-	put(ERROR, node.name, message)
+	put(ERROR, node, message)
 
 
 # Output formatting
