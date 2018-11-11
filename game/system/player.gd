@@ -63,17 +63,24 @@ const SAVE_KEYS = [
 	"requests", "completed_requests",
 ]
 
+# -----------------------------------------------------------
+
 func serialize():
 	var data = {}
 	update_playtime()
 	for k in SAVE_KEYS: data[k] = self[k]
 	return data
 
+# -----------------------------------------------------------
+
 func deserialize(data):
 	for k in SAVE_KEYS: self[k] = data[k]
 	last_update_time = OS.get_unix_time()
 
-# -----------------------------------------------------------
+
+# =========================================================== #
+#                       P L A Y T I M E                       #
+# ----------------------------------------------------------- #
 
 func update_playtime():
 	var current_time = OS.get_unix_time()
@@ -82,6 +89,8 @@ func update_playtime():
 	Log.info(self, ["Updated playtime: ", playtime, 
 			" (difference: ", playtime_difference, ")"])
 	last_update_time = current_time
+
+# -----------------------------------------------------------
 
 func get_printable_playtime(time = null):
 	if time == null:
@@ -93,5 +102,3 @@ func get_printable_playtime(time = null):
 	var hour = int(time / 60)
 	var minute = int(time) % 60
 	return str(hour) + ":" + str(minute).pad_zeros(2)
-
-# -----------------------------------------------------------

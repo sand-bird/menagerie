@@ -28,7 +28,7 @@ const lookup_func = {
 	"<=": "_less_than_equals",
 	"in": "_in",
 	
-	# separator operators
+	# separator operators (expanded seperators)
 	"map": "_map",
 	"get": "_get",
 	
@@ -257,7 +257,6 @@ func eval_sigil(arg, caller, parent):
 		'@': return caller[Utils.strip_sigil(arg)]
 		'*': return parent
 	return arg
-
 
 #                     s e p e r a t o r s                    
 # -----------------------------------------------------------

@@ -13,7 +13,7 @@ func _init(target, blackboard, tree):
 	self.tree = tree
 
 func enter_action(action):
-	action_count++
+	action_count += 1
 	open_actions.push(action)
 	print("action entered: ", action)
 

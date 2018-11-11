@@ -29,6 +29,8 @@ func get_save_list():
 	saves.sort_custom(self, "sort_by_date")
 	return saves
 
+# ------------------------------------------------------------
+
 func sort_by_date(a, b):
 	var file = File.new()
 	return (file.get_modified_time(get_path(a, PLAYER)) 

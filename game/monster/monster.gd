@@ -396,7 +396,7 @@ func _on_action_finished():
 #                  S E R I A L I Z A T I O N                  #
 # ----------------------------------------------------------- #
 
-const serial_keys = [
+const SAVE_KEYS = [
 	"monster_name", "type", "morph", 
 	"birthday", "mother", "father",
 	"traits", "preferences",
@@ -404,9 +404,11 @@ const serial_keys = [
 	"past_actions", "current_action", "next_action"
 ]
 
+# -----------------------------------------------------------
+
 func serialize():
 	var data = {}
-	for key in serial_keys:
+	for key in SAVE_KEYS:
 		data[key] = self[key]
 	data.position = {x = position.x, y = position.y}
 	# if we decide to use objects for traits (and attributes),
@@ -418,7 +420,7 @@ func serialize():
 # -----------------------------------------------------------
 
 func deserialize(data):
-	for key in serial_keys:
+	for key in SAVE_KEYS:
 		self[key] = data[key]
 	position.x = data.position.x
 	position.y = data.position.y
