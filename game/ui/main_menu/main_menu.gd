@@ -74,7 +74,6 @@ func set_current(val):
 			prev = tabs[i - 1].id if i > 0 else tabs[tabs.size() - 1].id
 		else: tabs[i].is_current = false
 
-
 # -----------------------------------------------------------
 
 func open(input = null):
