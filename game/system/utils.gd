@@ -22,6 +22,30 @@ static func load_resource(res_path, res_fn, ext = "png"):
 	Log.debug(Utils, ["loading resource: ", path])
 	return ResourceLoader.load(path)
 
+# -----------------------------------------------------------
+
+func write_file(path, data):
+	Log.info(Utils, ["writing file: ", path])
+	Log.verbose(Utils, data)
+	var file = File.new()
+	file.open(path, File.WRITE)
+	file.store_string(to_json(data))
+	file.close()
+
+# -----------------------------------------------------------
+
+func read_file(path):
+	Log.info(Utils, ["reading file: ", path])
+	var file = File.new()
+	if !file.file_exists(path): 
+		Log.warn(Utils, ["could not load `", path, "`: file does not exist!"])
+		return null
+	file.open(path, File.READ)
+	var data = parse_json(file.get_as_text())
+	file.close()
+	Log.verbose(Utils, data)
+	return data
+
 
 # =========================================================== #
 #                         A R R A Y S                         #

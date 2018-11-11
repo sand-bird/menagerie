@@ -45,7 +45,7 @@ func sort_by_date(a, b):
 # - player monsters
 func get_save_info(save_dir):
 	var save_info = {}
-	var data = read_file(get_path(save_dir, PLAYER))
+	var data = Utils.read_file(get_path(save_dir, PLAYER))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data[k]
 	save_info.encyclopedia = data.encyclopedia.completion
@@ -88,44 +88,17 @@ func new_save(pname):
 # -----------------------------------------------------------
 
 func save_game(data, save_dir = current_save_dir):
-	write_file(get_path(save_dir, PLAYER), data.player)
-	write_file(get_path(save_dir, GARDEN), data.garden)
+	Utils.write_file(get_path(save_dir, PLAYER), data.player)
+	Utils.write_file(get_path(save_dir, GARDEN), data.garden)
 
 # -----------------------------------------------------------
 
 func load_game(save_dir):
 	current_save_dir = save_dir
 	return {
-		"player": read_file(get_path(save_dir, PLAYER)),
-		"garden": read_file(get_path(save_dir, GARDEN)),
+		"player": Utils.read_file(get_path(save_dir, PLAYER)),
+		"garden": Utils.read_file(get_path(save_dir, GARDEN)),
 	}
-
-
-# =========================================================== #
-#                       F I L E   I / O                       #
-# ----------------------------------------------------------- #
-
-func write_file(path, data):
-	Log.info(self, ["writing file: ", path])
-	Log.verbose(self, data)
-	var file = File.new()
-	file.open(path, File.WRITE)
-	file.store_string(to_json(data))
-	file.close()
-
-# -----------------------------------------------------------
-
-func read_file(path):
-	Log.info(self, ["reading file: ", path])
-	var file = File.new()
-	if !file.file_exists(path): 
-		Log.warn(self, ["could not load `", path, "`: file does not exist!"])
-		return null
-	file.open(path, File.READ)
-	var data = parse_json(file.get_as_text())
-	file.close()
-	Log.verbose(self, data)
-	return data
 
 
 # =========================================================== #

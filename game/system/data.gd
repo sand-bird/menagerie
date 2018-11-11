@@ -93,7 +93,7 @@ func filter(a):
 # fetches modconfig from the place where we keep it. if there
 # is no modconfig, we make one (duh).
 func load_modconfig():
-	var modconfig = SaveManager.read_file(MOD_DIR.plus_file(".modconfig"))
+	var modconfig = Utils.read_file(MOD_DIR.plus_file(".modconfig"))
 	if !modconfig: modconfig = {
 		"load_order": [],
 		"mods": {}
@@ -103,7 +103,7 @@ func load_modconfig():
 # -----------------------------------------------------------
 
 func save_modconfig(modconfig):
-	SaveManager.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+	Utils.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
 
 # -----------------------------------------------------------
 
@@ -124,7 +124,7 @@ func update_modconfig(modconfig):
 		if !dir.current_is_dir(): 
 			current = dir.get_next()
 			continue
-		var modinfo = SaveManager.read_file(path.plus_file("meta.data"))
+		var modinfo = Utils.read_file(path.plus_file("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
 				check_modinfo(modconfig, modinfo, path)
@@ -264,7 +264,7 @@ func load_data(dirname, sourceinfo):
 # the filename, or as a single arg containing the full path.
 func load_datafile(path, sourceinfo):
 	Log.debug(self, ["loading data from file: `", path, "`"])
-	var filedata = SaveManager.read_file(path)
+	var filedata = Utils.read_file(path)
 	if !filedata:
 		Log.error(self, ["error loading data from `", path, "`!"])
 		return
@@ -279,7 +279,7 @@ func load_datafile(path, sourceinfo):
 
 func load_schemafile(path, sourceinfo):
 	Log.debug(self, ["loading schema from file: `", path, "`"])
-	var schema = SaveManager.read_file(path)
+	var schema = Utils.read_file(path)
 	if !schema:
 		Log.error(self, ["error loading schema from `", path, "`!"])
 		return
