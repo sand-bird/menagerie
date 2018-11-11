@@ -65,12 +65,12 @@ func _process(delta):
 	$unstick_area.position = $stick_area.position
 	
 	if is_free: 
-		graphic_dest = Utils.vround(get_global_mouse_position())
+		graphic_dest = get_global_mouse_position().round()
 	
-	var new_graphic_pos = Utils.vround(Utils.vlerp(
-			$graphic.rect_position, graphic_dest, lerp_val))
+	var new_graphic_pos = Utils.vlerp(
+			$graphic.rect_position, graphic_dest, lerp_val).round()
 
-	if (new_graphic_pos == Utils.vround($graphic.rect_position)
+	if (new_graphic_pos == $graphic.rect_position.round()
 			and new_graphic_pos != graphic_dest):
 		$graphic.rect_position = graphic_dest
 	else: 

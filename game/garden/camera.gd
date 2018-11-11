@@ -89,8 +89,8 @@ func get_bounds():
 	var parent_min = base_pos
 	var parent_max = base_pos + parent_size
 	var bound_padding = Utils.vmin(parent_size * 0.2, screen_size * 0.25)
-	min_pos = Utils.vmin(Utils.vround(parent_min - bound_padding), center_pos)
-	max_pos = Utils.vmax(Utils.vround(parent_max + bound_padding - screen_size), center_pos)
+	min_pos = Utils.vmin((parent_min - bound_padding).round(), center_pos)
+	max_pos = Utils.vmax((parent_max + bound_padding - screen_size).round(), center_pos)
 
 # -----------------------------------------------------------
 
@@ -160,7 +160,7 @@ func _physics_process(delta):
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
 	
 	# clamp target to camera bounds
-	target_pos = Utils.vround(Utils.vclamp(target_pos, min_pos, max_pos))
+	target_pos = Utils.vclamp(target_pos, min_pos, max_pos).round()
 	
 	# lerp camera to target position
 	if position != target_pos:
