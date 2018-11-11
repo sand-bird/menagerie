@@ -18,57 +18,56 @@
         "en": "Sprout"
       },
       "animations": {
-        "idle": {
-          "front":
+        "idle": [
           {
-            "sprites": "~idle_front.png",
+            "sprites": "~idle_back_test.png",
             "frames": 4,
             "fps": 2.0
           },
-          "back": {
-            "sprites": "~idle_back.png",
+          {
+            "sprites": "~idle_front_test.png",
             "frames": 4,
             "fps": 2.0
           }
-        },
-        "walk": {
-          "front": {
-            "sprites": "~walk_front.png",
-            "frames": 4,
-            "fps": 4.0
-          },
-          "back": {
+        ],
+        "walk": [
+          {
             "sprites": "~walk_back.png",
             "frames": 4,
             "fps": 4.0
+          },
+          {
+            "sprites": "~walk_front.png",
+            "frames": 4,
+            "fps": 4.0
           }
-        },
-        "sleep": {
-          "front": {
+        ],
+        "sleep": [
+          {
+            "sprites": "~sleep_back.png",
+            "frames": 4,
+            "fps": 1.5
+          },
+          {
             "sprites": "~sleep_front.png",
             "frames": 4,
             "fps": 1.5
           },
-          "back": {
-            "sprites": "~sleep_back.png",
-            "frames": 4,
-            "fps": 1.5
-          }
-        },
-        "lie_down": {
-          "front": {
-            "sprites": "~pre_sleep_front.png",
-            "frames": 4,
-            "fps": 4.0,
-            "loop": false
-          },
-          "back": {
+        ],
+        "lie_down": [
+          {
             "sprites": "~pre_sleep_back.png",
             "frames": 4,
             "fps": 4.0,
             "loop": false
+          },
+          {
+            "sprites": "~pre_sleep_front.png",
+            "frames": 4,
+            "fps": 4.0,
+            "loop": false
           }
-        }
+        ]
       }
     }
   }

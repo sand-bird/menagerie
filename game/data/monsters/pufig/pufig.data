@@ -18,29 +18,28 @@
         "en": "Pink"
       },
       "animations": {
-        "idle": {
-          "front":
+        "idle": [
+          {
+            "sprites": "~pink_idle_back.png",
+            "frames": 1,
+            "fps": 1.0
+          },
           {
             "sprites": "~pink_idle_front.png",
             "frames": 1,
             "fps": 1.0
-          },
-          "back": {
+          }
+        ],
+        "walk": [
+          {
             "sprites": "~pink_idle_back.png",
             "frames": 1,
             "fps": 1.0
-          }
-        },
-        "walk": {
-          "front": {
+          },
+          {
             "sprites": "~pink_walk_front.png",
             "frames": 6,
             "fps": 8.0
-          },
-          "back": {
-            "sprites": "~pink_idle_back.png",
-            "frames": 1,
-            "fps": 1.0
           }
         }
       }

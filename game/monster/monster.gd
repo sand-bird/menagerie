@@ -79,7 +79,7 @@ var preferences = {}
 # --------
 var mass # from entity definition
 # position (Vector2): built-in property
-var orientation = Vector2(0, 0) # get "facing" for animations
+var orientation = Vector2(0, 0) setget _update_orientation
 var velocity = Vector2(0, 0) # action property?
 # action properties:
 # max_force (scalar), max_speed (scalar)
@@ -93,47 +93,117 @@ func _ready():
 #	connect("draw", self, "update_z")
 	Dispatcher.connect("tick_changed", self, "update_drives")
 	update_z()
+	$orientation.cast_to = Vector2(-0, 20)
+	set_physics_process(true)
+	# left: -x
+	# right: +x
+	# back: -y
+	# front: +y
 
-# -----------------------------------------------------------
+var time = 0
+func _physics_process(delta):
+	time += delta
+	var rad = time * 2
+	self.orientation = Vector2(cos(rad), sin(rad))
+	if rad > 2 * PI: time = 0
+	$orientation.cast_to = orientation * 20
 
-#func play_animation(anim_id):
-#	if !$sprite/anim.has_animation(anim_id + "_" + facing):
-#		add_animation(anim_id, facing)
-#	$sprite/anim.play(anim_id + "_" + facing)
+func _update_orientation(new_o):
+	var old_o = orientation
+	orientation = new_o
+	if old_o.ceil() != new_o.ceil(): 
+		update_animation()
 
 # -----------------------------------------------------------
 
 func initialize(data):
 	deserialize(data)
 	var anim_data = Data.get([type, "morphs", morph, "animations"])
-	for anim in anim_data:
-		add_animation(anim, "front")
-		add_animation(anim, "back")
-	
-	$sprite/anim.play("idle_front")
+	for anim_id in anim_data: add_animation(anim_id)
+	play_animation("idle")
+
+
+# =========================================================== #
+#                     A N I M A T I O N S                     #
+# ----------------------------------------------------------- #
+
+var current_animation
+
+func update_animation():
+	var facing = orientation.ceil()
+#	$sprite/anim.current_animation = str(current_animation, "_1_0")
+	var anim_pos = $sprite/anim.current_animation_position
+	$sprite/anim.current_animation = str(current_animation, "_", facing.y, "_", facing.x)
+	$sprite/anim.seek(anim_pos)
+
+func play_animation(anim_id = null):
+	current_animation = anim_id
+	var facing = orientation.ceil()
+#	$sprite/anim.play(str(anim_id, "_1_0"))
+	$sprite/anim.play(str(anim_id, "_", facing.y, "_", facing.x))
 
 # -----------------------------------------------------------
 
-func add_animation(anim_id, facing):
-	var anim_info = Data.get([type, "morphs", morph, 
-			"animations", anim_id, facing])
-#	$sprite_old.hframes = anim_info.frames
-#	$sprite_old.texture = spritesheet
+# creates four animations for a given `anim_id` - one in each
+# facing direction - which are added to the AnimationPlayer
+# for our sprite. the resulting animations are identified by
+# a string in "{anim_id}_{y}_{x}" format, where y and x are
+# either 0 or 1, and represent the monster's front-back and
+# left-right orientation, respectively.
+func add_animation(anim_id):
+	var anims = Data.get([type, "morphs", morph, 
+			"animations", anim_id])
+	
+	for y in anims.size():
+		var anim = anims[y]
+		if typeof(anim) == TYPE_ARRAY:
+			for x in anim:
+				create_animation(anim[x], str(anim_id, "_", y, "_", x))
+		else:
+			create_animation(anim, str(anim_id, "_", y, "_0"))
+			create_animation(anim, str(anim_id, "_", y, "_1"), true)
 
+# -----------------------------------------------------------
+
+# creates an animation for a specific facing direction, using
+# an `anim_info` object from the monster's data definition,
+# and adds it to the AnimationPlayer for our sprite.
+func create_animation(anim_info, anim_name, flip = false):
+	# set the step and length parameters of the new animation
+	# depending on the frame count and fps specified in the
+	# data definition. the `step` parameter will determine the
+	# delay between frames when we insert them.
 	var anim = Animation.new()
 	anim.step = 1.0 / anim_info.fps
 	anim.length = anim.step * anim_info.frames
 	anim.loop = anim_info.loop if anim_info.has("loop") else true
 	
+	# add a track to set our texture to the spritesheet
+	# specified in the data definition
 	anim.add_track(0)
 	anim.track_set_path(0, ".:texture")
 	var spritesheet = ResourceLoader.load(anim_info.sprites)
 	anim.track_insert_key(0, 0.0, spritesheet)
 	
+	# add a track to set the hframes value of our texture
 	anim.add_track(0)
 	anim.track_set_path(1, ".:hframes")
 	anim.track_insert_key(1, 0.0, anim_info.frames)
 	
+	# add a track to set whether our sprite is h-flipped (for 
+	# right-facing animations without unique spritesheets).
+	# the data definition can optionally also specify whether
+	# the sprite should be flipped - in that case, a true value
+	# for the `flip` argument will cancel it out (boolean XOR).
+	var should_flip = (anim_info.flip != flip 
+			if anim_info.has("flip") else flip)
+	anim.add_track(0)
+	anim.track_set_path(1, ".:flip_h")
+	anim.track_insert_key(1, 0.0, should_flip)
+	
+	# add the animation track, with a keyframe for each frame
+	# in the spritesheet at intervals determined by the `step`
+	# parameter we calculated earlier
 	anim.add_track(0)
 	anim.track_set_path(2, ".:frame")
 	anim.track_set_interpolation_loop_wrap(2, false)
@@ -141,21 +211,13 @@ func add_animation(anim_id, facing):
 		var time = anim.step * frame
 		anim.track_insert_key(2, time, frame)
 	
-	$sprite/anim.add_animation(anim_id + "_" + facing, anim)
+	$sprite/anim.add_animation(anim_name, anim)
 
 # -----------------------------------------------------------
 
 func update_z():
 	pass
 	# z_index = position.y + $sprite.texture.get_height() / 2
-
-# -----------------------------------------------------------
-
-func _fixed_process(delta): 
-	if current_action: 
-		var action_status = current_action.execute()
-#		if action_status == Action.FINISHED:
-#			_on_action_finished()
 
 # -----------------------------------------------------------
 
