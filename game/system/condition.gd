@@ -42,12 +42,20 @@ const lookup_func = {
 	"empty": "_empty"
 }
 
-var globals = {
-	"player": Player,
-	"time": Time,
-	"data": Data.data
-	#"garden": get_node("/root/game/garden"),
-}
+# our global refs must be parsed at runtime, since not every
+# global will be a singleton (and we don't want to depend too
+# much on the other singletons being loaded first, anyway).
+# otherwise this would be a dictionary also.
+func resolve_global(arg):
+	match (arg):
+		"player":
+			return Player
+		"time":
+			return Time
+		"data":
+			return Data
+		"garden":
+			return get_node("/root/game/garden")
 
 # -----------------------------------------------------------
 
@@ -164,11 +172,20 @@ func _in(data, caller, parent):
 # the key or property of the former, specified by the latter.
 # (should crash if data doesn't have key)
 func _get(args, caller, parent):
-#	print("get (before): ", to_json(args))
+	Log.verbose(self, ["get (before): ", args])
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
-#	print("get (after): ", to_json([data, key]))
-	if data.has_method("get"): return data.get(key)
+	Log.verbose(self, ["get (after): ", [data, key]])
+	if !data:
+		Log.error(self, ["(_get) failed: collection '", args[0],
+				"' could not be resolved"])
+		return null
+	if key == null:
+		Log.error(self, ["(_get) failed: key '", args[1],
+				"' could not be resolved"])
+		return null
+	if data.has_method("get"):
+		return data.get(key)
 	else: return data[key]
 
 # ----------------------------------------------------------- 
@@ -180,7 +197,7 @@ func _get(args, caller, parent):
 # former, the value corresponding to the key or property 
 # specified by the latter, if such a value exists.
 func _map(args, caller, parent):
-#	print("map (before): ", to_json(args))
+	Log.verbose(self, ["map (before): ", args])
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
 	for item in data:
@@ -188,11 +205,10 @@ func _map(args, caller, parent):
 		if typeof(data) == TYPE_ARRAY: value = item
 		elif typeof(data) == TYPE_DICTIONARY: value = data[item]
 		var key = eval_arg(args[1], caller, value)
-#		print("-----\n args: ", to_json(args), "\n key: ", to_json(key), 
-#				"\n item: ", to_json(item), "\n data: ", to_json(data),
-#				"\n value: ", to_json(value))
+#		Log.verbose(self, ["-----\n args: ", args, "\n key: ", key,
+#				"\n item: ", item, "\n data: ", data, "\n value: ", value])
 		if value.has(key): results.push_back(value[key])
-#	print("map (after): ", to_json(results))
+	Log.verbose(self, ["map (after): ", results])
 	return results
 
 # -----------------------------------------------------------
@@ -212,11 +228,11 @@ func _filter(args, caller, parent):
 
 # accepts a single member, assumed to be an array or a dict.
 func _empty(arg, caller, parent):
-	var data = eval_arg(arg, caller, parent).empty()
+	var data = eval_arg(arg, caller, parent)
 	if typeof(data) == TYPE_ARRAY or typeof(data) == TYPE_DICTIONARY:
 		return data.empty()
 	else:
-		Log.error(self, "(_empty) argument is not a collection!") 
+		Log.warn(self, "(_empty) argument is not a collection!")
 		return true
 
 
@@ -251,7 +267,7 @@ func eval_arg(arg, caller = null, parent = null):
 # or may not have a sigil.
 func eval_sigil(arg, caller, parent):
 	match arg[0]:
-		'$': return globals[Utils.strip_sigil(arg)]
+		'$': return resolve_global(Utils.strip_sigil(arg))
 		'#': return Constants[Utils.strip_sigil(arg
 				).capitalize().replace(' ', '')]
 		'@': return caller[Utils.strip_sigil(arg)]
