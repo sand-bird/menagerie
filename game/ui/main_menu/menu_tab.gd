@@ -12,7 +12,8 @@ func _ready():
 
 func load_info(key, data):
 	id = key
-	$sprite/icon.texture = load(data.icon)
+	$sprite/icon.texture = Utils.load_resource(
+			Constants.UI_ICON_PATH, data.icon)
 
 func set_is_current(val):
 	is_current = val

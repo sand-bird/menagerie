@@ -7,7 +7,6 @@
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=5]
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=6]
 
-
 [sub_resource type="GDScript" id=1]
 
 script/source = "extends \"res://ui/event_button.gd\"
@@ -21,7 +20,7 @@ func update_visibility(control_mode):
 	if control_mode == Constants.ControlMode.TOUCH: show()
 	else: hide()"
 
-[node name="main_menu" type="Control"]
+[node name="main_menu" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -127,16 +126,6 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
-[node name="arrows" parent="content/book" index="2" instance=ExtResource( 5 )]
-
-anchor_left = 0.75
-anchor_right = 0.75
-margin_left = -34.0
-margin_top = 7.0
-margin_right = 34.0
-margin_bottom = 21.0
-_sections_unfolded = [ "Anchor", "Margin" ]
-
 [node name="tabs" type="HBoxContainer" parent="content" index="1"]
 
 show_behind_parent = true
@@ -154,6 +143,16 @@ size_flags_vertical = 1
 custom_constants/separation = 8
 alignment = 1
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Visibility", "custom_constants" ]
+
+[node name="arrows" parent="content" index="2" instance=ExtResource( 5 )]
+
+anchor_left = 0.75
+anchor_right = 0.75
+margin_left = -34.0
+margin_top = 24.0
+margin_right = 34.0
+margin_bottom = 38.0
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Visibility" ]
 
 [node name="close_button" type="Button" parent="." index="1"]
 

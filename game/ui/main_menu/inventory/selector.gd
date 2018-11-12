@@ -11,7 +11,9 @@ func move_to(pos):
 	set_process(true)
 
 func _process(delta):
-	rect_position = rect_position.linear_interpolate(dest_pos, 0.3)
-	if rect_position.distance_squared_to(dest_pos) < 25:
-		rect_position = dest_pos
+	var dest_vector = dest_pos - rect_position
+	rect_position += dest_vector.clamped(max(dest_vector.length() / 4.0, 2.0))
+#	rect_position += rect_position.linear_interpolate(dest_pos, 0.5)
+#	if rect_position.distance_squared_to(dest_pos) < 25:
+#		rect_position = dest_pos
 #		set_process(false)

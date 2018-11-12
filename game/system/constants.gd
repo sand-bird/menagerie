@@ -56,11 +56,14 @@ enum Category {
 const UI_ELEMENT_PATH = "res://assets/ui/elements"
 const UI_PANEL_PATH = "res://assets/ui/panels"
 const UI_ICON_PATH = "res://assets/ui/icons"
+const UI_MENU_PATH = "res://ui/main_menu"
 
 const EVENT_BUTTON_PATH = "res://ui/event_button.gd"
 
 const MONSTER_PATH = "res://monster/monster.tscn"
-# const ITEM_PATH = "res://item/item.tscn"
+const ITEM_PATH = "res://item/item.tscn"
+
+const ROOT_PATH = "/root/game"
 
 # --------- #
 #  ACTIONS  #
@@ -100,4 +103,67 @@ enum InventorySize {
 enum Language {
 	ENGLISH
 	PORTUGUESE
+}
+
+enum Wrap {
+	NONE
+	HORIZONTAL
+	VERTICAL
+}
+
+
+# CONFIG
+
+const INVENTORY_PROPERTIES = {
+	InventorySize.SMALL: {
+		columns = 6,
+		grid_bg = "item_grid_small",
+		selector = "selector_small",
+		selector_size = Vector2(0, 0),
+		grid_offset = Vector2(0, 0),
+		item_size = Vector2(20, 20)
+	},
+	InventorySize.LARGE: {
+		columns = 5,
+		grid_bg = "item_grid_large",
+		selector = "selector_big",
+		selector_size = Vector2(0, 0),
+		grid_offset = Vector2(2, 2),
+		item_size = Vector2(24, 24)
+	}
+}
+
+# we call them chapters, because pages are already a thing
+const MENU_CHAPTERS = {
+	monsters = {
+		icon = "monster",
+		scene = "monsters/monsters",
+		condition = {"not": {"empty": "$garden.monsters"}}
+	},
+	items = {
+		icon = "items",
+		scene = "inventory/items",
+		condition = {"in": ["fluffy_tuft", "$player.inventory:id"]}
+	},
+	objects = {
+		icon = "inventory",
+		scene = "inventory/objects",
+		condition = {"in": ["an_object", "$player.inventory:id"]}
+	},
+	town_map = {
+		icon = "town",
+		scene = "town_map/town_map"
+	},
+	calendar = {
+		icon = "calendar",
+		scene = "calendar/calendar"
+	},
+	encyclopedia = {
+		icon = "encyclopedia",
+		scene = "encyclopedia/encyclopedia"
+	},
+	options = {
+		icon = "options",
+		scene = "options/options"
+	}
 }

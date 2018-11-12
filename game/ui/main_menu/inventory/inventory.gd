@@ -1,25 +1,10 @@
 extends "res://ui/main_menu/menu_chapter.gd"
 
-var InventorySize = Constants.InventorySize
+var Wrap = Constants.Wrap
 
-var properties = {
-	InventorySize.SMALL: {
-		columns = 6,
-		grid_bg = "item_grid_small",
-		selector = "selector_small",
-		selector_size = Vector2(0, 0),
-		grid_offset = Vector2(0, 0),
-		item_size = Vector2(20, 20)
-	},
-	InventorySize.LARGE: {
-		columns = 5,
-		grid_bg = "item_grid_large",
-		selector = "selector_big",
-		selector_size = Vector2(0, 0),
-		grid_offset = Vector2(2, 2),
-		item_size = Vector2(24, 24)
-	}
-}
+onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
+onready var selector_offset = props.grid_offset - Vector2(4, 4)
+onready var columns = props.columns
 
 # as in "inventory item", not as in Item (the specific type
 # of game entity). unfortunately ambiguous, but i couldn't 
@@ -35,10 +20,6 @@ var properties = {
 #   currently disabled.
 onready var items = []
 
-onready var props = properties[Options.inventory_size]
-onready var selector_offset = props.grid_offset - Vector2(4, 4)
-onready var columns = props.columns
-
 # =========================================================== #
 #                 I N I T I A L I Z A T I O N                 #
 # ----------------------------------------------------------- #
@@ -46,38 +27,26 @@ onready var columns = props.columns
 func _ready():
 	Dispatcher.connect("item_selected", self, "update_current_item")
 
-func initialize():
-	init_self()
-	init_item_grid()
-	if items:
-		init_selector()
-		update_current_item(0)
-	.initialize()
+# -----------------------------------------------------------
 
-func init_self():
+func initialize(filter):
+	# init self
+	items = filter_items(filter)
 	columns = props.columns
-	page_count = items.size() / (columns * columns)
-	if items.size() % (columns * columns) > 0: page_count += 1
-	update_page_display()
-	update_title_display()
-
-func init_item_grid():
+	var pages = items.size() / (columns * columns)
+	if items.size() % (columns * columns) > 0: pages += 1
+	self.page_count = pages
+	
+	# init item grid
 	$item_grid.props = props
 	$item_grid.initialize()
 	$item_grid.load_items(get_page_items())
-
-func init_selector():
-	if items.empty(): return
-	$selector.texture = Utils.load_resource(
-			Constants.UI_ELEMENT_PATH, props.selector)
-	var selector_pos = get_selector_dest(current_item)
-	$selector.rect_position = selector_pos
-	$selector.dest_pos = selector_pos
+	init_selector()
+	if items: update_current_item(0)
 	
-# -----------------------------------------------------------
+	.initialize()
 
-func init_items(filter):
-	items = filter_items(filter)
+# -----------------------------------------------------------
 
 func filter_items(filter):
 	var results = []
@@ -95,35 +64,28 @@ func filter_items(filter):
 			results.append(i)
 	return results
 
+
+# =========================================================== #
+#                 U P D A T I N G   S T A T E                 #
+# ----------------------------------------------------------- #
+
+func update_current_item(new_item):
+	$item_grid.show_quantity(current_item, true)
+	$item_grid.show_quantity(new_item, false)
+	move_selector(new_item)
+	update_item_details(new_item)
+	self.current_item = new_item
+
+# -----------------------------------------------------------
+
+# returns a slice of the items array containing only the ones
+# that are visible on our current page
 func get_page_items():
 	var page_size = columns * columns
 	var start = current_page * page_size
 	return Utils.slice(items, start, page_size)
 
-func get_item(index):
-	var actual_index = current_page * columns * columns + index
-	return Player.inventory[items[actual_index]]
-
 # -----------------------------------------------------------
-
-func update_current_item(index):
-	prev_item = current_item
-	current_item = index
-	$item_grid.show_quantity(prev_item, true)
-	$item_grid.show_quantity(current_item, false)
-	move_selector(index)
-	update_item_details(index)
-
-func update_current_page(page):
-	.update_current_page(page)
-	current_page = page
-	$item_grid.load_items(get_page_items())
-	if current_page < page_count - 1:
-		$arrows/right.show()
-	else: $arrows/right.hide()
-	if current_page > 0:
-		$arrows/left.show()
-	else: $arrows/left.hide()
 
 func update_item_details(index):
 	var item = get_item(index)
@@ -146,20 +108,53 @@ func update_item_details(index):
 
 # -----------------------------------------------------------
 
+# fetches actual item data from the Player global
+func get_item(index):
+	var actual_index = current_page * columns * columns + index
+	return Player.inventory[items[actual_index]]
+
+
+# =========================================================== #
+#              S E L E C T O R   C O N T R O L S              #
+# ----------------------------------------------------------- #
+
+func init_selector():
+	if items.empty(): return
+	$selector.texture = Utils.load_resource(
+			Constants.UI_ELEMENT_PATH, props.selector)
+	var selector_pos = get_selector_dest(current_item)
+	$selector.rect_position = selector_pos
+	$selector.dest_pos = selector_pos
+
+# -----------------------------------------------------------
+
+# gets the pixel coordinates for our selector's destination
+# based on the item-grid index it wants to move to.
+# (TODO: something about that magic 3x3 vector - i forgot
+# exactly what it was supposed to be for)
 func get_selector_dest(index):
 	var base_pos = $item_grid.rect_position
 	var coords = get_coords(index)
 	var item_offset = coords * (props.item_size + Vector2(3, 3))
 	return base_pos + item_offset + selector_offset
 
+# -----------------------------------------------------------
+
 func move_selector(index):
 	$selector.move_to(get_selector_dest(index))
 	$selector.show()
 
+# -----------------------------------------------------------
+
+# gets the row and column of a given item-grid index, based
+# on the (configurable) column size of the inventory
 func get_coords(index):
 	return Vector2(index % columns, index / columns)
 
-# -----------------------------------------------------------
+
+# =========================================================== #
+#                 I N P U T   H A N D L I N G                 #
+# ----------------------------------------------------------- #
 
 func _input(e):
 	if e.is_action_pressed("ui_left"): move_left()
@@ -174,42 +169,62 @@ func _input(e):
 # -----------------------------------------------------------
 
 func move_left():
-	var coords = get_coords(current_item)
-	if coords.x > 0: 
+	if current_item <= 0 and current_page <= 0: return
+	if get_coords(current_item).x > 0:
 		update_current_item(current_item - 1)
-	elif current_page > 0 and prev_page():
-		update_current_item(current_item + columns - 1)
+	else: prev_page(Wrap.HORIZONTAL)
 
 func move_right():
-	var coords = get_coords(current_item)
-	if coords.x < columns - 1: 
+	if current_item >= $item_grid.item_count - 1: return
+	if get_coords(current_item).x < columns - 1:
 		update_current_item(current_item + 1)
-	elif current_page < page_count - 1 and next_page():
-		update_current_item(current_item - columns + 1)
-
+	else: next_page(Wrap.HORIZONTAL)
 
 func move_up():
-	var coords = get_coords(current_item)
-	if coords.y > 0: 
+	if current_item <= columns - 1: return
+	if get_coords(current_item).y > 0:
 		update_current_item(current_item - columns)
-	elif current_page > 0 and prev_page():
-		update_current_item(current_item + columns * (columns - 1))
+	else: prev_page(Wrap.VERTICAL)
 
 func move_down():
-	var coords = get_coords(current_item)
-	if coords.y < columns - 1:
+	if current_item >= $item_grid.item_count - columns: return
+	if get_coords(current_item).y < columns - 1:
 		update_current_item(current_item + columns)
-	elif current_page < page_count - 1 and next_page():
-		update_current_item(current_item - columns * (columns - 1))
+	else: next_page(Wrap.VERTICAL)
 
-func next_page():
+# -----------------------------------------------------------
+
+func next_page(wrap = Wrap.NONE):
 	if (current_page < page_count - 1):
-		update_current_page(current_page + 1)
-		return true
-	else: return false
+		change_page(1, wrap)
 
-func prev_page():
+func prev_page(wrap = Wrap.NONE):
 	if (current_page > 0):
-		update_current_page(current_page - 1)
-		return true
-	else: return false
+		change_page(-1, wrap)
+
+# -----------------------------------------------------------
+
+func change_page(offset, wrap = Wrap.NONE):
+	self.current_page += offset
+	$item_grid.load_items(get_page_items())
+	
+	var index_offset = get_index_offset(offset, wrap)
+	var new_index = get_new_index(offset, index_offset)
+	update_current_item(new_index)
+
+# -----------------------------------------------------------
+
+func get_index_offset(page_offset, wrap):
+	if wrap == Wrap.HORIZONTAL:
+		return columns - 1
+	if wrap == Wrap.VERTICAL:
+		return columns * (columns - 1)
+	return 0
+
+func get_new_index(page_offset, index_offset):
+	if !index_offset or page_offset == 0:
+		return min(current_item, $item_grid.item_count - 1)
+	if page_offset < 0:
+		return current_item + index_offset
+	if page_offset > 0:
+		return current_item - index_offset
