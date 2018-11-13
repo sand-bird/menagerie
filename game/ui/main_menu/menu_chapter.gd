@@ -3,8 +3,7 @@ extends Control
 signal title_changed(text)
 signal page_info_changed(text)
 
-const DEFAULT_TITLE = "\u2727 \u2726 \u2727"
-var title = DEFAULT_TITLE setget set_title
+var title setget set_title
 
 var prev_item = 0
 var current_item = 0
