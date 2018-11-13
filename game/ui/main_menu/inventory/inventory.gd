@@ -5,6 +5,7 @@ var Wrap = Constants.Wrap
 onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
 onready var columns = props.columns
+onready var rows = props.rows if props.has('rows') else props.columns
 
 # as in "inventory item", not as in Item (the specific type
 # of game entity). unfortunately ambiguous, but i couldn't 
@@ -32,7 +33,6 @@ func _ready():
 func initialize(filter):
 	# init self
 	items = filter_items(filter)
-	columns = props.columns
 	var pages = items.size() / (columns * columns)
 	if items.size() % (columns * columns) > 0: pages += 1
 	self.page_count = pages
@@ -69,12 +69,17 @@ func filter_items(filter):
 #                 U P D A T I N G   S T A T E                 #
 # ----------------------------------------------------------- #
 
-func update_current_item(new_item):
+func update_current_item(new_index):
+	# clamp to the last item on the page, in case we're on the
+	# last page and it's not completely full. doing this here
+	# ensures it always happens, so that we have less bounds-
+	# checking to do elsewhere.
+	new_index = min(new_index, $item_grid.item_count - 1)
 	$item_grid.show_quantity(current_item, true)
-	$item_grid.show_quantity(new_item, false)
-	move_selector(new_item)
-	update_item_details(new_item)
-	self.current_item = new_item
+	$item_grid.show_quantity(new_index, false)
+	move_selector(new_index)
+	update_item_details(new_index)
+	self.current_item = new_index
 
 # -----------------------------------------------------------
 
@@ -149,7 +154,7 @@ func move_selector(index):
 # gets the row and column of a given item-grid index, based
 # on the (configurable) column size of the inventory
 func get_coords(index):
-	return Vector2(index % columns, index / columns)
+	return Vector2(int(index) % int(columns), int(index) / int(columns))
 
 
 # =========================================================== #
@@ -169,62 +174,65 @@ func _input(e):
 # -----------------------------------------------------------
 
 func move_left():
-	if current_item <= 0 and current_page <= 0: return
 	if get_coords(current_item).x > 0:
 		update_current_item(current_item - 1)
-	else: prev_page(Wrap.HORIZONTAL)
+	else: prev_page(true)
 
 func move_right():
-	if current_item >= $item_grid.item_count - 1: return
 	if get_coords(current_item).x < columns - 1:
 		update_current_item(current_item + 1)
-	else: next_page(Wrap.HORIZONTAL)
+	else: next_page(true)
 
 func move_up():
-	if current_item <= columns - 1: return
 	if get_coords(current_item).y > 0:
 		update_current_item(current_item - columns)
-	else: prev_page(Wrap.VERTICAL)
 
 func move_down():
-	if current_item >= $item_grid.item_count - columns: return
-	if get_coords(current_item).y < columns - 1:
+	if get_coords(current_item).y < get_page_row():
 		update_current_item(current_item + columns)
-	else: next_page(Wrap.VERTICAL)
 
 # -----------------------------------------------------------
 
-func next_page(wrap = Wrap.NONE):
+func next_page(wrap = false):
 	if (current_page < page_count - 1):
 		change_page(1, wrap)
 
-func prev_page(wrap = Wrap.NONE):
+func prev_page(wrap = false):
 	if (current_page > 0):
 		change_page(-1, wrap)
 
 # -----------------------------------------------------------
 
-func change_page(offset, wrap = Wrap.NONE):
+func change_page(offset, wrap = false):
+	# change the page now
 	self.current_page += offset
 	$item_grid.load_items(get_page_items())
 	
-	var index_offset = get_index_offset(offset, wrap)
-	var new_index = get_new_index(offset, index_offset)
+	# determine where to place our cursor. if we're changing
+	# page via move_left or move_right, we want to wrap the
+	# cursor to the opposite side of the row.
+	var new_index = current_item
+	if (wrap):
+		var current_row = get_coords(current_item).y
+		if (offset > 0):
+			# in case we are going to the last page and it is not
+			# full, we must restrict our new cursor to the maximum
+			# row for that page. since the cursor snaps to the
+			# left, and rows are left-aligned, this will be safe.
+			new_index = min(current_row, get_page_row()) * columns
+		if (offset < 0):
+			new_index = current_row * columns + (columns - 1)
+	
 	update_current_item(new_index)
 
 # -----------------------------------------------------------
 
-func get_index_offset(page_offset, wrap):
-	if wrap == Wrap.HORIZONTAL:
-		return columns - 1
-	if wrap == Wrap.VERTICAL:
-		return columns * (columns - 1)
-	return 0
-
-func get_new_index(page_offset, index_offset):
-	if !index_offset or page_offset == 0:
-		return min(current_item, $item_grid.item_count - 1)
-	if page_offset < 0:
-		return current_item + index_offset
-	if page_offset > 0:
-		return current_item - index_offset
+# utility function to get the last row of the current page,
+# while handling the case where our page is partially empty.
+# this only happens on the last page; otherwise, we should be
+# safe to just return the maximum row.
+func get_page_row():
+	if current_page < page_count - 1:
+		return rows - 1
+	else:
+		return get_coords($item_grid.item_count - 1).y
