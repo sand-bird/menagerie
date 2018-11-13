@@ -172,21 +172,34 @@ func _in(data, caller, parent):
 # the key or property of the former, specified by the latter.
 # (should crash if data doesn't have key)
 func _get(args, caller, parent):
-	Log.verbose(self, ["get (before): ", args])
+	Log.verbose(self, ["(_get): ", args])
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
-	Log.verbose(self, ["get (after): ", [data, key]])
+	var result
+	
+	# check that data and key exist
 	if !data:
 		Log.error(self, ["(_get) failed: collection '", args[0],
 				"' could not be resolved"])
 		return null
 	if key == null:
-		Log.error(self, ["(_get) failed: key '", args[1],
-				"' could not be resolved"])
+		Log.error(self, ["(_get) failed: argument ", args[1],
+				" could not be resolved to a key"])
 		return null
-	if data.has_method("get"):
-		return data.get(key)
-	else: return data[key]
+	
+	# (try to) get property
+	if typeof(data) == TYPE_OBJECT:
+		if data.has_method("get"):
+			result = data.get(key)
+		elif key in data:
+			result = data[key]
+	elif typeof(data) == TYPE_DICTIONARY and data.has(key):
+		result = data[key]
+	
+	if !result:
+		Log.error(self, ["(_get) failed: key '", key,
+				"' not found in collection ", data])
+	return result
 
 # ----------------------------------------------------------- 
 
