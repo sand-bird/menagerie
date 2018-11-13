@@ -1,10 +1,7 @@
-extends Control
+extends Button
 
 var qty
 var index
-
-func _ready():
-	connect("focus_entered", self, "_pressed")
 
 # the notion of an inventory "item" is a bit misleading in
 # our terminology, since an Item is already a kind of thing

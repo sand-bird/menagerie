@@ -26,4 +26,4 @@ func show_quantity(index, show):
 func clear_items():
 	item_count = 0
 	for item in $items.get_children():
-		item.queue_free()
+		item.free()

@@ -78,9 +78,10 @@ func update_current_item(new_index):
 	Log.debug(self, ["(update_current_item) new: ", 
 			new_index, " | old: ", current_item])
 	
-#	$item_grid.show_quantity(current_item, true)
-	$item_grid.show_quantity(new_index, false)
 	move_selector(new_index)
+	$item_grid.show_quantity(new_index, false)
+	if (current_item < $item_grid.item_count - 1):
+		$item_grid.show_quantity(current_item, true)
 	update_item_details(new_index)
 	current_item = new_index
 
@@ -139,7 +140,7 @@ func init_selector():
 # gets the pixel coordinates for our selector's destination
 # based on the item-grid index it wants to move to.
 # (TODO: something about that magic 3x3 vector - i forgot
-# exactly what it was supposed to be for)
+# exactly what it was supposed to be for. spacing maybe?)
 func get_selector_dest(index):
 	var base_pos = $item_grid.rect_position
 	var coords = get_coords(index)
