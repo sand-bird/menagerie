@@ -16,6 +16,9 @@ static func load_relative(own_fn, sib_fn, ext = "tscn"):
 
 # -----------------------------------------------------------
 
+# TODO: test if passing a null to a parameter with default
+# argument will override the default. ideally we should also
+# be able to handle filenames that already have an extension.
 static func load_resource(res_path, res_fn, ext = "png"):
 	var file = str(res_fn, ".", ext)
 	var path = res_path.plus_file(file)
