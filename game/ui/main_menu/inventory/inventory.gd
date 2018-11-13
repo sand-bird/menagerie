@@ -79,9 +79,9 @@ func update_current_item(new_index):
 			new_index, " | old: ", current_item])
 	
 	move_selector(new_index)
-	$item_grid.show_quantity(new_index, false)
-	if (current_item < $item_grid.item_count - 1):
+	if current_item < $item_grid.item_count:
 		$item_grid.show_quantity(current_item, true)
+	$item_grid.show_quantity(new_index, false)
 	update_item_details(new_index)
 	current_item = new_index
 
