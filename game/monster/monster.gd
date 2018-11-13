@@ -119,8 +119,9 @@ func _update_orientation(new_o):
 func initialize(data):
 	deserialize(data)
 	var anim_data = Data.get([type, "morphs", morph, "animations"])
-	for anim_id in anim_data: add_animation(anim_id)
-	play_animation("idle")
+	if anim_data:
+		for anim_id in anim_data: add_animation(anim_id)
+		play_animation("idle")
 
 
 # =========================================================== #
