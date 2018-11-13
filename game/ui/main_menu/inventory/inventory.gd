@@ -4,7 +4,7 @@ var Wrap = Constants.Wrap
 
 onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
-onready var columns = props.columns
+onready var cols = props.columns
 onready var rows = props.rows if props.has('rows') else props.columns
 
 # as in "inventory item", not as in Item (the specific type
@@ -33,8 +33,8 @@ func _ready():
 func initialize(filter):
 	# init self
 	items = filter_items(filter)
-	var pages = items.size() / (columns * columns)
-	if items.size() % (columns * columns) > 0: pages += 1
+	var pages = items.size() / (cols * rows)
+	if items.size() % (cols * rows) > 0: pages += 1
 	self.page_count = pages
 	
 	# init item grid
@@ -75,18 +75,21 @@ func update_current_item(new_index):
 	# ensures it always happens, so that we have less bounds-
 	# checking to do elsewhere.
 	new_index = min(new_index, $item_grid.item_count - 1)
-	$item_grid.show_quantity(current_item, true)
+	Log.debug(self, ["(update_current_item) new: ", 
+			new_index, " | old: ", current_item])
+	
+#	$item_grid.show_quantity(current_item, true)
 	$item_grid.show_quantity(new_index, false)
 	move_selector(new_index)
 	update_item_details(new_index)
-	self.current_item = new_index
+	current_item = new_index
 
 # -----------------------------------------------------------
 
 # returns a slice of the items array containing only the ones
 # that are visible on our current page
 func get_page_items():
-	var page_size = columns * columns
+	var page_size = cols * rows
 	var start = current_page * page_size
 	return Utils.slice(items, start, page_size)
 
@@ -115,7 +118,7 @@ func update_item_details(index):
 
 # fetches actual item data from the Player global
 func get_item(index):
-	var actual_index = current_page * columns * columns + index
+	var actual_index = current_page * cols * rows + index
 	return Player.inventory[items[actual_index]]
 
 
@@ -140,6 +143,7 @@ func init_selector():
 func get_selector_dest(index):
 	var base_pos = $item_grid.rect_position
 	var coords = get_coords(index)
+	Log.debug(self, ["(get_selector_dest) destination coords: ", coords])
 	var item_offset = coords * (props.item_size + Vector2(3, 3))
 	return base_pos + item_offset + selector_offset
 
@@ -154,8 +158,10 @@ func move_selector(index):
 # gets the row and column of a given item-grid index, based
 # on the (configurable) column size of the inventory
 func get_coords(index):
-	return Vector2(int(index) % int(columns), int(index) / int(columns))
+	return Vector2(int(index) % int(cols), int(index) / int(cols))
 
+func coords_to_index(col, row):
+	return (cols * row) + col
 
 # =========================================================== #
 #                 I N P U T   H A N D L I N G                 #
@@ -179,17 +185,17 @@ func move_left():
 	else: prev_page(true)
 
 func move_right():
-	if get_coords(current_item).x < columns - 1:
+	if get_coords(current_item).x < cols - 1:
 		update_current_item(current_item + 1)
 	else: next_page(true)
 
 func move_up():
 	if get_coords(current_item).y > 0:
-		update_current_item(current_item - columns)
+		update_current_item(current_item - cols)
 
 func move_down():
 	if get_coords(current_item).y < get_page_row():
-		update_current_item(current_item + columns)
+		update_current_item(current_item + cols)
 
 # -----------------------------------------------------------
 
@@ -219,9 +225,10 @@ func change_page(offset, wrap = false):
 			# full, we must restrict our new cursor to the maximum
 			# row for that page. since the cursor snaps to the
 			# left, and rows are left-aligned, this will be safe.
-			new_index = min(current_row, get_page_row()) * columns
+			var new_row = min(current_row, get_page_row())
+			new_index = coords_to_index(0, new_row)
 		if (offset < 0):
-			new_index = current_row * columns + (columns - 1)
+			new_index = coords_to_index(cols - 1, current_row)
 	
 	update_current_item(new_index)
 
