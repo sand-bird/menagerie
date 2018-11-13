@@ -1,0 +1,20 @@
+{
+  "id": "terra_cotta_pot",
+  "type": "object",
+  "category": "planter",
+  "name": {
+    "en": "Terra-Cotta Pot"
+  },
+  "width": 1,
+  "height": 1,
+  "value": 100,
+  "description": {
+    "en": "A simple planter. Large enough for a small tree to grow in comfortably."
+  },
+  "states": {
+    "default": {
+      "sprite": "~terra_cotta_pot.png"
+    }
+  },
+  "icon": "~terra_cotta_pot.png"
+}

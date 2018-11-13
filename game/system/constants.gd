@@ -143,12 +143,24 @@ const MENU_CHAPTERS = {
 	items = {
 		icon = "items",
 		scene = "inventory/items",
-		condition = {"in": ["fluffy_tuft", "$player.inventory:id"]}
+		condition = {"filter": [
+				"$player.inventory:id",
+				{"==": [
+					"$data.*.type",
+					"item"
+				]}
+			]}
 	},
 	objects = {
 		icon = "inventory",
 		scene = "inventory/objects",
-		condition = {"in": ["an_object", "$player.inventory:id"]}
+		condition = {"filter": [
+				"$player.inventory:id",
+				{"==": [
+					"$data.*.type",
+					"object"
+				]}
+			]}
 	},
 	town_map = {
 		icon = "town",
