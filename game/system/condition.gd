@@ -95,6 +95,12 @@ func resolve(data, caller = null, parent = null):
 		# key must be one of our known comparators
 		assert(key in lookup_func)
 		result = call(lookup_func[key], data[key], caller, parent)
+	elif typeof(data) == TYPE_STRING:
+		# if we just want to evaluate a single argument, we
+		# should be able to. the likely use case is testing
+		# the result for truthiness, but it can also be used
+		# to fetch data declaratively (eg in an entity def.)
+		result = eval_arg(data, caller, parent)
 	# any other type is a problem
 	else: assert(false)
 	Log.verbose(self, ["condition ", data, " resolved to ", result])

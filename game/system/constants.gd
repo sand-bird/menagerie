@@ -138,18 +138,15 @@ const MENU_CHAPTERS = {
 	monsters = {
 		icon = "monster",
 		scene = "monsters/monsters",
-		condition = {"not": {"empty": "$garden.monsters"}}
+		condition = "$garden.monsters"
 	},
 	items = {
 		icon = "items",
 		scene = "inventory/items",
-		condition = {"filter": [
-				"$player.inventory:id",
-				{"==": [
-					"$data.*.type",
-					"item"
-				]}
-			]}
+#		condition = {"in": [
+#			"$player.inventory($data[*.id].type)",
+#			"item"
+#		]}
 	},
 	objects = {
 		icon = "inventory",
