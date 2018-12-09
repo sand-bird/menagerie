@@ -59,7 +59,7 @@ func resolve_global(arg):
 
 # -----------------------------------------------------------
 
-# basic test
+# basic test (please remember to delete me at some point)
 func _ready():
 	return
 	var Monster = preload("res://monster/monster.gd")
@@ -83,10 +83,12 @@ func _ready():
 # ----------------------------------------------------------- #
 
 func resolve(data, caller = null, parent = null):
-	var result
+	var result = false
+	
 	# an array of conditions implies an AND
 	if typeof(data) == TYPE_ARRAY:
 		result = _and(data, caller)
+	
 	# if it's a dict, our key will tell us what to do
 	elif typeof(data) == TYPE_DICTIONARY:
 		# must have exactly one key
@@ -95,15 +97,24 @@ func resolve(data, caller = null, parent = null):
 		# key must be one of our known comparators
 		assert(key in lookup_func)
 		result = call(lookup_func[key], data[key], caller, parent)
+	
+	# if we just want to evaluate a single (string) argument,
+	# we should be able to. the likely use case is checking 
+	# the result for truthiness, but it can also be used to
+	# fetch data declaratively (eg in an entity definition).
+	#
+	# note that `eval_arg` also calls `resolve` (if the arg
+	# evaluates to a dictionary). some more testing should
+	# probably be done to ensure we don't have any infinite
+	# recursion situations.
 	elif typeof(data) == TYPE_STRING:
-		# if we just want to evaluate a single argument, we
-		# should be able to. the likely use case is testing
-		# the result for truthiness, but it can also be used
-		# to fetch data declaratively (eg in an entity def.)
 		result = eval_arg(data, caller, parent)
-	# any other type is a problem
-	else: assert(false)
-	Log.verbose(self, ["condition ", data, " resolved to ", result])
+	
+	else: # any other type is a problem
+		Log.error(self, "(resolve) failed: unsupported argument!")
+	
+	Log.verbose(self, ["(resolve) condition ", data, 
+			" resolved to ", result])
 	return result
 
 # =========================================================== #
@@ -216,18 +227,14 @@ func _get(args, caller, parent):
 # former, the value corresponding to the key or property 
 # specified by the latter, if such a value exists.
 func _map(args, caller, parent):
-	Log.verbose(self, ["map (before): ", args])
+	Log.verbose(self, ["(_map) before: ", args])
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
 	for item in data:
-		var value
-		if typeof(data) == TYPE_ARRAY: value = item
-		elif typeof(data) == TYPE_DICTIONARY: value = data[item]
-		var key = eval_arg(args[1], caller, value)
-#		Log.verbose(self, ["-----\n args: ", args, "\n key: ", key,
-#				"\n item: ", item, "\n data: ", data, "\n value: ", value])
-		if value.has(key): results.push_back(value[key])
-	Log.verbose(self, ["map (after): ", results])
+		var value = resolve(args[1])
+		Log.verbose(self, "(_map) resolved value: ", value)
+		results.push_back(value)
+	Log.verbose(self, ["(_map) after: ", results])
 	return results
 
 # -----------------------------------------------------------
@@ -308,10 +315,10 @@ func expand_ops(arg):
 	if op_pos:
 		var op = op_pos[0]
 		var pos = op_pos[1]
-		return { seperators[op]: [
+		return {seperators[op]: [
 			expand_ops(arg.left(pos)), 
 			expand_ops(arg.right(pos + 1))
-		] }
+		]}
 	else: return arg
 
 # gets all operator positions in the argument string, and
