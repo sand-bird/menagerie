@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 var entity_type = Constants.EntityType.MONSTER
+var Anim = Constants.Anim
 
 signal drives_changed
 
@@ -28,7 +29,6 @@ var belly
 var mood
 var energy
 var social
-
 
 # personality
 # -----------
@@ -79,11 +79,12 @@ var preferences = {}
 # --------
 var mass # from entity definition
 # position (Vector2): built-in property
-var orientation = Vector2(0, 0) setget _update_orientation
+var orientation = Vector2(0, 1) setget _update_orientation
 var velocity = Vector2(0, 0) # action property?
 # action properties:
 # max_force (scalar), max_speed (scalar)
 
+var current_animation
 
 # =========================================================== #
 #                        M E T H O D S                        #
@@ -91,15 +92,28 @@ var velocity = Vector2(0, 0) # action property?
 
 func _ready():
 #	connect("draw", self, "update_z")
-	Dispatcher.connect("tick_changed", self, "update_drives")
+	Dispatcher.connect("tick_changed", self, "_update_drives")
 	update_z()
-	$orientation.cast_to = Vector2(-0, 20)
 	set_physics_process(true)
-	# left: -x
-	# right: +x
-	# back: -y
-	# front: +y
 
+# -----------------------------------------------------------
+
+func initialize(data):
+	deserialize(data)
+	var size = Data.get([type, "size"])
+	$shape.shape.radius = size
+	$shape.position.y -= size
+	var anim_data = Data.get([type, "morphs", morph, "animations"])
+	if anim_data:
+		for anim_id in anim_data: $sprite/anim.add(anim_id, anim_data[anim_id])
+		$sprite/anim.play(Anim.SLEEP, 5)
+		$sprite/anim.queue(Anim.SLEEP, 5)
+		$sprite/anim.queue(Anim.WALK, 5)
+
+# -----------------------------------------------------------
+
+# (temp) spin our monster to check that animations correctly
+# update when facing direction changes
 var time = 0
 func _physics_process(delta):
 	time += delta
@@ -108,114 +122,23 @@ func _physics_process(delta):
 	if rad > 2 * PI: time = 0
 	$orientation.cast_to = orientation * 20
 
+# -----------------------------------------------------------
+
+# update the AnimationPlayer's `facing` vector when our
+# `orientation` vector has changed enough to signify a new
+# facing direction. running orientation through ceil() will
+# result in either (1, 1), (0, 1), (1, 0), or (0, 0).
 func _update_orientation(new_o):
 	var old_o = orientation
 	orientation = new_o
-	if old_o.ceil() != new_o.ceil(): 
-		update_animation()
+	if old_o.ceil() != new_o.ceil():
+		$sprite/anim.facing = new_o.ceil()
 
 # -----------------------------------------------------------
 
-func initialize(data):
-	deserialize(data)
-	var anim_data = Data.get([type, "morphs", morph, "animations"])
-	if anim_data:
-		for anim_id in anim_data: add_animation(anim_id)
-		play_animation("idle")
-
-
-# =========================================================== #
-#                     A N I M A T I O N S                     #
-# ----------------------------------------------------------- #
-
-var current_animation
-
-func update_animation():
-	var facing = orientation.ceil()
-#	$sprite/anim.current_animation = str(current_animation, "_1_0")
-	var anim_pos = $sprite/anim.current_animation_position
-	$sprite/anim.current_animation = str(current_animation, "_", facing.y, "_", facing.x)
-	$sprite/anim.seek(anim_pos)
-
-func play_animation(anim_id = null):
-	current_animation = anim_id
-	var facing = orientation.ceil()
-#	$sprite/anim.play(str(anim_id, "_1_0"))
-	$sprite/anim.play(str(anim_id, "_", facing.y, "_", facing.x))
-
-# -----------------------------------------------------------
-
-# creates four animations for a given `anim_id` - one in each
-# facing direction - which are added to the AnimationPlayer
-# for our sprite. the resulting animations are identified by
-# a string in "{anim_id}_{y}_{x}" format, where y and x are
-# either 0 or 1, and represent the monster's front-back and
-# left-right orientation, respectively.
-func add_animation(anim_id):
-	var anims = Data.get([type, "morphs", morph, 
-			"animations", anim_id])
-	
-	for y in anims.size():
-		var anim = anims[y]
-		if typeof(anim) == TYPE_ARRAY:
-			for x in anim:
-				create_animation(anim[x], str(anim_id, "_", y, "_", x))
-		else:
-			create_animation(anim, str(anim_id, "_", y, "_0"))
-			create_animation(anim, str(anim_id, "_", y, "_1"), true)
-
-# -----------------------------------------------------------
-
-# creates an animation for a specific facing direction, using
-# an `anim_info` object from the monster's data definition,
-# and adds it to the AnimationPlayer for our sprite.
-func create_animation(anim_info, anim_name, flip = false):
-	# set the step and length parameters of the new animation
-	# depending on the frame count and fps specified in the
-	# data definition. the `step` parameter will determine the
-	# delay between frames when we insert them.
-	var anim = Animation.new()
-	anim.step = 1.0 / anim_info.fps
-	anim.length = anim.step * anim_info.frames
-	anim.loop = anim_info.loop if anim_info.has("loop") else true
-	
-	# add a track to set our texture to the spritesheet
-	# specified in the data definition
-	anim.add_track(0)
-	anim.track_set_path(0, ".:texture")
-	var spritesheet = ResourceLoader.load(anim_info.sprites)
-	anim.track_insert_key(0, 0.0, spritesheet)
-	
-	# add a track to set the hframes value of our texture
-	anim.add_track(0)
-	anim.track_set_path(1, ".:hframes")
-	anim.track_insert_key(1, 0.0, anim_info.frames)
-	
-	# add a track to set whether our sprite is h-flipped (for 
-	# right-facing animations without unique spritesheets).
-	# the data definition can optionally also specify whether
-	# the sprite should be flipped - in that case, a true value
-	# for the `flip` argument will cancel it out (boolean XOR).
-	var should_flip = (anim_info.flip != flip 
-			if anim_info.has("flip") else flip)
-	anim.add_track(0)
-	anim.track_set_path(1, ".:flip_h")
-	anim.track_insert_key(1, 0.0, should_flip)
-	
-	# add the animation track, with a keyframe for each frame
-	# in the spritesheet at intervals determined by the `step`
-	# parameter we calculated earlier
-	anim.add_track(0)
-	anim.track_set_path(2, ".:frame")
-	anim.track_set_interpolation_loop_wrap(2, false)
-	for frame in range(anim_info.frames + 1):
-		var time = anim.step * frame
-		anim.track_insert_key(2, time, frame)
-	
-	$sprite/anim.add_animation(anim_name, anim)
-
-# -----------------------------------------------------------
-
+# update the z-index of our sprite so that monsters appear
+# in front of or behind other entities according to their
+# y-position in the garden
 func update_z():
 	pass
 	# z_index = position.y + $sprite.texture.get_height() / 2
@@ -239,7 +162,7 @@ func choose_action():
 
 # updates the pet's drive meters (mood, hunger, etc). called
 # once per "tick" unit of game time (~0.5 seconds)
-func update_drives(tick):
+func _update_drives(tick):
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)
@@ -288,7 +211,7 @@ const D_ENERGY_FACTOR = 0.5
 # if delta energy is positive (recovery), our d_energy_mod
 # multiplier is < 1, causing belly to drain slower; if it's
 # negative, the modifier is > 1, which will drain it faster.
-# we use a magic number to adjust the strength of the effect.
+# D_ENERGY_FACTOR controls the strength of the effect.
 func calc_belly_delta(delta_energy):
 	var base_rate = BASE_BELLY_DECAY
 	var app_mod = traits.appetite * 2.0

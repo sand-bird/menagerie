@@ -8,10 +8,7 @@
     "en": "It's bunny!"
   },
   "gender_ratio": 0.5,
-  "size": {
-    "x": 20,
-    "y": 18
-  },
+  "size": 6,
   "morphs": {
     "sprout": {
       "name": {

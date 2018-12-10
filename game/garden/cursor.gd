@@ -44,9 +44,10 @@ func stick(body):
 	if (curr_body and curr_body != body): unstick(curr_body)
 	curr_body = body
 	is_free = false
-	var sprite_size = body.get_node("sprite").texture.get_size()
-	graphic_dest = body.position + Vector2(0, floor(sprite_size.y / 2))
-	hand_height = sprite_size.y + VERTICAL_HAND_OFFSET
+	# var sprite_size = body.get_node("sprite").texture.get_size()
+	graphic_dest = body.position
+	var sprite_size = body.get_node("shape").shape.radius * 2
+	hand_height = sprite_size + VERTICAL_HAND_OFFSET
 	Dispatcher.emit_signal("entity_highlighted", body)
 
 # -----------------------------------------------------------

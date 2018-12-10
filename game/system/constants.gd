@@ -77,6 +77,17 @@ enum ActionStatus {
 	ERROR
 }
 
+# ------- #
+#  PATHS  #
+# ------- #
+
+const Anim = {
+	IDLE = "idle",
+	LIE_DOWN = "lie_down",
+	WALK = "walk",
+	SLEEP = "sleep"
+}
+
 # --------- #
 #  OPTIONS  #
 # --------- #
