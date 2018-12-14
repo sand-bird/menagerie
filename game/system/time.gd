@@ -21,6 +21,9 @@ var day = 0 setget _set_day
 var month = 0 setget _set_month
 var year = 0 setget _set_year
 
+# for dispatching time events after all our updates are done
+var units_to_dispatch = []
+
 # -----------------------------------------------------------
 
 # time only moves in the garden, so it should be stopped on
@@ -33,7 +36,7 @@ func stop(): set_process(false)
 
 func _process(delta):
 	actual_seconds += delta
-	if try_rollover(actual_seconds, ACTUAL_SECONDS_IN_TICK, "tick") == 0:
+	if try_rollover(actual_seconds, ACTUAL_SECONDS_IN_TICK, "tick"):
 		actual_seconds -= ACTUAL_SECONDS_IN_TICK
 
 # ----------------------------------------------------------- #
@@ -41,30 +44,26 @@ func _process(delta):
 # ----------------------------------------------------------- #
 
 func _set_tick(new):
-	tick = int(try_rollover(new, TICKS_IN_HOUR, "hour"))
-	Dispatcher.emit_signal("tick_changed", tick, false)
+	tick = 0 if try_rollover(new, TICKS_IN_HOUR, "hour") else int(new)
+	dispatch_updates()
 
 func _set_hour(new):
-	hour = int(try_rollover(new, HOURS_IN_DAY, "date"))
-	Dispatcher.emit_signal("hour_changed", hour, false)
+	hour = 0 if try_rollover(new, HOURS_IN_DAY, "date") else int(new)
 
 func _set_date(new):
-	date = int(try_rollover(new, DAYS_IN_MONTH, "month"))
+	date = 0 if try_rollover(new, DAYS_IN_MONTH, "month") else int(new)
 	_set_day()
-	Dispatcher.emit_signal("date_changed", date)
 
 func _set_day(new = 0):
 	day = get_day()
 
 func _set_month(new):
-	month = int(try_rollover(new, MONTHS_IN_YEAR, "year"))
-	Dispatcher.emit_signal("month_changed", month)
+	month = 0 if try_rollover(new, MONTHS_IN_YEAR, "year") else int(new)
 
 func _set_year(new):
 	year = int(new)
-	Dispatcher.emit_signal("year_changed", year)
 
-# ----------------------------------------------------------- #
+# -----------------------------------------------------------
 
 # self[unit] += 1 will call the setget setter for self.unit 
 # (and it lets us pass the variable name as a string). each
@@ -74,8 +73,10 @@ func _set_year(new):
 func try_rollover(new_value, units_per_next_unit, next_unit):
 	if new_value >= units_per_next_unit:
 		self[next_unit] += 1
-		return 0
-	else: return new_value
+		units_to_dispatch.push_back(next_unit)
+		return true
+	else:
+		return false
 
 # -----------------------------------------------------------
 
@@ -84,6 +85,33 @@ func try_rollover(new_value, units_per_next_unit, next_unit):
 func get_day(input = null):
 	var total_days = get_total_time(input, "date")
 	return int(total_days) % DAYS_IN_WEEK
+
+# -----------------------------------------------------------
+
+# because try_rollover() pushes the update method for the
+# NEXT unit to the callstack before it resolves (which must
+# happen before we update the CURRENT unit), our units are
+# actually updated in largest-to-smallest order. 
+#
+# this is problematic for dispatching time events from within
+# the update logic, as the lesser units (eg. tick and hour)
+# have not yet been updated when a greater unit (eg. date)
+# finishes updating and sends its dispatch. so other classes
+# that listen to eg. "date_changed" will see a Time gobal
+# with the correct date, but incorrect hours and ticks, at
+# the time of the dispatch.
+#
+# to solve this, we queue all the units we need to dispatch
+# updates for, and then dispatch them all at once at the end
+# of _set_tick(), which is the last step of the update logic.
+# this ensures that all our units have been fully updated by
+# the time anyone else receives a dispatch.
+func dispatch_updates():
+	Log.debug(self, ["(dispatch_updates) queue: ", units_to_dispatch])
+	while units_to_dispatch:
+		var unit = units_to_dispatch.pop_front()
+		Dispatcher.emit_signal(str(unit, "_changed"), self[unit])
+
 
 # =========================================================== #
 #                  S E R I A L I Z A T I O N                  #
@@ -94,7 +122,7 @@ func get_day(input = null):
 # a parent class's serialize and deserialize methods.
 
 func serialize():
-	return get_total_time()
+	return get_dict()
 
 func deserialize(time):
 	if typeof(time) != TYPE_DICTIONARY:
