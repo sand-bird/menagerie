@@ -2,7 +2,7 @@ extends AnimationPlayer
 
 var current = null
 var queue = []
-var facing = Vector2(0, 0) setget _update_facing
+var facing = Vector2(0, 1) setget _update_facing
 var loop_counter = 0
 
 func _ready():

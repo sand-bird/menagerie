@@ -17,12 +17,12 @@
       "animations": {
         "idle": [
           {
-            "sprites": "~idle_back_test.png",
+            "sprites": "~idle_back.png",
             "frames": 4,
             "fps": 2.0
           },
           {
-            "sprites": "~idle_front_test.png",
+            "sprites": "~idle_front.png",
             "frames": 4,
             "fps": 2.0
           }
