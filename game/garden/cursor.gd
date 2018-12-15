@@ -18,6 +18,7 @@ var is_enabled = true
 # -----------------------------------------------------------
 
 func _ready():
+	return
 	$anim.play("cursor_bob")
 	connect("item_rect_changed", self, "reset_anim")
 	$stick_area.connect("body_entered", self, "stick")

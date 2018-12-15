@@ -77,14 +77,30 @@ var preferences = {}
 
 # movement
 # --------
-var mass # from entity definition
+var mass = 100 # from entity definition
 # position (Vector2): built-in property
 var orientation = Vector2(0, 1) setget _update_orientation
 var velocity = Vector2(0, 0) # action property?
 # action properties:
 # max_force (scalar), max_speed (scalar)
 
-var current_animation
+
+
+var collider # whatever we're about to hit next
+var collision # whatever we've just hit
+
+var destination
+var max_speed = 40
+var max_velocity = max_speed * 2
+var current_velocity = Vector2(0, 0)
+var arrival_radius = max_velocity / 4
+
+var points = []
+var next_point = 0
+
+var dest
+
+
 
 # =========================================================== #
 #                        M E T H O D S                        #
@@ -93,8 +109,16 @@ var current_animation
 func _ready():
 #	connect("draw", self, "update_z")
 	Dispatcher.connect("tick_changed", self, "_update_drives")
+#	Dispatcher.connect("set_dest", self, "set_dest")
 	update_z()
 	set_physics_process(true)
+
+func get_position():
+	return Vector2(position.x, position.y - $shape.shape.radius)
+
+func set_position(pos):
+	position.x = pos.x
+	position.y = pos.y + $shape.shape.radius
 
 # -----------------------------------------------------------
 
@@ -106,9 +130,14 @@ func initialize(data):
 	var anim_data = Data.get([type, "morphs", morph, "animations"])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add(anim_id, anim_data[anim_id])
-		$sprite/anim.play(Anim.SLEEP, 5)
-		$sprite/anim.queue(Anim.SLEEP, 5)
-		$sprite/anim.queue(Anim.WALK, 5)
+		play_animation(Anim.LIE_DOWN)
+		queue_animation(Anim.SLEEP)
+
+func play_animation(anim_id, loops = 0):
+	$sprite/anim.play(anim_id, loops)
+
+func queue_animation(anim_id, loops = 0):
+	$sprite/anim.queue(anim_id, loops)
 
 # -----------------------------------------------------------
 
@@ -118,9 +147,13 @@ var time = 0
 func _physics_process(delta):
 	time += delta
 	var rad = time * 2
-	self.orientation = Vector2(cos(rad), sin(rad))
+#	self.orientation = Vector2(cos(rad), sin(rad))
 	if rad > 2 * PI: time = 0
 	$orientation.cast_to = orientation * 20
+	if dest and position.distance_squared_to(dest) > 5:
+		move_and_slide((dest - position).normalized() * 40)
+	else:
+		dest = null
 
 # -----------------------------------------------------------
 
@@ -250,7 +283,6 @@ func highlight():
 	# yet (or for players using a "careful" (or whatever) 
 	# targeting scheme, where they must press action to focus
 	# and then again to select)
-	print("hi im highlighted")
 	pass
 
 # -----------------------------------------------------------

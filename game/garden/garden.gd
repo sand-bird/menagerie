@@ -33,20 +33,30 @@ var monsters = {}
 var items = {}
 var objects = {}
 
-
 func _ready():
 	Dispatcher.connect("entity_highlighted", self, "highlight")
 	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
 
+var test_mon
+
 func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
-#	Dispatcher.emit_signal("ui_open", ["garden/clock_hud", 0, false])
+	$nav.initialize(objects)
 #	print("tint color: ", $tint.color)
 #	$tint.color = color1
 	Time.start()
 #	Dispatcher.connect("hour_changed", self, "update_color")
 #	$tint/anim.play("tint")
+	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
+
+
+func _input(e):
+	if e is InputEventMouseButton and e.is_pressed():
+		if test_mon:
+			$nav.test(test_mon.get_position(), get_global_mouse_position())
+			test_mon.position = get_global_mouse_position()
+
 
 # -----------------------------------------------------------
 
@@ -81,7 +91,6 @@ func update_color(hour):
 	anim.track_insert_key(0, 1, Color(randf(), randf(), randf()))
 	
 	$tint/anim.play("tint")
-
 
 # =========================================================== #
 #                  S E R I A L I Z A T I O N                  #
