@@ -107,10 +107,10 @@ func get_day(input = null):
 # this ensures that all our units have been fully updated by
 # the time anyone else receives a dispatch.
 func dispatch_updates():
-	Log.debug(self, ["(dispatch_updates) queue: ", units_to_dispatch])
 	while units_to_dispatch:
 		var unit = units_to_dispatch.pop_front()
-		Dispatcher.emit_signal(str(unit, "_changed"), self[unit])
+		Dispatcher.emit_signal(str(unit, "_changed"), self[unit],
+				unit != "tick") # don't log if it's a tick update
 
 
 # =========================================================== #
