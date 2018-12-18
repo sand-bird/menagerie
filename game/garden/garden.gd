@@ -42,7 +42,6 @@ var test_mon
 func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
-	$nav.initialize(objects)
 #	print("tint color: ", $tint.color)
 #	$tint.color = color1
 	Time.start()
