@@ -9,13 +9,14 @@ var start_pos
 var end_pos
 
 var path = [] # for printing
+var neighbors = []
 
 const WALKABLE = -1
 const OBSTACLE = 0
 const H = Vector2(1, 0)
 const V = Vector2(0, 1)
 
-var grid = []
+#var grid = []
 
 func _ready():
 	pass
@@ -44,115 +45,63 @@ func test(start, end):
 			" | start tile: ", start_tile, " | end tile: ", end_tile, 
 			" | start id: ", get_cellv(start_tile), " | end id: ", get_cellv(end_tile),
 			" | walkable?: ", is_walkable_at(end_tile))
-	print(jump_point_2(start_tile, end_tile))
-	print("path: ", path)
+	#get_neighbors(end_tile)
+	a_star(start_tile, end_tile)
 	update()
 
+#func get_neighbors(pos):
+#	var grid = NavGrid.new(self)
+#	var node = grid.node_at(pos)
+#	neighbors = node.neighbors
+
 func _draw():
-	if start_pos:
-		draw_circle(start_pos, 4, Color(0, 0.5, 1))
-	if end_pos:
-		draw_circle(end_pos, 4, Color(1, 0, 0.5))
-	if start_tile:
-		draw_circle(map_to_world(start_tile), 4, Color(0, 1, 1))
-	if end_tile:
-		draw_circle(map_to_world(end_tile), 4, Color(1, 0, 1))
+#	if start_pos:
+#		draw_circle(start_pos, 4, Color(0, 0.5, 1))
+#	if end_pos:
+#		draw_circle(end_pos, 4, Color(1, 0, 0.5))
+#	if start_tile:
+#		draw_circle(map_to_world(start_tile), 4, Color(0, 1, 1))
+#	if end_tile:
+#		draw_circle(map_to_world(end_tile), 4, Color(1, 0, 1))
+	if open_list and !open_list.empty():
+		for i in open_list.list:
+			draw_circle(map_to_world(i.pos), 8, Color(0.5, 1, 0.5))
+	for i in closed_list:
+		draw_circle(map_to_world(i), 8, Color(1, 0.5, 0.5))
+	for i in neighbors:
+		draw_circle(map_to_world(i.pos), 5, Color(0, 1, 1))
 	for i in path:
 		draw_circle(map_to_world(i), 4, Color(1, 1, 0))
+	if node:
+		draw_circle(map_to_world(node.pos), 5, Color(0, 0, 1))
+
 
 # get back tile centerpoints instead of corners
 func map_to_world(tile):
 	return .map_to_world(tile) + cell_size / 2
 
+var timer = 0
 
-class Heap:
-	var items = []
-	
-	func push(item):
-		items.push_back(item)
-	
-	func pop():
-		if items.empty():
-			return
-		var m_f = INF
-		var m_i = -1
-		var m_item
-		for i in items.size():
-			var item = items[i]
-			if item.f < m_f:
-				m_f = item.f
-				m_i = i
-				m_item = item
-		items.remove(m_i)
-		return m_item
-	
-	func empty():
-		return items.empty()
-	
-	func update_item():
-		pass
+func _process(delta):
+	timer += delta
+	if timer < 1:
+		return
+	timer -= 1
+	if open_list and !open_list.empty():
+		process_node()
+		update()
 
+var node
+var closed_list = []
+
+# -----------------------------------------------------------
 
 class NavNode:
-	var opened = false
-	var closed = false
-	var parent = null
-	var position
-	
-	func _init(pos):
-		position = pos
-
-# -----------------------------------------------------------
-
-func a_star(start, end):
-	var open_list = [] # Heap.new() # (a, b) => return a.f - b.f
-	var start_node = get_node_at(start)
-	var end_node = get_node_at(end)
-	start_node.g = 0
-	start_node.f = 0
-
-	open_list.push_back(start_node)
-	start_node.opened = true
-
-	while !open_list.empty():
-		var node = open_list.pop_front()
-		node.closed = true
-		
-		# print("evaluating node: ", node.print())
-
-		if node == end_node:
-			return backtrace(end_node)
-		
-		var neighbors = get_neighbors(node)
-
-		for neighbor in neighbors:
-			if neighbor.closed:
-				continue
-			
-			var ng = node.g + neighbor.position.distance_squared_to(node.position)
-			
-			if !neighbor.opened or ng < neighbor.g:
-				neighbor.g = ng
-#				neighbor.h = neighbor.h #if neighbor.h else heuristic(
-#					(neighbor.position - end).abs()
-#				)
-				neighbor.f = neighbor.g #+ neighbor.h
-				neighbor.parent = node
-
-				if !neighbor.opened:
-					open_list.push_back(neighbor)
-					neighbor.opened = true
-				#else:
-				#	open_list.update_item(neighbor)
-	
-	return []
-
-# -----------------------------------------------------------
-
-class NavNode2:
 	var pos
 	var neighbors = [] setget , _get_neighbors
 	var parent
+	var g # distance from start to node
+	var f # heuristic value (manhattan = distance to goal)
 	var opened = false
 	var closed = false
 	var grid # reference to our NavGrid object
@@ -165,28 +114,27 @@ class NavNode2:
 		return node.pos - pos
 	
 	func distance_to(node):
-		return pos.distance_squared_to(node.pos)
+		return pos.distance_to(node.pos)
 	
 	func _get_neighbors():
 		if !neighbors:
-			var dirs = [-V, H - V, H, H + V, V, -H + V, -H, -H - V]
-			for dir in dirs:
-				var node = grid.node_at(pos + dir)
-				if node:
-					neighbors.push_back(node)
+			generate_neighbors()
 		return neighbors
 	
 	func add_neighbor(pos):
-		neighbors.push_back(grid.node_at(pos))
+		var node = grid.node_at(pos)
+		if node:
+			neighbors.push_back(node)
 	
 	func generate_neighbors():
 		var n = []
 		for h in [H, -H]:
-			var h_walkable = is_walkable_at(pos + h)
+			var h_walkable = grid.is_walkable_at(pos + h)
 			if h_walkable:
 				add_neighbor(pos + h)
 			for v in [V, -V]:
-				if is_walkable_at(pos + v):
+				var v_walkable = grid.is_walkable_at(pos + v)
+				if v_walkable:
 					add_neighbor(pos + v)
 					if h_walkable:
 						add_neighbor(pos + h + v)
@@ -200,13 +148,20 @@ class NavNode2:
 	# 2. dist_with_x < dist_without_x
 	func is_forced():
 		return true
+	
+	func print():
+		return str("pos: ", pos, " | opened: ", opened, " | closed: ", closed,
+				" | parent: ", parent.pos if parent else "(none)")
 
 # -----------------------------------------------------------
 
 class NavGrid:
 	var grid = []
+	var tilemap
 	
-	func _init(size):
+	func _init(tilemap):
+		self.tilemap = tilemap
+		var size = tilemap.get_used_rect().size
 		grid.resize(size.x)
 		for x in range(size.x):
 			grid[x] = []
@@ -214,27 +169,138 @@ class NavGrid:
 	
 	func node_at(pos):
 		# return null if out of bounds
-		if pos.x >= grid.size() or pos.y >= grid[pos.x].size():
+		if (pos.x < 0 or pos.y < 0 or pos.x >= grid.size() 
+				or pos.y >= grid[pos.x].size()):
 			return null
 		
 		# create nodes as necessary when coordinates are
 		# accessed. we pass the node a reference to ourself
 		# so that it can look up its neighbors.
 		if !grid[pos.x][pos.y]:
-			grid[pos.x][pos.y] = NavNode2.new(pos, self)
+			grid[pos.x][pos.y] = NavNode.new(pos, self)
 		
 		return grid[pos.x][pos.y]
+	
+	func is_walkable_at(pos):
+		return tilemap.is_walkable_at(pos)
 
 # -----------------------------------------------------------
 
-func identify_successors_2(x, start, goal):
-	var successors = []
-	var neighbors = prune(x)
-	for n in neighbors:
-		var successor = jump_2(x, x.direction_to(n), start, goal)
+class Heap:
+	var list = []
+	
+	func push(node):
+		list.push_back(node)
+	
+	func pop():
+		var min_f = INF
+		var min_i = -1
+		for i in list.size():
+			if list[i].f < min_f:
+				min_f = list[i].f
+				min_i = i
+		var node = list[min_i]
+		list.remove(min_i)
+		return node
+	
+	func empty():
+		return list.empty()
+
+# -----------------------------------------------------------
+
+var open_list
+var grid
+var start_node
+var goal_node
+
+# -----------------------------------------------------------
+
+func process_node():
+	print("process node")
+	node = open_list.pop()
+	node.closed = true
+	closed_list.push_back(node.pos)
+	
+	print("node: ", node.print())
+#		var print_list = []
+#		for n in open_list.list:
+#			print_list.push_back(n.pos)
+#		print("open_list: ", print_list)
+	
+	path = backtrace(node)
+	
+	if node == goal_node:
+		set_process(false)
+		open_list = null
+		return
+	
+	neighbors = node.neighbors
+	
+	for neighbor in node.neighbors:
+		if neighbor.closed:
+			continue
+		
+		var g = node.g + node.distance_to(neighbor)
+		
+		if !neighbor.opened:
+			open_list.push(neighbor)
+			neighbor.opened = true
+		elif g >= neighbor.g:
+			continue
+		
+		neighbor.parent = node
+		neighbor.g = g
+		neighbor.f = neighbor.g + neighbor.distance_to(goal_node)
+
+
+func a_star(start, goal):
+	grid = NavGrid.new(self)
+	start_node = grid.node_at(start)
+	goal_node = grid.node_at(goal)
+	closed_list = []
+	
+	open_list = Heap.new()
+	open_list.push(start_node)
+	start_node.g = 0
+	start_node.f = start_node.distance_to(goal_node)
+	set_process(true)
+
+# -----------------------------------------------------------
+
+func jump_point(start, goal):
+	var grid = NavGrid.new(self)
+	var start_node = grid.node_at(start)
+	var goal_node = grid.node_at(goal)
+	
+	var open_list = [start_node]
+	start_node.g = 0
+	start_node.f = 0
+	
+	while open_list:
+		var node = open_list.pop_back()
+		
+		print("node: ", node.print())
+		var print_list = []
+		for n in open_list:
+			print_list.push_back(n.pos)
+		print("open_list: ", print_list)
+		
+		if node.closed:
+			continue
+		node.closed = true
+		
+		if node == goal_node:
+			return backtrace(goal_node)
+		
+		identify_successors(node, start_node, goal_node, open_list)
+
+# -----------------------------------------------------------
+
+func identify_successors(x, start, goal, open_list):
+	for neighbor in prune(x):
+		var successor = jump(x, x.direction_to(neighbor), start, goal)
 		successor.parent = x
-		successors.push_back(successor)
-	return successors
+		open_list.push_back(successor)
 
 # -----------------------------------------------------------
 
@@ -272,7 +338,7 @@ func prune(x):
 
 # -----------------------------------------------------------
 
-func jump_2(x, d, start, goal):
+func jump(x, d, start, goal):
 	var n = x.step(d)
 	
 #	if !n.is_walkable():
@@ -291,221 +357,6 @@ func jump_2(x, d, start, goal):
 				return n
 	
 	return jump(n, d, start, goal)
-
-# -----------------------------------------------------------
-
-func jump_point_2(start, goal):
-	var grid = NavGrid.new(get_used_rect().size)
-	var start_node = grid.node_at(start)
-	var goal_node = grid.node_at(goal)
-	var open_list = [start_node]
-	start_node.opened = true
-	while open_list:
-		var node = open_list.pop_back()
-		if node.closed:
-			continue
-		node.closed = true
-		if node == goal_node:
-			return backtrace(goal_node)
-		var successors = identify_successors_2(node, start_node, goal_node)
-		for successor in successors:
-			open_list.push_front(successor)
-
-# -----------------------------------------------------------
-
-func jump_point(start, end):
-	path = []
-	print("\n------------------\nstart: ", start, " | end: ", end)
-	var grid = init_grid()
-	var open_list = []
-	var start_node = get_node_at2(grid, start)
-	var end_node = get_node_at2(grid, end)
-	
-	open_list.push_back(start_node)
-	start_node.opened = true
-	
-	while !open_list.empty():
-		var node = open_list.pop_back()
-		node.closed = true
-		Log.verbose(self, str("pos: ", node.position, " | parent: ", !!node.parent))
-		if node == end_node:
-			return backtrace(end_node)
-		
-		identify_successors(grid, node, open_list, end)
-
-# -----------------------------------------------------------
-
-func identify_successors(grid, node, open_list, end):
-	var neighbors = find_neighbors(node)
-	print("neighbors: ", neighbors)
-	for neighbor in neighbors:
-		var jump_point = jump(neighbor, node.position, end)
-		if !jump_point:
-			continue
-		print("jump_point: ", jump_point)
-		path.append(jump_point)
-		var jump_node = get_node_at2(grid, jump_point)
-		if jump_node.closed:
-			continue
-		var d = 0 # heuristic stuff
-#		var ng = node.g + d
-		if !jump_node.opened: # or ng < jump_node.g:
-#			jump_node.g = ng
-#			jump_node.h = 0 # heuristic stuff
-#			jump_node.f = jump_node.g + jump_node.h
-			jump_node.parent = node
-			
-			#if !jump_node.opened:
-			open_list.push_back(jump_node)
-			jump_node.opened = true
-
-# -----------------------------------------------------------
-
-func find_neighbors(node):
-	var pos = node.position
-	
-	if !node.parent:
-		return get_neighbors2(pos)
-	
-	var d = pos - node.parent.position
-	Log.verbose(self, ["pos: ", pos, " | parent: ", node.parent.position, " | d: ", d])
-	
-	var dh = Vector2(d.x, 0)
-	var dv = Vector2(0, d.y)
-	
-	var neighbors = []
-	
-	if d.x and d.y:
-		var diags = [pos + dh, pos + dv]
-		var both_walkable = true
-		for diag in diags:
-			if is_walkable_at(diag):
-				neighbors.append(diag)
-			else:
-				both_walkable = false
-		if both_walkable:
-			neighbors.append(pos + d)
-	
-	elif d.x:
-		add_neighbors_for_offset(pos, dh, Vector2(0, 1), neighbors)
-	
-	elif d.y:
-		add_neighbors_for_offset(pos, dv, Vector2(1, 0), neighbors)
-	
-	return neighbors
-
-# -----------------------------------------------------------
-
-func add_neighbors_for_offset(pos, next, perp, neighbors):
-	var walkable = [
-		is_walkable_at(pos + perp),
-		is_walkable_at(pos - perp)
-	]
-	if is_walkable_at(pos + next):
-		neighbors.append(pos + next)
-		if walkable[0]:
-			neighbors.append(pos + next + perp)
-		if walkable[1]:
-			neighbors.append(pos + next - perp)
-	if walkable[0]:
-		neighbors.append(pos + perp)
-	if walkable[1]:
-		neighbors.append(pos - perp)
-
-# -----------------------------------------------------------
-
-func jump(pos, p_pos, end):
-	if !is_walkable_at(pos):
-		return null
-	
-	if pos == end:
-		return pos
-	
-	var d = pos - p_pos
-	
-	var dh = Vector2(d.x, 0)
-	var dv = Vector2(0, d.y)
-	
-	var h = Vector2(1, 0)
-	var v = Vector2(0, 1)
-	
-	if d.x and d.y and (
-			jump(pos + dh, pos, end) or 
-			jump(pos + dv, pos, end)):
-		return pos
-	
-	if d.x and (
-			is_walkable_at(pos - v) &&
-			!is_walkable_at(pos - dh - v) or
-			is_walkable_at(pos + v) &&
-			!is_walkable_at(pos - dh + v)):
-		return pos
-	
-	if d.y and (
-			is_walkable_at(pos - h) &&
-			!is_walkable_at(pos - h - dv) or
-			is_walkable_at(pos + h) &&
-			!is_walkable_at(pos + h - dv)):
-		return pos
-	
-	if (is_walkable_at(pos + dh) and 
-			is_walkable_at(pos + dv)):
-		return jump(pos + d, pos, end)
-	
-	return null
-
-# -----------------------------------------------------------
-
-func init_grid():
-	var size = get_used_rect().size
-	var grid = []
-	grid.resize(size.x)
-	for x in range(size.x):
-		grid[x] = []
-		grid[x].resize(size.y)
-	return grid
-
-# -----------------------------------------------------------
-
-func get_node_at(tile):
-	return grid[tile.y][tile.x]
-
-# -----------------------------------------------------------
-
-func get_node_at2(grid, pos):
-	if !grid[pos.x][pos.y]:
-		grid[pos.x][pos.y] = NavNode.new(pos)
-	return grid[pos.x][pos.y]
-
-# -----------------------------------------------------------
-
-func get_neighbors(node):
-	var neighbors = []
-	var pos = node.position
-	var directions = [
-		get_node_at(Vector2(pos.x, pos.y - 1)),
-		get_node_at(Vector2(pos.x + 1, pos.y)),
-		get_node_at(Vector2(pos.x, pos.y + 1)), 
-		get_node_at(Vector2(pos.x - 1, pos.y))
-	]
-	for direction in directions:
-		if direction.walkable:
-			neighbors.push_back(direction)
-	
-	return neighbors
-
-# -----------------------------------------------------------
-
-func get_neighbors2(pos):
-	var neighbors = []
-	var v = Vector2(0, 1)
-	var h = Vector2(1, 0)
-	var directions = [pos - v, pos + h, pos + v, pos - h]
-	for direction in directions:
-		if is_walkable_at(direction):
-			neighbors.push_back(direction)
-	
-	return neighbors
 
 # -----------------------------------------------------------
 
