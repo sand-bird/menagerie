@@ -76,8 +76,11 @@ func _unhandled_input(e):
 # - exporting a variable (args) defaults it to null
 # - passing null still counts as an argument to the callee
 # - signals can only accept their predefined number of args
-func emit_signal(sig, args = null, log_it = true):
-	if log_it: Log.debug(self, ["emitting signal '", sig, 
+func emit_signal(sig, args = null, should_log = true):
+	if should_log: Log.debug(self, ["emitting signal '", sig,
 			"' | args: ", Utils.pack(args) if args != null else "(none)"])
 	if args != null: .emit_signal(sig, args)
 	else: .emit_signal(sig)
+
+func emit(sig, args = null, should_log = true):
+	emit_signal(sig, args, should_log)
