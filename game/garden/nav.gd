@@ -12,6 +12,8 @@ var path = [] # for printing
 
 const WALKABLE = -1
 const OBSTACLE = 0
+const H = Vector2(1, 0)
+const V = Vector2(0, 1)
 
 var grid = []
 
@@ -42,7 +44,7 @@ func test(start, end):
 			" | start tile: ", start_tile, " | end tile: ", end_tile, 
 			" | start id: ", get_cellv(start_tile), " | end id: ", get_cellv(end_tile),
 			" | walkable?: ", is_walkable_at(end_tile))
-	path = jump_point(start_tile, end_tile)
+	print(jump_point_2(start_tile, end_tile))
 	print("path: ", path)
 	update()
 
@@ -147,7 +149,172 @@ func a_star(start, end):
 
 # -----------------------------------------------------------
 
+class NavNode2:
+	var pos
+	var neighbors = [] setget , _get_neighbors
+	var parent
+	var opened = false
+	var closed = false
+	var grid # reference to our NavGrid object
+	
+	func _init(pos, grid):
+		self.grid = grid
+		self.pos = pos
+	
+	func direction_to(node):
+		return node.pos - pos
+	
+	func distance_to(node):
+		return pos.distance_squared_to(node.pos)
+	
+	func _get_neighbors():
+		if !neighbors:
+			var dirs = [-V, H - V, H, H + V, V, -H + V, -H, -H - V]
+			for dir in dirs:
+				var node = grid.node_at(pos + dir)
+				if node:
+					neighbors.push_back(node)
+		return neighbors
+	
+	func add_neighbor(pos):
+		neighbors.push_back(grid.node_at(pos))
+	
+	func generate_neighbors():
+		var n = []
+		for h in [H, -H]:
+			var h_walkable = is_walkable_at(pos + h)
+			if h_walkable:
+				add_neighbor(pos + h)
+			for v in [V, -V]:
+				if is_walkable_at(pos + v):
+					add_neighbor(pos + v)
+					if h_walkable:
+						add_neighbor(pos + h + v)
+	
+	func step(dir):
+		return grid.node_at(pos + dir)
+	
+	# a node n in neighbors(x) is forced if:
+	# 1. n is not a natural neighbor of x (would have been
+	#    pruned? or has an obstacle? idfk)
+	# 2. dist_with_x < dist_without_x
+	func is_forced():
+		return true
+
+# -----------------------------------------------------------
+
+class NavGrid:
+	var grid = []
+	
+	func _init(size):
+		grid.resize(size.x)
+		for x in range(size.x):
+			grid[x] = []
+			grid[x].resize(size.y)
+	
+	func node_at(pos):
+		# return null if out of bounds
+		if pos.x >= grid.size() or pos.y >= grid[pos.x].size():
+			return null
+		
+		# create nodes as necessary when coordinates are
+		# accessed. we pass the node a reference to ourself
+		# so that it can look up its neighbors.
+		if !grid[pos.x][pos.y]:
+			grid[pos.x][pos.y] = NavNode2.new(pos, self)
+		
+		return grid[pos.x][pos.y]
+
+# -----------------------------------------------------------
+
+func identify_successors_2(x, start, goal):
+	var successors = []
+	var neighbors = prune(x)
+	for n in neighbors:
+		var successor = jump_2(x, x.direction_to(n), start, goal)
+		successor.parent = x
+		successors.push_back(successor)
+	return successors
+
+# -----------------------------------------------------------
+
+# we prune OUT neighbor n if the length of the path from x's
+# parent p(x) straight to n (dist_without_x) is less than (or
+# equal to, for a straight path) the length of the path from
+# p(x) to x to n (dist_with_x). since we want to return a
+# list of the neighbors we HAVEN'T pruned, we flip this.
+#
+# thus for n NOT to be pruned, dist_without_x should be >=
+# dist_with_x for a diagonal path, and strictly > dist_with_x
+# for a straight path.
+func prune(x):
+	# we need x's parent to tell which direction to prune by,
+	# so if x is the start node (no parent), we can't prune
+	if !x.parent:
+		return x.neighbors
+	
+	var pruned_neighbors = []
+	
+	for n in x.neighbors:
+		var dist_without_x = n.distance_to(x.parent)
+		var dist_with_x = n.distance_to(x) + x.distance_to(x.parent)
+		
+		var d = x.parent.direction_to(x)
+		
+		if d.x and d.y: # diagonal (neither axis is 0)
+			if dist_with_x <= dist_without_x:
+				pruned_neighbors.push_back(n)
+		
+		elif dist_with_x < dist_without_x:
+			pruned_neighbors.push_back(n)
+	
+	return pruned_neighbors
+
+# -----------------------------------------------------------
+
+func jump_2(x, d, start, goal):
+	var n = x.step(d)
+	
+#	if !n.is_walkable():
+#		return null
+	
+	if n == goal:
+		return n
+	
+	# if exists n' in n.neighbors such that n is forced:
+	if n.is_forced():
+		return n
+	
+	if d.x and d.y: # diagonal (neither axis is 0)
+		for i in ['x', 'y']:
+			if jump(n, d[i], start, goal):
+				return n
+	
+	return jump(n, d, start, goal)
+
+# -----------------------------------------------------------
+
+func jump_point_2(start, goal):
+	var grid = NavGrid.new(get_used_rect().size)
+	var start_node = grid.node_at(start)
+	var goal_node = grid.node_at(goal)
+	var open_list = [start_node]
+	start_node.opened = true
+	while open_list:
+		var node = open_list.pop_back()
+		if node.closed:
+			continue
+		node.closed = true
+		if node == goal_node:
+			return backtrace(goal_node)
+		var successors = identify_successors_2(node, start_node, goal_node)
+		for successor in successors:
+			open_list.push_front(successor)
+
+# -----------------------------------------------------------
+
 func jump_point(start, end):
+	path = []
 	print("\n------------------\nstart: ", start, " | end: ", end)
 	var grid = init_grid()
 	var open_list = []
@@ -165,10 +332,6 @@ func jump_point(start, end):
 			return backtrace(end_node)
 		
 		identify_successors(grid, node, open_list, end)
-		
-		print(backtrace(node))
-	
-	return []
 
 # -----------------------------------------------------------
 
@@ -177,9 +340,10 @@ func identify_successors(grid, node, open_list, end):
 	print("neighbors: ", neighbors)
 	for neighbor in neighbors:
 		var jump_point = jump(neighbor, node.position, end)
-		print("jump_point: ", jump_point)
 		if !jump_point:
 			continue
+		print("jump_point: ", jump_point)
+		path.append(jump_point)
 		var jump_node = get_node_at2(grid, jump_point)
 		if jump_node.closed:
 			continue
@@ -355,8 +519,8 @@ func is_walkable_at(pos):
 # -----------------------------------------------------------
 
 func backtrace(node):
-	var path = [node.position]
+	var path = [node.pos]
 	while node.parent:
 		node = node.parent
-		path.push_front(node.position)
+		path.push_front(node.pos)
 	return path
