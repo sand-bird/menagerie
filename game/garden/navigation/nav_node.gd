@@ -45,16 +45,15 @@ const H = Vector2(1, 0)
 const V = Vector2(0, 1)
 
 func generate_neighbors():
+	for dir in [H, -H, V, -V]:
+		if grid.is_walkable_at(pos + dir):
+			add_neighbor(pos + dir)
 	for h in [H, -H]:
 		var h_walkable = grid.is_walkable_at(pos + h)
-		if h_walkable:
-			add_neighbor(pos + h)
 		for v in [V, -V]:
-			var v_walkable = grid.is_walkable_at(pos + v)
-			if v_walkable:
-				add_neighbor(pos + v)
-				if h_walkable:
-					add_neighbor(pos + h + v)
+			if (h_walkable and grid.is_walkable_at(pos + v)
+					and grid.is_walkable_at(pos + h + v)):
+				add_neighbor(pos + h + v)
 
 # -----------------------------------------------------------
 
