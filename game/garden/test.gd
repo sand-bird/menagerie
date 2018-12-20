@@ -50,26 +50,21 @@ func _init(map, start, goal):
 
 # -----------------------------------------------------------
 
+# we can't pass this anything, so all the stuff it draws has
+# to come from a class variable. one option: dump everything
+# to be drawn into a queue, and let _draw pop it off as it
+# goes along - at least that would isolate it a bit.
 func _draw():
-#	if start_pos:
-#		draw_circle(start_pos, 4, Color(0, 0.5, 1))
-#	if end_pos:
-#		draw_circle(end_pos, 4, Color(1, 0, 0.5))
-	if start_tile:
-		draw_circle(map.map_to_world(start_tile), 4, Color(0, 1, 1))
-	if goal_tile:
-		draw_circle(map.map_to_world(goal_tile), 4, Color(1, 0, 1))
-	if open_list and !open_list.empty():
-		for i in open_list.list:
-			draw_circle(map.map_to_world(i.pos), 8, Color(0.5, 1, 0.5))
-	for i in closed_list:
-		draw_circle(map.map_to_world(i), 8, Color(1, 0.5, 0.5))
-	for i in neighbors:
-		draw_circle(map.map_to_world(i.pos), 5, Color(0, 1, 1))
-	for i in path:
-		draw_circle(map.map_to_world(i), 4, Color(1, 1, 0))
-	if node:
-		draw_circle(map.map_to_world(node.pos), 5, Color(0, 0, 1))
+#	draw(start_pos, 4, Color(0, 0.5, 1))
+#	draw(end_pos, 4, Color(1, 0, 0.5))
+	draw(start_tile, 4, Color(0, 1, 1))
+	draw(goal_tile, 4, Color(1, 0, 1))
+	if open_list:
+		draw(open_list.list, 8, Color(0.5, 1, 0.5))
+	draw(closed_list, 8, Color(1, 0.5, 0.5))
+	draw(neighbors, 5, Color(0, 1, 1))
+	draw(path, 4, Color(1, 1, 0))
+	draw(node, 5, Color(0, 0, 1))
 
 # -----------------------------------------------------------
 
@@ -85,6 +80,15 @@ func _process(delta):
 
 # -----------------------------------------------------------
 
+# each step of the pathfinding expansion (where a new node is
+# popped off the heap and examined) happens here. all the
+# necessary state is stored as class objects, so that we can
+# debug the algorithm by:
+# 1. inserting an arbitrary delay between steps by calling
+#    process_node from within _process (alternately, we could
+#    use a timer, but this is simpler)
+# 2. updating the drawstack or whatever after each call, which
+#    causes _draw to update using our many class variables
 func process_node():
 	node = open_list.pop()
 	node.closed = true
@@ -123,3 +127,32 @@ func backtrace(node):
 		node = node.parent
 		path.push_front(node.pos)
 	return path
+
+# -----------------------------------------------------------
+
+# encapsulates null checking and iteration, if the thing we
+# want to draw is an array. we only draw circles anyway
+func draw(to_draw, size, color):
+	if !to_draw:
+		return
+	if typeof(to_draw) == TYPE_ARRAY:
+		for item in to_draw:
+			do_draw(item, size, color)
+	else:
+		do_draw(to_draw, size, color)
+
+# -----------------------------------------------------------
+
+# make sure we only draw if our item is a Vector2 or has a
+# Vector2 property with a reasonable name (pos for NavNode)
+func do_draw(item, size, color):
+	var pos
+	if typeof(item) == TYPE_VECTOR2:
+		pos = item
+	elif typeof(item) == TYPE_OBJECT:
+		if 'pos' in item:
+			pos = item.pos
+		elif 'position' in item:
+			pos = item.position
+	if !pos: return
+	draw_circle(map.map_to_world(pos), size, color)
