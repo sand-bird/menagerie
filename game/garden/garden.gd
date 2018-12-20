@@ -100,7 +100,7 @@ func update_color(hour):
 
 func serialize():
 	return {
-		camera = $camera.serialize(),
+#		camera = $camera.serialize(),
 		terrain = save_terrain(),
 		objects = save_objects(),
 		monsters = save_monsters(),
@@ -112,8 +112,8 @@ func deserialize(data):
 	load_objects(data.objects)
 	load_monsters(data.monsters)
 	load_items(data.items)
-	if data.has("camera"):
-		$camera.deserialize(data.camera)
+#	if data.has("camera"):
+#		$camera.deserialize(data.camera)
 
 # -----------------------------------------------------------
 

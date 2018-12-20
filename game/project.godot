@@ -38,10 +38,10 @@ indicators_enabled=true
 
 [display]
 
-window/size/width=384
-window/size/height=212
+window/size/width=300
+window/size/height=180
 window/size/test_width=640
-window/size/test_height=420
+window/size/test_height=392
 window/handheld/emulate_touchscreen=true
 window/stretch/mode="viewport"
 window/stretch/shrink="1"
