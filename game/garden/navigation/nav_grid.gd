@@ -17,6 +17,16 @@ func _init(tilemap):
 
 # -----------------------------------------------------------
 
+func get_node(pos):
+	return grid[pos.x][pos.y]
+
+# -----------------------------------------------------------
+
+func set_node(pos, node):
+	grid[pos.x][pos.y] = node
+
+# -----------------------------------------------------------
+
 func node_at(pos):
 	# return null if out of bounds
 	if (pos.x < 0 or pos.y < 0 or pos.x >= grid.size() 
@@ -26,12 +36,16 @@ func node_at(pos):
 	# create nodes as necessary when coordinates are
 	# accessed. we pass the node a reference to ourself
 	# so that it can look up its neighbors.
-	if !grid[pos.x][pos.y]:
-		grid[pos.x][pos.y] = NavNode.new(pos, self)
+	if !get_node(pos):
+		set_node(pos, NavNode.new(pos, self, tilemap.is_walkable_at(pos)))
 	
-	return grid[pos.x][pos.y]
+	return get_node(pos)
 
 # -----------------------------------------------------------
 
 func is_walkable_at(pos):
-	return tilemap.is_walkable_at(pos)
+	var node = node_at(pos)
+	if node:
+		return node.walkable
+	else:
+		return false

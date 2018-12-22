@@ -1,5 +1,8 @@
 extends Node
 
+# not actually a heap (yet); pushes in O(1) and pops in O(n),
+# as opposed to O(log n) for both in a real heap. todo later
+
 var list = []
 
 func push(node):

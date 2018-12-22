@@ -140,6 +140,17 @@ static func comma(num):
 #                        V E C T O R S                        #
 # ----------------------------------------------------------- #
 
+
+static func is_horizontal(v):
+	return v.x and !v.y
+
+static func is_vertical(v):
+	return v.y and !v.x
+
+static func is_diagonal(v):
+	return v.x and v.y
+
+
 static func veq(a, b):
 	var xeq = round(a.x) == round(b.x)
 	var yeq = round(a.y) == round(b.y)

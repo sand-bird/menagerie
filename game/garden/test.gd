@@ -1,10 +1,14 @@
 extends Node2D
 
+const H = Vector2(1, 0)
+const V = Vector2(0, 1)
+
+
 const NavGrid = preload("res://garden/navigation/nav_grid.gd")
 const NavNode = preload("res://garden/navigation/nav_node.gd")
 const Heap = preload("res://garden/navigation/heap.gd")
 
-const STEP_TIME = 0.5 # in seconds
+const STEP_TIME = 0.7 # in seconds
 
 var map # reference to our parent tilemap
 
@@ -18,6 +22,8 @@ var goal_pos
 
 var path = []
 var neighbors = []
+var bad_neighbors = []
+var jump_nodes = []
 var open_list
 var closed_list = []
 
@@ -28,6 +34,8 @@ var start_node
 var goal_node
 
 var draw_list = []
+
+var is_done = false
 
 # -----------------------------------------------------------
 
@@ -63,6 +71,8 @@ func _draw():
 		draw(open_list.list, 8, Color(0.5, 1, 0.5))
 	draw(closed_list, 8, Color(1, 0.5, 0.5))
 	draw(neighbors, 5, Color(0, 1, 1))
+	draw(bad_neighbors, 5, Color(0.5, 0.1, 0.1))
+	draw(jump_nodes, 3, Color(0.7, 0.7, 0.7))
 	draw(path, 4, Color(1, 1, 0))
 	draw(node, 5, Color(0, 0, 1))
 
@@ -76,7 +86,7 @@ func _process(delta):
 	timer -= STEP_TIME
 	if open_list and !open_list.empty():
 		process_node()
-		update()
+	update()
 
 # -----------------------------------------------------------
 
@@ -90,6 +100,10 @@ func _process(delta):
 # 2. updating the drawstack or whatever after each call, which
 #    causes _draw to update using our many class variables
 func process_node():
+	if open_list.empty():
+		set_process(false)
+		print("path not found!")
+	
 	node = open_list.pop()
 	node.closed = true
 	closed_list.push_back(node.pos)
@@ -99,25 +113,56 @@ func process_node():
 	if node == goal_node:
 		set_process(false)
 		print("path found!")
-		return
+		update()
 	
-	neighbors = node.neighbors
+	neighbors = node.prune()
+	bad_neighbors = node.bad_neighbors
+	jump_nodes = []
 	
 	for neighbor in neighbors:
-		if neighbor.closed:
+		var successor = jump(node, node.direction_to(neighbor), goal_node)
+		
+		if !successor:
 			continue
 		
-		var g = node.g + node.distance_to(neighbor)
-		
-		if !neighbor.opened:
-			open_list.push(neighbor)
-			neighbor.opened = true
-		elif g >= neighbor.g:
+		if successor.closed:
 			continue
 		
-		neighbor.parent = node
-		neighbor.g = g
-		neighbor.f = neighbor.g + neighbor.distance_to(goal_node)
+		var g = node.g + node.distance_to(successor)
+		
+		if !successor.opened:
+			open_list.push(successor)
+			successor.opened = true
+		elif g >= successor.g:
+			continue
+		
+		successor.parent = node
+		successor.g = g
+		successor.f = successor.g + successor.distance_to(goal_node)
+
+# -----------------------------------------------------------
+
+func jump(x, d, goal):
+	var n = x.step(d)
+	
+	if !grid.is_walkable_at(n.pos):
+		return null
+	
+	jump_nodes.push_back(n)
+	
+	if n == goal:
+		return n
+	
+	# if exists n' in n.neighbors such that n is forced:
+	if n.is_forced(d):
+		return n
+	
+	if d.x and d.y: # diagonal (neither axis is 0)
+		for i in [H, V]:
+			if jump(n, d * i, goal):
+				return n
+	
+	return jump(n, d, goal)
 
 # -----------------------------------------------------------
 
