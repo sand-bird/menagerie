@@ -231,9 +231,17 @@ func _map(args, caller, parent):
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
 	for item in data:
-		var value = resolve(args[1])
-		Log.verbose(self, "(_map) resolved value: ", value)
-		results.push_back(value)
+		var value
+		if typeof(data) == TYPE_ARRAY: value = item
+		elif typeof(data) == TYPE_DICTIONARY: value = data[item]
+		var key = eval_arg(args[1], caller, value)
+#		Log.verbose(self, ["-----\n args: ", args, "\n key: ", key,
+#				"\n item: ", item, "\n data: ", data, "\n value: ", value])
+		if value.has(key): results.push_back(value[key])
+		# stuff for "true map" that didn't work
+#		var value = resolve(args[1])
+#		Log.verbose(self, ["(_map) resolved value: ", value])
+#		results.push_back(value)
 	Log.verbose(self, ["(_map) after: ", results])
 	return results
 

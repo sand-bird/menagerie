@@ -153,31 +153,28 @@ const MENU_CHAPTERS = {
 	},
 	items = {
 		icon = "items",
-		scene = "inventory/items"
-#		condition = {"in": [
-#			"item",
-#			{"map": [
-#				"$player.inventory",
-#				{"get": [
-#					{"get": [
-#						"$data",
-#						{"get": ["*", "id"]}
-#					]},
-#					"type"
-#				]}
-#			]}
-#		]}
+		scene = "inventory/items",
+		condition = {"filter": [
+			"$player.inventory:id",
+			{"==": [
+				"$data.*.type",
+				"item"
+			]}
+		]}
 	},
 	objects = {
 		icon = "inventory",
-		scene = "inventory/objects"
-#		condition = {"filter": [
-#				"$player.inventory:id",
-#				{"==": [
-#					"$data.*.type",
-#					"object"
-#				]}
-#			]}
+		scene = "inventory/objects",
+		condition = {"filter": [
+			"$player.inventory",
+			{"==": [
+				{"get": [
+					{"get": ["$data", "*.id"]},
+					"type"
+				]},
+				"object"
+			]}
+		]}
 	},
 	town_map = {
 		icon = "town",
