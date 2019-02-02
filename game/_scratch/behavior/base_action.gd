@@ -4,6 +4,8 @@ var Status = Constants.ActionStatus
 
 # todo: see if this works
 # var id setget , 'get_instance_ID'
+var energy_cost = 0
+var monster
 
 func _init():
 	initialize()
@@ -16,7 +18,7 @@ func initialize(): pass
 func execute(tick):
 	_enter(tick)
 	
-	if !tick.blackboard.get('is_open', tick.tree.id, id):
+	if !tick.blackboard.get('is_open', tick.tree.id, self.id):
 		_open(tick)
 	
 	var status = _tick(tick)

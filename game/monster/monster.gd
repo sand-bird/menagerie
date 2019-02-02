@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+const Action = preload("res://_scratch/behavior/action.gd")
+
 var entity_type = Constants.EntityType.MONSTER
 var Anim = Constants.Anim
 
@@ -112,6 +114,7 @@ func _ready():
 #	Dispatcher.connect("set_dest", self, "set_dest")
 	update_z()
 	set_physics_process(true)
+	choose_action()
 
 func get_position():
 	return Vector2(position.x, position.y - $shape.shape.radius)
@@ -145,6 +148,7 @@ func queue_animation(anim_id, loops = 0):
 # update when facing direction changes
 var time = 0
 func _physics_process(delta):
+	current_action.execute()
 	time += delta
 	var rad = time * 2
 #	self.orientation = Vector2(cos(rad), sin(rad))
@@ -179,14 +183,12 @@ func update_z():
 # -----------------------------------------------------------
 
 func choose_action():
-	# logic to select current and next action(s)
-	# var stomach_priority = (max_status.stomach - status.stomach) 
-	#   / (max_status.stomach * 30) * 100
-	# var duration = 12
-	# current_action = Action.new(Action.IDLE_ACTION, duration)
 	randomize()
-#	current_action = Action.new(Utils.randi_range(2, 8) * 100)
-	pass
+	if randf() < 0.5:
+		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)
+	else:
+		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
+	print("chose action: ", current_action)
 
 
 # =========================================================== #
@@ -206,7 +208,7 @@ func _update_drives(tick):
 
 const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 
-# actions are defined with `energy_mod` values that describe
+# actions are defined with `energy_cost` values that describe
 # how fast a pet loses (or recovers) energy while performing
 # the action. these are in delta energy PER HOUR (positive
 # for recovery, negative for drain), but since the drive is
@@ -219,7 +221,7 @@ const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 # energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func calc_energy_delta():
-	var action_val = (current_action.energy_mod / Time.TICKS_IN_HOUR
+	var action_val = (current_action.energy_cost / Time.TICKS_IN_HOUR
 			if current_action else DEFAULT_ENERGY_DECAY)
 	var vig_mod = traits.vigor * 2.0
 	var delta_energy = 0.0

@@ -33,12 +33,11 @@ func direction_to(node):
 # -----------------------------------------------------------
 
 func distance_to(node):
-	# return pos.distance_squared_to(node.pos)
+	return pos.distance_squared_to(node.pos)
 	var dist_vec = (node.pos - pos).abs()
 	var straight_dist_to = abs(dist_vec.y - dist_vec.x)
 	var diag_dist_to = max(dist_vec.y, dist_vec.x) - straight_dist_to
 	return straight_dist_to + diag_dist_to * sqrt(2)
-
 
 # -----------------------------------------------------------
 
@@ -46,11 +45,6 @@ func add_neighbor(pos):
 	var node = grid.node_at(pos)
 	if node:
 		neighbors.push_back(node)
-
-#func add_neighbor_2(pos):
-#	var node = grid.node_at(pos)
-#	if node and node.walkable:
-#		neighbors.push_back(node)
 
 # -----------------------------------------------------------
 
@@ -67,14 +61,6 @@ func generate_neighbors(include_nonwalkable = false):
 			if include_nonwalkable or (h_walkable and grid.is_walkable_at(pos + v)
 					and grid.is_walkable_at(pos + h + v)):
 				add_neighbor(pos + h + v)
-
-
-#func generate_neighbors_2():
-#	for dir in [H, -H, V, -V]:
-#		add_neighbor_2(pos + dir)
-#	for h in [H, -H]:
-#		for v in [V, -V]:
-#			add_neighbor_2(pos + h + v)
 
 # -----------------------------------------------------------
 
@@ -93,11 +79,10 @@ func prune():
 		
 		var d = parent.direction_to(self)
 		
-		if d.x and d.y: # diagonal (neither axis is 0)
-			if dist_with_x <= dist_without_x:
-				pruned_neighbors.push_back(n)
-		
-		elif dist_with_x <= dist_without_x:
+		# for straight movement we're supposed to prune out
+		# neighbors with the same distance, but this breaks
+		# for forced corners. it works if we use <=
+		if dist_with_x <= dist_without_x:
 			pruned_neighbors.push_back(n)
 		
 		elif n.is_forced(d):

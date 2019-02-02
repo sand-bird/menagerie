@@ -130,7 +130,7 @@ class Wait extends BaseAction:
 	func tick(tick): # todo: set this to use game ticks??
 		var current_time = Time.get_time()
 		var start_time = get(tick, 'start_time')
-		if (curr_time - start_time > 0): return Status.SUCCESS
+		if (current_time - start_time > 0): return Status.SUCCESS
 		return Status.RUNNING
 
 # -----------------------------------------------------------
@@ -159,15 +159,18 @@ class Move extends BaseAction:
 	# path status?
 	# saved path (if we're doing that?)
 	
-	func _init(tgt, spd):
-		target = tgt
-		speed = spd
+	func _init(monster, target, speed):
+		energy_cost = 8
+		self.monster = monster
+		self.target = target
+		self.speed = speed
 		initialize()
 	
 	func open(tick): pass
 		# (call on the monster to) set the path, if we're doing that
 	
 	func tick(tick):
+		print("action ticking")
 		# call on monster to update path
 		# maybe we can check if anything is suddenly blocking our
 		# path before we recalculate? would prob save a lot of cycles
@@ -179,7 +182,8 @@ class Move extends BaseAction:
 class Sleep extends BaseAction:
 	var timeout
 	
-	func _init(timeout):
+	func _init(monster, timeout):
+		self.monster = monster
 		self.timeout = timeout
 		initialize()
 	
