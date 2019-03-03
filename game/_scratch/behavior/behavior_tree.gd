@@ -11,13 +11,13 @@ func tick(target, blackboard):
 	root.execute(tick)
 	
 	var last_open_actions = blackboard.get('open_actions', self.id)
-	var curr_open_actions = tick.open_actions.slice(0) # ?
+	var curr_open_actions = tick.open_actions # ?
 	
 	var start = 0
 	while (start < min(last_open_actions.length, curr_open_actions.length)
 			and last_open_actions[start] == curr_open_actions[start]):
 		start += 1
-
+	
 #	for i in min(last_open_actions.length, curr_open_actions.length):
 #		start = i + 1
 #		if last_open_actions[i] != curr_open_actions[i]: break

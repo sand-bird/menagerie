@@ -116,6 +116,8 @@ func _ready():
 	set_physics_process(true)
 	choose_action()
 
+# -----------------------------------------------------------
+
 func get_position():
 	return Vector2(position.x, position.y - $shape.shape.radius)
 
@@ -148,7 +150,9 @@ func queue_animation(anim_id, loops = 0):
 # update when facing direction changes
 var time = 0
 func _physics_process(delta):
-	current_action.execute()
+#	if !current_action or current_action.execute() != Status.RUNNING:
+#		choose_action()
+#	current_action.execute()
 	time += delta
 	var rad = time * 2
 #	self.orientation = Vector2(cos(rad), sin(rad))

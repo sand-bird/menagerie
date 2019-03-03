@@ -14,7 +14,7 @@ func _init(target, blackboard, tree):
 
 func enter_action(action):
 	action_count += 1
-	open_actions.push(action)
+	open_actions.push_back(action)
 	print("action entered: ", action)
 
 func open_action(action):
@@ -23,7 +23,7 @@ func open_action(action):
 func tick_action(action):
 	print("action ticked: ", action)
 
-func clode_action(action):
+func close_action(action):
 	print("action closed: ", action)
 	openActions.pop()
 

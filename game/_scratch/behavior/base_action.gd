@@ -18,7 +18,7 @@ func initialize(): pass
 func execute(tick):
 	_enter(tick)
 	
-	if !tick.blackboard.get('is_open', tick.tree.id, self.id):
+	if !get('is_open'):
 		_open(tick)
 	
 	var status = _tick(tick)
