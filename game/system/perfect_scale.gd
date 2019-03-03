@@ -16,38 +16,60 @@ const MAX_ASPECT = 0.75 # 3.0/4.0
 
 const MIN_SCALE = 2
 
+# DEBOUNCE_TIME represents how long we wait for resize
+# signals to stop coming before we do our thing, while the
+# timer keeps track of this for us.
+const DEBOUNCE_TIME = 0.05
+var timer: SceneTreeTimer = null
+
 func _ready():
-	print(get_tree().connect("screen_resized", self, "update_screen"))
+	print(get_tree().connect("screen_resized", self, "debounce"))
 	var base_size = update_screen()
-	Log.info(self, ["ready! window size: ", OS.get_window_size(),
+	Log.info(self, ["ready! window size: ", OS.window_size,
 			", base size: ", base_size])
 
 # -----------------------------------------------------------
-# cheap log limiter
-var old_base_size
+
+# manually resizing the window sends a bunch of resize
+# events, natch, but we only want to rescale once, so we wait
+# until the signals stop coming. note that SceneTreeTimer
+# does not free itself right away, so we must manually clear
+# our timer pointer inside `update_screen`.
+func debounce():
+	if !timer:
+		timer = get_tree().create_timer(DEBOUNCE_TIME)
+		timer.connect("timeout", self, "update_screen")
+	else:
+		timer.time_left = DEBOUNCE_TIME
+
+# -----------------------------------------------------------
 
 # for pixel perfect, the window size must exactly equal the
 # base_size times the scale (the scaled_size), or else there
 # must be a gutter of a few black pixels. here we resize the
 # window if possible, or render with a gutter if not.
 func update_screen():
+	timer = null
+
 	var viewport = get_tree().get_root()
 
-	var new_win_size = OS.get_window_size()
+	var new_win_size = OS.window_size
 	var new_scale = get_scale(new_win_size)
 	var base_size = get_new_size(new_win_size, new_scale)
 	var scaled_size = base_size * new_scale
 
-	viewport.set_size(base_size)
 	if OS.is_window_maximized() or OS.is_window_fullscreen():
-		var gutter = ((OS.get_window_size() - scaled_size) / 2).floor()
+		var gutter = ((OS.window_size - scaled_size) / 2).floor()
 		viewport.set_attach_to_screen_rect(Rect2(gutter, scaled_size))
-	else: OS.set_window_size(scaled_size)
+	else:
+		OS.window_size = scaled_size
 
-	if old_base_size != base_size:
-		old_base_size = base_size
-		Log.debug(self, ["base size: ", base_size, " | scaled size: ",
-				scaled_size, " | window size: ", OS.get_window_size()])
+	viewport.set_size(base_size)
+
+	Log.debug(self, ["base size: ", base_size, " | scaled size: ",
+			scaled_size, " | window size: ", OS.window_size])
+	print("base: ", base_size, " | scaled: ", scaled_size,
+			" | viewport: ", viewport.size, " | window: ", OS.window_size)
 
 	return base_size
 
