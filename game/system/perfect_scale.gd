@@ -16,67 +16,87 @@ const MAX_ASPECT = 0.75 # 3.0/4.0
 
 const MIN_SCALE = 2
 
-var scale = 3
-var base_size = Vector2()
-var win_size = OS.get_window_size()
-
-onready var viewport = get_tree().get_root()
-
 func _ready():
 	get_tree().connect("screen_resized", self, "update_screen")
-	update_screen()
-	Log.info(self, ["ready! window size: ", win_size, ", base size: ", base_size])
+	var base_size = update_screen()
+	Log.info(self, ["ready! window size: ", OS.get_window_size(), 
+			", base size: ", base_size])
+
+# -----------------------------------------------------------
+# cheap log limiter
+var old_base_size
 
 # for pixel perfect, the window size must exactly equal the 
 # base_size times the scale (the scaled_size), or else there 
 # must be a gutter of a few black pixels. here we resize the 
 # window if possible, or render with a gutter if not.
 func update_screen():
-	win_size = OS.get_window_size()
-	get_new_size()
-	var scaled_size = base_size * scale
-	Log.debug(self, ["resizing viewport: ", viewport.size, " -> ", base_size])
+	var viewport = get_tree().get_root()
+	
+	var new_win_size = OS.get_window_size()
+	var new_scale = get_scale(new_win_size)
+	var base_size = get_new_size(new_win_size, new_scale)
+	var scaled_size = base_size * new_scale
+	
 	viewport.set_size(base_size)
 	if OS.is_window_maximized() or OS.is_window_fullscreen():
 		var gutter = ((OS.get_window_size() - scaled_size) / 2).floor()
 		viewport.set_attach_to_screen_rect(Rect2(gutter, scaled_size))
 	else: OS.set_window_size(scaled_size)
+	
+	if old_base_size != base_size:
+		old_base_size = base_size
+		Log.debug(self, ["base size: ", base_size, " | scaled size: ",
+				scaled_size, " | window size: ", OS.get_window_size()])
+	
+	return base_size
+
+# -----------------------------------------------------------
 
 # sets `base_size` according to the new window dimensions and 
 # our constraints. also sets `scale` through get_scale().
-func get_new_size():
+func get_new_size(win_size, scale):
 	var new_x
 	var new_y
 	if win_size.y / win_size.x < MIN_ASPECT: # scale by height
-		get_scale("y")
-		new_y = get_primary("y")
-		new_x = get_secondary("x", new_y / MAX_ASPECT, new_y / MIN_ASPECT)
+		new_y = get_primary("y", win_size, scale)
+		new_x = get_secondary("x", win_size, scale,
+				new_y / MAX_ASPECT, new_y / MIN_ASPECT)
 	else: # scale by width (default)
-		get_scale("x")
-		new_x = get_primary("x")
-		new_y = get_secondary("y", new_x * MIN_ASPECT, new_x * MAX_ASPECT)
-	base_size = Vector2(round(new_x), round(new_y))
+		new_x = get_primary("x", win_size, scale)
+		new_y = get_secondary("y", win_size, scale,
+				new_x * MIN_ASPECT, new_x * MAX_ASPECT)
+	return Vector2(round(new_x), round(new_y))
+
+# -----------------------------------------------------------
 
 # the scale is found using IDEAL_SIZE, then clamped to
 # the minimum and maximum possible scale just in case.
-func get_scale(i):
-	scale = max(clamp(round(win_size[i] / IDEAL_SIZE[i]), 
-					  ceil(win_size[i] / MAX_SIZE[i]), 
-					  floor(win_size[i] / MIN_SIZE[i])), 
-				MIN_SCALE)
+func get_scale(win_size):
+	var i = 'y' if win_size.y / win_size.x < MIN_ASPECT else 'x'
+	return max(
+		clamp(
+			round(win_size[i] / IDEAL_SIZE[i]),
+			ceil(win_size[i] / MAX_SIZE[i]),
+			floor(win_size[i] / MIN_SIZE[i])
+		), 
+		MIN_SCALE
+	)
 
-# get primary and secondary dimensions
-# ------------------------------------
-# if the window is wider than the minimum aspect ratio, 
-# we must calculate base_size from the window's height; 
-# same with width if it's taller than the maximum. here 
-# we use width by default, and height when necessary.
+# -----------------------------------------------------------
 
-func get_primary(i):
+# getting primary and secondary dimensions
+# -----------------------------------------
+# if the window is wider than the minimum aspect ratio, we
+# must calculate base_size from the window's height; same
+# with width if it's taller than the maximum. here we use
+# width by default, and height when necessary.
+
+func get_primary(i, win_size, scale):
 	return max(win_size[i] / scale, 
 			   MIN_SIZE[i])
 
-func get_secondary(i, low_val, high_val):
+func get_secondary(i, win_size, scale, low_val, high_val):
 	return clamp(floor(win_size[i] / scale),
 				 max(low_val, MIN_SIZE[i]),
 				 min(high_val, MAX_SIZE[i]))
