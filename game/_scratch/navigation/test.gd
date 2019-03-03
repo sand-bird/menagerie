@@ -1,8 +1,9 @@
 extends Node2D
 
+#warning-ignore-all:unused_class_variable
+
 const H = Vector2(1, 0)
 const V = Vector2(0, 1)
-
 
 const NavGrid = preload("res://garden/navigation/nav_grid.gd")
 const NavNode = preload("res://garden/navigation/nav_node.gd")
@@ -46,14 +47,14 @@ func _init(map, start, goal):
 	grid = NavGrid.new(map)
 	start_node = grid.node_at(start)
 	goal_node = grid.node_at(goal)
-	
+
 	open_list = Heap.new()
 	closed_list = []
 	open_list.push(start_node)
-	
+
 	start_node.g = 0
 	start_node.f = start_node.distance_to(goal_node)
-	
+
 	set_process(true)
 
 # -----------------------------------------------------------
@@ -103,39 +104,39 @@ func process_node():
 	if open_list.empty():
 		set_process(false)
 		print("path not found!")
-	
+
 	node = open_list.pop()
 	node.closed = true
 	closed_list.push_back(node.pos)
-	
+
 	path = backtrace(node)
-	
+
 	if node == goal_node:
 		set_process(false)
 		print("path found!")
 		update()
-	
+
 	neighbors = node.prune()
 	bad_neighbors = node.bad_neighbors
 	jump_nodes = []
-	
+
 	for neighbor in neighbors:
 		var successor = jump(node, node.direction_to(neighbor), goal_node)
-		
+
 		if !successor:
 			continue
-		
+
 		if successor.closed:
 			continue
-		
+
 		var g = node.g + node.distance_to(successor)
-		
+
 		if !successor.opened:
 			open_list.push(successor)
 			successor.opened = true
 		elif g >= successor.g:
 			continue
-		
+
 		successor.parent = node
 		successor.g = g
 		successor.f = successor.g + successor.distance_to(goal_node)
@@ -144,24 +145,24 @@ func process_node():
 
 func jump(x, d, goal):
 	var n = x.step(d)
-	
+
 	if !grid.is_walkable_at(n.pos):
 		return null
-	
+
 	jump_nodes.push_back(n)
-	
+
 	if n == goal:
 		return n
-	
+
 	# if exists n' in n.neighbors such that n is forced:
 	if n.is_forced(d):
 		return n
-	
+
 	if d.x and d.y: # diagonal (neither axis is 0)
 		for i in [H, V]:
 			if jump(n, d * i, goal):
 				return n
-	
+
 	return jump(n, d, goal)
 
 # -----------------------------------------------------------

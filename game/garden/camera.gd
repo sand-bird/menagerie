@@ -13,8 +13,9 @@ var FLICK_SPEED = Options.camera_flick_speed # 1.0
 # options used for edge scroll
 var EDGE_SIZE = Options.camera_edge_size
 var SCROLL_SPEED = Options.camera_scroll_speed
-var SCROLL_ACCEL = Options.camera_scroll_acceleration
-var SCROLL_LERP = 0.05
+# what were we supposed to use these for, and why aren't we using them??
+# var SCROLL_ACCEL = Options.camera_scroll_acceleration
+# var SCROLL_LERP = 0.05
 
 # viewport properties
 var screen_size
@@ -41,15 +42,15 @@ var target_pos = Vector2()
 func _ready():
 	get_tree().connect("screen_resized", self, "_on_screen_resized")
 	$"..".connect("resized", self, "_on_screen_resized")
-	
+
 	_on_screen_resized()
-	
-	set_physics_process(true)
+
+	set_process(true)
 #	set_process_input(true) # we'll need this for joystick & button scroll (maybe)
 
 # -----------------------------------------------------------
 
-func _input(event): pass
+# func _input(event): pass
 
 # -----------------------------------------------------------
 
@@ -69,13 +70,13 @@ func get_screen_settings():
 
 # -----------------------------------------------------------
 
-# calculates and stores the properties of the camera's parent 
-# node (the garden) so we can initialize it to the center and 
+# calculates and stores the properties of the camera's parent
+# node (the garden) so we can initialize it to the center and
 # stop it from scrolling too far past the parent's boundaries.
 # no relation to the screen size properties.
 #
 # for now, lets us view a fifth of the parent's size or a
-# quarter of the screen size, whichever's smaller, of space 
+# quarter of the screen size, whichever's smaller, of space
 # outside the bounds of the parent (magic numbers below).
 func get_bounds():
 	# set up our member vars
@@ -84,7 +85,7 @@ func get_bounds():
 	parent_size = get_parent().get_size()
 	parent_center = base_pos + parent_size.floor() / 2
 	center_pos = parent_center - screen_radius
-	
+
 	# calculate pos values for our bounds
 	var parent_min = base_pos
 	var parent_max = base_pos + parent_size
@@ -136,8 +137,8 @@ func do_edge_scroll():
 
 # moves the camera up, down, left, and/or right based on key
 # input. suitable for mouse-and-keyboard or keyboard only
-# input schemes. naturally also works for joypad buttons, 
-# since the primary purpose of key-only is for all inputs to 
+# input schemes. naturally also works for joypad buttons,
+# since the primary purpose of key-only is for all inputs to
 # be externally remappable to an unrecognized controller.
 func do_key_scroll():
 	pass
@@ -151,17 +152,18 @@ func do_joystick_scroll():
 
 # -----------------------------------------------------------
 
-func _physics_process(delta):
+#warning-ignore:unused_argument
+func _process(delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
 	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
 	# (not sure if these will be here or in _process_input)
 	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
-	
+
 	# clamp target to camera bounds
 	target_pos = Utils.vclamp(target_pos, min_pos, max_pos).round()
-	
+
 	# lerp camera to target position
 	if position != target_pos:
 #		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
@@ -169,14 +171,14 @@ func _physics_process(delta):
 #		position = Vector2(new_x, new_y)
 		position = Utils.vlerp(position, target_pos, FLICK_SPEED / FLICK_DISTANCE)
 		align()
-	
+
 	# update saved cursor position (for drag scroll)
 	last_mouse_pos = get_local_mouse_position()
 
 # -----------------------------------------------------------
 
 func deserialize(data):
-	for i in ["x", "y"]: 
+	for i in ["x", "y"]:
 		position[i] = data[i]
 		target_pos[i] = data[i]
 		align()

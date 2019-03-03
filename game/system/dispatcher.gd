@@ -1,9 +1,14 @@
 extends Node
 
+# as of godot 3.1, we're getting a bunch of unused signal
+# warnings for signals that are in fact being used - probably
+# still some bugs in the new linter. disable warnings for now
+#warning-ignore-all:unused_signal
+
 # the dispatcher handles every signal in the game, except for
 # a couple used by parent nodes to receive events from their
 # children.
-# 
+#
 # we also create some signals from unhandled inputs (for now)
 # that map to fairly universal actions, like closing a menu
 # with ui_cancel. the idea is, if some other node needs that
@@ -24,10 +29,10 @@ signal quit_game
 #                           t i m e                           #
 # ----------------------------------------------------------- #
 signal tick_changed
-signal hour_changed(hour)
-signal date_changed(date)
-signal month_changed(month)
-signal year_changed(year)
+signal hour_changed
+signal date_changed
+signal month_changed
+signal year_changed
 
 #                             u i                             #
 # ----------------------------------------------------------- #
@@ -62,9 +67,9 @@ func _ready():
 # -----------------------------------------------------------
 
 func _unhandled_input(e):
-	if e.is_action_pressed("ui_menu"): 
+	if e.is_action_pressed("ui_menu"):
 		emit_signal("menu_open")
-	elif e.is_action_pressed("ui_menu_monsters"): 
+	elif e.is_action_pressed("ui_menu_monsters"):
 		emit_signal("menu_open", "monsters")
 	elif e.is_action_pressed("ui_cancel"):
 		emit_signal("ui_close")

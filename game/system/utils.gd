@@ -40,7 +40,7 @@ func write_file(path, data):
 func read_file(path):
 	Log.info(Utils, ["reading file: ", path])
 	var file = File.new()
-	if !file.file_exists(path): 
+	if !file.file_exists(path):
 		Log.warn(Utils, ["could not load `", path, "`: file does not exist!"])
 		return null
 	file.open(path, File.READ)
@@ -209,7 +209,7 @@ static func weighted_avg(args):
 		total_weight += item[1]
 		total_value += (item[0] * item[1])
 #	print("total weight: ", total_weight, " | total value: ", total_value,
-#		" | arg1: ", args[0][0], " | arg1 value: ", (args[0][0] * args[0][1]), 
+#		" | arg1: ", args[0][0], " | arg1 value: ", (args[0][0] * args[0][1]),
 #		" | result: ", round(float(total_value) / float(total_weight)))
 	var result = float(total_value) / float(total_weight)
 	if (randf() > 0.50): return round(result)
@@ -253,7 +253,7 @@ static func rand_tri(a, b, c):
 	var f = float(c - a) / float(b - a)
 	if u < f:
 		return round(a + sqrt(u * (b - a) * (c - a)))
-	else: 
+	else:
 		return round(b - sqrt((1 - u) * (b - a) * (b - c)))
 	pass
 

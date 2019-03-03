@@ -1,5 +1,6 @@
 extends Control
 
+#warning-ignore:unused_signal
 signal change_page
 
 const ANIM = "bob"
@@ -15,7 +16,7 @@ func update_visibility(current, total):
 	else:
 		$left.hide()
 		$left/sprite/anim.stop()
-	
+
 	if current < total - 1:
 		$right.show()
 		$right/sprite/anim.play(ANIM)
@@ -24,13 +25,13 @@ func update_visibility(current, total):
 		$right/sprite/anim.stop()
 
 func update_viz2(current, total):
-	if current == 0 and $left.visible: 
+	if current == 0 and $left.visible:
 		$left.hide()
 		$left/sprite/anim.stop()
 	elif !$left.visible:
 		$left/sprite/anim.play(ANIM)
 		$left.show()
-	
+
 	if current >= total - 1 and $right.visible:
 		$right.hide()
 		$right/sprite/anim.stop()

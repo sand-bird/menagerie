@@ -4,10 +4,10 @@ var target
 var EntityType = Constants.EntityType
 
 func initialize(entity):
-	update()
+	update(entity)
 
 func update(entity = null):
-	if !entity: 
+	if !entity:
 		hide()
 		return
 	show()

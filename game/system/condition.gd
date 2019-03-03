@@ -18,7 +18,7 @@ const lookup_func = {
 	"and": "_and",
 	"or": "_or",
 	"not": "_not",
-	
+
 	# comparators
 	"==": "_equals",
 	"!=": "_not_equals",
@@ -27,11 +27,11 @@ const lookup_func = {
 	">=": "_greater_than_equals",
 	"<=": "_less_than_equals",
 	"in": "_in",
-	
+
 	# separator operators (expanded seperators)
 	"map": "_map",
-	"get": "_get",
-	
+	"get": "_get_op",
+
 	# collection operators
 	"filter": "_filter",
 	"max": "_max",
@@ -57,38 +57,15 @@ func resolve_global(arg):
 		"garden":
 			return get_node("/root/game/garden")
 
-# -----------------------------------------------------------
-
-# basic test (please remember to delete me at some point)
-func _ready():
-	return
-	var Monster = load("res://monster/monster.gd")
-	var sample_monster = Monster.new()
-	sample_monster.mother = Monster.new()
-	sample_monster.mother.traits["iq"] = 20
-	sample_monster.father = Monster.new()
-	sample_monster.father.traits["iq"] = 40
-	sample_monster.id = 77777
-	var test_str = "$garden.monsters:preferences:monsters:@id"
-	var test_cond = {"in": [10, test_str]}
-	#print(eval_arg("$garden"))
-	#print(to_json(expand_ops(test_str)))
-	#print("eval_arg: ", to_json(eval_arg(test_str, sample_monster)))
-	Log.info(self, resolve(test_cond, sample_monster))
-	#eval_string("@mother.iq", sample_monster)
-	#eval_string("@mother", sample_monster)
-	for morph in Data.data.monsters.pufig.morphs:
-		Log.info(self, [morph.id, ": ", resolve(morph.condition, sample_monster)])
-
 # ----------------------------------------------------------- #
 
 func resolve(data, caller = null, parent = null):
 	var result = false
-	
+
 	# an array of conditions implies an AND
 	if typeof(data) == TYPE_ARRAY:
 		result = _and(data, caller, parent)
-	
+
 	# if it's a dict, our key will tell us what to do
 	elif typeof(data) == TYPE_DICTIONARY:
 		# must have exactly one key
@@ -97,9 +74,9 @@ func resolve(data, caller = null, parent = null):
 		# key must be one of our known comparators
 		assert(key in lookup_func)
 		result = call(lookup_func[key], data[key], caller, parent)
-	
+
 	# if we just want to evaluate a single (string) argument,
-	# we should be able to. the likely use case is checking 
+	# we should be able to. the likely use case is checking
 	# the result for truthiness, but it can also be used to
 	# fetch data declaratively (eg in an entity definition).
 	#
@@ -109,11 +86,11 @@ func resolve(data, caller = null, parent = null):
 	# recursion situations.
 	elif typeof(data) == TYPE_STRING:
 		result = eval_arg(data, caller, parent)
-	
+
 	else: # any other type is a problem
 		Log.error(self, "(resolve) failed: unsupported argument!")
-	
-	Log.verbose(self, ["(resolve) condition ", data, 
+
+	Log.verbose(self, ["(resolve) condition ", data,
 			" resolved to ", result])
 	return result
 
@@ -121,8 +98,8 @@ func resolve(data, caller = null, parent = null):
 #                      O P E R A T O R S                      #
 # ----------------------------------------------------------- #
 
-#                       b o o l e a n s                    
-# ----------------------------------------------------------- 
+#                       b o o l e a n s
+# -----------------------------------------------------------
 
 # accepts an ARRAY with AT LEAST 2 members
 # returns true if all members resolve to true
@@ -141,8 +118,8 @@ func _or(data, caller, parent):
 func _not(data, caller, parent):
 	return !resolve(data, caller, parent)
 
-#                    c o m p a r a t o r s                    
-# ----------------------------------------------------------- 
+#                    c o m p a r a t o r s
+# -----------------------------------------------------------
 
 # accepts an ARRAY with EXACTLY 2 members
 func _equals(data, caller, parent):
@@ -180,8 +157,8 @@ func _in(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] in args[1]
 
-#                d a t a   o p e r a t o r s                 
-# ----------------------------------------------------------- 
+#                d a t a   o p e r a t o r s
+# -----------------------------------------------------------
 
 # accepts an ARRAY with EXACTLY 2 members, where the first is
 # a dictionary or object and the second is a valid index or
@@ -194,7 +171,7 @@ func _get_op(args, caller, parent):
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
 	var result
-	
+
 	# check that data and key exist
 	if !data:
 		Log.error(Condition, ["(_get) failed: collection '", args[0],
@@ -204,7 +181,7 @@ func _get_op(args, caller, parent):
 		Log.error(Condition, ["(_get) failed: argument ", args[1],
 				" could not be resolved to a key"])
 		return null
-	
+
 	# (try to) get property
 	if typeof(data) == TYPE_OBJECT:
 		if data.has_method("get"):
@@ -213,19 +190,19 @@ func _get_op(args, caller, parent):
 			result = data[key]
 	elif typeof(data) == TYPE_DICTIONARY and data.has(key):
 		result = data[key]
-	
+
 	if !result:
 		Log.error(Condition, ["(_get) failed: key '", key,
 				"' not found in collection ", data])
 	return result
 
-# ----------------------------------------------------------- 
+# -----------------------------------------------------------
 
-# accepts an ARRAY with EXACTLY 2 members, where the first 
-# is a dictionary or array, and the second is a valid index 
-# or property of at least one ELEMENT IN the first. returns 
+# accepts an ARRAY with EXACTLY 2 members, where the first
+# is a dictionary or array, and the second is a valid index
+# or property of at least one ELEMENT IN the first. returns
 # a dictionary or array containing, for each element in the
-# former, the value corresponding to the key or property 
+# former, the value corresponding to the key or property
 # specified by the latter, if such a value exists.
 func _map(args, caller, parent):
 	Log.verbose(self, ["(_map) before: ", args])
@@ -248,7 +225,7 @@ func _map(args, caller, parent):
 
 # -----------------------------------------------------------
 
-# accepts an ARRAY with EXACTLY 2 members: the first is a 
+# accepts an ARRAY with EXACTLY 2 members: the first is a
 # dictionary or array, and the second is a condition object.
 # returns a dictionary or array containing the elements of
 # the former for which the latter resolves to true.
@@ -257,7 +234,7 @@ func _filter(args, caller, parent):
 	var data = eval_arg(args[0], caller, parent)
 	var condition = args[1]
 	for item in data:
-		if resolve(condition, caller, item): 
+		if resolve(condition, caller, item):
 			results.push_back(item)
 	return results
 
@@ -295,7 +272,7 @@ func eval_arg(arg, caller = null, parent = null):
 		return eval_sigil(expanded, caller, parent)
 	else: return expanded
 
-#                         s i g i l s                        
+#                         s i g i l s
 # -----------------------------------------------------------
 
 # accepts an ATOMIC (no seperators) string argument that may
@@ -309,7 +286,7 @@ func eval_sigil(arg, caller, parent):
 		'*': return parent
 	return arg
 
-#                     s e p e r a t o r s                    
+#                     s e p e r a t o r s
 # -----------------------------------------------------------
 
 # expands an argument string with separator operators, aka
@@ -325,27 +302,27 @@ func expand_ops(arg):
 		var op = op_pos[0]
 		var pos = op_pos[1]
 		return {seperators[op]: [
-			expand_ops(arg.left(pos)), 
+			expand_ops(arg.left(pos)),
 			expand_ops(arg.right(pos + 1))
 		]}
 	else: return arg
 
 # gets all operator positions in the argument string, and
 # returns the largest one as an array[2] with the operator
-# at 0 and its position at 1. 
+# at 0 and its position at 1.
 #
-# the rfind is VERY IMPORTANT for our argument to expand in 
-# the correct order. resolve recurses from the inside out, 
-# so the "top level" of the expansion must be the innermost 
+# the rfind is VERY IMPORTANT for our argument to expand in
+# the correct order. resolve recurses from the inside out,
+# so the "top level" of the expansion must be the innermost
 # nested operator. meanwhile, expand_ops recurses from the
-# outside in, so we have to start at the END of the string 
+# outside in, so we have to start at the END of the string
 # to obtain the correct structure.
 func find_op(arg):
 	var op_pos
 	var max_pos = 0
 	for op in seperators:
 		var pos = arg.rfind(op)
-		if pos > max_pos: 
+		if pos > max_pos:
 			max_pos = pos
 			op_pos = [op, pos]
 	return op_pos

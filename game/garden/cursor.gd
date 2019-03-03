@@ -13,18 +13,17 @@ var graphic_dest = Vector2()
 var lerp_val = 0.3
 
 var is_free = true
-var is_enabled = true
+# var is_enabled = true
 
 # -----------------------------------------------------------
 
-func _ready():
-	return
-	$anim.play("cursor_bob")
-	connect("item_rect_changed", self, "reset_anim")
-	$stick_area.connect("body_entered", self, "stick")
-	$unstick_area.connect("body_exited", self, "unstick")
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	set_process(true)
+#func _ready():
+#	$anim.play("cursor_bob")
+#	connect("item_rect_changed", self, "reset_anim")
+#	$stick_area.connect("body_entered", self, "stick")
+#	$unstick_area.connect("body_exited", self, "unstick")
+#	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+#	set_process(true)
 
 # -----------------------------------------------------------
 
@@ -62,22 +61,23 @@ func unstick(body):
 
 # -----------------------------------------------------------
 
+#warning-ignore:unused_argument
 func _process(delta):
 	$stick_area.position = get_global_mouse_position()
 	$unstick_area.position = $stick_area.position
-	
-	if is_free: 
+
+	if is_free:
 		graphic_dest = get_global_mouse_position().round()
-	
+
 	var new_graphic_pos = Utils.vlerp(
 			$graphic.rect_position, graphic_dest, lerp_val).round()
 
 	if (new_graphic_pos == $graphic.rect_position.round()
 			and new_graphic_pos != graphic_dest):
 		$graphic.rect_position = graphic_dest
-	else: 
+	else:
 		$graphic.rect_position = new_graphic_pos
-	
-	var new_hand_y = lerp(hand.rect_position.y, 
+
+	var new_hand_y = lerp(hand.rect_position.y,
 			-hand_height, lerp_val)
 	hand.rect_position = Vector2(HAND_X, new_hand_y)

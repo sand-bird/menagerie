@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-# const Action = preload("res://_scratch/behavior/action.gd")
+#warning-ignore-all:unused_class_variable
 
 var entity_type = Constants.EntityType.MONSTER
 var Anim = Constants.Anim
@@ -25,7 +25,7 @@ var past_actions = []
 var current_action
 var next_action
 
-# drives  
+# drives
 # ------
 var belly
 var mood
@@ -110,7 +110,7 @@ var dest
 
 func _ready():
 #	connect("draw", self, "update_z")
-	Dispatcher.connect("tick_changed", self, "_update_drives")
+	Dispatcher.connect("tick_changed", self, "_update_drives", [])
 #	Dispatcher.connect("set_dest", self, "set_dest")
 	update_z()
 	set_physics_process(true)
@@ -134,15 +134,15 @@ func initialize(data):
 	$shape.position.y -= size
 	var anim_data = Data.get([type, "morphs", morph, "animations"])
 	if anim_data:
-		for anim_id in anim_data: $sprite/anim.add(anim_id, anim_data[anim_id])
+		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
 		play_animation(Anim.LIE_DOWN)
 		queue_animation(Anim.SLEEP)
 
 func play_animation(anim_id, loops = 0):
-	$sprite/anim.start(anim_id, loops)
+	$sprite/anim.play_anim(anim_id, loops)
 
 func queue_animation(anim_id, loops = 0):
-	$sprite/anim.start(anim_id, loops)
+	$sprite/anim.queue_anim(anim_id, loops)
 
 # -----------------------------------------------------------
 
@@ -225,13 +225,14 @@ const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 # energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func calc_energy_delta():
+	var has_energy_cost = current_action and 'energy_cost' in current_action
 	var action_val = (current_action.energy_cost / Time.TICKS_IN_HOUR
-			if current_action else DEFAULT_ENERGY_DECAY)
+			if has_energy_cost else DEFAULT_ENERGY_DECAY)
 	var vig_mod = traits.vigor * 2.0
 	var delta_energy = 0.0
-	if action_val > 0: 
+	if action_val > 0:
 		delta_energy = action_val * vig_mod
-	else: 
+	else:
 		delta_energy = action_val * (2.0 - vig_mod)
 	return delta_energy
 
@@ -266,18 +267,20 @@ func calc_social_delta():
 
 # -----------------------------------------------------------
 
-func update_preferences(discipline_type): 
+func update_preferences(discipline_type):
+	print(discipline_type)
 	# updates pet's likes and dislikes via discipline
 	pass
 
 # -----------------------------------------------------------
 
 func update_mood(discipline_type):
+	print(discipline_type)
 	pass
 
 # -----------------------------------------------------------
 
-func update_attributes(): 
+func update_attributes():
 	# INT, VIT, CON... these are supposed to depend directly
 	# on the traits that feed into them
 	pass
@@ -291,7 +294,7 @@ func highlight():
 	# possibly a third (or rather first) interaction state:
 	# the highlight, for when the cursor is in "snapping"
 	# range of the monster but the focus delay hasn't elapsed
-	# yet (or for players using a "careful" (or whatever) 
+	# yet (or for players using a "careful" (or whatever)
 	# targeting scheme, where they must press action to focus
 	# and then again to select)
 	pass
@@ -303,16 +306,16 @@ func focus():
 	# mouse and gamepad: hover (make sure to add a short delay)
 	# cursor will snap to pet - this effect should be greater for
 	# gamepad than for mouse (and the delay greater to compensate)
-	
+
 	# alternately, focus immediately (should be good to see the
-	# focus highlight & hud on no delay), but some delay before 
+	# focus highlight & hud on no delay), but some delay before
 	# centering camera
-	
+
 	# hud: show basic pet info (name, status)
 	# camera: keep pet centered
 	# self: give pet selection highlight
-	
-	
+
+
 	# game.focused_pet = self
 	pass
 
@@ -321,7 +324,7 @@ func focus():
 func select():
 	# touch: second tap
 	# gamepad: push select button; mouse: click
-	
+
 	# hud: show interaction buttons
 	pass
 
@@ -330,7 +333,7 @@ func select():
 func unfocus():
 	# touch: tap outside of pet
 	# mouse and keyboard: hover off after delay
-	
+
 	# -----
 	# game.focused_pet = null
 	pass
@@ -339,10 +342,10 @@ func unfocus():
 
 func _on_discipline(discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
-	
+
 	update_preferences(discipline_type)
 	update_mood(discipline_type)
-	
+
 	# decide whether to stop current action
 	pass
 
@@ -364,7 +367,7 @@ func _on_action_finished():
 # ----------------------------------------------------------- #
 
 const SAVE_KEYS = [
-	"monster_name", "type", "morph", 
+	"monster_name", "type", "morph",
 	"birthday", "mother", "father",
 	"traits", "preferences",
 	"belly", "mood", "energy", "social",

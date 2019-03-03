@@ -7,7 +7,7 @@ func _ready():
 	Dispatcher.connect("load_game", self, "load_game")
 	Dispatcher.connect("save_game", self, "save_game")
 	Dispatcher.connect("quit_game", self, "quit_game")
-	
+
 	Data.init()
 	UI.ui_node = get_node("ui")
 	Dispatcher.emit_signal("ui_open", "title_screen")
@@ -18,8 +18,8 @@ func _ready():
 # ----------------------------------------------------------- #
 
 # loading a predefined "fresh" save is probably the way to go
-# here. default values will have to be defined for everybody 
-# that normally relies on save data, anyway, so might as well 
+# here. default values will have to be defined for everybody
+# that normally relies on save data, anyway, so might as well
 # do it all in one place.
 func new_game(player_name):
 	Log.info(self, ["Starting new game: ", player_name])
@@ -57,9 +57,9 @@ func load_garden(data):
 #                         S A V I N G                         #
 # ----------------------------------------------------------- #
 
-func save_game(arg = null):
-	SaveManager.save_game({ 
-		"player": save_player(), 
+func save_game():
+	SaveManager.save_game({
+		"player": save_player(),
 		"garden": save_garden()
 	})
 

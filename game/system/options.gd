@@ -1,5 +1,9 @@
 extends Node
 
+# disable erroneous "unused class variable" warnings, as of
+# godot 3.1. maybe something about the enum imports?
+#warning-ignore-all:unused_class_variable
+
 var ControlMode = Constants.ControlMode
 var ScrollMode = Constants.ScrollMode
 var InventorySize = Constants.InventorySize
@@ -43,7 +47,7 @@ var keybindings = {
 	camera_up = KEY_W,
 	camera_left = KEY_A,
 	camera_down = KEY_S,
-	camera_right = KEY_D 
+	camera_right = KEY_D
 }
 
 # presumably called by game.gd when it detects a change in input - or by
@@ -86,11 +90,11 @@ var camera_edge_size = 0.05 # percent of total screen width/height
 var camera_scroll_speed = 0.30
 var camera_scroll_acceleration = 1.05 # increases asymptotically toward 1.0
 
-func is_scroll_enabled(mode): 
+func is_scroll_enabled(mode):
 	return scroll_modes[control_mode].has(mode)
 
-func set_scroll_enabled(mode): 
-	if !is_scroll_enabled(mode): 
+func set_scroll_enabled(mode):
+	if !is_scroll_enabled(mode):
 		scroll_modes[control_mode].append(mode)
 
 func set_scroll_disabled(mode):
@@ -102,15 +106,15 @@ func set_scroll_disabled(mode):
 #                  S E R I A L I Z A T I O N                  #
 # ----------------------------------------------------------- #
 
-func _ready(): 
+func _ready():
 #	print(InputMap.get_signal_list())
 #	print(InputMap.get_actions())
 #	print(InputMap.get_action_list("ui_focus_next"))
 	pass
 	# deserialize(defaults)
 
-func deserialize(data): 
-	pass
+func deserialize(data) -> void:
+	Log.debug(self, ["deserializing", data])
 	# we will be passed just the options dict from game (probably)
 	# json parse it
 	# set our values

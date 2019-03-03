@@ -19,7 +19,7 @@ const SCHEMA_EXT = "schema"
 # 5. load mod data
 # 6. validate
 
-var EntityType = Constants.EntityType
+# var EntityType = Constants.EntityType
 
 var schemas = {}
 var data = {}
@@ -30,7 +30,7 @@ func _ready(): pass
 func init():
 	# loads schemas and datafiles from data/
 	var sourceinfo = {
-		"id": "menagerie", 
+		"id": "menagerie",
 		"version": "0.1.0",  # todo: a real version
 	}
 	var base_data = load_data(BASE_DIR, sourceinfo)
@@ -40,14 +40,14 @@ func init():
 	# reads .modconfig file into var modconfig
 	var modconfig = load_modconfig()
 	# checks & updates modconfig against mod folder
-	update_modconfig(modconfig)  
+	update_modconfig(modconfig)
 	save_modconfig(modconfig)
-	
+
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
-	
+
 	validate()
-	
+
 	Log.debug(self, ["data: ", data.keys()])
 	Log.verbose(self, data)
 	Log.debug(self, ["schemas: ", schemas.keys()])
@@ -58,21 +58,21 @@ func init():
 func get(a):
 	var args = Utils.pack(a)
 	Log.debug(self, ["get ", args])
-	
+
 	var result
 	if args.size() > 0 and args[0] in self:
 		Log.verbose(self, ["arg `", args[0], "` is a property of Data!"])
 		result = get(args[0])
 		args.pop_front() # args[0] is resolved, don't use it again
 	else: result = data
-	
+
 	for arg in args:
 		if !result.has(arg):
-			Log.warn(self, ["could not find data for ", arg, 
-					": ", PoolStringArray(args).join(".")]) 
+			Log.warn(self, ["could not find data for ", arg,
+					": ", PoolStringArray(args).join(".")])
 			return null
 		else: result = result[arg]
-	
+
 	return result
 
 func get_resource(a):
@@ -82,10 +82,10 @@ func get_resource(a):
 # -----------------------------------------------------------
 
 # TODO
-func filter(a):
-	var filtered = {}
-	match data:
-		a: Log.info(self, "hello")
+#func filter(a):
+#	var filtered = {}
+#	match data:
+#		a: Log.info(self, "hello")
 
 # =========================================================== #
 #                     . M O D C O N F I G                     #
@@ -122,7 +122,7 @@ func update_modconfig(modconfig):
 	var current = dir.get_next()
 	while (current != ""):
 		var path = MOD_DIR.plus_file(current)
-		if !dir.current_is_dir(): 
+		if !dir.current_is_dir():
 			current = dir.get_next()
 			continue
 		var modinfo = Utils.read_file(path.plus_file("meta.data"))
@@ -135,12 +135,12 @@ func update_modconfig(modconfig):
 
 # -----------------------------------------------------------
 
-# looks for the presence of a "found" key, which is set by 
+# looks for the presence of a "found" key, which is set by
 # add_modinfo and check_modinfo, in each entry in modconfig.
 # since update_modconfig crawls the mod directory and calls
 # one of those for each valid mod it finds, we can expect it
 # to be set for all mods ~*found*~ in the directory. we clear
-# the "found" key after we've seen it. 
+# the "found" key after we've seen it.
 #
 # fyi, we do these shenanigans so we don't have to crawl the
 # directory all over again in search of missing mods.
@@ -150,8 +150,8 @@ func clean_modconfig(modconfig):
 		var modinfo = modconfig.mods[id]
 		if modinfo.has("found") and modinfo.found:
 			modinfo.erase("found")
-		else: 
-			Log.warn(self, ["mod `", id, 
+		else:
+			Log.warn(self, ["mod `", id,
 					"` not found. its data will be erased from modconfig."])
 			modconfig.mods.erase(id)
 			modconfig.load_order.remove(i)
@@ -172,20 +172,20 @@ func clean_modconfig(modconfig):
 func check_modinfo(modconfig, modinfo, path):
 	var mod_id = modinfo.id
 	var saved_info = modconfig.mods[mod_id]
-	Log.verbose(self, ["found entry for `", mod_id, 
+	Log.verbose(self, ["found entry for `", mod_id,
 			"` in modconfig: ", saved_info])
-	
+
 	if saved_info.path != path:
-		Log.info(self, ["looks like mod `", mod_id, 
+		Log.info(self, ["looks like mod `", mod_id,
 				"` was moved. new path: `", path, "`"])
 		saved_info.path = path
-	
+
 	if saved_info.version != modinfo.version:
 		Log.info(self, ["mod `", mod_id, "` has been updated! version: ",
 				saved_info.version, " -> ", modinfo.version])
 		saved_info.schemas = modinfo.schemas
 		saved_info.version = modinfo.version
-	
+
 	saved_info.found = true
 
 # -----------------------------------------------------------
@@ -224,7 +224,7 @@ func load_mod_schemas(modconfig):
 func load_mod_data(modconfig):
 	for id in modconfig.load_order:
 		var sourceinfo = {
-			"id": id, 
+			"id": id,
 			"version": modconfig.mods[id].version,
 		}
 		load_data(modconfig.mods[id].path, sourceinfo)
@@ -297,9 +297,9 @@ func load_schemafile(path, sourceinfo):
 # load) a big headache, and open us up to a bunch of fatal
 # errors from stuff not getting found, which is exactly what
 # all this validation nonsense is supposed to prevent. plus,
-# we can't resolve @ sigils (instance properties) right now 
+# we can't resolve @ sigils (instance properties) right now
 # anyway, for obvious reasons.
-# 
+#
 # as for fileref sigils, we should resolve the sigil to the
 # full filepath (this is the only time we will know what it
 # is), but don't load the resource yet for the reasons above.
@@ -322,16 +322,16 @@ func process_data(data, basedir):
 #   dict are dealt with recursively. the goal is to prevent
 #   loss of data whenever possible, so the game ideally never
 #   misses something it's expecting (like a sub-subproperty).
-#   if the mod dict is trying to replace a dictionary 
+#   if the mod dict is trying to replace a dictionary
 #   property with something else, it's probably user error.
 # - for keys that lead to arrays in the base dict, whatever's
 #   in the mod dict is appended to them. there is no type
-#   checking here, obviously, so if we were expecting an 
+#   checking here, obviously, so if we were expecting an
 #   array of dicts and the mod doesn't conform, we're SOL.
 func merge(base, mod):
 	if !mod: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
-	
+
 	for key in mod:
 		var k = key
 		var replace = false
@@ -343,7 +343,7 @@ func merge(base, mod):
 				if typeof(mod[k]) == TYPE_ARRAY:
 					for item in mod[k]: base[k].append(item)
 				else: base[k].append(mod[k])
-			elif (typeof(base[k]) == TYPE_DICTIONARY 
+			elif (typeof(base[k]) == TYPE_DICTIONARY
 					and typeof(mod[k]) == TYPE_DICTIONARY):
 				merge(base[k], mod[k])
 		else: base[k] = mod[k]
@@ -371,10 +371,10 @@ func get_modified_time(dirname):
 	var current = dir.get_next()
 	while (current != ""):
 		if dir.current_is_dir():
-			modtime = max(modtime, 
+			modtime = max(modtime,
 				get_modified_time(dirname.plus_file(current)))
 		else:
-			modtime = max(modtime, 
+			modtime = max(modtime,
 				file.get_modified_time(dirname.plus_file(current)))
 		current = dir.get_next()
 	return modtime

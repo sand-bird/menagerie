@@ -1,28 +1,28 @@
 extends Node
 
 # TODO: put these somewhere they can be localized
-const days = [ "monday", "tuesday", "wednesday", 
+const days = [ "monday", "tuesday", "wednesday",
 	"thursday", "friday", "saturday", "sunday" ]
-const months = [ "verne", "tempest", "zenith", 
+const months = [ "verne", "tempest", "zenith",
 	"sol", "hearth", "hallow", "aurora", "rime" ]
 
-const ACTUAL_SECONDS_IN_TICK = 0.5
-const TICKS_IN_HOUR = 12
-const HOURS_IN_DAY = 24
-const DAYS_IN_WEEK = 7
-const DAYS_IN_MONTH = 21
-const MONTHS_IN_YEAR = 8
+const ACTUAL_SECONDS_IN_TICK := 0.5
+const TICKS_IN_HOUR := 12
+const HOURS_IN_DAY := 24
+const DAYS_IN_WEEK := 7
+const DAYS_IN_MONTH := 21
+const MONTHS_IN_YEAR := 8
 
-var actual_seconds = 0
-var tick = 0 setget _set_tick
-var hour = 0 setget _set_hour
-var date = 0 setget _set_date
-var day = 0 setget _set_day
-var month = 0 setget _set_month
-var year = 0 setget _set_year
+var actual_seconds := 0.0
+var tick := 0 setget _set_tick
+var hour := 0 setget _set_hour
+var date := 0 setget _set_date
+var day := 0
+var month := 0 setget _set_month
+var year := 0 setget _set_year
 
 # for dispatching time events after all our updates are done
-var units_to_dispatch = []
+var units_to_dispatch := []
 
 # -----------------------------------------------------------
 
@@ -52,10 +52,7 @@ func _set_hour(new):
 
 func _set_date(new):
 	date = 0 if try_rollover(new, DAYS_IN_MONTH, "month") else int(new)
-	_set_day()
-
-func _set_day(new = 0):
-	day = get_day()
+	day = calculate_day()
 
 func _set_month(new):
 	month = 0 if try_rollover(new, MONTHS_IN_YEAR, "year") else int(new)
@@ -65,11 +62,11 @@ func _set_year(new):
 
 # -----------------------------------------------------------
 
-# self[unit] += 1 will call the setget setter for self.unit 
+# self[unit] += 1 will call the setget setter for self.unit
 # (and it lets us pass the variable name as a string). each
-# tier of unit, when modified, calls try_rollover for the 
+# tier of unit, when modified, calls try_rollover for the
 # next; in this way, the last tick of year 1 will trigger a
-# cascade of rollovers that ends by incrementing year to 2. 
+# cascade of rollovers that ends by incrementing year to 2.
 func try_rollover(new_value, units_per_next_unit, next_unit):
 	if new_value >= units_per_next_unit:
 		set(next_unit, get(next_unit) + 1)
@@ -82,7 +79,7 @@ func try_rollover(new_value, units_per_next_unit, next_unit):
 
 # to ensure that the date of the week remains consistent, it
 # is calculated from the total elapsed days.
-func get_day(input = null):
+func calculate_day(input = null):
 	var total_days = get_total_time(input, "date")
 	return int(total_days) % DAYS_IN_WEEK
 
@@ -91,7 +88,7 @@ func get_day(input = null):
 # because try_rollover() pushes the update method for the
 # NEXT unit to the callstack before it resolves (which must
 # happen before we update the CURRENT unit), our units are
-# actually updated in largest-to-smallest order. 
+# actually updated in largest-to-smallest order.
 #
 # this is problematic for dispatching time events from within
 # the update logic, as the lesser units (eg. tick and hour)
@@ -109,14 +106,14 @@ func get_day(input = null):
 func dispatch_updates():
 	while units_to_dispatch:
 		var unit = units_to_dispatch.pop_front()
-		Dispatcher.emit_signal(str(unit, "_changed"), get(unit),
+		Dispatcher.emit_signal(str(unit, "_changed"), null,
 				unit != "tick") # don't log if it's a tick update
 
 
 # =========================================================== #
 #                  S E R I A L I Z A T I O N                  #
 # ----------------------------------------------------------- #
-# methods to format and return class data for saving to file, 
+# methods to format and return class data for saving to file,
 # and to parse and load saved data into the class. called by
 # SaveManager's save_file and load_file, or if applicable, by
 # a parent class's serialize and deserialize methods.
@@ -150,8 +147,8 @@ func load_dict(dict):
 
 # -----------------------------------------------------------
 
-# checks if the input is a time_dict, an integer total_time, 
-# or neither, and processes it accordingly. if a unit is 
+# checks if the input is a time_dict, an integer total_time,
+# or neither, and processes it accordingly. if a unit is
 # given, returns only the value for that unit. otherwise, it
 # returns a time_dict.
 func to_dict(dict, unit = null):
@@ -162,7 +159,7 @@ func to_dict(dict, unit = null):
 		dict = get_dict()
 	elif typeof(dict) != TYPE_DICTIONARY:
 		dict = parse_total_time(dict, unit) if unit else parse_total_time(dict)
-	
+
 	if dict.has(unit):
 		return dict[unit]
 	else:
@@ -170,26 +167,28 @@ func to_dict(dict, unit = null):
 
 # -----------------------------------------------------------
 
-func get_total_time(dict = null, unit = "tick"):
+# for some reason the linter thinks that `unit` isn't used?
+#warning-ignore:unused_argument
+func get_total_time(dict = null, unit := "tick"):
 	if dict == null:
 		dict = get_dict()
-	elif typeof(dict) == TYPE_STRING:
+	elif dict is String:
 		unit = dict
 		dict = get_dict()
-	
-	var units = ["year", "month", "date", "hour", "tick"]
+
+	var units := ["year", "month", "date", "hour", "tick"]
 	var relations = [MONTHS_IN_YEAR, DAYS_IN_MONTH, HOURS_IN_DAY, TICKS_IN_HOUR]
 	var scale = units.find(unit)
 	var total_time = 0
-	
+
 	for i in scale + 1:
 		# add this unit to total
 		total_time += dict[units[i]]
 		# convert running total to next unit
-		if i < scale: 
+		if i < scale:
 			total_time = total_time * relations[i]
 		else: break
-	
+
 	return total_time
 
 # -----------------------------------------------------------
@@ -200,7 +199,7 @@ func parse_total_time(time, unit = "year"):
 	var relations = [TICKS_IN_HOUR, HOURS_IN_DAY, DAYS_IN_MONTH, MONTHS_IN_YEAR]
 	var scale = units.find(unit)
 	for i in scale + 1:
-		if relations.size() > i: 
+		if relations.size() > i:
 			dict[units[i]] = int(time) % relations[i]
 			time = time / relations[i]
 		else:
@@ -213,7 +212,7 @@ func parse_total_time(time, unit = "year"):
 #                  P R I N T   M E T H O D S                  #
 # ----------------------------------------------------------- #
 # each takes an optional input, either a time_dict or a
-# total_time integer. if no input is given, it uses the 
+# total_time integer. if no input is given, it uses the
 # current time instead (see to_dict).
 
 func get_printable_hour(input = null):
@@ -230,11 +229,11 @@ func get_printable_date(input = null):
 	return Utils.ordinalize(d + 1)
 
 func get_printable_day(input = null):
-	var d_of_w = get_day(input)
+	var d_of_w = calculate_day(input)
 	return days[d_of_w].capitalize()
 
 func get_printable_day_abbr(input = null):
-	var d_of_w = get_day(input)
+	var d_of_w = calculate_day(input)
 	return days[d_of_w].substr(0, 3).to_upper()
 
 func get_printable_month(input = null):
@@ -256,7 +255,7 @@ func get_printable_time(dict = null):
 	return printable_time
 
 func log_time():
-	Log.info(self, ["CURRENT TIME || tick: ", tick, " | hour: ",  hour,  
-			" | date: ", date,  " (", day, ": ", 
-			get_printable_day(), ")", " | month: ", month, 
+	Log.info(self, ["CURRENT TIME || tick: ", tick, " | hour: ",  hour,
+			" | date: ", date,  " (", day, ": ",
+			get_printable_day(), ")", " | month: ", month,
 			" (", get_printable_month(), ")", " | year: ", year])

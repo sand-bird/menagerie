@@ -33,7 +33,7 @@ func get_save_list():
 
 func sort_by_date(a, b):
 	var file = File.new()
-	return (file.get_modified_time(get_filepath(a, PLAYER)) 
+	return (file.get_modified_time(get_filepath(a, PLAYER))
 			> file.get_modified_time(get_filepath(b, PLAYER)))
 
 # ------------------------------------------------------------
@@ -77,12 +77,12 @@ func new_save(pname):
 	# load fresh save data
 	var new_save = Utils.read_file(NEW_SAVE)
 	new_save.player.player_name = pname
-	
+
 	# create new save
 	current_save_dir = create_dirname(pname)
 	dir.make_dir(current_save_dir)
 	save_game(new_save)
-	
+
 	return current_save_dir
 
 # -----------------------------------------------------------
@@ -106,7 +106,7 @@ func load_game(save_dir):
 # ----------------------------------------------------------- #
 
 func is_save(dir_name):
-	return (dir.current_is_dir() and 
+	return (dir.current_is_dir() and
 			dir.file_exists(dir_name.plus_file(PLAYER)) and
 			dir.file_exists(dir_name.plus_file(GARDEN)))
 

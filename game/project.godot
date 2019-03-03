@@ -42,6 +42,7 @@ UI="*res://ui/ui.gd"
 
 [debug]
 
+gdscript/warnings/return_value_discarded=false
 indicators_enabled=true
 
 [display]
@@ -217,3 +218,4 @@ default_clear_color=Color( 0, 0, 0, 1 )
 quality/2d/use_pixel_snap=true
 quality/subsurface_scattering/scale=1
 environment/default_clear_color=Color( 0, 0, 0, 1 )
+quality/dynamic_fonts/use_oversampling=false

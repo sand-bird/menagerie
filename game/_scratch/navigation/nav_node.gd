@@ -1,5 +1,7 @@
 extends Node
 
+#warning-ignore-all:unused_class_variable
+
 var pos
 var neighbors = [] setget , _get_neighbors
 var bad_neighbors = []
@@ -34,10 +36,10 @@ func direction_to(node):
 
 func distance_to(node):
 	return pos.distance_squared_to(node.pos)
-	var dist_vec = (node.pos - pos).abs()
-	var straight_dist_to = abs(dist_vec.y - dist_vec.x)
-	var diag_dist_to = max(dist_vec.y, dist_vec.x) - straight_dist_to
-	return straight_dist_to + diag_dist_to * sqrt(2)
+#	var dist_vec = (node.pos - pos).abs()
+#	var straight_dist_to = abs(dist_vec.y - dist_vec.x)
+#	var diag_dist_to = max(dist_vec.y, dist_vec.x) - straight_dist_to
+#	return straight_dist_to + diag_dist_to * sqrt(2)
 
 # -----------------------------------------------------------
 
@@ -69,28 +71,28 @@ func prune():
 	# so if x is the start node (no parent), we can't prune
 	if !parent:
 		return self.neighbors
-	
+
 	var pruned_neighbors = []
 	bad_neighbors = []
-	
+
 	for n in self.neighbors:
 		var dist_without_x = n.distance_to(parent)
 		var dist_with_x = distance_to(n) + distance_to(parent)
-		
+
 		var d = parent.direction_to(self)
-		
+
 		# for straight movement we're supposed to prune out
 		# neighbors with the same distance, but this breaks
 		# for forced corners. it works if we use <=
 		if dist_with_x <= dist_without_x:
 			pruned_neighbors.push_back(n)
-		
+
 		elif n.is_forced(d):
 			pruned_neighbors.push_back(n)
-		
+
 		else:
 			bad_neighbors.push_back(n)
-	
+
 	return pruned_neighbors
 
 # -----------------------------------------------------------

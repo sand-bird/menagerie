@@ -1,7 +1,10 @@
 extends Control
 
+#warning-ignore-all:unused_class_variable
+
 const Monster = preload("res://monster/monster.tscn")
-# todo: items and objects
+# const GardenObject = preload("res://garden/object.tscn")
+# const GardenItem = preload("res://garden/item.tscn")
 
 var color_night = Color("66588c")
 var color_dawn = Color("db9ab4")
@@ -23,8 +26,8 @@ var colors = {
 # we maintain a lookup table for our entities, primarily so
 # that conditions can check what's in the garden (though it
 # also makes serialization slightly easier). these should
-# match one to one with the actual entities in the garden, 
-# just like the ui singleton's stack should match with the 
+# match one to one with the actual entities in the garden,
+# just like the ui singleton's stack should match with the
 # instanced ui node's children. we have no way to guarantee
 # this, though, unfortunately - we just have to be careful.
 var monsters = {}
@@ -85,7 +88,7 @@ func test_corner(p):
 # handle that input, and it will probably be us.
 #
 # we don't want our entities listening to the dispatches for
-# *everyone* (at least for now? maybe someday they should, 
+# *everyone* (at least for now? maybe someday they should,
 # and get jealous of each other or something?), so we listen
 # and delegate from the garden.
 func highlight(entity):
@@ -94,8 +97,7 @@ func highlight(entity):
 	$ui/select_hud.update(entity)
 
 func unhighlight(entity):
-	print("unhighlighted!")
-	$ui/select_hud.update()
+	$ui/select_hud.update(entity)
 
 # -----------------------------------------------------------
 # color stuff
@@ -108,7 +110,7 @@ func update_color(hour):
 	anim.track_set_key_value(0, 0, $tint.color)
 	anim.set_length(1)
 	anim.track_insert_key(0, 1, colors[hour])
-	
+
 	$tint/anim.play("tint")
 
 # =========================================================== #
@@ -137,7 +139,7 @@ func deserialize(data):
 
 # -----------------------------------------------------------
 
-func save_terrain(): 
+func save_terrain():
 	var size = $terrain.get_used_rect().size
 	var data = []
 	data.resize(size.y)
@@ -165,9 +167,10 @@ func save_objects():
 		data[uid] = objects[uid].serialize()
 	return data
 
-func load_objects(data): pass
+func load_objects(data):
+	print(data)
 #	for uid in data:
-#		var object = ObjectEntity.instance()
+#		var object = GardenObject.instance()
 #		object.initialize(data[uid])
 #		objects[uid] = object
 #		$entities.add_child(object)
@@ -195,9 +198,10 @@ func save_items():
 		data[uid] = items[uid].serialize()
 	return data
 
-func load_items(data): pass
+func load_items(data):
+	print(data)
 #	for id in data:
-#		var item = Item.instance()
+#		var item = GardenItem.instance()
 #		item.initialize(data[uid])
 #		items[uid] = item
 #		$entities.add_child(item)

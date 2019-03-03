@@ -29,16 +29,16 @@ func set_node(pos, node):
 
 func node_at(pos):
 	# return null if out of bounds
-	if (pos.x < 0 or pos.y < 0 or pos.x >= grid.size() 
+	if (pos.x < 0 or pos.y < 0 or pos.x >= grid.size()
 			or pos.y >= grid[pos.x].size()):
 		return null
-	
+
 	# create nodes as necessary when coordinates are
 	# accessed. we pass the node a reference to ourself
 	# so that it can look up its neighbors.
 	if !get_node(pos):
 		set_node(pos, NavNode.new(pos, self, tilemap.is_walkable_at(pos)))
-	
+
 	return get_node(pos)
 
 # -----------------------------------------------------------

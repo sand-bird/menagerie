@@ -1,7 +1,7 @@
 extends Node
 
-# class Player
-# ------------
+#warning-ignore-all:unused_class_variable
+
 # since there's only one player at a time, Player basically
 # functions as a store for game state. pretty much everything
 # here is saved to and loaded from the `player.save` file.
@@ -22,20 +22,20 @@ var letters
 
 var requests # "current" is too verbose and should be implied
 var completed_requests
-# expired requests: own category, put them in completed with 
-# a FAILED tag or something, or don't remember them at all? 
+# expired requests: own category, put them in completed with
+# a FAILED tag or something, or don't remember them at all?
 #
-# tracking expired requests implies not allowing them to be 
-# generated again, which might be overly punishing. (could 
-# also be to prevent the same type of request from being 
-# generated too often, which is ok but probably not a big 
+# tracking expired requests implies not allowing them to be
+# generated again, which might be overly punishing. (could
+# also be to prevent the same type of request from being
+# generated too often, which is ok but probably not a big
 # enough deal to be worth it.)
 
 # not really a huge feature, but npcs should warm up to you
 # as you interact with them and complete requests
 # (note: should this be a property of the npc instance? makes
 # sense intuitively, but in practice it's probably better to
-# centralize that info here, especially since it comes from 
+# centralize that info here, especially since it comes from
 # player.save)
 var relationships
 
@@ -86,7 +86,7 @@ func update_playtime():
 	var current_time = OS.get_unix_time()
 	var playtime_difference = current_time - last_update_time
 	playtime += playtime_difference
-	Log.info(self, ["Updated playtime: ", playtime, 
+	Log.info(self, ["Updated playtime: ", playtime,
 			" (difference: ", playtime_difference, ")"])
 	last_update_time = current_time
 
@@ -95,8 +95,8 @@ func update_playtime():
 func get_printable_playtime(time = null):
 	if time == null:
 		time = playtime
-	# convert to minutes. playtime isn't updated often 
-	# enough for us to sit and watch it tick, so we don't 
+	# convert to minutes. playtime isn't updated often
+	# enough for us to sit and watch it tick, so we don't
 	# care about seconds. (maybe change this later anyway)
 	time = int(time / 60)
 	var hour = int(time / 60)

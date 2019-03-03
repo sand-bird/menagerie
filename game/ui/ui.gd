@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-# ***** TODO ***** : saving the following for if/when it's 
-# relevant, but the ui_layer system needs more refinement 
+# ***** TODO ***** : saving the following for if/when it's
+# relevant, but the ui_layer system needs more refinement
 # before it's ready for implementation.
 # (from _open_menu:)
 # 1: ui_layer (int), optional - if given, indicates that the
@@ -21,8 +21,8 @@ const UI_PATH = "res://ui/"
 const EXT = ".tscn"
 # just a placeholder string man (r is for "replace")
 # ...i know, i know, but it's so nice and short :I
-const R = "{REF}" 
-const REFS = [ 
+const R = "{REF}"
+const REFS = [
 	R,
 	R + EXT,
 	UI_PATH + R,
@@ -54,7 +54,7 @@ func _ready():
 #                S I G N A L   H A N D L I N G                #
 # ----------------------------------------------------------- #
 
-# can happen in a few different ways, depending on values 
+# can happen in a few different ways, depending on values
 # passed by the caller when it triggers the signal.
 # accepts a single argument: either a STRING representing
 # the item_ref of the ui element to open (implying default
@@ -62,14 +62,14 @@ func _ready():
 # 0: item_ref (string), required
 # 1: open_type (enum), optional - determines how the element
 #    will interact with existing elements:
-#    DEFAULT (null) - uses the "layer" variable specified in 
+#    DEFAULT (null) - uses the "layer" variable specified in
 #      the element, if it exists, else falls back to OVERLAY
-#    OVERLAY (-1) - uses the current highest layer value plus 
+#    OVERLAY (-1) - uses the current highest layer value plus
 #      one, making restore_on_close meaningless
 #    CUSTOM (any other int) - uses the given number as the
 #      new element's layer value
 # 2: restore_on_close (boolean), optional - indicates whether
-#    the replaced elements, if there are any, should be 
+#    the replaced elements, if there are any, should be
 #    restored when this element is closed. defaults to true.
 func open(args):
 	get_tree().paused = true
@@ -87,21 +87,21 @@ func open(args):
 			open_type = args[1]
 		if args.size() > 2:
 			restore_on_close = args[2]
-	
+
 	var path = process_ref(item_ref)
 	if !path:
 		Log.error(self, ["could not open '", item_ref, "': file not found."])
 		return
-	
+
 	var layer_value = get_layer_value(open_type, path)
-	
+
 	var item = {
 		"path": path,
 		"layer": layer_value
 	}
 	if restore_on_close:
 		item.restore = []
-	
+
 	Log.debug(self, ["pushing to ui stack: ", item])
 	return push(item)
 
@@ -114,7 +114,7 @@ func open(args):
 # was already removed). this will help with cases that can't
 # be handled elegantly using layer values.
 func close(arg = null):
-	var item = pop(arg) if typeof(arg) == TYPE_INT else pop(find_item(arg))
+	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
 	if item.has("restore") and item.restore:
 		for stack_item in item.restore: push(stack_item)
 	if stack.empty():
@@ -124,7 +124,7 @@ func close(arg = null):
 
 # executed when we hear a 'menu_open' signal. the main menu
 # scene listens for the signal on its own, so if it's already
-# loaded it will handle it - but if not, we need to add it to 
+# loaded it will handle it - but if not, we need to add it to
 # the ui stack and then call its open function manually.
 # we also take this opportunity to update last_menu_page.
 func open_menu(arg = null):
@@ -134,16 +134,16 @@ func open_menu(arg = null):
 	if !page: page = last_menu_page
 	if !page: page = DEFAULT_MENU_PAGE
 	last_menu_page = page
-	
+
 	var menu_path = process_ref("main_menu")
 	Log.debug(self, ["opening menu. stack: ", stack])
-	
+
 	var menu_index = find_item(menu_path, false)
 	if menu_index != null:
 		Log.debug(self, "menu already present in stack!")
 		if noarg: close(menu_index)
 		return
-	
+
 	var menu = open(menu_path)
 	menu.open(page)
 
@@ -176,22 +176,22 @@ func push(item):
 		}
 		if stack[i].has("restore"):
 			restore_item.restore = stack[i].restore
-		Log.verbose(self, ["(push) adding item to our restore stack: ", 
+		Log.verbose(self, ["(push) adding item to our restore stack: ",
 				restore_item])
 		item.restore.push_back(restore_item)
-	
+
 	if pop_from != null:
-		Log.verbose(self, ["(push) popping the stack at index: ", 
+		Log.verbose(self, ["(push) popping the stack at index: ",
 				pop_from, " (stack size: ", stack.size() , ")"])
-		pop(pop_from)
-	
+		_pop(pop_from)
+
 	var node = load_node(item.path)
 	item.node = node
 	stack.push_back(item)
 	ui_node.add_child(node)
 	Log.verbose(self, ["pushed: ", item])
 	Log.verbose(self, ["stack: ", stack])
-	
+
 	return node
 
 # -----------------------------------------------------------
@@ -200,26 +200,26 @@ func push(item):
 # probably fine; in future we will want to handle a noderef
 # argument for ui_close, so that nodes can close themselves,
 # but this can be handled in close() instead of here.
-func pop(i = null, restore = true):
+# (int, bool) -> dict | undefined
+#warning-ignore:unused_argument
+func _pop(i = null, restore = true):
 	if !stack or (i and i >= stack.size()):
 		Log.warn(self, "stack is empty!")
 		return
-	
-	if i == null: i = stack.size() - 1
-	
+
 	# if we're trying to pop something that isn't at the top
 	# of the stack, we have to pop everything above it first.
 	# we throw away any restore data for those items (for now)
-	if i < stack.size() - 1:
-		Log.verbose(self, ["(pop) clearing items between our index (",
+	if i != null:
+		Log.verbose(self, ["(_pop) clearing items between our index (",
 				i, ") and the top index (", stack.size() - 1, ")"])
-		for j in range(i + 1, stack.size()):
-			pop(null, false)
-	
-	var item = stack[i]
+		while stack.size() - 1 > i:
+			_pop(null, false)
+
+	var item = stack[-1]
 	var node = item.node
-	stack.remove(i)
-	Log.verbose(self, ["popping: ", item])
+	stack.pop_back()
+	Log.verbose(self, ["popped: ", item])
 	Log.verbose(self, ["stack: ", stack])
 	node.queue_free()
 	return item
@@ -229,8 +229,8 @@ func pop(i = null, restore = true):
 #            A U X I L I A R Y   F U N C T I O N S            #
 # ----------------------------------------------------------- #
 
-func process_ref(ref):
-	# first we try the ref 
+func process_ref(ref: String): # -> String | undefined
+	# first we try the ref
 	var file = File.new()
 	for template in REFS:
 		var path = template.replace(R, ref)
@@ -239,7 +239,7 @@ func process_ref(ref):
 
 # -----------------------------------------------------------
 
-func load_node(path):
+func load_node(path) -> Node:
 	return load(path).instance()
 
 # -----------------------------------------------------------
@@ -247,7 +247,7 @@ func load_node(path):
 # the "layer value" of a ui element determines which elements
 # it will replace (those with an equal or greater value) and
 # which it will overlay. here we look up the layer value for
-# our new element based on the open_type property that was 
+# our new element based on the open_type property that was
 # passed to open() by whoever emitted the signal (see above).
 func get_layer_value(open_type, path):
 	if open_type == null:
@@ -264,7 +264,7 @@ func get_next_layer():
 	var max_layer = 0
 	if !stack.empty():
 		for element in stack:
-			if element.layer > max_layer: 
+			if element.layer > max_layer:
 				max_layer = element.layer
 	return max_layer + 1
 
