@@ -1,33 +1,12 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/panel_frame.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
 [ext_resource path="res://ui/save_list/save_list.gd" type="Script" id=3]
-[ext_resource path="res://assets/ui/panels/panel_background.tres" type="StyleBox" id=4]
+[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=5]
 [ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=6]
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=7]
-
-[sub_resource type="StyleBoxTexture" id=1]
-
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
-texture = ExtResource( 2 )
-region_rect = Rect2( 0, 0, 33, 43 )
-margin_left = 16.0
-margin_right = 16.0
-margin_top = 16.0
-margin_bottom = 16.0
-expand_margin_left = 0.0
-expand_margin_right = 0.0
-expand_margin_top = 0.0
-expand_margin_bottom = 0.0
-axis_stretch_vertical = 1
-modulate_color = Color( 1, 1, 1, 1 )
-draw_center = false
-_sections_unfolded = [ "Axis Stretch", "Expand Margin", "Margin" ]
 
 [node name="save_list" type="Panel"]
 
@@ -47,29 +26,11 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 theme = ExtResource( 1 )
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = ExtResource( 2 )
 script = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect", "Scroll", "Theme", "custom_styles" ]
 
-[node name="background" type="Panel" parent="." index="0"]
-
-show_behind_parent = true
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 4.0
-margin_right = -4.0
-margin_bottom = -4.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-custom_styles/panel = ExtResource( 4 )
-_sections_unfolded = [ "Anchor", "Focus", "Hint", "Margin", "Mouse", "Rect", "Size Flags", "Theme", "Visibility", "custom_styles" ]
+[node name="background" parent="." index="0" instance=ExtResource( 4 )]
 
 [node name="title" type="Label" parent="." index="1"]
 
