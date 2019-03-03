@@ -8,15 +8,12 @@
 [ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=1]
-
 content_margin_left = 0.0
 content_margin_right = 0.0
 content_margin_top = 0.0
 content_margin_bottom = 0.0
-_sections_unfolded = [ "Content Margin" ]
 
 [resource]
-
 default_font = ExtResource( 6 )
 Button/colors/font_color = Color( 0.443137, 0.254902, 0.231373, 1 )
 Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
@@ -93,5 +90,4 @@ VButtonArray/styles/focus = ExtResource( 4 )
 VButtonArray/styles/hover = ExtResource( 2 )
 VButtonArray/styles/normal = ExtResource( 2 )
 VButtonArray/styles/selected = ExtResource( 3 )
-_sections_unfolded = [ "Button", "Button/fonts", "Button/styles", "Dialogs", "Dialogs/constants", "Fonts", "Fonts/colors", "HButtonArray/colors", "HButtonArray/constants", "HButtonArray/fonts", "HButtonArray/styles", "HScrollBar/icons", "HScrollBar/styles", "Label", "Label/colors", "Label/constants", "Label/fonts", "LineEdit/colors", "LineEdit/fonts", "LineEdit/styles", "Panel", "Panel/colors", "Panel/styles", "PanelContainer", "RichTextLabel", "RichTextLabel/colors", "TabContainer", "TabContainer/icons", "TabContainer/styles", "TextEdit", "TextEdit/fonts", "VButtonArray", "VButtonArray/colors", "VButtonArray/constants", "VButtonArray/fonts", "VButtonArray/styles" ]
 

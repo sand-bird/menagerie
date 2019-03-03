@@ -9,7 +9,6 @@
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=7]
 
 [node name="save_list" type="Panel"]
-
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -19,67 +18,34 @@ margin_top = -96.0
 margin_right = 104.0
 margin_bottom = 96.0
 rect_min_size = Vector2( 208, 180 )
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 1 )
 custom_styles/panel = ExtResource( 2 )
 script = ExtResource( 3 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Scroll", "Theme", "custom_styles" ]
 
-[node name="background" parent="." index="0" instance=ExtResource( 4 )]
+[node name="background" parent="." instance=ExtResource( 4 )]
 
-[node name="title" type="Label" parent="." index="1"]
-
+[node name="title" type="Label" parent="."]
 anchor_left = 0.5
-anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.0
 margin_left = -48.0
 margin_top = 6.0
 margin_right = 48.0
 margin_bottom = 20.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 custom_styles/normal = ExtResource( 5 )
 text = "Records"
 align = 1
 valign = 1
 uppercase = true
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
-[node name="container" type="VBoxContainer" parent="." index="2"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="container" type="VBoxContainer" parent="."]
 margin_left = 8.0
 margin_top = 23.0
 margin_right = 11.0
 margin_bottom = 23.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
 mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 custom_constants/separation = 2
-alignment = 0
-_sections_unfolded = [ "Anchor", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Rect", "custom_constants" ]
 
-[node name="pages" type="Label" parent="." index="3"]
-
+[node name="pages" type="Label" parent="."]
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -88,28 +54,15 @@ margin_left = -24.0
 margin_top = -18.0
 margin_right = 24.0
 margin_bottom = -5.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 custom_styles/normal = ExtResource( 6 )
 text = "* * *"
 align = 1
 valign = 1
 uppercase = true
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_styles" ]
 
-[node name="arrows" parent="pages" index="0" instance=ExtResource( 7 )]
-
+[node name="arrows" parent="pages" instance=ExtResource( 7 )]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -6.0
 margin_right = 6.0
-_sections_unfolded = [ "Anchor", "Margin" ]
-
 

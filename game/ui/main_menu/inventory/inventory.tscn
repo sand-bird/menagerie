@@ -11,137 +11,57 @@
 [ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=9]
 
 [sub_resource type="GDScript" id=1]
-
 resource_name = "item_name"
 script/source = "extends Label
 
 func set_text(t):
 	if typeof(t) == TYPE_OBJECT:
 		text = t[Options.get_lang()]"
-_sections_unfolded = [ "Resource" ]
 
-[node name="inventory" type="Control" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
+[node name="inventory" type="Control"]
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
-_sections_unfolded = [ "Rect", "Theme" ]
 
-[node name="item_name" type="Panel" parent="." index="0"]
-
-editor/display_folded = true
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="item_name" type="Panel" parent="."]
 margin_left = 44.0
 margin_top = 26.0
 margin_right = 149.0
 margin_bottom = 55.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 3 )
 custom_styles/panel = ExtResource( 4 )
-_sections_unfolded = [ "Anchor", "Rect", "Theme", "custom_styles" ]
 
-[node name="label" type="Label" parent="item_name" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="label" type="Label" parent="item_name"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 align = 1
 valign = 1
 autowrap = true
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
 script = SubResource( 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Theme", "custom_colors", "custom_styles" ]
 
-[node name="item_properties" type="Panel" parent="." index="1"]
-
+[node name="item_properties" type="Panel" parent="."]
 editor/display_folded = true
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
 margin_left = 12.0
 margin_top = 60.0
 margin_right = 149.0
 margin_bottom = 77.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 3 )
 custom_styles/panel = ExtResource( 4 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme", "custom_styles" ]
 
-[node name="category" type="Label" parent="item_properties" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
+[node name="category" type="Label" parent="item_properties"]
 anchor_bottom = 1.0
 margin_left = 10.0
 margin_right = 72.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Rect", "Size Flags", "Theme", "Visibility", "custom_colors", "custom_constants", "custom_fonts", "custom_styles" ]
 
-[node name="value" type="Label" parent="item_properties" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="value" type="Label" parent="item_properties"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 72.0
 margin_right = -18.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 align = 2
 valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "custom_colors" ]
 
-[node name="aster" type="TextureRect" parent="item_properties/value" index="0"]
-
+[node name="aster" type="TextureRect" parent="item_properties/value"]
 visible = false
 anchor_left = 1.0
 anchor_top = 0.5
@@ -150,83 +70,36 @@ anchor_bottom = 0.5
 margin_left = 1.0
 margin_top = -4.0
 margin_bottom = -0.5
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 texture = ExtResource( 5 )
-stretch_mode = 0
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="item_description" type="Panel" parent="." index="2"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="item_description" type="Panel" parent="."]
 margin_left = 12.0
 margin_top = 80.0
 margin_right = 149.0
 margin_bottom = 159.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 3 )
 custom_styles/panel = ExtResource( 4 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme", "custom_styles" ]
 
-[node name="label" type="Label" parent="item_description" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="label" type="Label" parent="item_description"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 8.0
 margin_top = 3.0
 margin_right = -6.0
 margin_bottom = -3.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 custom_constants/line_spacing = 2
 autowrap = true
-percent_visible = 1.0
-lines_skipped = 0
 max_lines_visible = 6
-_sections_unfolded = [ "Anchor", "Hint", "Margin", "Rect", "custom_constants" ]
 
-[node name="item_icon" type="TextureRect" parent="." index="3"]
-
-editor/display_folded = true
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="item_icon" type="TextureRect" parent="."]
 margin_left = 10.0
 margin_top = 22.0
 margin_right = 50.0
 margin_bottom = 62.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 1 )
 texture = ExtResource( 6 )
-stretch_mode = 0
-_sections_unfolded = [ "Theme" ]
 
-[node name="icon" type="TextureRect" parent="item_icon" index="0"]
-
+[node name="icon" type="TextureRect" parent="item_icon"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -234,18 +107,10 @@ anchor_bottom = 0.5
 margin_left = -9.0
 margin_top = -9.0
 rect_min_size = Vector2( 16, 16 )
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 expand = true
 stretch_mode = 6
-_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="quantity" type="Label" parent="item_icon" index="1"]
-
+[node name="quantity" type="Label" parent="item_icon"]
 visible = false
 anchor_left = 1.0
 anchor_top = 1.0
@@ -255,44 +120,19 @@ margin_left = -27.0
 margin_top = -17.0
 margin_right = -7.0
 margin_bottom = -6.0
-rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = true
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 custom_styles/normal = ExtResource( 7 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
 align = 2
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "custom_colors", "custom_styles" ]
 
-[node name="item_grid" parent="." index="4" instance=ExtResource( 8 )]
+[node name="item_grid" parent="." instance=ExtResource( 8 )]
 
-rect_clip_content = false
-_sections_unfolded = [ "Rect", "Size Flags" ]
-
-[node name="selector" type="TextureRect" parent="." index="5"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="selector" type="TextureRect" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
 mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-stretch_mode = 0
 script = ExtResource( 9 )
-_sections_unfolded = [ "Mouse" ]
 __meta__ = {
 "_edit_lock_": true
 }
-
 
