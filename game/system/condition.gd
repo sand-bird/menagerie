@@ -62,7 +62,7 @@ func resolve_global(arg):
 # basic test (please remember to delete me at some point)
 func _ready():
 	return
-	var Monster = preload("res://monster/monster.gd")
+	var Monster = load("res://monster/monster.gd")
 	var sample_monster = Monster.new()
 	sample_monster.mother = Monster.new()
 	sample_monster.mother.traits["iq"] = 20
@@ -87,7 +87,7 @@ func resolve(data, caller = null, parent = null):
 	
 	# an array of conditions implies an AND
 	if typeof(data) == TYPE_ARRAY:
-		result = _and(data, caller)
+		result = _and(data, caller, parent)
 	
 	# if it's a dict, our key will tell us what to do
 	elif typeof(data) == TYPE_DICTIONARY:
@@ -183,24 +183,25 @@ func _in(data, caller, parent):
 #                d a t a   o p e r a t o r s                 
 # ----------------------------------------------------------- 
 
-# accepts an ARRAY with EXACTLY 2 members, where the first is 
-# a dictionary or object and the second is a valid index or 
+# accepts an ARRAY with EXACTLY 2 members, where the first is
+# a dictionary or object and the second is a valid index or
 # property of the first. returns the value corresponding to
 # the key or property of the former, specified by the latter.
-# (should crash if data doesn't have key)
-func _get(args, caller, parent):
-	Log.verbose(self, ["(_get): ", args])
+# (should crash if data doesn't have key.)
+# as of godot 3.1, `get` is a member function that can't be
+func _get_op(args, caller, parent):
+	Log.verbose(Condition, ["(_get): ", args])
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
 	var result
 	
 	# check that data and key exist
 	if !data:
-		Log.error(self, ["(_get) failed: collection '", args[0],
+		Log.error(Condition, ["(_get) failed: collection '", args[0],
 				"' could not be resolved"])
 		return null
 	if key == null:
-		Log.error(self, ["(_get) failed: argument ", args[1],
+		Log.error(Condition, ["(_get) failed: argument ", args[1],
 				" could not be resolved to a key"])
 		return null
 	
@@ -214,7 +215,7 @@ func _get(args, caller, parent):
 		result = data[key]
 	
 	if !result:
-		Log.error(self, ["(_get) failed: key '", key,
+		Log.error(Condition, ["(_get) failed: key '", key,
 				"' not found in collection ", data])
 	return result
 

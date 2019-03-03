@@ -72,7 +72,7 @@ func _set_year(new):
 # cascade of rollovers that ends by incrementing year to 2. 
 func try_rollover(new_value, units_per_next_unit, next_unit):
 	if new_value >= units_per_next_unit:
-		self[next_unit] += 1
+		set(next_unit, get(next_unit) + 1)
 		units_to_dispatch.push_back(next_unit)
 		return true
 	else:
@@ -109,7 +109,7 @@ func get_day(input = null):
 func dispatch_updates():
 	while units_to_dispatch:
 		var unit = units_to_dispatch.pop_front()
-		Dispatcher.emit_signal(str(unit, "_changed"), self[unit],
+		Dispatcher.emit_signal(str(unit, "_changed"), get(unit),
 				unit != "tick") # don't log if it's a tick update
 
 
@@ -141,12 +141,12 @@ func deserialize(time):
 func get_dict():
 	var dict = {}
 	for key in ["tick", "hour", "date", "month", "year"]:
-		dict[key] = self[key]
+		dict[key] = get(key)
 	return dict
 
 func load_dict(dict):
 	for key in dict.keys():
-		self[key] = dict[key]
+		set(key, dict[key])
 
 # -----------------------------------------------------------
 

@@ -68,13 +68,13 @@ const SAVE_KEYS = [
 func serialize():
 	var data = {}
 	update_playtime()
-	for k in SAVE_KEYS: data[k] = self[k]
+	for k in SAVE_KEYS: data[k] = get(k)
 	return data
 
 # -----------------------------------------------------------
 
 func deserialize(data):
-	for k in SAVE_KEYS: self[k] = data[k]
+	for k in SAVE_KEYS: set(k, data[k])
 	last_update_time = OS.get_unix_time()
 
 

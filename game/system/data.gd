@@ -62,7 +62,7 @@ func get(a):
 	var result
 	if args.size() > 0 and args[0] in self:
 		Log.verbose(self, ["arg `", args[0], "` is a property of Data!"])
-		result = self[args[0]]
+		result = get(args[0])
 		args.pop_front() # args[0] is resolved, don't use it again
 	else: result = data
 	
@@ -81,10 +81,11 @@ func get_resource(a):
 
 # -----------------------------------------------------------
 
+# TODO
 func filter(a):
 	var filtered = {}
 	match data:
-		a: Log.info("hello")
+		a: Log.info(self, "hello")
 
 # =========================================================== #
 #                     . M O D C O N F I G                     #

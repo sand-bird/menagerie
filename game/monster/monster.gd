@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-const Action = preload("res://_scratch/behavior/action.gd")
+# const Action = preload("res://_scratch/behavior/action.gd")
 
 var entity_type = Constants.EntityType.MONSTER
 var Anim = Constants.Anim
@@ -139,10 +139,10 @@ func initialize(data):
 		queue_animation(Anim.SLEEP)
 
 func play_animation(anim_id, loops = 0):
-	$sprite/anim.play(anim_id, loops)
+	$sprite/anim.start(anim_id, loops)
 
 func queue_animation(anim_id, loops = 0):
-	$sprite/anim.queue(anim_id, loops)
+	$sprite/anim.start(anim_id, loops)
 
 # -----------------------------------------------------------
 
@@ -188,10 +188,10 @@ func update_z():
 
 func choose_action():
 	randomize()
-	if randf() < 0.5:
-		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)
-	else:
-		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
+#	if randf() < 0.5:
+#		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)
+#	else:
+#		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
 	print("chose action: ", current_action)
 
 
@@ -201,7 +201,7 @@ func choose_action():
 
 # updates the pet's drive meters (mood, hunger, etc). called
 # once per "tick" unit of game time (~0.5 seconds)
-func _update_drives(tick):
+func _update_drives() -> void:
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)
@@ -266,8 +266,13 @@ func calc_social_delta():
 
 # -----------------------------------------------------------
 
-func update_preferences(): 
+func update_preferences(discipline_type): 
 	# updates pet's likes and dislikes via discipline
+	pass
+
+# -----------------------------------------------------------
+
+func update_mood(discipline_type):
 	pass
 
 # -----------------------------------------------------------
@@ -336,7 +341,7 @@ func _on_discipline(discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
 	
 	update_preferences(discipline_type)
-	update_status(discipline_type)
+	update_mood(discipline_type)
 	
 	# decide whether to stop current action
 	pass
@@ -371,7 +376,7 @@ const SAVE_KEYS = [
 func serialize():
 	var data = {}
 	for key in SAVE_KEYS:
-		data[key] = self[key]
+		data[key] = get(key)
 	data.position = {x = position.x, y = position.y}
 	# if we decide to use objects for traits (and attributes),
 	# we will need to give them serialize methods.
@@ -383,6 +388,6 @@ func serialize():
 
 func deserialize(data):
 	for key in SAVE_KEYS:
-		self[key] = data[key]
+		set(key, data[key])
 	position.x = data.position.x
 	position.y = data.position.y

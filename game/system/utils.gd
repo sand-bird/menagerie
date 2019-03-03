@@ -169,7 +169,7 @@ static func vmax(a, b):
 # -----------------------------------------------------------
 
 static func vrandi(vec):
-	return Vector2(randi_qty(int(vec.x)), randi_qty(int(vec.y)))
+	return Vector2(randi_to(int(vec.x)), randi_to(int(vec.y)))
 
 # -----------------------------------------------------------
 

@@ -5,13 +5,11 @@
 [ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=3]
 
 [sub_resource type="GDScript" id=1]
-
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): signal_name = \"menu_open\""
 
 [sub_resource type="GDScript" id=2]
-
 script/source = "extends Button
 
 var InventorySize = Constants.InventorySize
@@ -27,74 +25,32 @@ func _pressed():
 	print(\"inventory size toggled! is now \", size)"
 
 [node name="game" type="Node"]
-
 pause_mode = 2
 script = ExtResource( 1 )
-_sections_unfolded = [ "Pause" ]
 
-[node name="ui" parent="." index="0" instance=ExtResource( 2 )]
-
+[node name="ui" parent="." instance=ExtResource( 2 )]
 pause_mode = 2
 layer = 128
 script = null
-_sections_unfolded = [ "Pause" ]
 
-[node name="EventButton" type="Button" parent="." index="1"]
-
+[node name="EventButton" type="Button" parent="."]
 visible = false
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
 margin_left = 142.0
 margin_top = 124.0
 margin_right = 223.0
 margin_bottom = 144.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "MENU"
-flat = false
-align = 1
 script = SubResource( 1 )
-_sections_unfolded = [ "custom_constants" ]
 __meta__ = {
 "_editor_icon": ExtResource( 3 )
 }
 
-[node name="EventButton2" type="Button" parent="." index="2"]
-
+[node name="EventButton2" type="Button" parent="."]
 visible = false
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
 margin_left = 135.0
 margin_top = 152.0
 margin_right = 230.0
 margin_bottom = 172.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "TOGGLE SIZE"
-flat = false
-align = 1
 script = SubResource( 2 )
-
 

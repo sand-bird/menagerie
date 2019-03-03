@@ -33,8 +33,8 @@ func get_save_list():
 
 func sort_by_date(a, b):
 	var file = File.new()
-	return (file.get_modified_time(get_path(a, PLAYER)) 
-			> file.get_modified_time(get_path(b, PLAYER)))
+	return (file.get_modified_time(get_filepath(a, PLAYER)) 
+			> file.get_modified_time(get_filepath(b, PLAYER)))
 
 # ------------------------------------------------------------
 
@@ -45,7 +45,7 @@ func sort_by_date(a, b):
 # - player monsters
 func get_save_info(save_dir):
 	var save_info = {}
-	var data = Utils.read_file(get_path(save_dir, PLAYER))
+	var data = Utils.read_file(get_filepath(save_dir, PLAYER))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data[k]
 	save_info.encyclopedia = data.encyclopedia.completion
@@ -56,7 +56,7 @@ func get_save_info(save_dir):
 # ------------------------------------------------------------
 
 func get_save_time(save_dir):
-	return File.new().get_modified_time(get_path(save_dir, PLAYER))
+	return File.new().get_modified_time(get_filepath(save_dir, PLAYER))
 
 # ------------------------------------------------------------
 
@@ -75,7 +75,7 @@ func get_save_info_list():
 
 func new_save(pname):
 	# load fresh save data
-	var new_save = read_file(NEW_SAVE)
+	var new_save = Utils.read_file(NEW_SAVE)
 	new_save.player.player_name = pname
 	
 	# create new save
@@ -88,16 +88,16 @@ func new_save(pname):
 # -----------------------------------------------------------
 
 func save_game(data, save_dir = current_save_dir):
-	Utils.write_file(get_path(save_dir, PLAYER), data.player)
-	Utils.write_file(get_path(save_dir, GARDEN), data.garden)
+	Utils.write_file(get_filepath(save_dir, PLAYER), data.player)
+	Utils.write_file(get_filepath(save_dir, GARDEN), data.garden)
 
 # -----------------------------------------------------------
 
 func load_game(save_dir):
 	current_save_dir = save_dir
 	return {
-		"player": Utils.read_file(get_path(save_dir, PLAYER)),
-		"garden": Utils.read_file(get_path(save_dir, GARDEN)),
+		"player": Utils.read_file(get_filepath(save_dir, PLAYER)),
+		"garden": Utils.read_file(get_filepath(save_dir, GARDEN)),
 	}
 
 
@@ -112,7 +112,7 @@ func is_save(dir_name):
 
 # -----------------------------------------------------------
 
-func get_path(save_dir, file_name):
+func get_filepath(save_dir, file_name):
 	return SAVE_ROOT.plus_file(save_dir).plus_file(file_name)
 
 # -----------------------------------------------------------

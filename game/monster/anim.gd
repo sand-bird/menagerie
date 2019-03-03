@@ -12,24 +12,24 @@ func _ready():
 #                       P L A Y B A C K                       #
 # ----------------------------------------------------------- #
 
-# calling play() will immediately start playing the new anim.
+# calling `run` will immediately start playing the new anim.
 # currently, this leaves the queue intact, so that previously
 # queued animtions will resume after the current one is over.
 # doesn't matter right now; can change it later if necessary.
-func play(anim_id = null, loops = null):
+func start(anim_id = null, loops = null):
 	if anim_id: current = anim_id
 	if loops: loop_counter = loops
-	.play(str(current, "_", facing.y, "_", facing.x))
+	play(str(current, "_", facing.y, "_", facing.x))
 
 # -----------------------------------------------------------
 
 func queue(anim_id, loops = 0):
 	queue.push_back({"id": anim_id, "loops": loops})
-	if !current: play_next()
+	if !current: _play_next()
 
 # -----------------------------------------------------------
 
-func play_next(old_anim = null):
+func _play_next(old_anim = null):
 	if loop_counter - 1 > 0:
 		loop_counter = loop_counter - 1
 	elif !queue.empty():
@@ -37,7 +37,7 @@ func play_next(old_anim = null):
 		current = new_anim.id
 		loop_counter = new_anim.loops
 	else: current = "idle"
-	play()
+	start()
 
 # -----------------------------------------------------------
 

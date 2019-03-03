@@ -7,7 +7,7 @@ const Nav = preload('res://garden/test.gd')
 var nav # current navigation
 
 # get back tile centerpoints instead of corners
-func map_to_world(tile):
+func map_to_world(tile, ignore_half_ofs = false):
 	return .map_to_world(tile) + cell_size / 2
 
 #func world_to_map(pos):

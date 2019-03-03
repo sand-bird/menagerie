@@ -3,7 +3,6 @@ extends Control
 const Monster = preload("res://monster/monster.tscn")
 # todo: items and objects
 
-"""
 var color_night = Color("66588c")
 var color_dawn = Color("db9ab4")
 var color_morning = Color("dbc2b8")
@@ -20,7 +19,6 @@ var colors = {
 	18: color_evening,
 	20: color_dusk
 }
-"""
 
 # we maintain a lookup table for our entities, primarily so
 # that conditions can check what's in the garden (though it
@@ -102,14 +100,14 @@ func unhighlight(entity):
 # -----------------------------------------------------------
 # color stuff
 
-func get_anim_duration(hour):
-	pass
+#func get_anim_duration(hour):
+#	pass
 
 func update_color(hour):
 	var anim = $tint/anim.get_animation("tint")
 	anim.track_set_key_value(0, 0, $tint.color)
 	anim.set_length(1)
-	anim.track_insert_key(0, 1, Color(randf(), randf(), randf()))
+	anim.track_insert_key(0, 1, colors[hour])
 	
 	$tint/anim.play("tint")
 
