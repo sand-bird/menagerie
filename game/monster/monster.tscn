@@ -12,7 +12,7 @@ func _ready():
 
 func _offset_texture():
 	offset.y = -texture.get_height()
-	offset.x = -((int(texture.get_width()) / hframes) / 2)
+	offset.x = -((texture.get_width() / hframes) / 2)
 "
 
 [sub_resource type="CircleShape2D" id=2]

@@ -5,12 +5,12 @@ signal page_info_changed(text)
 
 var title setget set_title
 
-var prev_item = 0
+# var prev_item = 0
 var current_item = 0
 var current_page = 0 setget set_current_page
 var page_count = 0 setget set_page_count
 
-func initialize():
+func initialize(args = null):
 	emit_signal("title_changed", title)
 
 func set_title(val):
@@ -21,7 +21,7 @@ func set_current_page(new_page):
 	current_page = new_page
 	emit_signal("page_info_changed", [current_page, page_count])
 
-func set_page_count(val): 
+func set_page_count(val):
 	page_count = val
 	emit_signal("page_info_changed", [current_page, page_count])
 

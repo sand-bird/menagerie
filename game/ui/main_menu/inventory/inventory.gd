@@ -1,6 +1,6 @@
 extends "res://ui/main_menu/menu_chapter.gd"
 
-var Wrap = Constants.Wrap
+# var Wrap = Constants.Wrap
 
 onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 onready var selector_offset = props.grid_offset - Vector2(4, 4)
@@ -8,16 +8,16 @@ onready var cols = props.columns
 onready var rows = props.rows if props.has('rows') else props.columns
 
 # as in "inventory item", not as in Item (the specific type
-# of game entity). unfortunately ambiguous, but i couldn't 
+# of game entity). unfortunately ambiguous, but i couldn't
 # come up with any decent alternatives :(
-# 
+#
 # an array of ints, each an index within Player.inventory.
 # represents the subset of the player's inventory that we can
-# SEE & INTERACT WITH. possible reasons an inventory item 
+# SEE & INTERACT WITH. possible reasons an inventory item
 # doesn't show up in this list:
 # - it's being filtered out by our current filter settings
 # - the data for its entity id was not found; an uncommon but
-#   expected case, eg. if an entity belongs to a mod that's 
+#   expected case, eg. if an entity belongs to a mod that's
 #   currently disabled.
 onready var items = []
 
@@ -30,25 +30,25 @@ func _ready():
 
 # -----------------------------------------------------------
 
-func initialize(filter):
+func initialize(filter = {}):
 	# init self
 	items = filter_items(filter)
 	var pages = items.size() / (cols * rows)
 	if items.size() % (cols * rows) > 0: pages += 1
 	self.page_count = pages
-	
+
 	# init item grid
 	$item_grid.props = props
 	$item_grid.initialize()
 	$item_grid.load_items(get_page_items())
 	init_selector()
 	if items: update_current_item(0)
-	
+
 	.initialize()
 
 # -----------------------------------------------------------
 
-func filter_items(filter):
+func filter_items(filter: Dictionary):
 	var results = []
 	for i in Player.inventory.size():
 		var id = Player.inventory[i].id
@@ -75,9 +75,9 @@ func update_current_item(new_index):
 	# ensures it always happens, so that we have less bounds-
 	# checking to do elsewhere.
 	new_index = min(new_index, $item_grid.item_count - 1)
-	Log.debug(self, ["(update_current_item) new: ", 
+	Log.debug(self, ["(update_current_item) new: ",
 			new_index, " | old: ", current_item])
-	
+
 	move_selector(new_index)
 	if current_item < $item_grid.item_count:
 		$item_grid.show_quantity(current_item, true)
@@ -99,14 +99,14 @@ func get_page_items():
 func update_item_details(index):
 	var item = get_item(index)
 	var item_data = Data.get(item.id)
-	
+
 	$item_name/label.text = Utils.trans(item_data.name)
 	$item_description/label.text = Utils.trans(item_data.description)
 	$item_icon/icon.texture = Data.get_resource([item.id, "icon"])
 	$item_properties/category.text = item_data.category
 	$item_properties/value.text = Utils.comma(item_data.value)
 	$item_properties/value/aster.show()
-	
+
 	var qty = item.qty
 	if qty == 1: $item_icon/quantity.hide()
 	else:
@@ -214,7 +214,7 @@ func change_page(offset, wrap = false):
 	# change the page now
 	self.current_page += offset
 	$item_grid.load_items(get_page_items())
-	
+
 	# determine where to place our cursor. if we're changing
 	# page via move_left or move_right, we want to wrap the
 	# cursor to the opposite side of the row.
@@ -230,7 +230,7 @@ func change_page(offset, wrap = false):
 			new_index = coords_to_index(0, new_row)
 		if (offset < 0):
 			new_index = coords_to_index(cols - 1, current_row)
-	
+
 	update_current_item(new_index)
 
 # -----------------------------------------------------------

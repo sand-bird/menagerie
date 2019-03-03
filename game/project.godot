@@ -42,7 +42,9 @@ UI="*res://ui/ui.gd"
 
 [debug]
 
+gdscript/warnings/unused_argument=false
 gdscript/warnings/return_value_discarded=false
+gdscript/warnings/integer_division=false
 indicators_enabled=true
 
 [display]
