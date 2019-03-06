@@ -19,7 +19,7 @@ const MIN_SCALE = 2
 # DEBOUNCE_TIME represents how long we wait for resize
 # signals to stop coming before we do our thing, while the
 # timer keeps track of this for us.
-const DEBOUNCE_TIME = 0.05
+const DEBOUNCE_TIME = 0.1
 var timer: SceneTreeTimer = null
 
 func _ready():
@@ -34,7 +34,7 @@ func _ready():
 # events, natch, but we only want to rescale once, so we wait
 # until the signals stop coming. note that SceneTreeTimer
 # does not free itself right away, so we must manually clear
-# our timer pointer inside `update_screen`.
+# our timer pointer inside update_screen().
 func debounce():
 	if !timer:
 		timer = get_tree().create_timer(DEBOUNCE_TIME)
@@ -68,8 +68,6 @@ func update_screen():
 
 	Log.debug(self, ["base size: ", base_size, " | scaled size: ",
 			scaled_size, " | window size: ", OS.window_size])
-	print("base: ", base_size, " | scaled: ", scaled_size,
-			" | viewport: ", viewport.size, " | window: ", OS.window_size)
 
 	return base_size
 
