@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Control
+
+const text = \"Hello World\"
+const font = preload(\"res://assets/ui/menagerie.font\")
+
+onready var rid = get_canvas_item()
+
+var start_pos = Vector2(50, 100)
+
+var offset_y = 0
+var time = 0
+
+func _ready():
+	set_process(true)
+
+func _process(delta):
+	time = time + delta
+	offset_y = sin(time * 3)
+	update()
+
+func _draw():
+	var pos = start_pos
+	for i in text.length():
+		pos.x += draw_wavy(i, pos)
+
+func draw_wavy(i, pos):
+	return font.draw_char(rid, pos + Vector2(0, cos((time * 6) - i) * 2), text.ord_at(i))
+"
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = SubResource( 1 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = 1.58887
+margin_top = 2.7805
+margin_right = 139.589
+margin_bottom = 18.7805
+
