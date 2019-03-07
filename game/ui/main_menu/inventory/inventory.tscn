@@ -2,11 +2,11 @@
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=3]
-[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=4]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=5]
-[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=6]
-[ext_resource path="res://assets/ui/panels/qty_label.tres" type="StyleBox" id=7]
+[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=3]
+[ext_resource path="res://assets/ui/panels/qty_label.tres" type="StyleBox" id=4]
+[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=5]
+[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=6]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=7]
 [ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://ui/main_menu/inventory/selector.gd" type="Script" id=9]
 
@@ -19,87 +19,23 @@ func set_text(t):
 		text = t[Options.get_lang()]"
 
 [node name="inventory" type="Control"]
+margin_right = 296.0
+margin_bottom = 142.0
+rect_min_size = Vector2( 296, 142 )
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 
-[node name="item_name" type="Panel" parent="."]
-margin_left = 44.0
-margin_top = 26.0
-margin_right = 149.0
-margin_bottom = 55.0
-theme = ExtResource( 3 )
-custom_styles/panel = ExtResource( 4 )
+[node name="item_info" type="Control" parent="."]
+margin_right = 141.0
+margin_bottom = 140.0
 
-[node name="label" type="Label" parent="item_name"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-align = 1
-valign = 1
-autowrap = true
-script = SubResource( 1 )
-
-[node name="item_properties" type="Panel" parent="."]
-editor/display_folded = true
-margin_left = 12.0
-margin_top = 60.0
-margin_right = 149.0
-margin_bottom = 77.0
-theme = ExtResource( 3 )
-custom_styles/panel = ExtResource( 4 )
-
-[node name="category" type="Label" parent="item_properties"]
-anchor_bottom = 1.0
-margin_left = 10.0
-margin_right = 72.0
-valign = 1
-
-[node name="value" type="Label" parent="item_properties"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 72.0
-margin_right = -18.0
-align = 2
-valign = 1
-
-[node name="aster" type="TextureRect" parent="item_properties/value"]
-visible = false
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = 1.0
-margin_top = -4.0
-margin_bottom = -0.5
-texture = ExtResource( 5 )
-
-[node name="item_description" type="Panel" parent="."]
-margin_left = 12.0
-margin_top = 80.0
-margin_right = 149.0
-margin_bottom = 159.0
-theme = ExtResource( 3 )
-custom_styles/panel = ExtResource( 4 )
-
-[node name="label" type="Label" parent="item_description"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 3.0
-margin_right = -6.0
-margin_bottom = -3.0
-custom_constants/line_spacing = 2
-autowrap = true
-max_lines_visible = 6
-
-[node name="item_icon" type="TextureRect" parent="."]
-margin_left = 10.0
-margin_top = 22.0
-margin_right = 50.0
-margin_bottom = 62.0
+[node name="item_icon" type="TextureRect" parent="item_info"]
+margin_right = 40.0
+margin_bottom = 40.0
 theme = ExtResource( 1 )
-texture = ExtResource( 6 )
+texture = ExtResource( 3 )
 
-[node name="icon" type="TextureRect" parent="item_icon"]
+[node name="icon" type="TextureRect" parent="item_info/item_icon"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -110,7 +46,7 @@ rect_min_size = Vector2( 16, 16 )
 expand = true
 stretch_mode = 6
 
-[node name="quantity" type="Label" parent="item_icon"]
+[node name="quantity" type="Label" parent="item_info/item_icon"]
 visible = false
 anchor_left = 1.0
 anchor_top = 1.0
@@ -121,11 +57,87 @@ margin_top = -17.0
 margin_right = -7.0
 margin_bottom = -6.0
 rect_clip_content = true
-custom_styles/normal = ExtResource( 7 )
+custom_styles/normal = ExtResource( 4 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
 align = 2
 
+[node name="item_name" type="Panel" parent="item_info"]
+margin_left = 34.0
+margin_top = 4.0
+margin_right = 139.0
+margin_bottom = 33.0
+theme = ExtResource( 5 )
+custom_styles/panel = ExtResource( 6 )
+
+[node name="label" type="Label" parent="item_info/item_name"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+align = 1
+valign = 1
+autowrap = true
+script = SubResource( 1 )
+
+[node name="item_properties" type="Panel" parent="item_info"]
+margin_left = 2.0
+margin_top = 38.0
+margin_right = 139.0
+margin_bottom = 55.0
+theme = ExtResource( 5 )
+custom_styles/panel = ExtResource( 6 )
+
+[node name="category" type="Label" parent="item_info/item_properties"]
+anchor_bottom = 1.0
+margin_left = 9.0
+margin_right = 71.0
+text = "Resource"
+valign = 1
+
+[node name="value" type="Label" parent="item_info/item_properties"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 73.0
+margin_right = -17.0
+text = "1,230"
+align = 2
+valign = 1
+
+[node name="aster" type="TextureRect" parent="item_info/item_properties/value"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 1.0
+margin_top = -5.0
+margin_right = 9.0
+margin_bottom = 3.0
+texture = ExtResource( 7 )
+
+[node name="item_description" type="Panel" parent="item_info"]
+margin_left = 2.0
+margin_top = 58.0
+margin_right = 139.0
+margin_bottom = 137.0
+theme = ExtResource( 5 )
+custom_styles/panel = ExtResource( 6 )
+
+[node name="label" type="Label" parent="item_info/item_description"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 7.0
+margin_top = 3.0
+margin_right = -7.0
+margin_bottom = -3.0
+custom_constants/line_spacing = 2
+autowrap = true
+max_lines_visible = 6
+
 [node name="item_grid" parent="." instance=ExtResource( 8 )]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -138.0
+margin_top = 3.0
+margin_right = -3.0
+margin_bottom = 138.0
 
 [node name="selector" type="TextureRect" parent="."]
 margin_right = 40.0

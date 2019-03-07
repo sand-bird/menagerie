@@ -1,15 +1,5 @@
 extends CanvasLayer
 
-# ***** TODO ***** : saving the following for if/when it's
-# relevant, but the ui_layer system needs more refinement
-# before it's ready for implementation.
-# (from _open_menu:)
-# 1: ui_layer (int), optional - if given, indicates that the
-#    new ui element will REPLACE existing ui elements at or
-#    above the given layer, while leaving those below intact.
-#    if not given, the new element will be assigned a layer
-#    value equal to the larger of: the element below it, or
-#    the default value (2). see the Layer enum above.
 enum Layer {
 	BACKGROUND = 0
 	HUD = 1
@@ -19,9 +9,7 @@ enum Layer {
 
 const UI_PATH = "res://ui/"
 const EXT = ".tscn"
-# just a placeholder string man (r is for "replace")
-# ...i know, i know, but it's so nice and short :I
-const R = "{REF}"
+const R = "{REF}" # placeholder string (R is for "replace")
 const REFS = [
 	R,
 	R + EXT,
@@ -33,7 +21,7 @@ const REFS = [
 	UI_PATH + R + "/" + R + EXT
 ]
 
-const DEFAULT_MENU_PAGE = "options"
+const DEFAULT_MENU_PAGE = 'options'
 # we can't count on our main_menu node always being
 # instantiated, but we still want to remember the last
 # open menu page, so we'll keep track of it here instead
@@ -45,9 +33,9 @@ var stack = []
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
-	Dispatcher.connect("ui_open", self, "open")
-	Dispatcher.connect("ui_close", self, "close")
-	Dispatcher.connect("menu_open", self, "open_menu")
+	Dispatcher.connect('ui_open', self, 'open')
+	Dispatcher.connect('ui_close', self, 'close')
+	Dispatcher.connect('menu_open', self, 'open_menu')
 
 
 # =========================================================== #
@@ -73,14 +61,14 @@ func _ready():
 #    restored when this element is closed. defaults to true.
 func open(args):
 	get_tree().paused = true
-	Log.debug(self, ["opening: ", args])
+	Log.debug(self, ["(open) args: ", args])
 	# set up vars
 	var item_ref
 	var open_type = null
 	var restore_on_close = true
-	if typeof(args) == TYPE_STRING:
+	if args is String:
 		item_ref = args
-	elif typeof(args) == TYPE_ARRAY:
+	elif args is Array:
 		item_ref = args[0]
 		# optional arguments
 		if args.size() > 1:
@@ -90,19 +78,20 @@ func open(args):
 
 	var path = process_ref(item_ref)
 	if !path:
-		Log.error(self, ["could not open '", item_ref, "': file not found."])
+		Log.error(self, ["(open) could not open '", item_ref,
+				"': file not found."])
 		return
 
 	var layer_value = get_layer_value(open_type, path)
 
 	var item = {
-		"path": path,
-		"layer": layer_value
+		'path': path,
+		'layer': layer_value
 	}
 	if restore_on_close:
 		item.restore = []
 
-	Log.debug(self, ["pushing to ui stack: ", item])
+	Log.debug(self, ["(open) pushing to ui stack: ", item])
 	return push(item)
 
 # -----------------------------------------------------------
@@ -115,7 +104,7 @@ func open(args):
 # be handled elegantly using layer values.
 func close(arg = null):
 	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
-	if item.has("restore") and item.restore:
+	if item.has('restore') and item.restore:
 		for stack_item in item.restore: push(stack_item)
 	if stack.empty():
 		get_tree().paused = false
@@ -135,7 +124,7 @@ func open_menu(arg = null):
 	if !page: page = DEFAULT_MENU_PAGE
 	last_menu_page = page
 
-	var menu_path = process_ref("main_menu")
+	var menu_path = process_ref('main_menu')
 	Log.debug(self, ["opening menu. stack: ", stack])
 
 	var menu_index = find_item(menu_path, false)
@@ -167,14 +156,14 @@ func push(item):
 	for i in stack.size():
 		if stack[i].layer < item.layer: continue
 		if pop_from == null: pop_from = i
-		if !item.has("restore"): break
+		if !item.has('restore'): break
 		# we want everything but the noderef, since
 		# the node will be deleted anyway.
 		var restore_item = {
 			layer = stack[i].layer,
 			path = stack[i].path,
 		}
-		if stack[i].has("restore"):
+		if stack[i].has('restore'):
 			restore_item.restore = stack[i].restore
 		Log.verbose(self, ["(push) adding item to our restore stack: ",
 				restore_item])
@@ -233,13 +222,13 @@ func process_ref(ref: String): # -> String | undefined
 	# first we try the ref
 	var file = File.new()
 	for template in REFS:
-		var path = template.replace(R, ref)
+		var path: String = template.replace(R, ref)
 		if file.file_exists(path): return path
 	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
 
 # -----------------------------------------------------------
 
-func load_node(path) -> Node:
+func load_node(path: String) -> Node:
 	return load(path).instance()
 
 # -----------------------------------------------------------
@@ -252,7 +241,7 @@ func load_node(path) -> Node:
 func get_layer_value(open_type, path):
 	if open_type == null:
 		var node = load_node(path)
-		if "layer" in node: return node.layer
+		if 'layer' in node: return node.layer
 		else: return get_next_layer()
 	elif open_type == -1:
 		return get_next_layer()

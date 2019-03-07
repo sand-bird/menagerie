@@ -11,19 +11,19 @@ var current_page = 0 setget set_current_page
 var page_count = 0 setget set_page_count
 
 func initialize(args = null):
-	emit_signal("title_changed", title)
+	emit_signal('title_changed', title)
 
 func set_title(val):
 	title = val
-	emit_signal("title_changed", title)
+	emit_signal('title_changed', title)
 
 func set_current_page(new_page):
 	current_page = new_page
-	emit_signal("page_info_changed", [current_page, page_count])
+	emit_signal('page_info_changed', [current_page, page_count])
 
 func set_page_count(val):
 	page_count = val
-	emit_signal("page_info_changed", [current_page, page_count])
+	emit_signal('page_info_changed', [current_page, page_count])
 
 func is_valid():
 	return true

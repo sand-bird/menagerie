@@ -1,19 +1,36 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://ui/main_menu/encyclopedia/encyclopedia.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=1]
+[ext_resource path="res://ui/main_menu/encyclopedia/encyclopedia.gd" type="Script" id=2]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=3]
+[ext_resource path="res://ui/text.gd" type="Script" id=4]
 
 [node name="container" type="Control"]
+margin_right = 296.0
+margin_bottom = 142.0
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
+[node name="left" type="Panel" parent="."]
+margin_top = 3.0
+margin_right = 140.0
+margin_bottom = 140.0
 
+[node name="right" type="Panel" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -142.0
+margin_top = -18.0
+margin_bottom = 140.0
+
+[node name="Control" type="Control" parent="right"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 6.0
+margin_top = 4.0
+margin_right = -6.0
+margin_bottom = -4.0
+theme = ExtResource( 3 )
+script = ExtResource( 4 )
+text = "A pair of em dashes can replace a pair of parentheses. Dashes are considered less formal than parentheses; they are also more intrusive. If you want to draw attention to the parenthetical content, use dashes. If you want to include the parenthetical content more subtly, use parentheses."
 

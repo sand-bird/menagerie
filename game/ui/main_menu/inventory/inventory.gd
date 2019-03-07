@@ -100,20 +100,20 @@ func update_item_details(index):
 	var item = get_item(index)
 	var item_data = Data.get(item.id)
 
-	$item_name/label.text = Utils.trans(item_data.name)
-	$item_description/label.text = Utils.trans(item_data.description)
-	$item_icon/icon.texture = Data.get_resource([item.id, "icon"])
-	$item_properties/category.text = item_data.category
-	$item_properties/value.text = Utils.comma(item_data.value)
-	$item_properties/value/aster.show()
+	$item_info/item_name/label.text = Utils.trans(item_data.name)
+	$item_info/item_description/label.text = Utils.trans(item_data.description)
+	$item_info/item_icon/icon.texture = Data.get_resource([item.id, "icon"])
+	$item_info/item_properties/category.text = item_data.category
+	$item_info/item_properties/value.text = Utils.comma(item_data.value)
+	$item_info/item_properties/value/aster.show()
 
 	var qty = item.qty
-	if qty == 1: $item_icon/quantity.hide()
+	if qty == 1: $item_info/item_icon/quantity.hide()
 	else:
-		$item_icon/quantity.show()
-		$item_icon/quantity.text = str(qty)
-		var min_size = $item_icon/quantity.get_minimum_size().x
-		$item_icon/quantity.margin_left = -7 - min_size
+		$item_info/item_icon/quantity.show()
+		$item_info/item_icon/quantity.text = str(qty)
+		var min_size = $item_info/item_icon/quantity.get_minimum_size().x
+		$item_info/item_icon/quantity.margin_left = -7 - min_size
 
 # -----------------------------------------------------------
 

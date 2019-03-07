@@ -4,6 +4,6 @@ func _ready():
 	title = "Encyclopedia"
 	initialize()
 
-func initialize():
-	.initialize()
+func initialize(arg = null):
+	.initialize(arg)
 	# specific stuff goes here
