@@ -12,6 +12,7 @@ export var line_spacing: int = 2
 export var text: String
 
 onready var FONT_HEIGHT = font.get_height()
+onready var LINE_HEIGHT = FONT_HEIGHT + line_spacing
 
 var _buf = []
 
@@ -31,13 +32,13 @@ const PAUSES = {
 	',': 0.1,
 	'?': 0.3,
 	'!': 0.3,
-	'-': 0.1, # hyphen
+	'-': 0.1
 }
 
 #warning-ignore:unused_class_variable
 onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
 onready var MAX_WIDTH = rect_size.x
-onready var MAX_LINES = rect_size.y / FONT_HEIGHT
+onready var MAX_LINES = get_max_lines(FONT_HEIGHT, line_spacing, rect_size.y)
 onready var CHAR_DELAY = 1 / Options.text_speed
 
 onready var MOD_DEFAULTS = {
@@ -56,24 +57,7 @@ var _line_count = 1
 
 # -----------------------------------------------------------
 
-func get_max_lines(font_height, line_spacing, max_height):
-	var max_lines = 0
-	var total_height = font_height
-	while total_height < max_height:
-		total_height += font_height + line_spacing
-		max_lines += 1
-	return max_lines
-
-func _ready():
-	var max_raw_lines = floor(rect_size.y / FONT_HEIGHT)
-	var max_spaced_lines = floor(rect_size.y / (FONT_HEIGHT + (line_spacing * (max_raw_lines - 1))))
-	print('font height: ', FONT_HEIGHT)
-
-	print('max raw lines: ', max_raw_lines)
-	print('max spaced lines: ', max_spaced_lines)
-
-	print('new max lines: ', get_max_lines(FONT_HEIGHT, line_spacing, rect_size.y))
-	tokenize(text)
+func _ready(): tokenize(text)
 
 # -----------------------------------------------------------
 
@@ -133,12 +117,18 @@ func tokenize(raw: String) -> void:
 		is_escaped = false
 		i += 1
 
+# -----------------------------------------------------------
+
 func insert_newline(use_last_space = false):
+	_current_line = ''
 	if use_last_space and _last_space:
 		_buf[_last_space] = { type = BufType.NEWLINE }
+		for i in _buf.size() - _last_space:
+			if 'uni' in _buf[i]:
+				print(char(_buf[i].uni))
+				_current_line += char(_buf[i].uni)
 	else:
 		_buf.push_back({ type = BufType.NEWLINE })
-	_current_line = ''
 	_last_space = 0
 	_line_count += 1
 
@@ -202,7 +192,7 @@ func reset_modifier(token):
 onready var rid = get_canvas_item()
 onready var START_POS = Vector2(0, font.get_ascent())
 
-var time := 0.0
+var time = 0.0
 
 func _physics_process(delta: float):
 	time += delta
@@ -217,7 +207,7 @@ func _draw():
 		match _buf[i].type:
 			BufType.NEWLINE:
 				pos.x = START_POS.x
-				pos.y += font.get_height() + line_spacing
+				pos.y += LINE_HEIGHT
 			BufType.CHAR:
 				pos.x += do_draw_char(i, pos)
 
@@ -232,6 +222,7 @@ func do_draw_char(i: int, pos: Vector2) -> int:
 		_buf[i].color
 	)
 
+# TODO
 func draw_image(i: int, pos: Vector2) -> int:
 	return 0
 
@@ -243,10 +234,8 @@ func next_char(i):
 			and 'uni' in _buf[i + 1]) else -1
 
 func do_anim(i, pos) -> Vector2:
-	return call(_buf[i].anim, i, pos) if safe_truthy('anim', _buf[i]) else pos
-
-func safe_truthy(prop, dict):
-	return prop in dict and dict[prop]
+	return (call(_buf[i].anim, i, pos)
+			if safe_truthy('anim', _buf[i]) else pos)
 
 
 #                     a n i m a t i o n s
@@ -266,3 +255,21 @@ func wavy2(i, pos):
 
 # seriously why do we have to do this
 func float(x): return float(x)
+
+
+# =========================================================== #
+#                          U T I L S                          #
+# ----------------------------------------------------------- #
+
+func get_max_lines(font_height, line_spacing, max_height):
+	var max_lines = 0
+	var total_height = font_height
+	while total_height < max_height:
+		total_height += font_height + line_spacing
+		max_lines += 1
+	return max_lines
+
+# -----------------------------------------------------------
+
+func safe_truthy(prop, dict):
+	return prop in dict and dict[prop]
