@@ -4,19 +4,34 @@ extends Node
 # godot 3.1. maybe something about the enum imports?
 #warning-ignore-all:unused_class_variable
 
+# =========================================================== #
+#                      C O N S T A N T S                      #
+# ----------------------------------------------------------- #
+
 var ControlMode = Constants.ControlMode
 var ScrollMode = Constants.ScrollMode
 var InventorySize = Constants.InventorySize
 var Language = Constants.Language
 
 # =========================================================== #
-#                   G A M E   O P T I O N S                   #
+#                        O P T I O N S                        #
 # ----------------------------------------------------------- #
 
-var autosave_interval = "hour"
+#                           g a m e                           #
+# ----------------------------------------------------------- #
 
-# =========================================================== #
-#               L A N G U A G E   O P T I O N S               #
+const TextSpeed = {
+	1: 16.0,
+	2: 24.0,
+	3: 32.0,
+	4: 40.0,
+	5: 48.0
+}
+
+var autosave_interval = "hour"
+var text_speed = TextSpeed[3] # characters per second
+
+#                       l a n g u a g e                       #
 # ----------------------------------------------------------- #
 
 var lang_codes = {
@@ -31,14 +46,12 @@ const fallback_lang = "en"  # ugly but it'll do for now
 func get_lang():
 	return lang_codes[language]
 
-# =========================================================== #
-#              I N V E N T O R Y   O P T I O N S              #
+#                      i n v e n t o r y                      #
 # ----------------------------------------------------------- #
 
 var inventory_size = InventorySize.SMALL
 
-# =========================================================== #
-#                  I N P U T   O P T I O N S                  #
+#                          i n p u t                          #
 # ----------------------------------------------------------- #
 
 var control_mode = ControlMode.MOUSE_AND_KEY
@@ -55,8 +68,7 @@ var keybindings = {
 func set_control_mode(mode):
 	control_mode = mode
 
-# =========================================================== #
-#                 C A M E R A   O P T I O N S                 #
+#                         c a m e r a                         #
 # ----------------------------------------------------------- #
 
 # these are both the defaults (for now) and all the possible

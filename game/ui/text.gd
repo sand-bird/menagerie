@@ -1,8 +1,6 @@
 extends Control
 
 onready var font = theme.default_font
-onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
-onready var rid = get_canvas_item()
 
 enum BufType {
 	CHAR,START_POS
@@ -10,16 +8,12 @@ enum BufType {
 	NEWLINE
 }
 
-const MAX_WIDTH = 200
-const TEXT_SPEED = 12.0 # characters per second
-var seconds_per_char = 1.0 / TEXT_SPEED
+export var line_spacing: int = 2
+export var text: String
 
-export var text = "Hel{_0.5}{ # ff00ff }lo {~}World{/#}!{/~}"
+onready var FONT_HEIGHT = font.get_height()
 
-var _buf := []
-
-func _ready():
-	tokenize(text)
+var _buf = []
 
 # =========================================================== #
 #                  I N P U T   P A R S I N G                  #
@@ -32,97 +26,169 @@ const TOKENS = {
 	'_': { key = 'pause', apply = 'float' }
 }
 
-var MOD_DEFAULTS = {
+const PAUSES = {
+	'.': 0.2,
+	',': 0.1,
+	'?': 0.3,
+	'!': 0.3,
+	'-': 0.1, # hyphen
+}
+
+#warning-ignore:unused_class_variable
+onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
+onready var MAX_WIDTH = rect_size.x
+onready var MAX_LINES = rect_size.y / FONT_HEIGHT
+onready var CHAR_DELAY = 1 / Options.text_speed
+
+onready var MOD_DEFAULTS = {
 	'anim': false,
 	'color': DEFAULT_COLOR,
 	'speed': 1,
 	'pause': 0
 }
 
-var _current_at = 0
-var _current_line_length = 0
-var _last_space = -1
+onready var _modifiers = MOD_DEFAULTS.duplicate(true)
+var _last_modifiers = [] # for automatically closing
 
-# todo: test if this passes by reference
-var _modifiers = MOD_DEFAULTS.duplicate(true)
-var _last_modifier: String # for automatically closing
-
-func tokenize(raw: String) -> void:
-	var i := 0
-	var last_space := -1
-	var escaped := false
-
-	while i < raw.length():
-		# should we escape the next tag character?
-		if raw[i] == '\\' and !escaped:
-			escaped = true
-			i += 1
-			continue
-		# if it's a tag, we parse it, then continue processing
-		# the string from the end of the tag
-		if raw[i] == '{' and !escaped:
-			i = parse_tag(i, raw)
-			continue
-		# if it's anything else, we can consider it a character
-		push_to_buf(i, raw)
-
-		_current_line_length += font.get_string_size(raw[i]).x
-
-		escaped = false
-		i += 1
+var _last_space = 0
+var _current_line = ''
+var _line_count = 1
 
 # -----------------------------------------------------------
 
-func push_to_buf(i, raw) -> void:
-	var uni = raw.ord_at(i)
+func get_max_lines(font_height, line_spacing, max_height):
+	var max_lines = 0
+	var total_height = font_height
+	while total_height < max_height:
+		total_height += font_height + line_spacing
+		max_lines += 1
+	return max_lines
 
-	var at_inc: float = seconds_per_char * _modifiers.speed
-	if _modifiers.pause:
-		at_inc += _modifiers.pause
+func _ready():
+	var max_raw_lines = floor(rect_size.y / FONT_HEIGHT)
+	var max_spaced_lines = floor(rect_size.y / (FONT_HEIGHT + (line_spacing * (max_raw_lines - 1))))
+	print('font height: ', FONT_HEIGHT)
+
+	print('max raw lines: ', max_raw_lines)
+	print('max spaced lines: ', max_spaced_lines)
+
+	print('new max lines: ', get_max_lines(FONT_HEIGHT, line_spacing, rect_size.y))
+	tokenize(text)
+
+# -----------------------------------------------------------
+
+func tokenize(raw: String) -> void:
+	var current_at = 0
+	var is_escaped = false
+
+	var i = 0
+	while i < raw.length():
+		# if '\', escape the next character. `is_escaped` is
+		# reset to false after each character is processed.
+		if raw[i] == '\\' and !is_escaped:
+			is_escaped = true
+			i += 1
+			continue
+
+		# if it's a tag, we parse it, then continue processing
+		# the string from the end of the tag. if the tag is a
+		# substitution, it manipulates `raw`, and sets i to the
+		# beginning of the substitution string. if somebody sets
+		# up recursive looping substitutions, we are in trouble
+		elif raw[i] == '{' and !is_escaped:
+			i = parse_tag(i, raw) + 1
+			continue
+
+		# if it's anything else, we can consider it a character
+		current_at += CHAR_DELAY / _modifiers.speed + _modifiers.pause
 		_modifiers.pause = 0
-	_current_at += at_inc
 
-	_buf.push_back({
-		type = BufType.CHAR,
-		uni = uni,
-		at = _current_at,
-		anim = _modifiers.anim,
-		color = _modifiers.color if _modifiers.color else DEFAULT_COLOR
-	})
+		_buf.push_back({
+			type = BufType.CHAR,
+			uni = raw.ord_at(i),
+			at = current_at,
+			anim = _modifiers.anim,
+			color = (_modifiers.color if _modifiers.color
+					else DEFAULT_COLOR)
+		})
+
+		# if this character has associated pause data, we add
+		# it to `current_at` AFTER pushing the character to the
+		# render buffer, so that the pause occurs between the
+		# current character and the next one.
+		if raw[i] in PAUSES and !is_escaped:
+			current_at += PAUSES[raw[i]]
+
+		if raw[i] == ' ':
+			_last_space = _buf.size() - 1
+		# if we pass individual characters to get_string_size(),
+		# it can't account for kerning, so we have to give it the
+		# whole string at once. as we process each character, we
+		# dump it into `current_line`, then measure the result.
+		_current_line += raw[i]
+		if font.get_string_size(_current_line).x > MAX_WIDTH:
+			insert_newline(true)
+
+		# housekeeping
+		is_escaped = false
+		i += 1
+
+func insert_newline(use_last_space = false):
+	if use_last_space and _last_space:
+		_buf[_last_space] = { type = BufType.NEWLINE }
+	else:
+		_buf.push_back({ type = BufType.NEWLINE })
+	_current_line = ''
+	_last_space = 0
+	_line_count += 1
 
 # -----------------------------------------------------------
 
 func parse_tag(i: int, raw: String) -> int:
+	# find the bounds of our tag. we always skip over the tab
+	# opener unless it was explicitly escaped; but if the tag
+	# is invalid, we can return without doing anything else.
 	var end_of_tag: int = raw.find('}', i)
 	var start_of_next_tag: int = raw.find('{', i + 1)
 	if end_of_tag < 0 or (start_of_next_tag > 0
 			and end_of_tag > start_of_next_tag):
-		return i + 1
+		return i
 
 	var tag = raw.substr(i + 1, end_of_tag - i - 1).replace(' ', '')
-	if !tag: return end_of_tag + 1
+	# if tag is blank, we can safely skip it
+	if !tag: return end_of_tag
 
+	# whatever is not the token is the argument
 	var arg: String = tag.right(1)
-	print('arg: ', arg)
 
 	if tag[0] in TOKENS:
 		set_modifier(tag[0], arg)
-		_last_modifier = tag[0]
 	elif tag[0] == '/':
 		if arg: reset_modifier(arg)
-		elif _last_modifier: reset_modifier(_last_modifier)
+		elif !_last_modifiers.empty():
+			reset_modifier(_last_modifiers.pop_back())
+	elif tag[0] == 'n':
+		insert_newline()
 
-	return end_of_tag + 1
+	return end_of_tag
 
 # -----------------------------------------------------------
 
 func set_modifier(token, arg):
 	var mod = TOKENS[token]
 	if arg:
-		_modifiers[mod.key] = call(mod.apply, arg) if safe_truthy('apply', mod) else arg
+		_modifiers[mod.key] = (
+			call(mod.apply, arg)
+			if safe_truthy('apply', mod)
+			else arg
+		)
 	else:
-		_modifiers[mod.key] =  mod.value if 'value' in mod else MOD_DEFAULTS[mod.key]
-
+		_modifiers[mod.key] = (
+			mod.value
+			if 'value' in mod
+			else MOD_DEFAULTS[mod.key]
+		)
+	_last_modifiers.push_back(token)
 
 func reset_modifier(token):
 	var modkey = TOKENS[token].key
@@ -133,7 +199,8 @@ func reset_modifier(token):
 #                      R E N D E R I N G                      #
 # ----------------------------------------------------------- #
 
-onready var START_POS = Vector2(0, font.get_ascent()) # rect_global_position + Vector2(0, font.get_height())
+onready var rid = get_canvas_item()
+onready var START_POS = Vector2(0, font.get_ascent())
 
 var time := 0.0
 
@@ -150,7 +217,7 @@ func _draw():
 		match _buf[i].type:
 			BufType.NEWLINE:
 				pos.x = START_POS.x
-				pos.y += font.get_height()
+				pos.y += font.get_height() + line_spacing
 			BufType.CHAR:
 				pos.x += do_draw_char(i, pos)
 
@@ -187,8 +254,8 @@ func safe_truthy(prop, dict):
 
 func wavy(i, pos) -> Vector2:
 	return pos + Vector2(
-		0,
-		cos((time * 10) - i) * 2
+		0, # cos((time * 10) - i),
+		sin((time * 8) - i * 0.8) * 1.6
 	)
 
 func wavy2(i, pos):
