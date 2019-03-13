@@ -2,6 +2,13 @@ extends Node
 
 var garden
 
+const validator = preload('res://system/validator.gd')
+
+var test
+
+func test():
+	return 'test1'
+
 func _ready():
 	Dispatcher.connect("new_game", self, "new_game")
 	Dispatcher.connect("load_game", self, "load_game")

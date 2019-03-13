@@ -46,7 +46,9 @@ func read_file(path):
 	file.open(path, File.READ)
 	var data = parse_json(file.get_as_text())
 	file.close()
-	Log.verbose(Utils, data)
+	# even for verbose, this is a little much, but i'll
+	# leave it here in case we need to re-enable it
+#	Log.verbose(Utils, data)
 	return data
 
 
