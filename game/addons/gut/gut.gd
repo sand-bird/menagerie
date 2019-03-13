@@ -5,7 +5,7 @@
 #The MIT License (MIT)
 #=====================
 #
-#Copyright (c) 2017 Tom "Butch" Wesley
+#Copyright (c) 2019 Tom "Butch" Wesley
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -28,20 +28,23 @@
 ################################################################################
 # View readme for usage details.
 #
-# Version 6.2.0
+# Version 6.6.2
 ################################################################################
 extends "res://addons/gut/gut_gui.gd"
 
+var _utils = load('res://addons/gut/utils.gd').new()
+var _lgr = _utils.get_logger()
 
 # ###########################
 # Editor Variables
 # ###########################
+export var _should_maximize = false setget set_should_maximize, get_should_maximize
 export var _run_on_load = false
 export(String) var _select_script = null
 export(String) var _tests_like = null
+export(String) var _inner_class_name = null
 export var _should_print_to_console = true setget set_should_print_to_console, get_should_print_to_console
 export(int, 'Failures only', 'Tests and failures', 'Everything') var _log_level = 1 setget set_log_level, get_log_level
-
 # This var is JUST used to expose this setting in the editor
 # the var that is used is in the _yield_between hash.
 export var _yield_between_tests = true setget set_yield_between_tests, get_yield_between_tests
@@ -50,7 +53,10 @@ export var _disable_strict_datatype_checks = false setget disable_strict_datatyp
 export var _test_prefix = 'test_'
 export var _file_prefix = 'test_'
 export var _file_extension = '.gd'
-
+export var _inner_class_prefix = 'Test'
+export(String) var _temp_directory = 'user://gut_temp_directory'
+export var _include_subdirectories = false setget set_include_subdirectories, get_include_subdirectories
+export(int, 'FULL', 'PARTIAL') var _double_strategy = _utils.DOUBLE_STRATEGY.PARTIAL setget set_double_strategy, get_double_strategy
 
 # Allow user to add test directories via editor.  This is done with strings
 # instead of an array because the interface for editing arrays is really
@@ -75,11 +81,7 @@ const WAITING_MESSAGE = '/# waiting #/'
 const PAUSE_MESSAGE = '/# Pausing.  Press continue button...#/'
 
 var _stop_pressed = false
-
-# Tests to run for the current script
-var _tests = []
-# all the scripts that should be ran as test scripts
-var _test_scripts = []
+var _test_collector = load('res://addons/gut/test_collector.gd').new()
 
 # The instanced scripts.  This is populated as the scripts are run.
 var _test_script_objects = []
@@ -119,8 +121,12 @@ var _yielding_to = {
 	signal_name = ''
 }
 
+var _stubber = _utils.Stubber.new()
+var _doubler = _utils.Doubler.new()
+var _spy = _utils.Spy.new()
+
 const SIGNAL_TESTS_FINISHED = 'tests_finished'
-const SIGNAL_STOP_YIELD_BEFORE_TEARDOWN = 'stop_yeild_before_teardown'
+const SIGNAL_STOP_YIELD_BEFORE_TEARDOWN = 'stop_yield_before_teardown'
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -128,31 +134,39 @@ func _init():
 	add_user_signal(SIGNAL_TESTS_FINISHED)
 	add_user_signal(SIGNAL_STOP_YIELD_BEFORE_TEARDOWN)
 	add_user_signal('timeout')
+	_doubler.set_output_dir(_temp_directory)
+	_doubler.set_stubber(_stubber)
+	_doubler.set_spy(_spy)
+	_doubler.set_logger(_lgr)
+
+	#_stubber.set_logger(_lgr)
+	#_spy.set_logger(_lgr)
 
 # ------------------------------------------------------------------------------
 # Connect all the controls created in the parent class to the methods here.
 # ------------------------------------------------------------------------------
 func _connect_controls():
-	_ctrls.copy_button.connect("pressed", self, "_copy_button_pressed")
-	_ctrls.clear_button.connect("pressed", self, "clear_text")
-	_ctrls.continue_button.connect("pressed", self, "_on_continue_button_pressed")
-	_ctrls.ignore_continue_checkbox.connect('pressed', self, '_on_ignore_continue_checkbox_pressed')
-	_ctrls.log_level_slider.connect("value_changed", self, "_on_log_level_slider_changed")
-	_ctrls.stop_button.connect("pressed", self, '_on_stop_button_pressed')
-	_ctrls.run_rest.connect('pressed', self, '_on_run_rest_pressed')
-	_ctrls.previous_button.connect("pressed", self, '_on_previous_button_pressed')
-	_ctrls.next_button.connect("pressed", self, '_on_next_button_pressed')
-	_ctrls.scripts_drop_down.connect('item_selected', self, '_on_script_selected')
-	_ctrls.run_button.connect("pressed", self, "_on_run_button_pressed")
+	$copy_button.connect("pressed", self, "_copy_button_pressed")
+	$clear_button.connect("pressed", self, "clear_text")
+	$continue_button.connect("pressed", self, "_on_continue_button_pressed")
+	$ignore_continue_checkbox.connect('pressed', self, '_on_ignore_continue_checkbox_pressed')
+	$log_level_slider.connect("value_changed", self, "_on_log_level_slider_changed")
+	$stop_button.connect("pressed", self, '_on_stop_button_pressed')
+	$run_rest.connect('pressed', self, '_on_run_rest_pressed')
+	$previous_button.connect("pressed", self, '_on_previous_button_pressed')
+	$next_button.connect("pressed", self, '_on_next_button_pressed')
+	$scripts_drop_down.connect('item_selected', self, '_on_script_selected')
+	$run_button.connect("pressed", self, "_on_run_button_pressed")
 
 # ------------------------------------------------------------------------------
 # Initialize controls
 # ------------------------------------------------------------------------------
 func _ready():
+	_lgr.info(str('using [', OS.get_user_data_dir(), '] for temporary output.'))
 	set_it_up()
 	set_process_input(true)
 	_connect_controls()
-	set_position(get_position() + Vector2(0, 20))
+	set_position(get_position() + title_offset)
 
 	add_child(_wait_timer)
 	_wait_timer.set_wait_time(1)
@@ -167,7 +181,7 @@ func _ready():
 
 	# This timer is started, but it should never finish.  Used
 	# to determine how long it took to run the tests since
-	# getting the time and doing time math is rediculous in godot.
+	# getting the time and doing time math is ridiculous in godot.
 	add_child(_runtime_timer)
 	_runtime_timer.set_one_shot(true)
 	_runtime_timer.set_wait_time(RUNTIME_START_TIME)
@@ -187,6 +201,10 @@ func _ready():
 
 	if(_run_on_load):
 		test_scripts(_select_script == null)
+
+	if(_should_maximize):
+		maximize()
+
 	show()
 
 #####################
@@ -199,7 +217,7 @@ func _ready():
 # ------------------------------------------------------------------------------
 func _process(delta):
 	if(_is_running):
-		_ctrls.runtime_label.set_text(str(RUNTIME_START_TIME - _runtime_timer.get_time_left()).pad_decimals(3) + ' s')
+		$runtime_label.set_text(str(RUNTIME_START_TIME - _runtime_timer.get_time_left()).pad_decimals(3) + ' s')
 
 # ------------------------------------------------------------------------------
 # Timeout for the built in timer.  emits the timeout signal.  Start timer
@@ -234,36 +252,36 @@ func _on_run_button_pressed():
 # ------------------------------------------------------------------------------
 func _on_continue_button_pressed():
 	_pause_before_teardown = false
-	_ctrls.continue_button.set_disabled(true)
+	$continue_button.set_disabled(true)
 	emit_signal(SIGNAL_STOP_YIELD_BEFORE_TEARDOWN)
 
 # ------------------------------------------------------------------------------
 # Change the log level.  Will be visible the next time tests are run.
 # ------------------------------------------------------------------------------
 func _on_log_level_slider_changed(value):
-	_log_level = _ctrls.log_level_slider.get_value()
+	_log_level = $log_level_slider.get_value()
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 func _on_previous_button_pressed():
-	if(_ctrls.scripts_drop_down.get_selected() > 0):
-		_ctrls.scripts_drop_down.select(_ctrls.scripts_drop_down.get_selected() -1)
+	if($scripts_drop_down.get_selected() > 0):
+		$scripts_drop_down.select($scripts_drop_down.get_selected() -1)
 	_update_controls()
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 func _on_next_button_pressed():
-	if(_ctrls.scripts_drop_down.get_selected() < _ctrls.scripts_drop_down.get_item_count() -1):
-		_ctrls.scripts_drop_down.select(_ctrls.scripts_drop_down.get_selected() +1)
+	if($scripts_drop_down.get_selected() < $scripts_drop_down.get_item_count() -1):
+		$scripts_drop_down.select($scripts_drop_down.get_selected() +1)
 	_update_controls()
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 func _on_stop_button_pressed():
 	_stop_pressed = true
-	_ctrls.stop_button.set_disabled(true)
+	$stop_button.set_disabled(true)
 	# short circuit any yielding or yielded tests
-	if(!_ctrls.continue_button.is_disabled()):
+	if(!$continue_button.is_disabled()):
 		_on_continue_button_pressed()
 	else:
 		_waiting = false
@@ -271,10 +289,10 @@ func _on_stop_button_pressed():
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 func _on_ignore_continue_checkbox_pressed():
-	_ignore_pause_before_teardown = _ctrls.ignore_continue_checkbox.is_pressed()
+	_ignore_pause_before_teardown = $ignore_continue_checkbox.is_pressed()
 	# If you want to ignore them, then you probably just want to continue
 	# running, so we'll save you a click.
-	if(!_ctrls.continue_button.is_disabled()):
+	if(!$continue_button.is_disabled()):
 		_on_continue_button_pressed()
 
 # ------------------------------------------------------------------------------
@@ -294,31 +312,6 @@ func _on_run_rest_pressed():
 #####################
 
 # ------------------------------------------------------------------------------
-# Parses out the tests based on the _test_prefix.  Fills the _tests array with
-# instances of OneTest.
-# ------------------------------------------------------------------------------
-func _parse_tests(script):
-	var file = File.new()
-	var line = ""
-	var line_count = 0
-
-	file.open(script, 1)
-	while(!file.eof_reached()):
-		line_count += 1
-		line = file.get_line()
-		#Add a test
-		if(line.begins_with("func " + _test_prefix)):
-			var from = line.find(_test_prefix)
-			var line_len = line.find("(") - from
-			var new_test = OneTest.new()
-			new_test.name = line.substr(from, line_len)
-			new_test.line_number = line_count
-			_tests.append(new_test)
-
-	file.close()
-
-
-# ------------------------------------------------------------------------------
 # Convert the _summary dictionary into text
 # ------------------------------------------------------------------------------
 func _get_summary_text():
@@ -328,17 +321,17 @@ func _get_summary_text():
 
 	if(_new_summary.get_totals().tests > 0):
 		to_return +=  '+++ ' + str(_new_summary.get_totals().passing) + ' passed ' + str(_new_summary.get_totals().failing) + ' failed.  ' + \
-		              "Tests finished in:  " + _ctrls.runtime_label.get_text() + ' +++'
+		              "Tests finished in:  " + $runtime_label.get_text() + ' +++'
 		var c = Color(0, 1, 0)
 		if(_new_summary.get_totals().failing > 0):
 			c = Color(1, 0, 0)
 		elif(_new_summary.get_totals().pending > 0):
 			c = Color(1, 1, .8)
 
-		_ctrls.text_box.add_color_region('+++', '+++', c)
+		$text_box.add_color_region('+++', '+++', c)
 	else:
 		to_return += '+++ No tests ran +++'
-		_ctrls.text_box.add_color_region('+++', '+++', Color(1, 0, 0))
+		$text_box.add_color_region('+++', '+++', Color(1, 0, 0))
 
 	if(_summary.moved_methods > 0):
 		to_return += "\nMoved Methods (" + str(_summary.moved_methods) + ')' + """
@@ -355,6 +348,7 @@ easier in the future...I'm pretty sure at least.  Thanks for using Gut!"""
 # Initialize variables for each run of a single test script.
 # ------------------------------------------------------------------------------
 func _init_run():
+	_test_collector.set_test_class_prefix(_inner_class_prefix)
 	_test_script_objects = []
 	_new_summary = Summary.new()
 	_summary.tally_passed = 0
@@ -371,8 +365,8 @@ func _init_run():
 
 	_yield_between.tests_since_last_yield = 0
 	._init_run()
-	_ctrls.script_progress.set_max(_test_scripts.size())
-	_ctrls.script_progress.set_value(0)
+	$script_progress.set_max(_test_collector.scripts.size())
+	$script_progress.set_value(0)
 
 # ------------------------------------------------------------------------------
 # Print out run information and close out the run.
@@ -389,7 +383,7 @@ func _end_run():
 	_yield_between.timer.set_wait_time(0.001)
 	_yield_between.timer.start()
 	yield(_yield_between.timer, 'timeout')
-	_ctrls.text_box.cursor_set_line(_ctrls.text_box.get_line_count())
+	$text_box.cursor_set_line($text_box.get_line_count())
 
 	_runtime_timer.stop()
 	_is_running = false
@@ -410,24 +404,21 @@ func _is_function_state(script_result):
 # ------------------------------------------------------------------------------
 # Print out the heading for a new script
 # ------------------------------------------------------------------------------
-func _print_script_heading(script_name):
-	p("/-----------------------------------------")
-	p("Testing Script " + script_name, 0)
-	if(_unit_test_name != ''):
-		p('  Only running tests like: "' + _unit_test_name + '"')
-	p("-----------------------------------------/")
+func _print_script_heading(script):
+	if(_does_class_name_match(_inner_class_name, script.inner_class_name)):
+		p("\n/-----------------------------------------")
+		if(script.inner_class_name == null):
+			p("Running Script " + script.path, 0)
+		else:
+			p("Running Class [" + script.inner_class_name + "] in " + script.path, 0)
 
-# ------------------------------------------------------------------------------
-# Initialize a new test script object.  The file is loaded from the passed in path
-# and the tests are parsed out.
-# ------------------------------------------------------------------------------
-func _init_test_script(script_path):
-	_parse_tests(script_path)
-	var test_script = load(script_path).new()
-	add_child(test_script)
-	test_script.gut = self
+		if(_inner_class_name != null and _does_class_name_match(_inner_class_name, script.inner_class_name)):
+			p(str('  [',script.inner_class_name, '] matches [', _inner_class_name, ']'))
 
-	return test_script
+		if(_unit_test_name != ''):
+			p('  Only running tests like: "' + _unit_test_name + '"')
+
+		p("-----------------------------------------/")
 
 # ------------------------------------------------------------------------------
 # Just gets more logic out of _test_the_scripts.  Decides if we should yield after
@@ -442,6 +433,8 @@ func _should_yield_now():
 		_yield_between.tests_since_last_yield += 1
 	return should
 
+func _does_class_name_match(a_class_name, script_class_name):
+	return a_class_name == null or (script_class_name != null and script_class_name.find(a_class_name) != -1)
 # ------------------------------------------------------------------------------
 # Run all tests in a script.  This is the core logic for running tests.
 #
@@ -451,97 +444,123 @@ func _should_yield_now():
 func _test_the_scripts():
 	_init_run()
 	var file = File.new()
+	if(_doubler.get_strategy() == _utils.DOUBLE_STRATEGY.FULL):
+		_lgr.info("Using Double Strategy FULL as default strategy.  Keep an eye out for weirdness, this is still experimental.")
 
-	for s in range(_test_scripts.size()):
-		_tests.clear()
-		set_title('Running:  ' + _test_scripts[s])
-		_print_script_heading(_test_scripts[s])
-		_new_summary.add_script(_test_scripts[s])
+	# loop through scripts
+	for s in range(_test_collector.scripts.size()):
+		var the_script = _test_collector.scripts[s]
+		if(the_script.tests.size() > 0):
+			set_title('Running:  ' + the_script.get_full_name())
+			_print_script_heading(the_script)
+			_new_summary.add_script(the_script.get_full_name())
 
-		if(!file.file_exists(_test_scripts[s])):
-			p("FAILED   COULD NOT FIND FILE:  " + _test_scripts[s])
+		var test_script = the_script.get_new()
+		print(the_script.to_s())
+		test_script.gut = self
+		add_child(test_script)
+		_test_script_objects.append(test_script)
+		var script_result = null
+		_doubler.set_strategy(_double_strategy)
+
+		# yield between test scripts so things paint
+		if(_yield_between.should):
+			_yield_between.timer.set_wait_time(0.01)
+			_yield_between.timer.start()
+			yield(_yield_between.timer, 'timeout')
+
+		# !!!
+		# Hack so there isn't another indent to this monster of a method.  if
+		# inner class is set and we do not have a match then empty the tests
+		# for the current test.
+		# !!!
+		if(!_does_class_name_match(_inner_class_name, the_script.inner_class_name)):
+			the_script.tests = []
 		else:
-			var test_script = _init_test_script(_test_scripts[s])
-			_test_script_objects.append(test_script)
-			var script_result = null
-
+			# call both pre-all-tests methods until prerun_setup is removed
 			test_script.prerun_setup()
+			test_script.before_all()
 
-			#yield between test scripts so things paint
-			if(_yield_between.should):
-				_yield_between.timer.set_wait_time(0.01)
-				_yield_between.timer.start()
-				yield(_yield_between.timer, 'timeout')
+		$test_progress.set_max(the_script.tests.size())
 
-			_ctrls.test_progress.set_max(_tests.size())
-			for i in range(_tests.size()):
-				_current_test = _tests[i]
+		# Each test in the script
+		for i in range(the_script.tests.size()):
+			_stubber.clear()
+			_spy.clear()
+			_doubler.clear_output_directory()
+			_current_test = the_script.tests[i]
 
-				if((_unit_test_name != '' and _current_test.name.find(_unit_test_name) > -1) or
-				   (_unit_test_name == '')):
-					p(_current_test.name, 1)
-					_new_summary.add_test(_current_test.name)
-					#yield so things paint
-					if(_should_yield_now()):
-						_yield_between.timer.set_wait_time(0.001)
-						_yield_between.timer.start()
-						yield(_yield_between.timer, 'timeout')
+			if((_unit_test_name != '' and _current_test.name.find(_unit_test_name) > -1) or
+			   (_unit_test_name == '')):
+				p(_current_test.name, 1)
+				_new_summary.add_test(_current_test.name)
+				# yield so things paint
+				if(_should_yield_now()):
+					_yield_between.timer.set_wait_time(0.001)
+					_yield_between.timer.start()
+					yield(_yield_between.timer, 'timeout')
 
-					test_script.setup()
+				# call both pre-each-test method until setup is removed
+				test_script.setup()
+				test_script.before_each()
 
-					script_result = test_script.call(_current_test.name)
-					#When the script yields it will return a GDFunctionState object
-					if(_is_function_state(script_result)):
-						if(!_was_yield_method_called):
-							p('/# Yield detected, waiting #/')
-						_was_yield_method_called = false
-						_waiting = true
-						while(_waiting):
-							p(WAITING_MESSAGE, 2)
-							_wait_timer.start()
-							yield(_wait_timer, 'timeout')
+				script_result = test_script.call(_current_test.name)
+				#When the script yields it will return a GDFunctionState object
+				if(_is_function_state(script_result)):
+					if(!_was_yield_method_called):
+						p('/# Yield detected, waiting #/')
+					_was_yield_method_called = false
+					_waiting = true
+					while(_waiting):
+						p(WAITING_MESSAGE, 2)
+						_wait_timer.start()
+						yield(_wait_timer, 'timeout')
 
-					#if the test called pause_before_teardown then yield until
-					#the continue button is pressed.
-					if(_pause_before_teardown and !_ignore_pause_before_teardown):
-						p(PAUSE_MESSAGE, 1)
-						_waiting = true
-						_ctrls.continue_button.set_disabled(false)
-						yield(self, SIGNAL_STOP_YIELD_BEFORE_TEARDOWN)
+				#if the test called pause_before_teardown then yield until
+				#the continue button is pressed.
+				if(_pause_before_teardown and !_ignore_pause_before_teardown):
+					p(PAUSE_MESSAGE, 1)
+					_waiting = true
+					$continue_button.set_disabled(false)
+					yield(self, SIGNAL_STOP_YIELD_BEFORE_TEARDOWN)
 
-					test_script.clear_signal_watcher()
-					test_script.teardown()
+				test_script.clear_signal_watcher()
 
-					if(_current_test.passed):
-						_ctrls.text_box.add_keyword_color(_current_test.name, Color(0, 1, 0))
-					else:
-						_ctrls.text_box.add_keyword_color(_current_test.name, Color(1, 0, 0))
+				# call each post-each-test method until teardown is removed.
+				test_script.teardown()
+				test_script.after_each()
 
-					# !!! STOP BUTTON SHORT CIRCUIT !!!
-					if(_stop_pressed):
-						_is_running = false
-						_update_controls()
-						_stop_pressed = false
-						p("STOPPED")
-						return
+				if(_current_test.passed):
+					$text_box.add_keyword_color(_current_test.name, Color(0, 1, 0))
+				else:
+					$text_box.add_keyword_color(_current_test.name, Color(1, 0, 0))
 
-					_ctrls.test_progress.set_value(i + 1)
+				# !!! STOP BUTTON SHORT CIRCUIT !!!
+				if(_stop_pressed):
+					_is_running = false
+					_update_controls()
+					_stop_pressed = false
+					p("STOPPED")
+					return
+
+				$test_progress.set_value(i + 1)
+
+		# call both post-all-tests methods until postrun_teardown is removed.
+		if(_does_class_name_match(_inner_class_name, the_script.inner_class_name)):
 			test_script.postrun_teardown()
-			# This might end up being very resource intensive if the scripts
-			# don't clean up after themselves.  Might have to consolidate output
-			# into some other structure and kill the script objects with
-			# test_script.free() instead of remove child.
-			remove_child(test_script)
-			#END TESTS IN SCRIPT LOOP
+			test_script.after_all()
 
+		# This might end up being very resource intensive if the scripts
+		# don't clean up after themselves.  Might have to consolidate output
+		# into some other structure and kill the script objects with
+		# test_script.free() instead of remove child.
+		remove_child(test_script)
+		#END TESTS IN SCRIPT LOOP
 		_current_test = null
-		p("\n\n")
-		_ctrls.script_progress.set_value(s + 1)
+		$script_progress.set_value(s + 1)
 		#END TEST SCRIPT LOOP
 
 	_end_run()
-
-
 
 func _pass(text=''):
 	_summary.tally_passed += 1
@@ -552,10 +571,18 @@ func _pass(text=''):
 func _fail(text=''):
 	_summary.tally_failed += 1
 	if(_current_test != null):
-		var line_text = '  at line ' + str(_current_test.line_number)
-		_new_summary.add_fail(_current_test.name, text + "\n    " + line_text)
+		var line_text = ''
+		# Inner classes don't get the line number set so don't print it
+		# since -1 isn't helpful
+		if(_current_test.line_number != -1):
+			line_text = '  at line ' + str(_current_test.line_number)
+			p(line_text, LOG_LEVEL_FAIL_ONLY)
+			# format for summary
+			line_text =  "\n    " + line_text
+
+		_new_summary.add_fail(_current_test.name, text + line_text)
 		_current_test.passed = false
-		p(line_text, LOG_LEVEL_FAIL_ONLY)
+
 	_update_controls()
 
 func _pending(text=''):
@@ -580,7 +607,7 @@ func p(text, level=0, indent=0):
 
 	if(level <= _log_level):
 		if(_current_test != null):
-			#make sure everyting printed during the execution
+			#make sure everything printed during the execution
 			#of a test is at least indented once under the test
 			if(indent == 0):
 				indent = 1
@@ -607,7 +634,7 @@ func p(text, level=0, indent=0):
 
 		_log_text += to_print + "\n"
 
-		_ctrls.text_box.insert_text_at_cursor(to_print + "\n")
+		$text_box.insert_text_at_cursor(to_print + "\n")
 
 ################
 #
@@ -619,14 +646,15 @@ func p(text, level=0, indent=0):
 # Runs all the scripts that were added using add_script
 # ------------------------------------------------------------------------------
 func test_scripts(run_rest=false):
+	_test_collector.set_test_class_prefix(_inner_class_prefix)
 	clear_text()
-	_test_scripts.clear()
+	_test_collector.clear()
 
 	if(run_rest):
-		for idx in range(_ctrls.scripts_drop_down.get_selected(), _ctrls.scripts_drop_down.get_item_count()):
-			_test_scripts.append(_ctrls.scripts_drop_down.get_item_text(idx))
+		for idx in range($scripts_drop_down.get_selected(), $scripts_drop_down.get_item_count()):
+			_test_collector.add_script($scripts_drop_down.get_item_text(idx))
 	else:
-		_test_scripts.append(_ctrls.scripts_drop_down.get_item_text(_ctrls.scripts_drop_down.get_selected()))
+		_test_collector.add_script($scripts_drop_down.get_item_text($scripts_drop_down.get_selected()))
 
 	_test_the_scripts()
 
@@ -635,27 +663,25 @@ func test_scripts(run_rest=false):
 # Runs a single script passed in.
 # ------------------------------------------------------------------------------
 func test_script(script):
-	_test_scripts.clear()
-	_test_scripts.append(script)
+	_test_collector.set_test_class_prefix(_inner_class_prefix)
+	_test_collector.clear()
+	_test_collector.add_script(script)
 	_test_the_scripts()
-	_test_scripts.clear()
 
 # ------------------------------------------------------------------------------
 # Adds a script to be run when test_scripts called
 # ------------------------------------------------------------------------------
 func add_script(script, select_this_one=false):
-	if(_test_scripts.has(script)):
-		return
-
-	_test_scripts.append(script)
-	_ctrls.scripts_drop_down.add_item(script)
+	_test_collector.set_test_class_prefix(_inner_class_prefix)
+	_test_collector.add_script(script)
+	$scripts_drop_down.add_item(script)
 	# Move the run_button in case the size of the path of the script caused the
 	# drop down to resize.
-	_ctrls.run_button.set_position(_ctrls.scripts_drop_down.get_position() + \
-	                           Vector2(_ctrls.scripts_drop_down.get_size().x + 5, 0))
+	$run_button.set_position($scripts_drop_down.get_position() + \
+	                           Vector2($scripts_drop_down.get_size().x + 5, 0))
 
 	if(select_this_one):
-		_ctrls.scripts_drop_down.select(_ctrls.scripts_drop_down.get_item_count() -1)
+		$scripts_drop_down.select($scripts_drop_down.get_item_count() -1)
 
 # ------------------------------------------------------------------------------
 # Add all scripts in the specified directory that start with the prefix and end
@@ -664,29 +690,37 @@ func add_script(script, select_this_one=false):
 # ------------------------------------------------------------------------------
 func add_directory(path, prefix=_file_prefix, suffix=_file_extension):
 	var d = Directory.new()
-	if(!d.dir_exists(path)):
+	# check for '' b/c the calls to addin the exported directories 1-6 will pass
+	# '' if the field has not been populated.  This will cause res:// to be
+	# processed which will include all files if include_subdirectories is true.
+	if(path == '' or !d.dir_exists(path)):
 		return
 	d.open(path)
-	d.list_dir_begin()
+	# true parameter tells list_dir_begin not to include "." and ".." diretories.
+	d.list_dir_begin(true)
 
 	# Traversing a directory is kinda odd.  You have to start the process of listing
 	# the contents of a directory with list_dir_begin then use get_next until it
 	# returns an empty string.  Then I guess you should end it.
-	var thing = d.get_next()
+	var fs_item = d.get_next()
 	var full_path = ''
-	while(thing != ''):
-		full_path = path + "/" + thing
+	while(fs_item != ''):
+		full_path = path.plus_file(fs_item)
+
 		#file_exists returns fasle for directories
 		if(d.file_exists(full_path)):
-			if(thing.begins_with(prefix) and thing.find(suffix) != -1):
+			if(fs_item.begins_with(prefix) and fs_item.find(suffix) != -1):
 				add_script(full_path)
-		thing = d.get_next()
+		elif(get_include_subdirectories() and d.dir_exists(full_path)):
+			add_directory(full_path, prefix, suffix)
+
+		fs_item = d.get_next()
 	d.list_dir_end()
 
 # ------------------------------------------------------------------------------
 # This will try to find a script in the list of scripts to test that contains
 # the specified script name.  It does not have to be a full match.  It will
-# select the first matching occurance so that this script will run when run_tests
+# select the first matching occurrence so that this script will run when run_tests
 # is called.  Works the same as the select_this_one option of add_script.
 #
 # returns whether it found a match or not
@@ -695,9 +729,9 @@ func select_script(script_name):
 	var found = false
 	var idx = 0
 
-	while(idx < _ctrls.scripts_drop_down.get_item_count() and !found):
-		if(_ctrls.scripts_drop_down.get_item_text(idx).find(script_name) != -1):
-			_ctrls.scripts_drop_down.select(idx)
+	while(idx < $scripts_drop_down.get_item_count() and !found):
+		if($scripts_drop_down.get_item_text(idx).find(script_name) != -1):
+			$scripts_drop_down.select(idx)
 			found = true
 		else:
 			idx += 1
@@ -709,6 +743,21 @@ func select_script(script_name):
 # MISC
 #
 ################
+# ------------------------------------------------------------------------------
+# Maximize test runner window to fit the viewport.
+# ------------------------------------------------------------------------------
+func set_should_maximize(should):
+	_should_maximize = should
+
+func get_should_maximize():
+	return _should_maximize
+
+func maximize():
+	if(is_inside_tree()):
+		set_position(title_offset)
+		var vp_size_offset = get_viewport().size - title_offset
+		set_size(vp_size_offset / get_scale())
+
 func disable_strict_datatype_checks(should):
 	_disable_strict_datatype_checks = should
 
@@ -726,8 +775,8 @@ func end_yielded_test():
 # Clears the text of the text box.  This resets all counters.
 # ------------------------------------------------------------------------------
 func clear_text():
-	_ctrls.text_box.set_text("")
-	_ctrls.text_box.clear_colors()
+	$text_box.set_text("")
+	$text_box.clear_colors()
 	update()
 
 # ------------------------------------------------------------------------------
@@ -785,7 +834,7 @@ func get_result_text():
 # ------------------------------------------------------------------------------
 func set_log_level(level):
 	_log_level = level
-	_ctrls.log_level_slider.set_value(level)
+	$log_level_slider.set_value(level)
 
 # ------------------------------------------------------------------------------
 # Get the current log level.
@@ -806,7 +855,7 @@ func pause_before_teardown():
 # ------------------------------------------------------------------------------
 func set_ignore_pause_before_teardown(should_ignore):
 	_ignore_pause_before_teardown = should_ignore
-	_ctrls.ignore_continue_checkbox.set_pressed(should_ignore)
+	$ignore_continue_checkbox.set_pressed(should_ignore)
 
 func get_ignore_pause_before_teardown():
 	return _ignore_pause_before_teardown
@@ -851,7 +900,7 @@ func simulate(obj, times, delta):
 func set_yield_time(time, text=''):
 	_yield_timer.set_wait_time(time)
 	_yield_timer.start()
-	var msg = '/# Yeilding (' + str(time) + 's)'
+	var msg = '/# Yielding (' + str(time) + 's)'
 	if(text == ''):
 		msg += ' #/'
 	else:
@@ -898,8 +947,9 @@ func file_touch(path):
 # ------------------------------------------------------------------------------
 func file_delete(path):
 	var d = Directory.new()
-	d.open(path.get_base_dir())
-	d.remove(path)
+	var result = d.open(path.get_base_dir())
+	if(result == OK):
+		d.remove(path)
 
 # ------------------------------------------------------------------------------
 # Checks to see if the passed in file has any data in it.
@@ -912,11 +962,24 @@ func is_file_empty(path):
 	return empty
 
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_file_as_text(path):
+	var to_return = ''
+	var f = File.new()
+	f.open(path, f.READ)
+	to_return = f.get_as_text()
+	f.close()
+	return to_return
+# ------------------------------------------------------------------------------
 # deletes all files in a given directory
 # ------------------------------------------------------------------------------
 func directory_delete_files(path):
 	var d = Directory.new()
-	d.open(path)
+	var result = d.open(path)
+
+	# SHORTCIRCUIT
+	if(result != OK):
+		return
 
 	# Traversing a directory is kinda odd.  You have to start the process of listing
 	# the contents of a directory with list_dir_begin then use get_next until it
@@ -941,6 +1004,76 @@ func get_current_script_object():
 		to_return = _test_script_objects[-1]
 	return to_return
 
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_stubber():
+	return _stubber
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_doubler():
+	return _doubler
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_spy():
+	return _spy
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_temp_directory():
+	return _temp_directory
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func set_temp_directory(temp_directory):
+	_temp_directory = temp_directory
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_inner_class_name():
+	return _inner_class_name
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func set_inner_class_name(inner_class_name):
+	_inner_class_name = inner_class_name
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_summary():
+	return _new_summary
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_double_strategy():
+	return _double_strategy
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func set_double_strategy(double_strategy):
+	_double_strategy = double_strategy
+	_doubler.set_strategy(double_strategy)
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_include_subdirectories():
+	return _include_subdirectories
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func get_logger():
+	return _lgr
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func set_logger(logger):
+	_lgr = logger
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+func set_include_subdirectories(include_subdirectories):
+	_include_subdirectories = include_subdirectories
 
 # #######################
 # Moved method warnings.

@@ -3,18 +3,18 @@ extends BaseButton
 # SignalButton
 # ------------
 # calls on an emitter node to emit a signal when the button
-# is pressed. the emitter node, signal name, and arguments 
+# is pressed. the emitter node, signal name, and arguments
 # (packed into an array) can be set in the inspector panel.
 
 export(String) var emitter = "Dispatcher"
 export(String) var signal_name
 
-# this will have to be an object, defined manually for each 
+# this will have to be an object, defined manually for each
 # button that needs it (since we can't define vararg functions)
 export(Array) var args
 
 onready var emitter_node = get_node("/root/" + emitter)
-onready var use_signal_name = signal_name if (signal_name != null) else self.name 
+onready var use_signal_name = signal_name if (signal_name != null) else self.name
 
 # we have to explicitly emit an argumentless signal if args
 # is null (meaning we want no arguments), because:

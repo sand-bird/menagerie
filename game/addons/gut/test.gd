@@ -5,7 +5,7 @@
 #The MIT License (MIT)
 #=====================
 #
-#Copyright (c) 2017 Tom "Butch" Wesley
+#Copyright (c) 2019 Tom "Butch" Wesley
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@
 ################################################################################
 extends Node
 
-# constant for signal when calling yeild_for
+# constant for signal when calling yield_for
 const YIELD = 'timeout'
 
 # Need a reference to the instance that is running the tests.  This
@@ -88,6 +88,9 @@ func _init_types_dictionary():
 	types[TYPE_COLOR_ARRAY] = 'TYPE_COLOR_ARRAY'
 	types[TYPE_MAX] = 'TYPE_MAX'
 
+const EDITOR_PROPERTY = PROPERTY_USAGE_SCRIPT_VARIABLE | PROPERTY_USAGE_DEFAULT
+const VARIABLE_PROPERTY = PROPERTY_USAGE_SCRIPT_VARIABLE
+
 # Summary counts for the test.
 var _summary = {
 	asserts = 0,
@@ -100,27 +103,13 @@ var _summary = {
 # This is used to watch signals so we can make assertions about them.
 var _signal_watcher = load('res://addons/gut/signal_watcher.gd').new()
 
+# Convenience copy of _utils.DOUBLE_STRATEGY
+var DOUBLE_STRATEGY = null
+
+var _utils = load('res://addons/gut/utils.gd').new()
 func _init():
 	_init_types_dictionary()
-
-# #######################
-# Virtual Methods
-# #######################
-# Overridable method that runs before each test.
-func setup():
-	pass
-
-# Overridable method that runs after each test
-func teardown():
-	pass
-
-# Overridable method that runs before any tests are run
-func prerun_setup():
-	pass
-
-# Overridable method that runs after all tests are run
-func postrun_teardown():
-	pass
+	DOUBLE_STRATEGY = _utils.DOUBLE_STRATEGY
 
 # ------------------------------------------------------------------------------
 # Fail an assertion.  Causes test and script to fail as well.
@@ -164,12 +153,93 @@ func _do_datatypes_match__fail_if_not(got, expected, text):
 			# print out a warning but do not fail.
 			if([2, 3].has(got_type) and [2, 3].has(expect_type)):
 				if(gut):
-					gut.p(str('Warn:  Float/Int comparison.  Got ', types[got_type], ' but expected ', types[expect_type]), 1)
+					gut.get_logger().warn(str('Warn:  Float/Int comparison.  Got ', types[got_type], ' but expected ', types[expect_type]))
 			else:
 				_fail('Cannot compare ' + types[got_type] + '[' + str(got) + '] to ' + types[expect_type] + '[' + str(expected) + '].  ' + text)
 				passed = false
 
 	return passed
+
+# ------------------------------------------------------------------------------
+# Create a string that lists all the methods that were called on an spied
+# instance.
+# ------------------------------------------------------------------------------
+func _get_desc_of_calls_to_instance(inst):
+	var BULLET = '  * '
+	var calls = gut.get_spy().get_call_list_as_string(inst)
+	# indent all the calls
+	calls = BULLET + calls.replace("\n", "\n" + BULLET)
+	# remove trailing newline and bullet
+	calls = calls.substr(0, calls.length() - BULLET.length() - 1)
+	return "Calls made on " + str(inst) + "\n" + calls
+
+# ------------------------------------------------------------------------------
+# Signal assertion helper.  Do not call directly, use _can_make_signal_assertions
+# ------------------------------------------------------------------------------
+func _fail_if_does_not_have_signal(object, signal_name):
+	var did_fail = false
+	if(!_signal_watcher.does_object_have_signal(object, signal_name)):
+		_fail(str('Object ', object, ' does not have the signal [', signal_name, ']'))
+		did_fail = true
+	return did_fail
+# ------------------------------------------------------------------------------
+# Signal assertion helper.  Do not call directly, use _can_make_signal_assertions
+# ------------------------------------------------------------------------------
+func _fail_if_not_watching(object):
+	var did_fail = false
+	if(!_signal_watcher.is_watching_object(object)):
+		_fail(str('Cannot make signal assertions because the object ', object, \
+		          ' is not being watched.  Call watch_signals(some_object) to be able to make assertions about signals.'))
+		did_fail = true
+	return did_fail
+
+# ------------------------------------------------------------------------------
+# Returns text that contains original text and a list of all the signals that
+# were emitted for the passed in object.
+# ------------------------------------------------------------------------------
+func _get_fail_msg_including_emitted_signals(text, object):
+	return str(text," (Signals emitted: ", _signal_watcher.get_signals_emitted(object), ")")
+
+# #######################
+# Virtual Methods
+# #######################
+
+# Overridable method that runs before each test.
+func setup():
+	pass
+
+# Overridable method that runs after each test
+func teardown():
+	pass
+
+# Overridable method that runs before any tests are run
+func prerun_setup():
+	pass
+
+# Overridable method that runs after all tests are run
+func postrun_teardown():
+	pass
+
+# alias for prerun_setup
+func before_all():
+	pass
+
+# alias for setup
+func before_each():
+	pass
+
+# alias for postrun_teardown
+func after_all():
+	pass
+
+# alias for teardown
+func after_each():
+	pass
+
+# #######################
+# Public
+# #######################
+
 
 # ------------------------------------------------------------------------------
 # Asserts that the expected value equals the value got.
@@ -192,6 +262,29 @@ func assert_ne(got, not_expected, text=""):
 			_fail(disp)
 		else:
 			_pass(disp)
+
+# ------------------------------------------------------------------------------
+# Asserts that the expected value almost equals the value got.
+# ------------------------------------------------------------------------------
+func assert_almost_eq(got, expected, error_interval, text=''):
+	var disp = "[" + str(got) + "] expected to equal [" + str(expected) + "] +/- [" + str(error_interval) + "]:  " + text
+	if(_do_datatypes_match__fail_if_not(got, expected, text) and _do_datatypes_match__fail_if_not(got, error_interval, text)):
+		if(got < (expected - error_interval) or got > (expected + error_interval)):
+			_fail(disp)
+		else:
+			_pass(disp)
+
+# ------------------------------------------------------------------------------
+# Asserts that the expected value does not almost equal the value got.
+# ------------------------------------------------------------------------------
+func assert_almost_ne(got, not_expected, error_interval, text=''):
+	var disp = "[" + str(got) + "] expected to not equal [" + str(not_expected) + "] +/- [" + str(error_interval) + "]:  " + text
+	if(_do_datatypes_match__fail_if_not(got, not_expected, text) and _do_datatypes_match__fail_if_not(got, error_interval, text)):
+		if(got < (not_expected - error_interval) or got > (not_expected + error_interval)):
+			_pass(disp)
+		else:
+			_fail(disp)
+
 # ------------------------------------------------------------------------------
 # Asserts got is greater than expected
 # ------------------------------------------------------------------------------
@@ -336,25 +429,45 @@ func assert_get_set_methods(obj, property, default, set_to):
 	obj.call(set, set_to)
 	assert_eq(obj.call(get), set_to, 'The set value should have been returned.')
 
+# Alias for assert_get_set_methods
+func assert_accessors(obj, property, default, set_to):
+	assert_get_set_methods(obj, property, default, set_to)
+
+# ---------------------------------------------------------------------------
+# Property search helper.  Used to retrieve Dictionary of specified property
+# from passed object. Returns null if not found.
+# If provided, property_usage constrains the type of property returned by
+# passing either:
+# EDITOR_PROPERTY for properties defined as: export(int) var some_value
+# VARIABLE_PROPERTY for properties definded as: var another_value
+# ---------------------------------------------------------------------------
+func _find_object_property(obj, property_name, property_usage=null):
+	var result = null
+	var found = false
+	var properties = obj.get_property_list()
+
+	while !found and !properties.empty():
+		var property = properties.pop_back()
+		if property['name'] == property_name:
+			if property_usage == null or property['usage'] == property_usage:
+				result = property
+				found = true
+	return result
+
 # ------------------------------------------------------------------------------
-# Signal assertion helper.  Do not call directly, use _can_make_signal_assertions
+# Asserts a class exports a variable.
 # ------------------------------------------------------------------------------
-func _fail_if_does_not_have_signal(object, signal_name):
-	var did_fail = false
-	if(!_signal_watcher.does_object_have_signal(object, signal_name)):
-		_fail(str('Object ', object, ' does not have the signal [', signal_name, ']'))
-		did_fail = true
-	return did_fail
-# ------------------------------------------------------------------------------
-# Signal assertion helper.  Do not call directly, use _can_make_signal_assertions
-# ------------------------------------------------------------------------------
-func _fail_if_not_watching(object):
-	var did_fail = false
-	if(!_signal_watcher.is_watching_object(object)):
-		_fail(str('Cannot make signal assertions because the object ', object, \
-		          ' is not being watched.  Call watch_signals(some_object) to be able to make assertions about signals.'))
-		did_fail = true
-	return did_fail
+func assert_exports(obj, property_name, type):
+	var disp = 'expected %s to have editor property [%s]' % [obj, property_name]
+	var property = _find_object_property(obj, property_name, EDITOR_PROPERTY)
+	if property != null:
+		disp += ' of type [%s]. Got type [%s].' % [types[type], types[property['type']]]
+		if property['type'] == type:
+			_pass(disp)
+		else:
+			_fail(disp)
+	else:
+		_fail(disp)
 
 # ------------------------------------------------------------------------------
 # Signal assertion helper.
@@ -385,7 +498,7 @@ func assert_signal_emitted(object, signal_name, text=""):
 		if(_signal_watcher.did_emit(object, signal_name)):
 			_pass(disp)
 		else:
-			_fail(disp)
+			_fail(_get_fail_msg_including_emitted_signals(disp, object))
 
 # ------------------------------------------------------------------------------
 # Asserts that a signal has not been emitted.
@@ -420,7 +533,8 @@ func assert_signal_emitted_with_parameters(object, signal_name, parameters, inde
 			else:
 				_fail(str(disp, parms_got))
 		else:
-			_fail(str('Object ', object, ' did not emit signal [', signal_name, ']'))
+			var text = str('Object ', object, ' did not emit signal [', signal_name, ']')
+			_fail(_get_fail_msg_including_emitted_signals(text, object))
 
 # ------------------------------------------------------------------------------
 # Assert that a signal has been emitted a specific number of times.
@@ -436,7 +550,7 @@ func assert_signal_emit_count(object, signal_name, times, text=""):
 		if(count== times):
 			_pass(disp)
 		else:
-			_fail(disp)
+			_fail(_get_fail_msg_including_emitted_signals(disp, object))
 
 # ------------------------------------------------------------------------------
 # Assert that the passed in object has the specfied signal
@@ -487,6 +601,10 @@ func assert_extends(object, a_class, text=''):
 				_pass(disp)
 			else:
 				_fail(disp)
+
+# Alias for assert_extends
+func assert_is(object, a_class, text=''):
+	assert_extends(object, a_class, text)
 
 # ------------------------------------------------------------------------------
 # Assert that text contains given search string.
@@ -550,6 +668,86 @@ func assert_string_ends_with(text, search, match_case=true):
 			_fail(disp)
 
 # ------------------------------------------------------------------------------
+# Assert that a method was called on an instance of a doubled class.  If
+# parameters are supplied then the params passed in when called must match.
+# TODO make 3rd paramter "param_or_text" and add fourth parameter of "text" and
+#      then work some magic so this can have a "text" parameter without being
+#      annoying.
+# ------------------------------------------------------------------------------
+func assert_called(inst, method_name, parameters=null):
+	var disp = str('Expected [',method_name,'] to have been called on ',inst)
+
+	if(!inst.get('__gut_metadata_')):
+		_fail('You must pass a doubled instance to assert_called.  Check the wiki for info on using double.')
+	else:
+		if(gut.get_spy().was_called(inst, method_name, parameters)):
+			_pass(disp)
+		else:
+			if(parameters != null):
+				disp += str(' with parameters ', parameters)
+			_fail(str(disp, "\n", _get_desc_of_calls_to_instance(inst)))
+
+# ------------------------------------------------------------------------------
+# Assert that a method was not called on an instance of a doubled class.  If
+# parameters are specified then this will only fail if it finds a call that was
+# sent matching parameters.
+# ------------------------------------------------------------------------------
+func assert_not_called(inst, method_name, parameters=null):
+	var disp = str('Expected [', method_name, '] to NOT have been called on ', inst)
+
+	if(!inst.get('__gut_metadata_')):
+		_fail('You must pass a doubled instance to assert_not_called.  Check the wiki for info on using double.')
+	else:
+		if(gut.get_spy().was_called(inst, method_name, parameters)):
+			if(parameters != null):
+				disp += str(' with parameters ', parameters)
+			_fail(str(disp, "\n", _get_desc_of_calls_to_instance(inst)))
+		else:
+			_pass(disp)
+
+# ------------------------------------------------------------------------------
+# Assert that a method on an instance of a doubled class was called a number
+# of times.  If parameters are specified then only calls with matching
+# parameter values will be counted.
+# ------------------------------------------------------------------------------
+func assert_call_count(inst, method_name, expected_count, parameters=null):
+	var count = gut.get_spy().call_count(inst, method_name, parameters)
+
+	var param_text = ''
+	if(parameters):
+		param_text = ' with parameters ' + str(parameters)
+	var disp = 'Expected [%s] on %s to be called [%s] times%s.  It was called [%s] times.'
+	disp = disp % [method_name, inst, expected_count, param_text, count]
+
+	if(!inst.get('__gut_metadata_')):
+		_fail('You must pass a doubled instance to assert_call_count.  Check the wiki for info on using double.')
+	else:
+		if(count == expected_count):
+			_pass(disp)
+		else:
+			_fail(str(disp, "\n", _get_desc_of_calls_to_instance(inst)))
+
+# ------------------------------------------------------------------------------
+# Asserts the passed in value is null
+# ------------------------------------------------------------------------------
+func assert_null(got, text=''):
+	var disp = str('Expected [', got, '] to be NULL:  ', text)
+	if(got == null):
+		_pass(disp)
+	else:
+		_fail(disp)
+
+# ------------------------------------------------------------------------------
+# Asserts the passed in value is null
+# ------------------------------------------------------------------------------
+func assert_not_null(got, text=''):
+	var disp = str('Expected [', got, '] to be anything but NULL:  ', text)
+	if(got == null):
+		_fail(disp)
+	else:
+		_pass(disp)
+
+# ------------------------------------------------------------------------------
 # Mark the current test as pending.
 # ------------------------------------------------------------------------------
 func pending(text=""):
@@ -567,16 +765,28 @@ func pending(text=""):
 # is not being watched.
 # ------------------------------------------------------------------------------
 
-# I think this reads better than set_yield_time, but don't want to break anything
+# ------------------------------------------------------------------------------
+# Yield for the time sent in.  The optional message will be printed when
+# Gut detects the yeild.  When the time expires the YIELD signal will be
+# emitted.
+# ------------------------------------------------------------------------------
 func yield_for(time, msg=''):
 	return gut.set_yield_time(time, msg)
 
+# ------------------------------------------------------------------------------
+# Yield to a signal or a maximum amount of time, whichever comes first.  When
+# the conditions are met the YIELD signal will be emitted.
+# ------------------------------------------------------------------------------
 func yield_to(obj, signal_name, max_wait, msg=''):
 	watch_signals(obj)
 	gut.set_yield_signal_or_time(obj, signal_name, max_wait, msg)
 
 	return gut
 
+# ------------------------------------------------------------------------------
+# Ends a test that had a yield in it.  You only need to use this if you do
+# not make assertions after a yield.
+# ------------------------------------------------------------------------------
 func end_test():
 	gut.end_yielded_test()
 
@@ -598,6 +808,14 @@ func get_assert_count():
 func clear_signal_watcher():
 	_signal_watcher.clear()
 
+func get_double_strategy():
+	return gut.get_doubler().get_strategy()
+
+func set_double_strategy(double_strategy):
+	gut.get_doubler().set_strategy(double_strategy)
+
+func pause_before_teardown():
+	gut.pause_before_teardown()
 # ------------------------------------------------------------------------------
 # Convert the _summary dictionary into text
 # ------------------------------------------------------------------------------
@@ -609,3 +827,83 @@ func get_summary_text():
 	if(_summary.failed > 0):
 		to_return += str("\n  ", _summary.failed, ' failed.')
 	return to_return
+
+# ------------------------------------------------------------------------------
+# Double a script, inner class, or scene using a path or a loaded script/scene.
+#
+#
+# ------------------------------------------------------------------------------
+func double(thing, p2=null, p3=null):
+	var strategy = p2
+	var subpath = null
+
+	if(typeof(p2) == TYPE_STRING):
+		strategy = p3
+		subpath = p2
+
+	var path = null
+	if(typeof(thing) == TYPE_OBJECT):
+		path = thing.resource_path
+	else:
+		path = thing
+
+	var extension = path.get_extension()
+	var to_return = null
+
+	if(extension == 'tscn'):
+		to_return =  double_scene(path, strategy)
+	elif(extension == 'gd'):
+		if(subpath == null):
+			to_return = double_script(path, strategy)
+		else:
+			to_return = double_inner(path, subpath, strategy)
+
+	return to_return
+
+# ------------------------------------------------------------------------------
+# Specifically double a scene
+# ------------------------------------------------------------------------------
+func double_scene(path, strategy=null):
+	var override_strat = _utils.nvl(strategy, gut.get_doubler().get_strategy())
+	return gut.get_doubler().double_scene(path, override_strat)
+
+# ------------------------------------------------------------------------------
+# Specifically double a script
+# ------------------------------------------------------------------------------
+func double_script(path, strategy=null):
+	var override_strat = _utils.nvl(strategy, gut.get_doubler().get_strategy())
+	return gut.get_doubler().double(path, override_strat)
+
+# ------------------------------------------------------------------------------
+# Specifically double an Inner class in a a script
+# ------------------------------------------------------------------------------
+func double_inner(path, subpath, strategy=null):
+	var override_strat = _utils.nvl(strategy, gut.get_doubler().get_strategy())
+	return gut.get_doubler().double_inner(path, subpath, override_strat)
+
+# ------------------------------------------------------------------------------
+# Stub something.
+#
+# Parameters
+# 1: the thing to stub, a file path or a instance or a class
+# 2: either an inner class subpath or the method name
+# 3: the method name if an inner class subpath was specified
+# NOTE:  right now we cannot stub inner classes at the path level so this should
+#        only be called with two parameters.  I did the work though so I'm going
+#        to leave it but not update the wiki.
+# ------------------------------------------------------------------------------
+func stub(thing, p2, p3=null):
+	var method_name = p2
+	var subpath = null
+	if(p3 != null):
+		subpath = p2
+		method_name = p3
+	var sp = _utils.StubParams.new(thing, method_name, subpath)
+	gut.get_stubber().add_stub(sp)
+	return sp
+
+# ------------------------------------------------------------------------------
+# convenience wrapper.
+# ------------------------------------------------------------------------------
+func simulate(obj, times, delta):
+	gut.simulate(obj, times, delta)
