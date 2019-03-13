@@ -2,7 +2,7 @@ extends Node
 
 const BASE_DIR = "res://data"
 const MOD_DIR = "res://mods"
-const DATA_EXT= "data"
+const DATA_EXT= "json"
 const SCHEMA_EXT = "schema"
 
 # -----------------------------------------------------------

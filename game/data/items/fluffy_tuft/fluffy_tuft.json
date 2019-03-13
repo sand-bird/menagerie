@@ -1,5 +1,5 @@
 {
-  "id": "fluffy_tuft", 
+  "id": "fluffy_tuft",
   "type": "item",
   "category": "resource",
   "name": {
@@ -11,3 +11,4 @@
   "icon": "~/fluffy_tuft.png",
   "value": 45
 }
+
