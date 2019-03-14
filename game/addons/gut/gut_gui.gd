@@ -28,7 +28,7 @@
 # This class contains all the GUI creation code for Gut.  It was split out and
 # hopefully can be moved to a scene in the future.
 ################################################################################
-extends WindowDialog
+extends Control
 
 # various counters.  Most have been moved to the Summary object but not all.
 var _summary = {

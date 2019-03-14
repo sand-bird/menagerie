@@ -2,8 +2,7 @@
 
 [ext_resource path="res://addons/gut/gut.gd" type="Script" id=1]
 
-[node name="gut_control" type="WindowDialog"]
-visible = true
+[node name="gut_control" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -400.0
@@ -21,8 +20,14 @@ readonly = true
 syntax_highlighting = true
 
 [node name="run_button" type="Button" parent="."]
-margin_right = 12.0
-margin_bottom = 20.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 176.0
+margin_top = -28.0
+margin_right = 212.0
+margin_bottom = -8.0
+rect_min_size = Vector2( 40, 20 )
+text = "Run"
 
 [node name="copy_button" type="Button" parent="."]
 anchor_left = 1.0
@@ -89,8 +94,13 @@ margin_right = 16.0
 margin_bottom = 16.0
 
 [node name="scripts_drop_down" type="OptionButton" parent="."]
-margin_right = 41.0
-margin_bottom = 20.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = -28.0
+margin_right = 168.0
+margin_bottom = -8.0
+rect_min_size = Vector2( 160, 20 )
 
 [node name="next_button" type="Button" parent="."]
 margin_right = 12.0
@@ -107,29 +117,32 @@ margin_bottom = 20.0
 [node name="script_progress" type="ProgressBar" parent="."]
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_left = 44.0
+margin_left = 54.0
 margin_top = -76.0
-margin_right = 160.0
-margin_bottom = -76.0
+margin_right = 214.0
+margin_bottom = -62.0
 rect_min_size = Vector2( 160, 12 )
 
 [node name="label" type="Label" parent="script_progress"]
+margin_right = -4.0
 margin_bottom = 14.0
 grow_horizontal = 0
-text = "Script:"
+text = "Scripts: "
 align = 2
 
 [node name="test_progress" type="ProgressBar" parent="."]
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_left = 44.0
+margin_left = 54.0
 margin_top = -92.0
-margin_bottom = -92.0
+margin_right = 214.0
+margin_bottom = -78.0
 rect_min_size = Vector2( 160, 12 )
 
 [node name="Label" type="Label" parent="test_progress"]
+margin_right = -4.0
 grow_horizontal = 0
-text = "Test:"
+text = "Tests:"
 align = 2
 
 [node name="runtime_label" type="Label" parent="."]

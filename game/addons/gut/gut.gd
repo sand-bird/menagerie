@@ -390,7 +390,7 @@ func _end_run():
 	update()
 	_update_controls()
 	emit_signal(SIGNAL_TESTS_FINISHED)
-	set_title("Finished.  " + str(get_fail_count()) + " failures.")
+#	set_title("Finished.  " + str(get_fail_count()) + " failures.")
 
 # ------------------------------------------------------------------------------
 # Checks the passed in thing to see if it is a "function state" object that gets
@@ -451,7 +451,7 @@ func _test_the_scripts():
 	for s in range(_test_collector.scripts.size()):
 		var the_script = _test_collector.scripts[s]
 		if(the_script.tests.size() > 0):
-			set_title('Running:  ' + the_script.get_full_name())
+#			set_title('Running:  ' + the_script.get_full_name())
 			_print_script_heading(the_script)
 			_new_summary.add_script(the_script.get_full_name())
 
