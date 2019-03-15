@@ -3,19 +3,10 @@
 [ext_resource path="res://ui/arrows.gd" type="Script" id=1]
 [ext_resource path="res://assets/other/old/arrow_big.png" type="Texture" id=2]
 
-[sub_resource type="StyleBoxEmpty" id=3]
+[sub_resource type="StyleBoxEmpty" id=1]
 
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
-
-[sub_resource type="Animation" id=1]
-
-resource_name = "bob"
-length = 1.0
+[sub_resource type="Animation" id=2]
 loop = true
-step = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:offset")
 tracks/0/interp = 0
@@ -29,18 +20,10 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( -1, 0 ), Vector2( 0, 0 ) ]
 }
 
-[sub_resource type="StyleBoxEmpty" id=4]
+[sub_resource type="StyleBoxEmpty" id=3]
 
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
-
-[sub_resource type="Animation" id=2]
-
-length = 1.0
+[sub_resource type="Animation" id=4]
 loop = true
-step = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:offset")
 tracks/0/interp = 0
@@ -55,66 +38,30 @@ tracks/0/keys = {
 }
 
 [node name="arrows" type="Control"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
 margin_right = 107.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 script = ExtResource( 1 )
 
-[node name="left" type="Button" parent="." index="0"]
-
-anchor_left = 0.0
+[node name="left" type="Button" parent="."]
 anchor_top = 0.5
-anchor_right = 0.0
 anchor_bottom = 0.5
 margin_left = -20.0
 margin_top = -10.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-custom_styles/focus = SubResource( 3 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
+custom_styles/focus = SubResource( 1 )
 flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
-[node name="sprite" type="Sprite" parent="left" index="0"]
-
+[node name="sprite" type="Sprite" parent="left"]
 texture = ExtResource( 2 )
 centered = false
 flip_h = true
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
 
-[node name="anim" type="AnimationPlayer" parent="left/sprite" index="0"]
-
-root_node = NodePath("..")
+[node name="anim" type="AnimationPlayer" parent="left/sprite"]
 autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
 playback_speed = 0.6
-anims/bob = SubResource( 1 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
+anims/bob = SubResource( 2 )
 
-[node name="right" type="Button" parent="." index="1"]
-
+[node name="right" type="Button" parent="."]
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -123,37 +70,15 @@ margin_top = -10.0
 margin_right = 20.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 20, 19 )
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-custom_styles/focus = SubResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
+custom_styles/focus = SubResource( 3 )
 flat = true
-align = 1
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "custom_styles" ]
 
-[node name="sprite" type="Sprite" parent="right" index="0"]
-
+[node name="sprite" type="Sprite" parent="right"]
 texture = ExtResource( 2 )
 centered = false
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Grow Direction", "Hint", "Margin", "Mouse", "Offset", "Rect", "Region", "Transform" ]
 
-[node name="anim" type="AnimationPlayer" parent="right/sprite" index="0"]
-
-root_node = NodePath("..")
+[node name="anim" type="AnimationPlayer" parent="right/sprite"]
 autoplay = "bob"
-playback_process_mode = 1
-playback_default_blend_time = 0.0
 playback_speed = 0.6
-anims/bob = SubResource( 2 )
-blend_times = [  ]
-_sections_unfolded = [ "Playback Options" ]
-
+anims/bob = SubResource( 4 )
 
