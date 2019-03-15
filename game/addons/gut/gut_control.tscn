@@ -5,8 +5,8 @@
 [node name="gut_control" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -400.0
-margin_bottom = -300.0
+margin_right = 80.0
+margin_bottom = 104.0
 rect_min_size = Vector2( 400, 300 )
 script = ExtResource( 1 )
 
@@ -92,6 +92,7 @@ text = "Ignore pauses"
 [node name="log_level_slider" type="HSlider" parent="."]
 margin_right = 16.0
 margin_bottom = 16.0
+ticks_on_borders = true
 
 [node name="scripts_drop_down" type="OptionButton" parent="."]
 anchor_top = 1.0

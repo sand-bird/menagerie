@@ -1,4 +1,7 @@
 extends "res://addons/gut/test.gd"
+
+const Validator = preload("res://system/validator.gd")
+
 func before_each():
 	gut.p("ran setup", 2)
 

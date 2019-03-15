@@ -110,7 +110,7 @@ var dest
 
 func _ready():
 #	connect("draw", self, "update_z")
-	Dispatcher.connect("tick_changed", self, "_update_drives", [])
+	Dispatcher.connect('tick_changed', self, '_update_drives', [])
 #	Dispatcher.connect("set_dest", self, "set_dest")
 	update_z()
 	set_physics_process(true)
@@ -129,10 +129,10 @@ func set_position(pos):
 
 func initialize(data):
 	deserialize(data)
-	var size = Data.get([type, "size"])
+	var size = Data.get([type, 'size'])
 	$shape.shape.radius = size
 	$shape.position.y -= size
-	var anim_data = Data.get([type, "morphs", morph, "animations"])
+	var anim_data = Data.get([type, 'morphs', morph, 'animations'])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
 		play_animation(Anim.LIE_DOWN)
@@ -206,7 +206,7 @@ func _update_drives() -> void:
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)
 #	social += calc_social_delta()
-	emit_signal("drives_changed")
+	emit_signal('drives_changed')
 
 # -----------------------------------------------------------
 
@@ -367,11 +367,11 @@ func _on_action_finished():
 # ----------------------------------------------------------- #
 
 const SAVE_KEYS = [
-	"monster_name", "type", "morph",
-	"birthday", "mother", "father",
-	"traits", "preferences",
-	"belly", "mood", "energy", "social",
-	"past_actions", "current_action", "next_action"
+	'monster_name', 'type', 'morph',
+	'birthday', 'mother', 'father',
+	'traits', 'preferences',
+	'belly', 'mood', 'energy', 'social',
+	'past_actions', 'current_action', 'next_action'
 ]
 
 # -----------------------------------------------------------

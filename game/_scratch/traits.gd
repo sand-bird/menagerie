@@ -2,7 +2,7 @@ extends Object
 
 class Trait:
 	signal value_changed
-	
+
 	# defaults for trait properties
 	var name = ""
 	var max_value = 100
@@ -11,16 +11,16 @@ class Trait:
 	var high_threshold = 80
 	var title_low = ""
 	var low_threshold = 20
-	
+
 	var orig_value = 0 setget _set_orig
 	var value = 0 setget _set_value
-	
+
 	func get_portion ():
 		return round(value / max_value)
-	
+
 	func get_increase ():
 		return value - orig_value
-	
+
 	func calc_initial_value (monster):
 		var v
 		if monster.father and monster.mother:
@@ -36,20 +36,20 @@ class Trait:
 		orig_value = v
 		print("baby's ", name, " is ", value)
 		pass
-	
+
 	func load_value (data):
 		value = data.value
 		orig_value = data.orig_value
-	
+
 	func _set_value (val):
 		value = val
 		emit_signal("value_changed", name, val)
 		print(name, ", ", val)
-	
-	func _set_orig (val): 
+
+	func _set_orig (val):
 		print("Error: can't change original value! (", orig_value, ")")
 		pass
-	
+
 	func serialize():
 		return {
 			orig_value = orig_value,
@@ -72,7 +72,7 @@ class Iq extends Trait:
 		high_threshold = 150
 		title_low = "dim-witted"
 		low_threshold = 50
-	
+
 	func init_value():
 		pass
 
@@ -86,7 +86,7 @@ class Learning extends Trait:
 		high_threshold = 80
 		title_low = "callow"
 		low_threshold = 20
-	
+
 	func init_value():
 		value = 0
 		orig_value = 0
@@ -282,11 +282,11 @@ class Happiness extends Trait:
 		max_value = 0
 		high_threshold = 0
 		low_threshold = 0
-	
+
 	func get_portion():
 		# this needs to be special since we don't really have a max happiness
 		pass
-	
+
 	func init_value():
 		value = 0
 		orig_value = 0
@@ -298,7 +298,7 @@ class Actualization extends Trait:
 		max_value = 0
 		high_threshold = 0
 		low_threshold = 0
-	
+
 	func init_value():
 		value = 0
 		orig_value = 0
@@ -310,7 +310,7 @@ class Loyalty extends Trait:
 		max_value = 10
 		high_threshold = 0
 		low_threshold = 0
-	
+
 	func init_value():
 		value = 0
 		orig_value = 0
