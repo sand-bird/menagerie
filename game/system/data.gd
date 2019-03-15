@@ -4,6 +4,7 @@ const BASE_DIR = "res://data"
 const MOD_DIR = "res://mods"
 const DATA_EXT= "json"
 const SCHEMA_EXT = "schema"
+const Validator = preload("res://system/validator.gd")
 
 # -----------------------------------------------------------
 
@@ -24,7 +25,25 @@ const SCHEMA_EXT = "schema"
 var schemas = {}
 var data = {}
 
-func _ready(): pass
+func _ready():
+	var val = Validator.new()
+	print('validator validate')
+	val.validate({
+		"category":"food",
+			"description":
+				{"en":""},
+			"icon":"breadfruit.png",
+			"id":"breadfruit",
+			"name":{"en":"Breadfruit"},
+			"sources":[{"id":"menagerie","version":"0.1.0"}],
+			"type":"item",
+			"value":18
+		}, {
+			"type": "string",
+			"sources":[{"id":"yourmom","version":"99.0"}],
+		}, "breadfruit")
+	val.validate("hello world", {"maxLength": "a"}, "xyz")
+	pass
 #	init()
 
 func init():

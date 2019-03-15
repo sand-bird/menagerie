@@ -10,19 +10,62 @@ const messages = {
 	type_mismatch_plural = "is the wrong type (should be one of %s, but is %s).",
 	enum_mismatch = "does not have an acceptable value (should be one of %s, but is %s).",
 	const_mismatch = "has the wrong value (should be %s, but is %s).",
-	max_length_exceeded = "is too long (should be under %s characters, but is %s).",
-	min_length_not_met = "",
+	max_length_exceeded = "is too long (should be up to %s characters, but is %s).",
+	min_length_not_met = "is too short (should be at least %s characters, but is %s).",
+	not_divisible = "should be divisible by %s, but is not (remainder: %s).",
+	maximum_exceeded = "is too large (should be at most %s, but is %s)."
 }
 
 # -----------------------------------------------------------
 
-func report(result, message_key, message_args, breadcrumb, sources):
+# if the result is false (meaning error), we report it using
+# the given arguments, then pass it along.
+# - message_key: some key in our `messages` dict, for getting
+#     the error message.
+# - message_args: passed to the message we get after looking
+#     up `message_key`. currently we don't verify whether the
+#     number of args matches up... so, uh, be careful
+# - breadcrumb: eg, 'pufig.morphs.pink'; identifies the thing
+#     that failed validation. goes in front of our message
+# - sources: when data is loaded, each mod that contributes
+#     to a data definition is added to its 'sources' array.
+#     the dict we see here has 'data' and 'schema' keys with
+#     the sources array for each, corresponding to the ROOT
+#     of the breadcrumb (eg 'pufig').
+func report(result: bool, message_key: String, message_args: Array,
+		breadcrumb: String, sources: Dictionary) -> bool:
 	if !result:
 		var message = str("'", breadcrumb, "' ",
 				messages[message_key] % message_args)
+
+		if 'data' in sources:
+			message += " | data " + sources_to_string(sources.data)
+		if 'schema' in sources:
+			message += " | schema " + sources_to_string(sources.schema)
+
 		Log.error(self, message)
-		print(message)
+		print("validation error: ", message)
 	return result
+
+# -----------------------------------------------------------
+
+func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
+	var message = str("schema warning: found bad keyword '", key,
+			"' when testing '", breadcrumb, "'.")
+
+	if 'schema' in sources:
+		message += " | " + sources_to_string(sources.schema)
+
+	Log.warn(self, message)
+	print(message)
+
+# -----------------------------------------------------------
+
+func sources_to_string(sources: Array) -> String:
+	var source_strings: PoolStringArray = []
+	for i in sources.size():
+		source_strings.append(str(sources[i].id, " (v", sources[i].version, ")"))
+	return str("sources: ", source_strings.join(", "))
 
 # -----------------------------------------------------------
 
@@ -36,6 +79,12 @@ func get_type(data):
 		TYPE_STRING: 'string',
 		TYPE_BOOL: 'boolean'
 	}[typeof(data)]
+
+# -----------------------------------------------------------
+
+# sigh
+func is_number(x):
+	return x is int or x is float
 
 # -----------------------------------------------------------
 
@@ -74,69 +123,92 @@ func deep_equals(a, b):
 #
 # -----------------------------------------------------------
 
-func validate(data, schema, breadcrumb = "", sources = {}):
+func validate(data, schema: Dictionary, breadcrumb: String = "",
+		sources: Dictionary = {}) -> bool:
 	var result = true
 	var data_type = get_type(data)
+
+	if 'sources' in data and data.sources:
+		sources.data = data.sources
+	if 'sources' in schema and schema.sources:
+		sources.schema = schema.sources
+
+	# any-type validation
 	if 'type' in schema:
 		if schema.type is String:
-			result &= report(
+			result = result && report(
 				matches_type(data, schema.type),
 				'type_mismatch_single', [schema.type, data_type],
 				breadcrumb, sources
 			)
 		elif schema.type is Array:
-			result &= report(
+			result = result && report(
 				matches_any(data, schema.type, 'matches_type'),
 				'type_mismatch_plural', [schema.type, data_type],
 				breadcrumb, sources
 			)
-	if 'enum' in schema:
-		result &= report(
+	if 'enum' in schema and schema.enum is Array and !schema.enum.empty():
+		result = result && report(
 			matches_any(data, schema.enum, 'deep_equals'),
 			'enum_mismatch', [schema.enum, data],
 			breadcrumb, sources
 		)
 	if 'const' in schema:
-		result &= report(
+		result = result && report(
 			deep_equals(data, schema.const),
 			'const_mismatch', [schema.const, data],
 			breadcrumb, sources
 		)
+
+	# call specialized validators
 	var type_fn = str('validate_', data_type)
 	if has_method(type_fn):
-		result &= call(type_fn, data, schema, breadcrumb, sources)
+		result = result && call(type_fn, data, schema, breadcrumb, sources)
 	return result
 
 # -----------------------------------------------------------
 
-func validate_number(data, schema, breadcrumb = "", sources = {}):
+func validate_integer(data, schema, breadcrumb, sources) -> bool:
+	return validate_number(data, schema, breadcrumb, sources)
+
+func validate_number(data, schema: Dictionary,
+		breadcrumb: String = "", sources: Dictionary = {}) -> bool:
 	var result = true
-	if 'multipleOf' in schema and (schema.multipleOf is int
-			or schema.multipleOf is float):
-		result &= report(
+	if 'multipleOf' in schema and is_number(schema.multipleOf):
+		result = result && report(
 			data % schema.multipleOf == 0,
-			'not_divisible', [data, schema.multipleOf],
+			'not_divisible', [schema.multipleOf, data % schema.multipleOf],
+			breadcrumb, sources)
+	if 'maximum' in schema and is_number(schema.maximum):
+		result = result && report(
+			data <= schema.maximum,
+			'maximum_exceeded', [schema.maximum, data],
 			breadcrumb, sources)
 	return result
 
 # -----------------------------------------------------------
 
-func validate_string(data, schema, breadcrumb = "", sources = {}):
+func validate_string(data: String, schema: Dictionary,
+		breadcrumb: String = "", sources: Dictionary = {}) -> bool:
 	var result = true
 	if 'maxLength' in schema:
-		result &= report(
-			data.length() < schema.maxLength,
-			'max_length_exceeded', [schema.maxLength, data.length],
-			breadcrumb, sources
-		)
+		if schema.maxLength is int and schema.maxLength >= 0:
+			result = result && report(
+				data.length() < schema.maxLength,
+				'max_length_exceeded', [schema.maxLength, data.length],
+				breadcrumb, sources
+			)
+		else: warn_schema('maxLength', breadcrumb, sources)
 	if 'minLength' in schema:
-		result &= report(
-			data.length() > schema.minLength,
-			'min_length_not_met', [schema.minLength, data.length],
-			breadcrumb, sources
-		)
+		if schema.maxLength is int and schema.maxLength >= 0:
+			result = result && report(
+				data.length() > schema.minLength,
+				'min_length_not_met', [schema.minLength, data.length],
+				breadcrumb, sources
+			)
+		else: warn_schema('minLength', breadcrumb, sources)
 	if 'pattern' in schema:
-		result &= report(
+		result = result && report(
 			data.match(schema.pattern),
 			'pattern_not_matched', [data, schema.pattern],
 			breadcrumb, sources
