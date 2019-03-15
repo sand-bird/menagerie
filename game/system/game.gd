@@ -2,13 +2,6 @@ extends Node
 
 var garden
 
-const validator = preload('res://system/validator.gd')
-
-var test
-
-func test():
-	return 'test1'
-
 func _ready():
 	Dispatcher.connect("new_game", self, "new_game")
 	Dispatcher.connect("load_game", self, "load_game")
@@ -16,7 +9,6 @@ func _ready():
 	Dispatcher.connect("quit_game", self, "quit_game")
 
 	Data.init()
-	UI.ui_node = get_node("ui")
 	Dispatcher.emit_signal("ui_open", "title_screen")
 
 

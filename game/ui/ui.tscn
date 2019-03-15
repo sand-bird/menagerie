@@ -2,16 +2,9 @@
 
 [ext_resource path="res://ui/ui.gd" type="Script" id=1]
 
-[node name="ui" type="CanvasLayer" index="0"]
-
-layer = 1
-offset = Vector2( 0, 0 )
-rotation = 0.0
-scale = Vector2( 1, 1 )
-transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+[node name="ui" type="CanvasLayer"]
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_lock_": true
 }
-
 

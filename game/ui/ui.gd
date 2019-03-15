@@ -23,11 +23,17 @@ const REFS = [
 
 const DEFAULT_MENU_PAGE = 'options'
 # we can't count on our main_menu node always being
-# instantiated, but we still want to remember the last
-# open menu page, so we'll keep track of it here instead
+# instantiated, but we still want to remember the last open
+# menu page, so we'll keep track of it here instead
 var last_menu_page
 
-var ui_node
+# UI used to be a singleton, where `ui_node` held a reference
+# to the instanced CanvasLayer that would hold the instances
+# of the nodes in our stack. that was silly, since (a) we
+# only have one instanced ui node, and (b) UI's primary
+# function is to instantiate scenes anyway - but let's keep
+# the variable around, just in case.
+var ui_node = self
 
 var stack = []
 
