@@ -5,7 +5,7 @@
 [ext_resource path="res://assets/ui/icons/months.png" type="Texture" id=3]
 [ext_resource path="res://assets/ui/elements/clock.png" type="Texture" id=4]
 [ext_resource path="res://assets/ui/elements/clock_hand.png" type="Texture" id=5]
-[ext_resource path="res://assets/other/old/clock_pendulum.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/elements/pendulum.png" type="Texture" id=6]
 [ext_resource path="res://assets/ui/elements/indicator_circle.png" type="Texture" id=7]
 [ext_resource path="res://assets/ui/icons/weather.png" type="Texture" id=8]
 

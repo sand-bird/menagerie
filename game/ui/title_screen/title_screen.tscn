@@ -4,11 +4,8 @@
 [ext_resource path="res://ui/title_screen/title_buttons.tscn" type="PackedScene" id=2]
 
 [sub_resource type="Animation" id=1]
-
 resource_name = "title"
 length = 3.0
-loop = false
-step = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("title:margin_top")
 tracks/0/interp = 2
@@ -46,53 +43,22 @@ tracks/2/keys = {
 "values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
 }
 
-[node name="title_screen" type="Control" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="title_screen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect" ]
 
-[node name="title" type="TextureRect" parent="." index="0"]
-
+[node name="title" type="TextureRect" parent="."]
 anchor_left = 0.5
-anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.0
 margin_left = -125.0
 margin_top = 24.0
 margin_right = 125.0
 margin_bottom = 86.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 texture = ExtResource( 1 )
-stretch_mode = 0
-_sections_unfolded = [ "Anchor", "Animation", "Focus", "Hint", "Margin", "Material", "Mouse", "Offset", "Rect", "Region", "Size Flags", "Theme", "Transform", "Visibility", "Z Index" ]
 
-[node name="anim" type="AnimationPlayer" parent="." index="1"]
-
-root_node = NodePath("..")
-autoplay = ""
-playback_process_mode = 1
-playback_default_blend_time = 0.0
+[node name="anim" type="AnimationPlayer" parent="."]
 playback_speed = 0.8
 anims/title = SubResource( 1 )
-blend_times = [  ]
-_sections_unfolded = [ "Pause", "Playback Options" ]
 
-[node name="menu" parent="." index="2" instance=ExtResource( 2 )]
-
-rect_clip_content = false
-
+[node name="menu" parent="." instance=ExtResource( 2 )]
 

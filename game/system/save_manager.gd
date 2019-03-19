@@ -3,11 +3,11 @@ extends Node
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
-const NEW_SAVE = "res://data/system/new_save.data"
+const NEW_SAVE = "res://data/system/new_save.json"
 
 var current_save_dir
 # probably not the best idea, but seems to work fine for now
-var dir = Directory.new()
+# var dir = Directory.new()
 
 
 # =========================================================== #
@@ -16,6 +16,7 @@ var dir = Directory.new()
 
 # scans the SAVE_ROOT dir for valid save directories.
 func get_save_list():
+	var dir = Directory.new()
 	var saves = []
 	if dir.open(SAVE_ROOT) != OK:
 		return
@@ -79,8 +80,12 @@ func new_save(pname):
 	new_save.player.player_name = pname
 
 	# create new save
+	var dir = Directory.new()
+	if !dir.dir_exists(SAVE_ROOT):
+		dir.make_dir(SAVE_ROOT)
+	
 	current_save_dir = create_dirname(pname)
-	dir.make_dir(current_save_dir)
+	dir.make_dir(SAVE_ROOT.plus_file(current_save_dir))
 	save_game(new_save)
 
 	return current_save_dir
@@ -106,7 +111,8 @@ func load_game(save_dir):
 # ----------------------------------------------------------- #
 
 func is_save(dir_name):
-	return (dir.current_is_dir() and
+	var dir = Directory.new()
+	return (dir.dir_exists(SAVE_ROOT.plus_file(dir_name)) and
 			dir.file_exists(dir_name.plus_file(PLAYER)) and
 			dir.file_exists(dir_name.plus_file(GARDEN)))
 

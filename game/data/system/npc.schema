@@ -21,10 +21,10 @@
     "sprites": {
       "type": "object",
       "additionalProperties": {
-        "type": "string"
+        "type": "string",
         "note": "should be a valid filepath"
       }
-    }
+    },
     "locations": {
       "type": "object",
       "additionalProperties": {
