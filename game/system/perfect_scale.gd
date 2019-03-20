@@ -19,7 +19,7 @@ const MIN_SCALE = 2
 # DEBOUNCE_TIME represents how long we wait for resize
 # signals to stop coming before we do our thing, while the
 # timer keeps track of this for us.
-const DEBOUNCE_TIME = 0.1
+const DEBOUNCE_TIME = 0.2
 var timer: SceneTreeTimer = null
 
 func _ready():
