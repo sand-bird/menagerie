@@ -2,13 +2,13 @@
   "title": "Monster",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions.schema#/id"},
+    "id": {"$ref": "definitions/id"},
     "type": {
       "type": "string",
       "enum": ["monster"]
     },
-    "name": {"$ref": "definitions.schema#/text16"},
-    "description": {"$ref": "definitions.schema#/text128"},
+    "name": {"$ref": "definitions/text16"},
+    "description": {"$ref": "definitions/text128"},
     "gender_balance": {
       "type": "number",
       "minimum": 0,
@@ -20,9 +20,9 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "name": {"$ref": "definitions.schema#/text16"},
-          "if": {"$ref": "definitions.schema#/condition"},
-          "weight": {"$ref": "definitions.schema#/weight"},
+          "name": {"$ref": "definitions/text16"},
+          "if": {"$ref": "definitions/condition"},
+          "weight": {"$ref": "definitions/weight"},
           "sprites": {}
         },
         "required": ["name", "sprites"]
@@ -31,12 +31,12 @@
     },
     "evolves_into": {
       "type": "object",
-      "_": "key should be a valid id of another monster; should warn otherwise.",
+      "$comment": "key should be a valid id of another monster; should warn otherwise.",
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "if": {"$ref": "definitions.schema#/condition"},
-          "weight": {"$ref": "definitions.schema#/weight"}
+          "if": {"$ref": "definitions/condition"},
+          "weight": {"$ref": "definitions/weight"}
         }
       }
     }

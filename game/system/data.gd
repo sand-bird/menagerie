@@ -4,7 +4,6 @@ const BASE_DIR = "res://data"
 const MOD_DIR = "res://mods"
 const DATA_EXT= "json"
 const SCHEMA_EXT = "schema"
-const Validator = preload("res://system/validator.gd")
 
 # -----------------------------------------------------------
 
@@ -26,25 +25,13 @@ var schemas = {}
 var data = {}
 
 func _ready():
+#	var rg = RegEx.new()
+#	rg.compile("^(?:\\d{1,3}?\\.){2}\\d{1,4}?$")
+#	print(rg.is_valid())
+#	print(rg.search("1.2.3"), rg.search("1"), rg.search("1.2"), rg.search(""), rg.search("..1"), rg.search("12345.2.3"), rg.search("123.123.1234"))
 	var val = Validator.new()
-	print('validator validate')
-	val.validate({
-		"category":"food",
-			"description":
-				{"en":""},
-			"icon":"breadfruit.png",
-			"id":"breadfruit",
-			"name":{"en":"Breadfruit"},
-			"sources":[{"id":"menagerie","version":"0.1.0"}],
-			"type":"item",
-			"value":18
-		}, {
-			"type": "string",
-			"sources":[{"id":"yourmom","version":"99.0"}],
-		}, "breadfruit")
-	val.validate("hello world", {"maxLength": "a"}, "xyz")
-	pass
-#	init()
+	val.validate(["1.2.3", "1", "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"pattern": "^(?:\\d{1,3}?\\.){2}\\d{1,4}?$"}}, "test")
+	val.validate(["1.2.3", 1, "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"type": "string"}}, "str")#	init()
 
 func init():
 	# loads schemas and datafiles from data/

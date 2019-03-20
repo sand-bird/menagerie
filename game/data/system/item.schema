@@ -2,14 +2,14 @@
   "title": "Item",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions.schema#/id"},
+    "id": {"$ref": "definitions/id"},
     "type": {
       "type": "string",
       "enum": ["item"]
     },
-    "category": {"$ref": "definitions.schema#/category"},
-    "name": {"$ref": "definitions.schema#/text"},
-    "description": {"$ref": "definitions.schema#/text"}
+    "category": {"$ref": "definitions/category"},
+    "name": {"$ref": "definitions/text"},
+    "description": {"$ref": "definitions/text"}
   },
   "required": []
 }

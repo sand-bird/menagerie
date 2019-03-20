@@ -2,19 +2,19 @@
   "title": "Metadata",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions.schema#/id"},
+    "id": {"$ref": "definitions/id"},
     "type": {
       "type": "string",
       "enum": ["metadata"]
     },
-    "name": {"$ref": "definitions.schema#/name"},
+    "name": {"$ref": "definitions/name"},
     "author": {"type": "string"},
     "date": {"type": "date"},
     "version": {
       "type": "string",
-      "_": "must be a valid version - dd.dd.dd? TODO: come up with a regex for this"
+      "pattern": "^(?:\\d{1,3}?\\.){2}\\d{1,4}?$"
     },
-    "description": {"$ref": "definitions.schema#/description"},
+    "description": {"$ref": "definitions/description"},
     "tags": {
       "type": "array",
       "items": {"type": "string"}
@@ -22,7 +22,7 @@
     "schemas": {
       "type": "object",
       "additionalProperties": {
-        "_": "must be a valid filepath.",
+        "$comment": "must be a valid filepath.",
         "type": "string"
       }
     }

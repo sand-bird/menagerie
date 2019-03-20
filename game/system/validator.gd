@@ -1,5 +1,9 @@
 extends Node
 
+class_name Validator
+
+func _ready(): name = "Validator"
+
 # 2019-03-10 01:35:11 ERROR [Validator]: Validation error in monster 'pufig':
 # 'morphs.pink.name' is the wrong type (should be one of ['string', 'condition',
 # 'null'], but is 'boolean'). | schema sources: my_mod (v1.0.0), menagerie
@@ -10,6 +14,7 @@ const messages = {
 	type_mismatch_plural = "is the wrong type (should be one of %s, but is %s).",
 	enum_mismatch = "does not have an acceptable value (should be one of %s, but is %s).",
 	const_mismatch = "has the wrong value (should be %s, but is %s).",
+	pattern_mismatch = "does not match the required pattern '%s' (is %s).",
 	max_length_exceeded = "is too long (should be up to %s characters, but is %s).",
 	min_length_not_met = "is too short (should be at least %s characters, but is %s).",
 	not_divisible = "should be divisible by %s, but is not (remainder: %s).",
@@ -32,23 +37,25 @@ const messages = {
 #     the dict we see here has 'data' and 'schema' keys with
 #     the sources array for each, corresponding to the ROOT
 #     of the breadcrumb (eg 'pufig').
-func report(result: bool, message_key: String, message_args: Array,
-		breadcrumb: String, sources: Dictionary) -> bool:
-	if !result:
+func report(result: int, message_key: String, message_args: Array,
+		breadcrumb: String, sources: Dictionary) -> int:
+	if not result:
 		var message = str("'", breadcrumb, "' ",
 				messages[message_key] % message_args)
-
 		if 'data' in sources:
 			message += " | data " + sources_to_string(sources.data)
 		if 'schema' in sources:
 			message += " | schema " + sources_to_string(sources.schema)
-
 		Log.error(self, message)
-		print("validation error: ", message)
-	return result
+		return 0
+	else:
+		return 1
 
 # -----------------------------------------------------------
 
+# actually, we should just validate the schemas with a meta-
+# schema before running validation on our actual data files.
+# TODO: delete me
 func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
 	var message = str("schema warning: found bad keyword '", key,
 			"' when testing '", breadcrumb, "'.")
@@ -57,7 +64,6 @@ func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
 		message += " | " + sources_to_string(sources.schema)
 
 	Log.warn(self, message)
-	print(message)
 
 # -----------------------------------------------------------
 
@@ -81,6 +87,9 @@ func get_type(data):
 	}[typeof(data)]
 
 # -----------------------------------------------------------
+
+func is_non_negative_int(x):
+	return x is int and x >= 0
 
 # sigh
 func is_number(x):
@@ -111,6 +120,8 @@ func matches_type(data, type):
 
 # -----------------------------------------------------------
 
+# using hashes for a cheap deep equals. not sure if this is a
+# viable shortcut -- keep an eye on it in future
 func deep_equals(a, b):
 	if typeof(a) != typeof(b):
 		return false
@@ -119,16 +130,19 @@ func deep_equals(a, b):
 	return a == b
 
 
-# ===========================================================
-#
-# -----------------------------------------------------------
+# =========================================================== #
+#             V A L I D A T E   F U N C T I O N S             #
+# ----------------------------------------------------------- #
 
+# maybe todo: make this do_validate (called internally), and
+# make the validate function first validate the schema
 func validate(data, schema: Dictionary, breadcrumb: String = "",
-		sources: Dictionary = {}) -> bool:
-	var result = true
+		sources: Dictionary = {}) -> int:
+	Log.warn(self, ["(validate) ", breadcrumb])
+	var result = 1
 	var data_type = get_type(data)
 
-	if 'sources' in data and data.sources:
+	if data is Dictionary and 'sources' in data and data.sources:
 		sources.data = data.sources
 	if 'sources' in schema and schema.sources:
 		sources.schema = schema.sources
@@ -136,25 +150,25 @@ func validate(data, schema: Dictionary, breadcrumb: String = "",
 	# any-type validation
 	if 'type' in schema:
 		if schema.type is String:
-			result = result && report(
+			result &= report(
 				matches_type(data, schema.type),
 				'type_mismatch_single', [schema.type, data_type],
 				breadcrumb, sources
 			)
 		elif schema.type is Array:
-			result = result && report(
+			result &= report(
 				matches_any(data, schema.type, 'matches_type'),
 				'type_mismatch_plural', [schema.type, data_type],
 				breadcrumb, sources
 			)
 	if 'enum' in schema and schema.enum is Array and !schema.enum.empty():
-		result = result && report(
+		result &= report(
 			matches_any(data, schema.enum, 'deep_equals'),
 			'enum_mismatch', [schema.enum, data],
 			breadcrumb, sources
 		)
 	if 'const' in schema:
-		result = result && report(
+		result &= report(
 			deep_equals(data, schema.const),
 			'const_mismatch', [schema.const, data],
 			breadcrumb, sources
@@ -163,79 +177,82 @@ func validate(data, schema: Dictionary, breadcrumb: String = "",
 	# call specialized validators
 	var type_fn = str('validate_', data_type)
 	if has_method(type_fn):
-		result = result && call(type_fn, data, schema, breadcrumb, sources)
+		result &= call(type_fn, data, schema, breadcrumb, sources)
+		
+	Log.verbose(self, ["(validate) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
 
-func validate_integer(data, schema, breadcrumb, sources) -> bool:
+func validate_integer(data, schema, breadcrumb, sources) -> int:
 	return validate_number(data, schema, breadcrumb, sources)
 
 func validate_number(data, schema: Dictionary,
-		breadcrumb: String = "", sources: Dictionary = {}) -> bool:
-	var result = true
+		breadcrumb: String = "", sources: Dictionary = {}) -> int:
+	var result = 1
 	if 'multipleOf' in schema and is_number(schema.multipleOf):
-		result = result && report(
+		result &= report(
 			data % schema.multipleOf == 0,
 			'not_divisible', [schema.multipleOf, data % schema.multipleOf],
 			breadcrumb, sources)
 	if 'maximum' in schema and is_number(schema.maximum):
-		result = result && report(
+		result &= report(
 			data <= schema.maximum,
 			'maximum_exceeded', [schema.maximum, data],
 			breadcrumb, sources)
+	
+	Log.verbose(self, ["(validate_number) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
 
 func validate_string(data: String, schema: Dictionary,
-		breadcrumb: String = "", sources: Dictionary = {}) -> bool:
-	var result = true
-	if 'maxLength' in schema:
-		if schema.maxLength is int and schema.maxLength >= 0:
-			result = result && report(
-				data.length() < schema.maxLength,
-				'max_length_exceeded', [schema.maxLength, data.length],
-				breadcrumb, sources
-			)
-		else: warn_schema('maxLength', breadcrumb, sources)
-	if 'minLength' in schema:
-		if schema.maxLength is int and schema.maxLength >= 0:
-			result = result && report(
-				data.length() > schema.minLength,
-				'min_length_not_met', [schema.minLength, data.length],
-				breadcrumb, sources
-			)
-		else: warn_schema('minLength', breadcrumb, sources)
-	if 'pattern' in schema:
-		result = result && report(
-			data.match(schema.pattern),
-			'pattern_not_matched', [data, schema.pattern],
+		breadcrumb: String = "", sources: Dictionary = {}) -> int:
+	var result = 1
+	if 'maxLength' in schema and is_non_negative_int(schema.maxLength):
+		result &= report(
+			data.length() < schema.maxLength,
+			'max_length_exceeded', [schema.maxLength, data.length],
 			breadcrumb, sources
 		)
+	if 'minLength' in schema and is_non_negative_int(schema.minLength):
+		result &= report(
+			data.length() > schema.minLength,
+			'min_length_not_met', [schema.minLength, data.length],
+			breadcrumb, sources
+		)
+	if 'pattern' in schema:
+		var regex = RegEx.new()
+		regex.compile(schema.pattern)
+		result &= report(
+			regex.is_valid() and regex.search(data) != null,
+			'pattern_mismatch', [schema.pattern, data],
+			breadcrumb, sources
+		)
+	Log.verbose(self, ["(validate_string) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
 
 func validate_array(data: Array, schema: Dictionary,
-		breadcrumb: String, sources: Dictionary) -> bool:
-	var is_valid = true
-	# The value of "items" MUST be either a valid JSON Schema
-	# or an array of valid JSON Schemas. Omitting this keyword
-	# has the same behavior as an empty schema.
+		breadcrumb: String, sources: Dictionary) -> int:
+	var result = 1
+	var adl_item_idx = 0
 	if 'items' in schema:
-		# If "items" is a schema, validation succeeds if all
-		# elements in the array successfully validate against
-		# that schema.
 		if schema.items is Dictionary:
+			adl_item_idx = data.size()
 			for i in data.size():
-				is_valid &= validate(data[i], schema.items,
+				result &= validate(data[i], schema.items,
 						str(breadcrumb, "[", i, "]"), sources)
-		# If "items" is an array of schemas, validation succeeds
-		# if each element of the instance validates against the
-		# schema at the same position, if any.
 		elif schema.items is Array:
+			adl_item_idx = schema.items.size()
 			for i in min(data.size(), schema.items.size()):
-				is_valid &= validate(data[i], schema.items[i],
+				result &= validate(data[i], schema.items[i],
 						str(breadcrumb, "[", i, "]"), sources)
-	return is_valid
+	if 'additionalItems' in schema and schema.additionalItems is Dictionary:
+		for i in range(adl_item_idx, data.size()):
+				result &= validate(data[i], schema.additionalItems,
+						str(breadcrumb, "[", i, "]"), sources)
+#	if 'maxItems' in schema and schema.maxItems is 
+	Log.verbose(self, ["(validate_array) ", breadcrumb, " | result: ", result])
+	return result
