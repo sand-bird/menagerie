@@ -38,8 +38,7 @@ func initialize(filter = {}):
 	self.page_count = pages
 
 	# init item grid
-	$item_grid.props = props
-	$item_grid.initialize()
+	$item_grid.initialize(props.grid_size)
 	$item_grid.load_items(get_page_items())
 	init_selector()
 	if items: update_current_item(0)

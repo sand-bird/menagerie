@@ -23,7 +23,7 @@ enum Status {
 }
 
 enum DataType {
-	
+
 }
 
 enum EntityType {
@@ -69,9 +69,9 @@ const ROOT_PATH = "/root/game"
 #  ACTIONS  #
 # --------- #
 
-enum ActionStatus { 
+enum ActionStatus {
 	SUCCESS
-	FAILURE 
+	FAILURE
 	RUNNING
 	INTERRUPTED
 	ERROR
@@ -125,20 +125,41 @@ enum Wrap {
 
 # CONFIG
 
+
+enum GridSize {
+	SMALL,
+	LARGE
+}
+
 const INVENTORY_PROPERTIES = {
 	InventorySize.SMALL: {
 		columns = 6,
+		rows = 6,
+		grid_size = GridSize.SMALL,
 		grid_bg = "item_grid_small",
 		selector = "selector_small",
 		selector_size = Vector2(0, 0),
+	},
+	InventorySize.LARGE: {
+		columns = 5,
+		rows = 5,
+		grid_size = GridSize.LARGE,
+		grid_bg = "item_grid_large",
+		selector = "selector_big",
+		selector_size = Vector2(0, 0),
+	}
+}
+
+const GRID_PROPERTIES = {
+	GridSize.SMALL: {
+		grid_bg = "item_grid_small_9patch",
+		selector = "selector_small",
 		grid_offset = Vector2(0, 0),
 		item_size = Vector2(20, 20)
 	},
 	InventorySize.LARGE: {
-		columns = 5,
-		grid_bg = "item_grid_large",
+		grid_bg = "item_grid_large_9patch",
 		selector = "selector_big",
-		selector_size = Vector2(0, 0),
 		grid_offset = Vector2(2, 2),
 		item_size = Vector2(24, 24)
 	}

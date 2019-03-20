@@ -1,13 +1,16 @@
 extends TextureRect
 
-var InventorySize = Constants.InventorySize
+onready var props = Constants.GRID_PROPERTIES[Options.inventory_size.grid_size]
 onready var Item = Utils.load_relative(filename, "grid_item")
-var props # passed from big mama inventory scene
 var item_count = 0
 
-func _ready(): pass
+func init_bg(grid_width, cells):
+	return grid_width
 
-func initialize():
+func calc_size(item_size, grid_size):
+	return (item_size * grid_size) + Vector2(3, 3) + (grid_size - (Vector2(2, 2) * 3))
+
+func initialize(grid_config, grid_size):
 	$items.columns = props.columns
 	texture = Utils.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
 	$items.rect_position = props.grid_offset
