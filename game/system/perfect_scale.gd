@@ -23,7 +23,7 @@ const DEBOUNCE_TIME = 0.2
 var timer: SceneTreeTimer = null
 
 func _ready():
-	print(get_tree().connect("screen_resized", self, "debounce"))
+	get_tree().connect("screen_resized", self, "debounce")
 	var base_size = update_screen()
 	Log.info(self, ["ready! window size: ", OS.window_size,
 			", base size: ", base_size])

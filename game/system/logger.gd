@@ -159,7 +159,13 @@ const FILE_BUFFER_SIZE = 30
 # Configuration
 var output_level = VERBOSE
 # TODO: Find (or implement in Godot) a more clever way to achieve that
-var output_strategies = STRATEGY_FILE
+var output_strategies = [
+	STRATEGY_FILE,
+	STRATEGY_FILE,
+	STRATEGY_FILE,
+	STRATEGY_FILE | STRATEGY_PRINT,
+	STRATEGY_FILE | STRATEGY_PRINT
+]
 var logfile_path = "user://%s.log" % ProjectSettings.get_setting("application/name")
 var configfile_path = "user://%s.cfg" % PLUGIN_NAME
 
