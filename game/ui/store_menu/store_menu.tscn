@@ -1,35 +1,38 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
-[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://ui/store_menu/store_item.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=1]
+[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ui/item_info.tscn" type="PackedScene" id=3]
+[ext_resource path="res://ui/store_menu/item_list.tscn" type="PackedScene" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
 
-[node name="store_menu" type="Panel"]
+[node name="store_menu" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -160.0
-margin_bottom = -36.0
-theme = ExtResource( 1 )
-custom_styles/panel = ExtResource( 2 )
 
-[node name="background" parent="." instance=ExtResource( 3 )]
+[node name="item_info" type="Panel" parent="."]
+margin_right = 151.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 151, 150 )
+custom_styles/panel = ExtResource( 1 )
+
+[node name="background" parent="item_info" instance=ExtResource( 2 )]
 custom_styles/panel = SubResource( 1 )
 
-[node name="container" type="VBoxContainer" parent="."]
-margin_left = 6.0
-margin_top = 6.0
-margin_right = 150.0
-margin_bottom = 36.0
+[node name="item_info" parent="item_info" instance=ExtResource( 3 )]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 147.0
+margin_bottom = 147.0
+rect_min_size = Vector2( 142, 0 )
 
-[node name="store_item" parent="container" instance=ExtResource( 4 )]
+[node name="store_item_list" parent="." instance=ExtResource( 4 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 1.0
-margin_top = 1.0
-margin_right = 147.0
-margin_bottom = 31.0
+margin_left = 153.0
+margin_right = 313.0
+margin_bottom = 160.0
+rect_min_size = Vector2( 160, 160 )
 
