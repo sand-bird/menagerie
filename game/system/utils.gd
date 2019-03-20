@@ -1,5 +1,9 @@
 extends Node
 
+class_name Utils
+
+const log_name = "Utils"
+
 # =========================================================== #
 #                       F I L E   I / O                       #
 # ----------------------------------------------------------- #
@@ -11,7 +15,7 @@ extends Node
 static func load_relative(own_fn, sib_fn, ext = "tscn"):
 	var file = str(sib_fn, ".", ext)
 	var path = own_fn.get_base_dir().plus_file(file)
-	Log.debug(Utils, ["loading: ", path])
+	Log.debug(log_name, ["loading: ", path])
 	return load(path)
 
 # -----------------------------------------------------------
@@ -22,14 +26,14 @@ static func load_relative(own_fn, sib_fn, ext = "tscn"):
 static func load_resource(res_path, res_fn, ext = "png"):
 	var file = str(res_fn, ".", ext)
 	var path = res_path.plus_file(file)
-	Log.debug(Utils, ["loading resource: ", path])
+	Log.debug(log_name, ["loading resource: ", path])
 	return ResourceLoader.load(path)
 
 # -----------------------------------------------------------
 
-func write_file(path, data):
-	Log.info(Utils, ["writing file: ", path])
-	Log.verbose(Utils, data)
+static func write_file(path, data):
+	Log.info(log_name, ["writing file: ", path])
+	Log.verbose(log_name, data)
 	var file = File.new()
 	file.open(path, File.WRITE)
 	file.store_string(to_json(data))
@@ -37,18 +41,18 @@ func write_file(path, data):
 
 # -----------------------------------------------------------
 
-func read_file(path):
-	Log.info(Utils, ["reading file: ", path])
+static func read_file(path):
+	Log.info(log_name, ["reading file: ", path])
 	var file = File.new()
 	if !file.file_exists(path):
-		Log.warn(Utils, ["could not load `", path, "`: file does not exist!"])
+		Log.warn(log_name, ["could not load `", path, "`: file does not exist!"])
 		return null
 	file.open(path, File.READ)
 	var data = parse_json(file.get_as_text())
 	file.close()
 	# even for verbose, this is a little much, but i'll
 	# leave it here in case we need to re-enable it
-#	Log.verbose(Utils, data)
+#	Log.verbose(log_name, data)
 	return data
 
 
@@ -95,13 +99,11 @@ static func slice(array, first, size):
 # identifying info for the trans object, so maybe rethink
 # this at some point)
 func trans(t):
-	if typeof(t) == TYPE_STRING:
-		return t
-	elif typeof(t) == TYPE_DICTIONARY:
-		if t.has(Options.get_lang()):
-			return t[Options.get_lang()]
-		elif t.has(Options.fallback_lang):
-			return t[Options.fallback_lang]
+	if t is String: return t
+	elif t is Dictionary:
+		for i in ['locale/test', 'locale/fallback']:
+			var locale = ProjectSettings.get(i)
+			if locale in t: return t[locale]
 	return ""
 
 # -----------------------------------------------------------

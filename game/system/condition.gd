@@ -4,6 +4,8 @@
 
 extends Node
 
+class_name Condition
+
 # not a typo: actually a portmanteau of "separators" and
 # "operators". these apply to condition arguments
 const seperators = {
@@ -280,8 +282,7 @@ func eval_arg(arg, caller = null, parent = null):
 func eval_sigil(arg, caller, parent):
 	match arg[0]:
 		'$': return resolve_global(Utils.strip_sigil(arg))
-		'#': return Constants[Utils.strip_sigil(arg
-				).capitalize().replace(' ', '')]
+		'#': return Constants.new().get(Utils.strip_sigil(arg).capitalize().replace(' ', ''))
 		'@': return caller[Utils.strip_sigil(arg)]
 		'*': return parent
 	return arg

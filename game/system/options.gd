@@ -31,21 +31,6 @@ const TextSpeed = {
 var autosave_interval = "hour"
 var text_speed = TextSpeed[3] # characters per second
 
-#                       l a n g u a g e                       #
-# ----------------------------------------------------------- #
-
-var lang_codes = {
-	Language.ENGLISH: "en",
-	Language.PORTUGUESE: "pr"
-}
-
-# TODO: this should match the project settings instead
-var language = Language.ENGLISH
-const fallback_lang = "en"  # ugly but it'll do for now
-
-func get_lang():
-	return lang_codes[language]
-
 #                      i n v e n t o r y                      #
 # ----------------------------------------------------------- #
 

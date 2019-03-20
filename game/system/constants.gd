@@ -1,6 +1,6 @@
-# class Constants
-
 extends Node
+
+class_name Constants
 
 enum Speed {
 	AMBLE = 30
@@ -177,10 +177,7 @@ const MENU_CHAPTERS = {
 		scene = "inventory/items",
 		condition = {"filter": [
 			"$player.inventory:id",
-			{"==": [
-				"$data.*.type",
-				"item"
-			]}
+			{"==": ["$data.*.type", "item"]}
 		]}
 	},
 	objects = {
@@ -189,13 +186,19 @@ const MENU_CHAPTERS = {
 		condition = {"filter": [
 			"$player.inventory",
 			{"==": [
-				{"get": [
-					{"get": ["$data", "*.id"]},
-					"type"
-				]},
+				{"get": [{"get": ["$data", "*.id"]}, ".type"]}, 
 				"object"
 			]}
-		]}
+		]},
+		condition3 = {"filter": [
+			"$player.inventory",
+			{"==": [
+				"data[*.id].type", 
+				"object"
+			]}
+		]},
+		condition4 = "$player.inventory(data[*.id].type)",
+		condition5 = "$player.inventory:(data.(*.id).type)"
 	},
 	town_map = {
 		icon = "town",

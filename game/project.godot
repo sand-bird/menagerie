@@ -8,9 +8,32 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node",
+"class": "Condition",
+"language": "GDScript",
+"path": "res://system/condition.gd"
+}, {
+"base": "Node",
+"class": "Constants",
+"language": "GDScript",
+"path": "res://system/constants.gd"
+}, {
+"base": "Node",
+"class": "Utils",
+"language": "GDScript",
+"path": "res://system/utils.gd"
+}, {
+"base": "Node",
+"class": "Validator",
+"language": "GDScript",
+"path": "res://system/validator.gd"
+} ]
 _global_script_class_icons={
-
+"Condition": "",
+"Constants": "",
+"Utils": "",
+"Validator": ""
 }
 
 [application]
@@ -30,14 +53,14 @@ icon="res://assets/ui/icons/thumbnail.png"
 Log="*res://system/logger.gd"
 Constants="*res://system/constants.gd"
 SaveManager="*res://system/save_manager.gd"
-Utils="*res://system/utils.gd"
+Utils="res://system/utils.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"
 PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Time="*res://system/time.gd"
-Condition="*res://system/condition.gd"
+Condition="res://system/condition.gd"
 
 [debug]
 
