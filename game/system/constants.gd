@@ -1,5 +1,3 @@
-extends Node
-
 class_name Constants
 
 enum Speed {
@@ -22,31 +20,15 @@ enum Status {
 	SICK
 }
 
-enum DataType {
-
-}
+enum DataType {}
 
 enum EntityType {
-	MONSTER
-	ITEM
-	OBJECT
-	NPC
-	LOCATION
-	EVENT
+	MONSTER, ITEM, OBJECT, NPC, LOCATION, EVENT
 }
 
 enum Category {
-	RESOURCE
-	TOY
-	FOOD
-	POTION
-	SEED
-	MUSHROOM
-	FRUIT
-	FLOWER
-	TREE
-	DECORATION
-	FLOORING
+	RESOURCE, TOY, FOOD, POTION, SEED, MUSHROOM,
+	FRUIT, FLOWER, TREE, DECORATION, FLOORING
 }
 
 # ------- #
@@ -70,11 +52,7 @@ const ROOT_PATH = "/root/game"
 # --------- #
 
 enum ActionStatus {
-	SUCCESS
-	FAILURE
-	RUNNING
-	INTERRUPTED
-	ERROR
+	SUCCESS, FAILURE, RUNNING, INTERRUPTED, ERROR
 }
 
 # ------- #
@@ -122,13 +100,25 @@ enum Wrap {
 	VERTICAL
 }
 
+# -------- #
+#  CONFIG  #
+# -------- #
 
-# CONFIG
+enum GridSize { SMALL, LARGE }
 
-
-enum GridSize {
-	SMALL,
-	LARGE
+const GRID_PROPERTIES = {
+	GridSize.SMALL: {
+		grid_bg = "item_grid_small_9patch",
+		selector = "selector_small",
+		grid_offset = Vector2(0, 0),
+		item_size = Vector2(20, 20)
+	},
+	InventorySize.LARGE: {
+		grid_bg = "item_grid_large_9patch",
+		selector = "selector_big",
+		grid_offset = Vector2(2, 2),
+		item_size = Vector2(24, 24)
+	}
 }
 
 const INVENTORY_PROPERTIES = {
@@ -147,21 +137,6 @@ const INVENTORY_PROPERTIES = {
 		grid_bg = "item_grid_large",
 		selector = "selector_big",
 		selector_size = Vector2(0, 0),
-	}
-}
-
-const GRID_PROPERTIES = {
-	GridSize.SMALL: {
-		grid_bg = "item_grid_small_9patch",
-		selector = "selector_small",
-		grid_offset = Vector2(0, 0),
-		item_size = Vector2(20, 20)
-	},
-	InventorySize.LARGE: {
-		grid_bg = "item_grid_large_9patch",
-		selector = "selector_big",
-		grid_offset = Vector2(2, 2),
-		item_size = Vector2(24, 24)
 	}
 }
 
@@ -186,14 +161,14 @@ const MENU_CHAPTERS = {
 		condition = {"filter": [
 			"$player.inventory",
 			{"==": [
-				{"get": [{"get": ["$data", "*.id"]}, ".type"]}, 
+				{"get": [{"get": ["$data", "*.id"]}, ".type"]},
 				"object"
 			]}
 		]},
 		condition3 = {"filter": [
 			"$player.inventory",
 			{"==": [
-				"data[*.id].type", 
+				"data[*.id].type",
 				"object"
 			]}
 		]},

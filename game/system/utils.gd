@@ -98,7 +98,7 @@ static func slice(array, first, size):
 # TODO: add some logging here (though we don't receive any
 # identifying info for the trans object, so maybe rethink
 # this at some point)
-func trans(t):
+static func trans(t):
 	if t is String: return t
 	elif t is Dictionary:
 		for i in ['locale/test', 'locale/fallback']:

@@ -14,7 +14,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://system/condition.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "Constants",
 "language": "GDScript",
 "path": "res://system/constants.gd"
@@ -51,16 +51,13 @@ icon="res://assets/ui/icons/thumbnail.png"
 [autoload]
 
 Log="*res://system/logger.gd"
-Constants="*res://system/constants.gd"
 SaveManager="*res://system/save_manager.gd"
-Utils="res://system/utils.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"
 PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Time="*res://system/time.gd"
-Condition="res://system/condition.gd"
 
 [debug]
 

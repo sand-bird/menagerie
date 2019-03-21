@@ -162,7 +162,7 @@ var output_level = VERBOSE
 var output_strategies = [
 	STRATEGY_FILE,
 	STRATEGY_FILE,
-	STRATEGY_FILE,
+	STRATEGY_FILE | STRATEGY_PRINT,
 	STRATEGY_FILE | STRATEGY_PRINT,
 	STRATEGY_FILE | STRATEGY_PRINT
 ]
@@ -199,20 +199,20 @@ func get_output_strategy(level):
 func put(level, node, message):
 	if typeof(node) == TYPE_OBJECT and "name" in node:
 		node = node.name
-	
+
 	var output_strategy = get_output_strategy(level)
-	
+
 	if output_strategy == STRATEGY_MUTE or output_level > level:
 		return # Out of scope
-	
+
 	var output = format(output_format, level, node, format_message(message))
-	
+
 	if output_strategy & STRATEGY_PRINT:
 		print(output)
-	
+
 	if output_strategy & STRATEGY_FILE:
 		logfile.write(output, level)
-	
+
 	if output_strategy & STRATEGY_MEMORY:
 		memory_buffer[memory_idx] = output
 		memory_idx += 1

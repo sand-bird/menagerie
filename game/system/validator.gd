@@ -1,8 +1,7 @@
 extends Node
 
 class_name Validator
-
-func _ready(): name = "Validator"
+const log_name = "Validator"
 
 # 2019-03-10 01:35:11 ERROR [Validator]: Validation error in monster 'pufig':
 # 'morphs.pink.name' is the wrong type (should be one of ['string', 'condition',
@@ -46,7 +45,7 @@ func report(result: int, message_key: String, message_args: Array,
 			message += " | data " + sources_to_string(sources.data)
 		if 'schema' in sources:
 			message += " | schema " + sources_to_string(sources.schema)
-		Log.error(self, message)
+		Log.error(log_name, message)
 		return 0
 	else:
 		return 1
@@ -63,7 +62,7 @@ func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
 	if 'schema' in sources:
 		message += " | " + sources_to_string(sources.schema)
 
-	Log.warn(self, message)
+	Log.warn(log_name, message)
 
 # -----------------------------------------------------------
 
@@ -138,7 +137,7 @@ func deep_equals(a, b):
 # make the validate function first validate the schema
 func validate(data, schema: Dictionary, breadcrumb: String = "",
 		sources: Dictionary = {}) -> int:
-	Log.warn(self, ["(validate) ", breadcrumb])
+	Log.verbose(log_name, ["(validate) ", breadcrumb])
 	var result = 1
 	var data_type = get_type(data)
 
@@ -178,8 +177,8 @@ func validate(data, schema: Dictionary, breadcrumb: String = "",
 	var type_fn = str('validate_', data_type)
 	if has_method(type_fn):
 		result &= call(type_fn, data, schema, breadcrumb, sources)
-		
-	Log.verbose(self, ["(validate) ", breadcrumb, " | result: ", result])
+
+	Log.verbose(log_name, ["(validate) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
@@ -200,8 +199,8 @@ func validate_number(data, schema: Dictionary,
 			data <= schema.maximum,
 			'maximum_exceeded', [schema.maximum, data],
 			breadcrumb, sources)
-	
-	Log.verbose(self, ["(validate_number) ", breadcrumb, " | result: ", result])
+
+	Log.verbose(log_name, ["(validate_number) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
@@ -229,7 +228,7 @@ func validate_string(data: String, schema: Dictionary,
 			'pattern_mismatch', [schema.pattern, data],
 			breadcrumb, sources
 		)
-	Log.verbose(self, ["(validate_string) ", breadcrumb, " | result: ", result])
+	Log.verbose(log_name, ["(validate_string) ", breadcrumb, " | result: ", result])
 	return result
 
 # -----------------------------------------------------------
@@ -253,6 +252,6 @@ func validate_array(data: Array, schema: Dictionary,
 		for i in range(adl_item_idx, data.size()):
 				result &= validate(data[i], schema.additionalItems,
 						str(breadcrumb, "[", i, "]"), sources)
-#	if 'maxItems' in schema and schema.maxItems is 
-	Log.verbose(self, ["(validate_array) ", breadcrumb, " | result: ", result])
+#	if 'maxItems' in schema and schema.maxItems is
+	Log.verbose(log_name, ["(validate_array) ", breadcrumb, " | result: ", result])
 	return result

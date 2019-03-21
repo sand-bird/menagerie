@@ -5,6 +5,7 @@
 extends Node
 
 class_name Condition
+const log_name = "Condition"
 
 # not a typo: actually a portmanteau of "separators" and
 # "operators". these apply to condition arguments
@@ -48,7 +49,7 @@ const lookup_func = {
 # global will be a singleton (and we don't want to depend too
 # much on the other singletons being loaded first, anyway).
 # otherwise this would be a dictionary also.
-func resolve_global(arg):
+static func resolve_global(arg):
 	match (arg):
 		"player":
 			return Player
@@ -57,11 +58,46 @@ func resolve_global(arg):
 		"data":
 			return Data
 		"garden":
-			return get_node("/root/game/garden")
+			return Player
 
 # ----------------------------------------------------------- #
 
-func resolve(data, caller = null, parent = null):
+static func call_fn(data, caller, parent):
+	# must have exactly one key
+	assert(data.keys().size() == 1)
+	var key = data.keys()[0]
+	# key must be one of our known comparators
+	match key:
+		# booleans
+		"and": return _and(data[key], caller, parent)
+		"or": return _or(data[key], caller, parent)
+		"not": return _not(data[key], caller, parent)
+
+		# comparators
+		"==": return _equals(data[key], caller, parent)
+		"!=": return _not_equals(data[key], caller, parent)
+		">": return _greater_than(data[key], caller, parent)
+		"<": return _less_than(data[key], caller, parent)
+		">=": return _greater_than_equals(data[key], caller, parent)
+		"<=": return _less_than_equals(data[key], caller, parent)
+		"in": return _in(data[key], caller, parent)
+
+		# separator operators (expanded seperators)
+		"map": return _map(data[key], caller, parent)
+		"get": return _get_op(data[key], caller, parent)
+
+		# collection operators
+		"filter": return _filter(data[key], caller, parent)
+		# "max": _max(data[key], caller, parent)
+		# "min": _min(data[key], caller, parent)
+		# "total": _total(data[key], caller, parent)
+		# "first": _first(data[key], caller, parent)
+		# "last": _last(data[key], caller, parent)
+		"empty": return _empty(data[key], caller, parent)
+
+# -----------------------------------------------------------
+
+static func resolve(data, caller = null, parent = null):
 	var result = false
 
 	# an array of conditions implies an AND
@@ -70,18 +106,12 @@ func resolve(data, caller = null, parent = null):
 
 	# if it's a dict, our key will tell us what to do
 	elif typeof(data) == TYPE_DICTIONARY:
-		# must have exactly one key
-		assert(data.keys().size() == 1)
-		var key = data.keys()[0]
-		# key must be one of our known comparators
-		assert(key in lookup_func)
-		result = call(lookup_func[key], data[key], caller, parent)
+		result = call_fn(data, caller, parent)
 
 	# if we just want to evaluate a single (string) argument,
 	# we should be able to. the likely use case is checking
 	# the result for truthiness, but it can also be used to
 	# fetch data declaratively (eg in an entity definition).
-	#
 	# note that `eval_arg` also calls `resolve` (if the arg
 	# evaluates to a dictionary). some more testing should
 	# probably be done to ensure we don't have any infinite
@@ -90,9 +120,9 @@ func resolve(data, caller = null, parent = null):
 		result = eval_arg(data, caller, parent)
 
 	else: # any other type is a problem
-		Log.error(self, "(resolve) failed: unsupported argument!")
+		Log.error(log_name, "(resolve) failed: unsupported argument!")
 
-	Log.verbose(self, ["(resolve) condition ", data,
+	Log.verbose(log_name, ["(resolve) condition ", data,
 			" resolved to ", result])
 	return result
 
@@ -105,57 +135,57 @@ func resolve(data, caller = null, parent = null):
 
 # accepts an ARRAY with AT LEAST 2 members
 # returns true if all members resolve to true
-func _and(data, caller, parent):
+static func _and(data, caller, parent):
 	for condition in data:
 		if !resolve(condition, caller, parent): return false
 	return true
 
 # accepts an ARRAY with AT LEAST 2 members
 # returns true if at least one member resolves to true
-func _or(data, caller, parent):
+static func _or(data, caller, parent):
 	for condition in data:
 		if resolve(condition, caller, parent): return true
 	return false
 
-func _not(data, caller, parent):
+static func _not(data, caller, parent):
 	return !resolve(data, caller, parent)
 
 #                    c o m p a r a t o r s
 # -----------------------------------------------------------
 
 # accepts an ARRAY with EXACTLY 2 members
-func _equals(data, caller, parent):
+static func _equals(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] == args[1]
 
 # accepts an ARRAY with EXACTLY 2 members
-func _not_equals(data, caller, parent):
+static func _not_equals(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] != args[1]
 
 # accepts an ARRAY with EXACTLY 2 members
-func _greater_than(data, caller, parent):
+static func _greater_than(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] > args[1]
 
 # accepts an ARRAY with EXACTLY 2 members
-func _less_than(data, caller, parent):
+static func _less_than(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] < args[1]
 
 # accepts an ARRAY with EXACTLY 2 members
-func _greater_than_equals(data, caller, parent):
+static func _greater_than_equals(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] >= args[1]
 
 # accepts an ARRAY with EXACTLY 2 members
-func _less_than_equals(data, caller, parent):
+static func _less_than_equals(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] <= args[1]
 
 # accepts an ARRAY with EXACTLY 2 members,
 # the first a scalar, and the second a collection
-func _in(data, caller, parent):
+static func _in(data, caller, parent):
 	var args = eval_args(data, caller, parent)
 	return args[0] in args[1]
 
@@ -168,19 +198,19 @@ func _in(data, caller, parent):
 # the key or property of the former, specified by the latter.
 # (should crash if data doesn't have key.)
 # as of godot 3.1, `get` is a member function that can't be
-func _get_op(args, caller, parent):
-	Log.verbose(Condition, ["(_get): ", args])
+static func _get_op(args, caller, parent):
+	Log.verbose(log_name, ["(_get): ", args])
 	var data = eval_arg(args[0], caller, parent)
 	var key = eval_arg(args[1], caller, parent) # no parent i think
 	var result
 
 	# check that data and key exist
 	if !data:
-		Log.error(Condition, ["(_get) failed: collection '", args[0],
+		Log.error(log_name, ["(_get) failed: collection '", args[0],
 				"' could not be resolved"])
 		return null
 	if key == null:
-		Log.error(Condition, ["(_get) failed: argument ", args[1],
+		Log.error(log_name, ["(_get) failed: argument ", args[1],
 				" could not be resolved to a key"])
 		return null
 
@@ -194,7 +224,7 @@ func _get_op(args, caller, parent):
 		result = data[key]
 
 	if !result:
-		Log.error(Condition, ["(_get) failed: key '", key,
+		Log.error(log_name, ["(_get) failed: key '", key,
 				"' not found in collection ", data])
 	return result
 
@@ -206,8 +236,8 @@ func _get_op(args, caller, parent):
 # a dictionary or array containing, for each element in the
 # former, the value corresponding to the key or property
 # specified by the latter, if such a value exists.
-func _map(args, caller, parent):
-	Log.verbose(self, ["(_map) before: ", args])
+static func _map(args, caller, parent):
+	Log.verbose(log_name, ["(_map) before: ", args])
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
 	for item in data:
@@ -215,14 +245,14 @@ func _map(args, caller, parent):
 		if typeof(data) == TYPE_ARRAY: value = item
 		elif typeof(data) == TYPE_DICTIONARY: value = data[item]
 		var key = eval_arg(args[1], caller, value)
-#		Log.verbose(self, ["-----\n args: ", args, "\n key: ", key,
+#		Log.verbose(log_name, ["-----\n args: ", args, "\n key: ", key,
 #				"\n item: ", item, "\n data: ", data, "\n value: ", value])
 		if value.has(key): results.push_back(value[key])
 		# stuff for "true map" that didn't work
 #		var value = resolve(args[1])
-#		Log.verbose(self, ["(_map) resolved value: ", value])
+#		Log.verbose(log_name, ["(_map) resolved value: ", value])
 #		results.push_back(value)
-	Log.verbose(self, ["(_map) after: ", results])
+	Log.verbose(log_name, ["(_map) after: ", results])
 	return results
 
 # -----------------------------------------------------------
@@ -231,7 +261,7 @@ func _map(args, caller, parent):
 # dictionary or array, and the second is a condition object.
 # returns a dictionary or array containing the elements of
 # the former for which the latter resolves to true.
-func _filter(args, caller, parent):
+static func _filter(args, caller, parent):
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
 	var condition = args[1]
@@ -241,12 +271,12 @@ func _filter(args, caller, parent):
 	return results
 
 # accepts a single member, assumed to be an array or a dict.
-func _empty(arg, caller, parent):
+static func _empty(arg, caller, parent):
 	var data = eval_arg(arg, caller, parent)
 	if typeof(data) == TYPE_ARRAY or typeof(data) == TYPE_DICTIONARY:
 		return data.empty()
 	else:
-		Log.warn(self, "(_empty) argument is not a collection!")
+		Log.warn(log_name, "(_empty) argument is not a collection!")
 		return true
 
 
@@ -257,7 +287,7 @@ func _empty(arg, caller, parent):
 # residual from 1.0 - convenient for the basic comparators
 # but probably won't handle * context right, meaning it will
 # break for filtering
-func eval_args(data, caller, parent):
+static func eval_args(data, caller, parent):
 	assert(typeof(data) == TYPE_ARRAY and data.size() == 2)
 	var resolved_data = []
 	for arg in data:
@@ -266,7 +296,7 @@ func eval_args(data, caller, parent):
 
 # this is called from anybody who might get an argment with
 # seperators in it. expands the arg, then resolves it.
-func eval_arg(arg, caller = null, parent = null):
+static func eval_arg(arg, caller = null, parent = null):
 	var expanded = expand_ops(arg)
 	if typeof(expanded) == TYPE_DICTIONARY:
 		return resolve(expanded, caller, parent)
@@ -279,7 +309,7 @@ func eval_arg(arg, caller = null, parent = null):
 
 # accepts an ATOMIC (no seperators) string argument that may
 # or may not have a sigil.
-func eval_sigil(arg, caller, parent):
+static func eval_sigil(arg, caller, parent):
 	match arg[0]:
 		'$': return resolve_global(Utils.strip_sigil(arg))
 		'#': return Constants.new().get(Utils.strip_sigil(arg).capitalize().replace(' ', ''))
@@ -296,7 +326,7 @@ func eval_sigil(arg, caller, parent):
 # the seperator becomes the key, and the rest of the string
 # is split around it to become the arguments, which are then
 # expanded themselves.
-func expand_ops(arg):
+static func expand_ops(arg):
 	if typeof(arg) != TYPE_STRING: return arg
 	var op_pos = find_op(arg)
 	if op_pos:
@@ -318,7 +348,7 @@ func expand_ops(arg):
 # nested operator. meanwhile, expand_ops recurses from the
 # outside in, so we have to start at the END of the string
 # to obtain the correct structure.
-func find_op(arg):
+static func find_op(arg):
 	var op_pos
 	var max_pos = 0
 	for op in seperators:
