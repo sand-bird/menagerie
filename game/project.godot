@@ -69,10 +69,11 @@ indicators_enabled=true
 [display]
 
 window/size/width=320
-window/size/height=196
+window/size/height=208
 window/size/test_width=640
-window/size/test_height=392
+window/size/test_height=416
 window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 window/stretch/shrink="1"
 window/handheld/emulate_touchscreen=true
 emulate_touchscreen=true
