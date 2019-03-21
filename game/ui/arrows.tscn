@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://ui/arrows.gd" type="Script" id=1]
-[ext_resource path="res://assets/other/old/arrow_big.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/icons/arrow.png" type="Texture" id=2]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
