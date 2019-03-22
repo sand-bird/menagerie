@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
+"base": "Reference",
 "class": "Condition",
 "language": "GDScript",
 "path": "res://system/condition.gd"
@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://system/utils.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "Validator",
 "language": "GDScript",
 "path": "res://system/validator.gd"

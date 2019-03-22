@@ -1,48 +1,12 @@
-# class Condition
-# ---------------
 # evaluates and resolves conditions parsed from data files.
-
-extends Node
-
 class_name Condition
 const log_name = "Condition"
 
 # not a typo: actually a portmanteau of "separators" and
 # "operators". these apply to condition arguments
 const seperators = {
-	".": "get",
-	":": "map"
-}
-
-# dictionary of operators to the functions used to evaluate
-# them, accessed via GDScript's handy call() method.
-const lookup_func = {
-	# booleans
-	"and": "_and",
-	"or": "_or",
-	"not": "_not",
-
-	# comparators
-	"==": "_equals",
-	"!=": "_not_equals",
-	">": "_greater_than",
-	"<": "_less_than",
-	">=": "_greater_than_equals",
-	"<=": "_less_than_equals",
-	"in": "_in",
-
-	# separator operators (expanded seperators)
-	"map": "_map",
-	"get": "_get_op",
-
-	# collection operators
-	"filter": "_filter",
-	"max": "_max",
-	"min": "_min",
-	"total": "_total",
-	"first": "_first",
-	"last": "_last",
-	"empty": "_empty"
+	'.': 'get',
+	':': 'map'
 }
 
 # our global refs must be parsed at runtime, since not every
@@ -51,49 +15,42 @@ const lookup_func = {
 # otherwise this would be a dictionary also.
 static func resolve_global(arg):
 	match (arg):
-		"player":
-			return Player
-		"time":
-			return Time
-		"data":
-			return Data
-		"garden":
-			return Player
+		'player': return Player
+		'time': return Time
+		'data': return Data
+		'garden': return Player.garden
 
-# ----------------------------------------------------------- #
+# -----------------------------------------------------------
 
 static func call_fn(data, caller, parent):
 	# must have exactly one key
-	assert(data.keys().size() == 1)
+	if data.keys().size() != 1:
+		Log.error(log_name, [""])
+		return false
 	var key = data.keys()[0]
-	# key must be one of our known comparators
 	match key:
 		# booleans
-		"and": return _and(data[key], caller, parent)
-		"or": return _or(data[key], caller, parent)
-		"not": return _not(data[key], caller, parent)
-
+		'and': return _and(data[key], caller, parent)
+		'or': return _or(data[key], caller, parent)
+		'not': return _not(data[key], caller, parent)
 		# comparators
-		"==": return _equals(data[key], caller, parent)
-		"!=": return _not_equals(data[key], caller, parent)
-		">": return _greater_than(data[key], caller, parent)
-		"<": return _less_than(data[key], caller, parent)
-		">=": return _greater_than_equals(data[key], caller, parent)
-		"<=": return _less_than_equals(data[key], caller, parent)
-		"in": return _in(data[key], caller, parent)
-
-		# separator operators (expanded seperators)
-		"map": return _map(data[key], caller, parent)
-		"get": return _get_op(data[key], caller, parent)
-
+		'==': return _equals(data[key], caller, parent)
+		'!=': return _not_equals(data[key], caller, parent)
+		'>': return _greater_than(data[key], caller, parent)
+		'<': return _less_than(data[key], caller, parent)
+		'>=': return _greater_than_equals(data[key], caller, parent)
+		'<=': return _less_than_equals(data[key], caller, parent)
+		'in': return _in(data[key], caller, parent)
 		# collection operators
-		"filter": return _filter(data[key], caller, parent)
+		'map': return _map(data[key], caller, parent)
+		'get': return _get_op(data[key], caller, parent)
+		'filter': return _filter(data[key], caller, parent)
 		# "max": _max(data[key], caller, parent)
 		# "min": _min(data[key], caller, parent)
 		# "total": _total(data[key], caller, parent)
 		# "first": _first(data[key], caller, parent)
 		# "last": _last(data[key], caller, parent)
-		"empty": return _empty(data[key], caller, parent)
+		'empty': return _empty(data[key], caller, parent)
 
 # -----------------------------------------------------------
 

@@ -49,6 +49,7 @@ func load_garden(data):
 	garden = load("res://garden/garden.tscn").instance()
 	add_child(garden)
 	garden.init(data)
+	Player.garden = garden
 	Dispatcher.emit_signal("ui_close", 0)
 
 

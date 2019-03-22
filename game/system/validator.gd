@@ -1,5 +1,3 @@
-extends Node
-
 class_name Validator
 const log_name = "Validator"
 

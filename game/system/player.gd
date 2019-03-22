@@ -12,6 +12,8 @@ var last_update_time # used to update playtime
 var money
 var level
 
+var garden
+
 # the big boys
 var encyclopedia = {}
 var inventory = []
