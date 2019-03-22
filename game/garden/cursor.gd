@@ -17,13 +17,13 @@ var is_free = true
 
 # -----------------------------------------------------------
 
-#func _ready():
-#	$anim.play("cursor_bob")
-#	connect("item_rect_changed", self, "reset_anim")
-#	$stick_area.connect("body_entered", self, "stick")
-#	$unstick_area.connect("body_exited", self, "unstick")
-#	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-#	set_process(true)
+func _ready():
+	$anim.play("cursor_bob")
+	connect("item_rect_changed", self, "reset_anim")
+	$stick_area.connect("body_entered", self, "stick")
+	$unstick_area.connect("body_exited", self, "unstick")
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	set_process(true)
 
 # -----------------------------------------------------------
 
@@ -46,9 +46,11 @@ func stick(body):
 	is_free = false
 	# var sprite_size = body.get_node("sprite").texture.get_size()
 	graphic_dest = body.position
-	var sprite_size = body.get_node("shape").shape.radius * 2
-	hand_height = sprite_size + VERTICAL_HAND_OFFSET
-	Dispatcher.emit_signal("entity_highlighted", body)
+	var shape_node = body.get_node('shape')
+	if shape_node:
+		var sprite_size = shape_node.shape.radius * 2
+		hand_height = sprite_size + VERTICAL_HAND_OFFSET
+		Dispatcher.emit_signal("entity_highlighted", body)
 
 # -----------------------------------------------------------
 

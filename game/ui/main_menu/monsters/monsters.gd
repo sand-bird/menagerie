@@ -4,6 +4,6 @@ func _ready():
 	title = "Monsters"
 	initialize()
 
-func initialize():
-	.initialize()
+func initialize(args = null):
+	.initialize(args)
 	# specific stuff goes here

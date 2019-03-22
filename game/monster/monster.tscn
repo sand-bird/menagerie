@@ -9,6 +9,7 @@ script/source = "extends Sprite
 
 func _ready():
 	connect(\"texture_changed\", self, \"_offset_texture\")
+	_offset_texture()
 
 func _offset_texture():
 	offset.y = -texture.get_height()

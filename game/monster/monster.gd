@@ -1,9 +1,11 @@
 extends KinematicBody2D
 
+class_name Monster
+
 #warning-ignore-all:unused_class_variable
 
-var entity_type = Constants.EntityType.MONSTER
 var Anim = Constants.Anim
+var entity_type = Constants.EntityType.MONSTER
 
 signal drives_changed
 

@@ -54,31 +54,10 @@ var path = []
 var tpath = []
 
 func _input(e):
-	if e is InputEventMouseButton and e.is_pressed():
-		if test_mon:
-#			$nav.test(test_mon.get_position(), get_global_mouse_position())
-			path = $nav2.get_simple_path(test_mon.get_position(), get_global_mouse_position(), true)
-			print(path)
-			tpath = []
-			for i in path:
-				tpath.push_back(test_corner(i))
-			update()
-			test_mon.position = get_global_mouse_position()
+	if e is InputEventMouseButton and e.is_pressed() and test_mon:
+		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
+		test_mon.set_position(get_global_mouse_position())
 
-func _draw():
-	for i in path:
-		draw_circle(i, 3, Color(1, 1, 0))
-	for i in tpath:
-		draw_circle(i, 3, Color(1, 0, 1))
-
-const H = Vector2(8, 0)
-const V = Vector2(0, 8)
-
-func test_corner(p):
-	for dir in [H + V, H - V, -H + V, -H - V]:
-		if !$nav.is_walkable_at($nav.world_to_map(p + dir)):
-			return p - dir
-	return p
 
 # -----------------------------------------------------------
 
@@ -94,10 +73,10 @@ func test_corner(p):
 func highlight(entity):
 	print("(garden) entity ", entity, " has been highlighted!")
 	if entity.has_method("highlight"): entity.highlight()
-	$ui/select_hud.update(entity)
+	$ui/select_hud.select(entity)
 
 func unhighlight(entity):
-	$ui/select_hud.update(entity)
+	$ui/select_hud.unselect(entity)
 
 # -----------------------------------------------------------
 # color stuff

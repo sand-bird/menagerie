@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=1]
 [ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/other/old/box_inset.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=3]
 [ext_resource path="res://assets/ui/panels/box_outset_dark.tres" type="StyleBox" id=4]
 [ext_resource path="res://assets/ui/panels/box_outset_light.tres" type="StyleBox" id=5]
 [ext_resource path="res://ui/save_list/save_item.gd" type="Script" id=6]
@@ -11,7 +11,7 @@
 [ext_resource path="res://assets/ui/icons/monster.png" type="Texture" id=9]
 [ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=10]
 [ext_resource path="res://assets/ui/icons/encyclopedia.png" type="Texture" id=11]
-[ext_resource path="res://assets/other/old/clock_icon.png" type="Texture" id=12]
+[ext_resource path="res://assets/ui/icons/clock.png" type="Texture" id=12]
 [ext_resource path="res://assets/ui/icons/calendar.png" type="Texture" id=13]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=14]
 
@@ -27,9 +27,9 @@ custom_styles/normal = ExtResource( 5 )
 script = ExtResource( 6 )
 
 [node name="player_name" type="TextureRect" parent="."]
-margin_left = 9.0
+margin_left = 7.0
 margin_top = 6.0
-margin_right = 16.0
+margin_right = 14.0
 margin_bottom = 14.0
 mouse_filter = 2
 texture = ExtResource( 7 )
@@ -40,7 +40,7 @@ anchor_right = 1.0
 margin_left = 3.0
 margin_top = -1.0
 margin_right = 102.0
-margin_bottom = 21.0
+margin_bottom = 10.0
 rect_min_size = Vector2( 64, 0 )
 custom_colors/font_color = Color( 0.742188, 0.318909, 0.537162, 1 )
 text = "Michelle"
@@ -48,9 +48,9 @@ text = "Michelle"
 [node name="town_name" type="TextureRect" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -18.0
+margin_left = -17.0
 margin_top = 6.0
-margin_right = -8.0
+margin_right = -7.0
 margin_bottom = 14.0
 mouse_filter = 2
 texture = ExtResource( 8 )
@@ -66,9 +66,9 @@ text = "Sunshine"
 align = 2
 
 [node name="monsters" type="TextureRect" parent="."]
-margin_left = 8.0
+margin_left = 6.0
 margin_top = 20.0
-margin_right = 18.0
+margin_right = 16.0
 margin_bottom = 28.0
 mouse_filter = 2
 texture = ExtResource( 9 )
@@ -78,14 +78,14 @@ anchor_left = 1.0
 anchor_right = 1.0
 margin_left = 3.0
 margin_top = -1.0
-margin_right = 17.0
-margin_bottom = 11.0
-text = "99"
+margin_right = 18.0
+margin_bottom = 10.0
+text = "999"
 
 [node name="money" type="TextureRect" parent="."]
-margin_left = 80.0
+margin_left = 75.0
 margin_top = 20.0
-margin_right = 88.0
+margin_right = 83.0
 margin_bottom = 28.0
 mouse_filter = 2
 texture = ExtResource( 10 )
@@ -93,17 +93,17 @@ texture = ExtResource( 10 )
 [node name="label" type="Label" parent="money"]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = 3.0
+margin_left = 2.0
 margin_top = -1.0
-margin_right = 56.0
+margin_right = 55.0
 margin_bottom = 10.0
-text = "1,487,690"
+text = "999,999,999"
 
 [node name="encyclopedia" type="TextureRect" parent="."]
-margin_left = 39.0
-margin_top = 20.0
-margin_right = 49.0
-margin_bottom = 28.0
+margin_left = 38.2774
+margin_top = 19.7226
+margin_right = 48.2774
+margin_bottom = 27.7226
 mouse_filter = 2
 texture = ExtResource( 11 )
 
@@ -112,17 +112,17 @@ anchor_left = 1.0
 anchor_right = 1.0
 margin_left = 3.0
 margin_top = -1.0
-margin_right = 43.0
+margin_right = 23.0
 margin_bottom = 10.0
-rect_min_size = Vector2( 40, 0 )
-text = "58.9%"
+rect_min_size = Vector2( 16, 0 )
+text = "100%"
 
 [node name="playtime" type="TextureRect" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -16.0
+margin_left = -15.0
 margin_top = 20.0
-margin_right = -7.0
+margin_right = -6.0
 margin_bottom = 28.0
 mouse_filter = 2
 texture = ExtResource( 12 )
@@ -133,14 +133,14 @@ margin_top = -1.0
 margin_right = -2.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 56, 0 )
-text = "1020:43"
+text = "9999:99"
 align = 2
 clip_text = true
 
 [node name="time" type="TextureRect" parent="."]
-margin_left = 8.0
+margin_left = 6.0
 margin_top = 33.0
-margin_right = 18.0
+margin_right = 16.0
 margin_bottom = 41.0
 mouse_filter = 2
 texture = ExtResource( 13 )

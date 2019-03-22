@@ -83,7 +83,7 @@ func new_save(pname):
 	var dir = Directory.new()
 	if !dir.dir_exists(SAVE_ROOT):
 		dir.make_dir(SAVE_ROOT)
-	
+
 	current_save_dir = create_dirname(pname)
 	dir.make_dir(SAVE_ROOT.plus_file(current_save_dir))
 	save_game(new_save)
@@ -112,9 +112,10 @@ func load_game(save_dir):
 
 func is_save(dir_name):
 	var dir = Directory.new()
-	return (dir.dir_exists(SAVE_ROOT.plus_file(dir_name)) and
-			dir.file_exists(dir_name.plus_file(PLAYER)) and
-			dir.file_exists(dir_name.plus_file(GARDEN)))
+	var save_path = SAVE_ROOT.plus_file(dir_name)
+	return (dir.dir_exists(save_path) and
+			dir.file_exists(save_path.plus_file(PLAYER)) and
+			dir.file_exists(save_path.plus_file(GARDEN)))
 
 # -----------------------------------------------------------
 

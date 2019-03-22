@@ -49,7 +49,7 @@
             "sprites": "~sleep_front.png",
             "frames": 4,
             "fps": 1.5
-          },
+          }
         ],
         "lie_down": [
           {

@@ -53,9 +53,9 @@
         "current_action": null,
         "energy": 1.0,
         "father": null,
-        "monster_name": "Bumblebottom",
+        "monster_name": "Bunny!",
         "mood": 1.0,
-        "morph": "pink",
+        "morph": "sprout",
         "mother": null,
         "next_action": null,
         "past_actions": [],
@@ -63,13 +63,9 @@
           "x": 64,
           "y": 64
         },
-        "sprite": {
-          "id": "standing",
-          "flip": false
-        },
         "preferences": {},
         "social": 1.0,
-        "type": "pufig",
+        "type": "bunny",
         "traits": {
           "iq": 0,
           "learning": 0,
