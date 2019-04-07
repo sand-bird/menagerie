@@ -31,6 +31,16 @@
 1/navigation_offset = Vector2( 0, 0 )
 1/shapes = [  ]
 1/z_index = 0
+2/name = "terrains.png 2"
+2/texture = ExtResource( 4 )
+2/tex_offset = Vector2( 0, 0 )
+2/modulate = Color( 1, 1, 1, 1 )
+2/region = Rect2( 0, 32, 16, 16 )
+2/tile_mode = 0
+2/occluder_offset = Vector2( 0, 0 )
+2/navigation_offset = Vector2( 0, 0 )
+2/shapes = [  ]
+2/z_index = 0
 
 [sub_resource type="Animation" id=2]
 tracks/0/type = "value"
@@ -53,11 +63,11 @@ margin_bottom = 212.0
 script = ExtResource( 1 )
 
 [node name="bg" type="TextureRect" parent="."]
-visible = false
-margin_left = -272.0
-margin_top = -395.0
-margin_right = 1008.0
-margin_bottom = 885.0
+show_behind_parent = true
+margin_left = -427.23
+margin_top = -507.424
+margin_right = 852.77
+margin_bottom = 772.576
 texture = ExtResource( 2 )
 
 [node name="camera" parent="." instance=ExtResource( 3 )]
@@ -72,9 +82,11 @@ format = 1
 
 [node name="nav" type="Navigation2D" parent="."]
 show_behind_parent = true
+position = Vector2( -8, -8 )
 script = ExtResource( 5 )
 
 [node name="tilemap" type="TileMap" parent="nav"]
+show_behind_parent = true
 tile_set = ExtResource( 6 )
 cell_size = Vector2( 16, 16 )
 format = 1

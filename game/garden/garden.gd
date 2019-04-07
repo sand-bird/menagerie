@@ -2,7 +2,6 @@ extends Control
 
 #warning-ignore-all:unused_class_variable
 
-const Monster = preload("res://monster/monster.tscn")
 # const GardenObject = preload("res://garden/object.tscn")
 # const GardenItem = preload("res://garden/item.tscn")
 
@@ -57,7 +56,6 @@ func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
 		test_mon.set_position(get_global_mouse_position())
-
 
 # -----------------------------------------------------------
 
@@ -167,6 +165,7 @@ func load_monsters(data):
 		var monster = Monster.instance()
 		monster.initialize(data[uid])
 		monsters[uid] = monster
+		monster.garden = self
 		$entities.add_child(monster)
 
 # -----------------------------------------------------------
