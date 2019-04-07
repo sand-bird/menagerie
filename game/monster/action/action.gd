@@ -1,11 +1,20 @@
-extends Node
+class_name Action
 
-func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+class Base:
+	var monster: Monster
 
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+	func _init(monster):
+		self.monster = monster
+
+class Wander:
+	func _init(monster):
+		._init()
+
+class Walk extends Base:
+	func _init(monster):
+		# Called every time the node is added to the scene.
+		# Initialization here
+		._init()
+
+	func open():
+		pass

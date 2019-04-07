@@ -4,8 +4,8 @@ class_name Monster
 
 #warning-ignore-all:unused_class_variable
 
-var Anim = Constants.Anim
 var entity_type = Constants.EntityType.MONSTER
+var garden
 
 signal drives_changed
 
@@ -88,8 +88,6 @@ var velocity = Vector2(0, 0) # action property?
 # action properties:
 # max_force (scalar), max_speed (scalar)
 
-
-
 var collider # whatever we're about to hit next
 var collision # whatever we've just hit
 
@@ -104,16 +102,12 @@ var next_point = 0
 
 var dest
 
-
-
 # =========================================================== #
 #                        M E T H O D S                        #
 # ----------------------------------------------------------- #
 
 func _ready():
-#	connect("draw", self, "update_z")
 	Dispatcher.connect('tick_changed', self, '_update_drives', [])
-#	Dispatcher.connect("set_dest", self, "set_dest")
 	update_z()
 	set_physics_process(true)
 	choose_action()
@@ -121,11 +115,14 @@ func _ready():
 # -----------------------------------------------------------
 
 func get_position():
-	return Vector2(position.x, position.y - $shape.shape.radius)
+	return Vector2(
+		position.x + $shape.shape.radius,
+		position.y + $shape.shape.radius
+	)
 
 func set_position(pos):
-	position.x = pos.x
-	position.y = pos.y + $shape.shape.radius
+	position.x = pos.x - $shape.shape.radius
+	position.y = pos.y - $shape.shape.radius
 
 # -----------------------------------------------------------
 
@@ -137,8 +134,8 @@ func initialize(data):
 	var anim_data = Data.get([type, 'morphs', morph, 'animations'])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
-		play_animation(Anim.LIE_DOWN)
-		queue_animation(Anim.SLEEP)
+		play_animation(Constants.Anim.LIE_DOWN)
+		queue_animation(Constants.Anim.SLEEP)
 
 func play_animation(anim_id, loops = 0):
 	$sprite/anim.play_anim(anim_id, loops)
