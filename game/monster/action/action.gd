@@ -7,14 +7,14 @@ class Base:
 		self.monster = monster
 
 class Wander:
-	func _init(monster):
+	func _init(monster, args):
 		._init()
 
 class Walk extends Base:
-	func _init(monster):
-		# Called every time the node is added to the scene.
-		# Initialization here
-		._init()
+	var target
+
+	func _init(monster).(target):
+		self.target = target
 
 	func open():
 		pass
