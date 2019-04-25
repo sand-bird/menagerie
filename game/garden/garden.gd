@@ -161,6 +161,7 @@ func save_monsters():
 	return data
 
 func load_monsters(data):
+	var Monster = load('res://monster/monster.tscn')
 	for uid in data:
 		var monster = Monster.instance()
 		monster.initialize(data[uid])
