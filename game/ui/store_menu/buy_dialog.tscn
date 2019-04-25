@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
@@ -9,24 +9,17 @@
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=7]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=8]
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=9]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=10]
-[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=11]
-[ext_resource path="res://assets/ui/icons/items.png" type="Texture" id=12]
-[ext_resource path="res://assets/ui/themes/qty_panel_flat.tres" type="Theme" id=13]
-[ext_resource path="res://assets/ui/icons/inventory.png" type="Texture" id=14]
-
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
+[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=10]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=11]
+[ext_resource path="res://ui/store_menu/funds_footer.tscn" type="PackedScene" id=12]
 
 [sub_resource type="StyleBoxFlat" id=2]
-bg_color = Color( 0.780392, 0.690196, 0.545098, 1 )
+bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
 
 [sub_resource type="StyleBoxFlat" id=3]
-bg_color = Color( 0.913725, 0.709804, 0.639216, 1 )
+bg_color = Color( 0.780392, 0.690196, 0.545098, 1 )
 
-[sub_resource type="StyleBoxEmpty" id=4]
-
-[node name="store_item" type="Panel"]
+[node name="buy_dialog" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -34,25 +27,25 @@ anchor_bottom = 0.5
 margin_left = -77.0
 margin_top = -60.0
 margin_right = 74.0
-margin_bottom = 56.0
+margin_bottom = 55.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme = ExtResource( 1 )
 custom_styles/panel = ExtResource( 2 )
 
 [node name="background" parent="." instance=ExtResource( 3 )]
-margin_left = 4.05011
+margin_left = 4.35747
 margin_top = 4.26352
-margin_right = -3.94989
+margin_right = -3.64253
 margin_bottom = -3.73648
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 2 )
 
 [node name="buy" type="Button" parent="."]
 anchor_right = 1.0
 margin_left = 97.0
-margin_top = 60.0
+margin_top = 59.0
 margin_right = -12.0
-margin_bottom = 79.0
+margin_bottom = 78.0
 focus_mode = 0
 custom_styles/hover = ExtResource( 4 )
 custom_styles/pressed = ExtResource( 5 )
@@ -61,15 +54,15 @@ text = "BUY"
 
 [node name="arrows2" parent="." instance=ExtResource( 7 )]
 margin_left = 34.0
-margin_top = 64.0
+margin_top = 63.0
 margin_right = 65.0
-margin_bottom = 77.0
+margin_bottom = 76.0
 
 [node name="qty" type="PanelContainer" parent="."]
 margin_left = 34.0
-margin_top = 63.0
+margin_top = 62.0
 margin_right = 63.0
-margin_bottom = 78.0
+margin_bottom = 77.0
 rect_pivot_offset = Vector2( 212.702, -33.0049 )
 custom_styles/panel = ExtResource( 8 )
 __meta__ = {
@@ -101,60 +94,21 @@ valign = 1
 autowrap = true
 clip_text = true
 
-[node name="total1" type="Panel" parent="."]
-margin_left = 7.0
-margin_top = 40.0
-margin_right = 144.0
-margin_bottom = 54.0
-custom_styles/panel = ExtResource( 9 )
-
-[node name="total" type="Label" parent="total1"]
-margin_left = 8.07355
-margin_top = 2.0
-margin_right = 38.0735
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.729412, 0.458824, 0.415686, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
-text = "Total:"
-
-[node name="total_amt" type="Label" parent="total1"]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -91.0
-margin_top = 2.0
-margin_right = -17.0
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
-text = "-12,340,891"
-align = 2
-
-[node name="TextureRect" type="TextureRect" parent="total1/total_amt"]
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 1.0
-margin_top = 1.0
-margin_right = 9.0
-margin_bottom = -2.0
-texture = ExtResource( 10 )
-
 [node name="TextureRect" type="TextureRect" parent="."]
 margin_left = 5.0
 margin_top = 4.0
 margin_right = 45.0
 margin_bottom = 44.0
-texture = ExtResource( 11 )
+texture = ExtResource( 10 )
 
 [node name="separator" type="Panel" parent="."]
 margin_left = 9.0
-margin_top = 85.0
+margin_top = 84.0
 margin_right = 143.0
-margin_bottom = 86.0
-custom_styles/panel = SubResource( 2 )
+margin_bottom = 85.0
+custom_styles/panel = SubResource( 3 )
 
 [node name="total3" type="Panel" parent="."]
-visible = false
 margin_left = 40.0
 margin_top = 39.0
 margin_right = 143.0
@@ -169,13 +123,6 @@ margin_bottom = 14.1578
 custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
 custom_colors/font_color_shadow = Color( 0.913725, 0.709804, 0.639216, 1 )
 text = "Total:"
-
-[node name="underline" type="Panel" parent="total3"]
-visible = false
-margin_left = -29.0
-margin_top = 13.0
-margin_bottom = 14.0
-custom_styles/panel = SubResource( 3 )
 
 [node name="total_amt" type="Label" parent="total3"]
 anchor_left = 1.0
@@ -197,170 +144,11 @@ margin_left = 1.0
 margin_top = 1.0
 margin_right = 9.0
 margin_bottom = -2.0
-texture = ExtResource( 10 )
+texture = ExtResource( 11 )
 
-[node name="funds2" type="Panel" parent="."]
-editor/display_folded = true
-visible = false
-margin_left = 7.0
-margin_top = 95.0
-margin_right = 144.0
-margin_bottom = 108.0
-custom_styles/panel = SubResource( 4 )
-
-[node name="Panel" type="Panel" parent="funds2"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 46.0
-margin_bottom = 16.0
-custom_styles/panel = ExtResource( 9 )
-
-[node name="owned" type="Label" parent="funds2"]
-margin_left = 20.3264
-margin_top = 3.80856
-margin_right = 72.3264
-margin_bottom = 14.8086
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
-text = "999"
-
-[node name="TextureRect" type="TextureRect" parent="funds2/owned"]
-margin_left = -11.0
-margin_top = 1.0
-margin_right = -2.0
-margin_bottom = 9.0
-texture = ExtResource( 12 )
-
-[node name="PanelContainer" type="Panel" parent="funds2"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -81.0
-margin_top = -11.0
-margin_right = -1.0
-margin_bottom = 3.0
-custom_styles/panel = ExtResource( 9 )
-
-[node name="HBoxContainer" type="HBoxContainer" parent="funds2"]
-margin_left = 68.0
-margin_top = 4.0
-margin_right = 129.0
-margin_bottom = 15.0
-rect_min_size = Vector2( 60, 0 )
-custom_constants/separation = 1
-alignment = 2
-
-[node name="total_amt" type="Label" parent="funds2/HBoxContainer"]
-margin_left = 1.0
-margin_right = 52.0
-margin_bottom = 11.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
-text = "999,999,999"
-valign = 1
-
-[node name="CenterContainer" type="CenterContainer" parent="funds2/HBoxContainer"]
-margin_left = 53.0
-margin_right = 61.0
-margin_bottom = 11.0
-
-[node name="TextureRect" type="TextureRect" parent="funds2/HBoxContainer/CenterContainer"]
-margin_top = 1.0
-margin_right = 8.0
-margin_bottom = 9.0
-texture = ExtResource( 10 )
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="funds2"]
-margin_left = 6.0
-margin_top = -8.0
-margin_right = 47.0
-margin_bottom = 3.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-text = "Owned:"
-
-[node name="Label2" type="Label" parent="funds2"]
-margin_left = 89.0
-margin_top = -8.0
-margin_right = 131.0
-margin_bottom = 3.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-text = "Funds:"
-align = 2
-
-[node name="funds3" type="Panel" parent="."]
-margin_left = 7.0
-margin_top = 96.0
-margin_right = 144.0
-margin_bottom = 109.0
-custom_styles/panel = SubResource( 4 )
-
-[node name="owned" type="Panel" parent="funds3"]
-margin_left = 16.0
-margin_top = 3.0
-margin_right = 43.0
-margin_bottom = 16.0
-theme = ExtResource( 13 )
-
-[node name="label" type="Label" parent="funds3/owned"]
-margin_left = 2.0
-margin_top = 1.0
-margin_right = 26.0
-margin_bottom = 12.0
-text = "0"
-
-[node name="icon" type="TextureRect" parent="funds3/owned/label"]
-margin_left = -13.0
-margin_top = 1.0
-margin_right = -3.0
-margin_bottom = 9.0
-texture = ExtResource( 14 )
-
-[node name="funds" type="Panel" parent="funds3"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -70.0
-margin_top = -10.0
-margin_right = -14.0
-margin_bottom = 3.0
-theme = ExtResource( 13 )
-
-[node name="label" type="Label" parent="funds3/funds"]
-margin_left = 3.0
-margin_top = 0.850098
-margin_right = 55.0
-margin_bottom = 11.8501
-text = "500"
-align = 2
-valign = 1
-
-[node name="icon" type="TextureRect" parent="funds3/funds/label"]
-margin_left = 54.0
-margin_top = 1.0
-margin_right = 62.0
-margin_bottom = 9.0
-texture = ExtResource( 10 )
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="funds3"]
-margin_left = 6.0
-margin_top = -8.0
-margin_right = 47.0
-margin_bottom = 3.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.913725, 0.709804, 0.639216, 1 )
-text = "Owned:"
-
-[node name="Label2" type="Label" parent="funds3"]
-margin_left = 89.0
-margin_top = -8.0
-margin_right = 131.0
-margin_bottom = 3.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.913725, 0.709804, 0.639216, 1 )
-text = "Funds:"
-align = 2
+[node name="funds3" parent="." instance=ExtResource( 12 )]
+margin_left = 5.0
+margin_top = -5.0
+margin_right = -5.0
+margin_bottom = -5.0
 

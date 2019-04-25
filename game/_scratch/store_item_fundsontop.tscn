@@ -1,0 +1,252 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
+[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/ui/panels/box_border_outset.tres" type="StyleBox" id=4]
+[ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=5]
+[ext_resource path="res://ui/arrows.gd" type="Script" id=6]
+[ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=7]
+[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=8]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=9]
+[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=10]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
+
+[node name="store_item_fundsontop" type="Panel"]
+editor/display_folded = true
+visible = false
+margin_left = 83.0
+margin_top = 38.0
+margin_right = 234.0
+margin_bottom = 146.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource( 1 )
+custom_styles/panel = ExtResource( 2 )
+
+[node name="background" type="Panel" parent="." instance=ExtResource( 3 )]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.16609
+margin_top = 4.26352
+margin_right = -3.83391
+margin_bottom = -3.73648
+custom_styles/panel = SubResource( 1 )
+
+[node name="buy" type="Button" parent="."]
+anchor_right = 1.0
+margin_left = 101.0
+margin_top = 79.0
+margin_right = -12.0
+margin_bottom = 99.0
+custom_styles/normal = ExtResource( 4 )
+custom_colors/font_color_disabled = Color( 0.627451, 0.52549, 0.384314, 1 )
+text = "Buy"
+
+[node name="arrows2" type="Control" parent="." instance=ExtResource( 5 )]
+margin_left = 33.0
+margin_top = 83.0
+margin_right = 65.0
+margin_bottom = 96.0
+script = ExtResource( 6 )
+
+[node name="qty" type="PanelContainer" parent="."]
+editor/display_folded = true
+margin_left = 34.0
+margin_top = 82.0
+margin_right = 63.0
+margin_bottom = 97.0
+rect_pivot_offset = Vector2( 212.702, -33.0049 )
+custom_styles/panel = ExtResource( 7 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Label" type="Label" parent="qty"]
+margin_left = 1.0
+margin_top = 2.0
+margin_right = 28.0
+margin_bottom = 13.0
+text = "1"
+align = 1
+
+[node name="total1" type="Panel" parent="."]
+editor/display_folded = true
+visible = false
+margin_left = 7.0
+margin_top = 54.0
+margin_right = 144.0
+margin_bottom = 68.0
+custom_styles/panel = ExtResource( 8 )
+
+[node name="total" type="Label" parent="total1"]
+margin_left = 7.07355
+margin_top = 2.0
+margin_right = 37.0735
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "Total:"
+
+[node name="total_amt" type="Label" parent="total1"]
+margin_left = 69.0
+margin_top = 2.0
+margin_right = 121.0
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "-12,340,891"
+align = 2
+
+[node name="TextureRect" type="TextureRect" parent="total1/total_amt"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 9.0
+margin_bottom = -2.0
+texture = ExtResource( 9 )
+
+[node name="total2" type="Panel" parent="."]
+editor/display_folded = true
+margin_left = 39.0
+margin_top = 54.0
+margin_right = 144.0
+margin_bottom = 68.0
+custom_styles/panel = ExtResource( 8 )
+
+[node name="total" type="Label" parent="total2"]
+margin_left = -27.9265
+margin_top = 2.15778
+margin_right = 2.07355
+margin_bottom = 13.1578
+custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+text = "Total:"
+
+[node name="total_amt" type="Label" parent="total2"]
+margin_left = 40.1846
+margin_top = 1.54813
+margin_right = 89.1846
+margin_bottom = 12.5481
+custom_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "-12,340,891"
+align = 2
+
+[node name="TextureRect" type="TextureRect" parent="total2/total_amt"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 9.0
+margin_bottom = -2.0
+texture = ExtResource( 9 )
+
+[node name="funds" type="Panel" parent="."]
+editor/display_folded = true
+visible = false
+margin_left = 7.0
+margin_top = 39.0
+margin_right = 144.0
+margin_bottom = 53.0
+custom_styles/panel = ExtResource( 8 )
+
+[node name="total" type="Label" parent="funds"]
+margin_left = 7.07355
+margin_top = 2.0
+margin_right = 40.0735
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "Funds:"
+
+[node name="total_amt" type="Label" parent="funds"]
+margin_left = 69.0
+margin_top = 2.0
+margin_right = 121.0
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.443137, 0.254902, 0.231373, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "992,205,860"
+align = 2
+
+[node name="TextureRect" type="TextureRect" parent="funds/total_amt"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 9.0
+margin_bottom = -2.0
+texture = ExtResource( 9 )
+
+[node name="funds2" type="Panel" parent="."]
+editor/display_folded = true
+margin_left = 39.0
+margin_top = 39.0
+margin_right = 144.0
+margin_bottom = 53.0
+custom_styles/panel = ExtResource( 8 )
+
+[node name="total" type="Label" parent="funds2"]
+margin_left = -30.9265
+margin_top = 2.0
+margin_right = 2.07355
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+text = "Funds:"
+
+[node name="total_amt" type="Label" parent="funds2"]
+margin_left = 37.0
+margin_top = 2.0
+margin_right = 89.0
+margin_bottom = 13.0
+custom_colors/font_color = Color( 0.443137, 0.254902, 0.231373, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "992,205,860"
+align = 2
+
+[node name="TextureRect" type="TextureRect" parent="funds2/total_amt"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 9.0
+margin_bottom = -2.0
+texture = ExtResource( 9 )
+
+[node name="icon" type="TextureRect" parent="."]
+margin_left = 5.0
+margin_top = 4.0
+margin_right = 45.0
+margin_bottom = 44.0
+texture = ExtResource( 10 )
+
+[node name="name" type="Label" parent="."]
+margin_left = 39.0
+margin_top = 8.0
+margin_right = 144.0
+margin_bottom = 37.0
+custom_styles/normal = ExtResource( 8 )
+custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+text = "Potion of Good Fortune"
+align = 1
+valign = 1
+autowrap = true
+clip_text = true
+
+[node name="owned" type="Label" parent="."]
+visible = false
+margin_left = 11.4867
+margin_top = 76.9611
+margin_right = 56.4867
+margin_bottom = 87.9611
+text = "Owned:  3"
+
