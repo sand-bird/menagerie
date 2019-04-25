@@ -110,20 +110,18 @@ const GRID_PROPERTIES = {
 	GridSize.SMALL: {
 		grid_bg = "item_grid_small_9patch",
 		selector = "selector_small",
-		grid_offset = Vector2(0, 0),
 		item_size = Vector2(20, 20)
 	},
-	InventorySize.LARGE: {
+	GridSize.LARGE: {
 		grid_bg = "item_grid_large_9patch",
 		selector = "selector_big",
-		grid_offset = Vector2(2, 2),
 		item_size = Vector2(24, 24)
 	}
 }
 
 const INVENTORY_PROPERTIES = {
 	InventorySize.SMALL: {
-		columns = 6,
+		cols = 6,
 		rows = 6,
 		grid_size = GridSize.SMALL,
 		grid_bg = "item_grid_small",
@@ -131,7 +129,7 @@ const INVENTORY_PROPERTIES = {
 		selector_size = Vector2(0, 0),
 	},
 	InventorySize.LARGE: {
-		columns = 5,
+		cols = 5,
 		rows = 5,
 		grid_size = GridSize.LARGE,
 		grid_bg = "item_grid_large",
@@ -161,7 +159,7 @@ const MENU_CHAPTERS = {
 		condition = {"filter": [
 			"$player.inventory",
 			{"==": [
-				{"get": [{"get": ["$data", "*.id"]}, ".type"]},
+				{"get": [{"get": ["$data", "*.id"]}, "type"]},
 				"object"
 			]}
 		]},

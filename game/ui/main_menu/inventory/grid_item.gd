@@ -14,11 +14,11 @@ var index
 # here we are dealing with one specific "item" from the ui's
 # list. we receive its index in the grid (for communicating
 # what's been selected, i think?), and its data, which is the
-# pointer. the "props" argument contains size info for the
-# element, depending on the user's grid_size setting.
-func initialize(i, iref, props):
+# pointer. the "item_size" argument contains size info for
+# the element, depending on the parent ItemGrid's grid_size.
+func initialize(i, iref, item_size):
 	index = i
-	set_size(props.item_size)
+	set_size(item_size)
 	var item = Player.inventory[iref]
 	set_qty(item.qty)
 	$icon.texture = Data.get_resource([item.id, "icon"])
