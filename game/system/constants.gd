@@ -52,7 +52,13 @@ const ROOT_PATH = "/root/game"
 # --------- #
 
 enum ActionStatus {
-	SUCCESS, FAILURE, RUNNING, INTERRUPTED, ERROR
+	NEW,
+	RUNNING,
+	PAUSED,
+	SUCCESS,
+	FAILURE,
+	INTERRUPTED,
+	ERROR
 }
 
 # ------- #

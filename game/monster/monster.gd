@@ -186,6 +186,7 @@ func update_z():
 # -----------------------------------------------------------
 
 func choose_action():
+	current_action = Action.Wander.new(self)
 	randomize()
 #	if randf() < 0.5:
 #		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)

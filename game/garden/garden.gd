@@ -5,21 +5,17 @@ extends Control
 # const GardenObject = preload("res://garden/object.tscn")
 # const GardenItem = preload("res://garden/item.tscn")
 
-var color_night = Color("66588c")
-var color_dawn = Color("db9ab4")
-var color_morning = Color("dbc2b8")
-var color_noon = Color("fbffe6")
-var color_afternoon = Color("fcdec3")
-var color_evening = Color("e48b9a")
-var color_dusk = Color("b268dc")
-
+# todo: move the color logic to the actual tint node whenever
+# it becomes relevant. we will probably want to tint locales
+# too, so it should be independent from the garden.
 var colors = {
-	6: color_dawn,
-	8: color_morning,
-	11: color_noon,
-	14: color_afternoon,
-	18: color_evening,
-	20: color_dusk
+	6: Color("db9ab4"), # dawn
+	8: Color("dbc2b8"), # morning
+	11: Color("fbffe6"), # midday
+	14: Color("fcdec3"), # afternoon
+	18: Color("e48b9a"), # evening
+	20: Color("b268dc"), # dusk
+	23: Color("66588c") # night
 }
 
 # we maintain a lookup table for our entities, primarily so
@@ -56,6 +52,9 @@ func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
 		test_mon.set_position(get_global_mouse_position())
+
+func calc_path(start, end):
+	return $nav.calc_path(start, end)
 
 # -----------------------------------------------------------
 
