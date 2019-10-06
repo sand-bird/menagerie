@@ -9,7 +9,7 @@ enum BufType {
 }
 
 export var line_spacing: int = 2
-export var text: String
+export var text: String = '{_1.0}We can do syntax-based pauses... (or not\\.\\.\\.){n}Insert newlines and {_0.5}manual pauses{_1.0}, {>0.2}change the{/} {>1.5}speeeeeeed{/}, and use {#FF00FF}colors{/} and {~}effects!{/}'
 
 onready var FONT_HEIGHT = font.get_height()
 onready var LINE_HEIGHT = FONT_HEIGHT + line_spacing
@@ -21,6 +21,7 @@ var _buf = []
 # ----------------------------------------------------------- #
 
 const TOKENS = {
+	'+': { key = 'anim', value = 'shaky' },
 	'~': { key = 'anim', value = 'wavy' },
 	'#': { key = 'color' },
 	'>': { key = 'speed', apply = 'float' },
@@ -169,7 +170,7 @@ func set_modifier(token, arg):
 	if arg:
 		_modifiers[mod.key] = (
 			call(mod.apply, arg)
-			if safe_truthy('apply', mod)
+			if exists_in('apply', mod)
 			else arg
 		)
 	else:
@@ -235,7 +236,7 @@ func next_char(i):
 
 func do_anim(i, pos) -> Vector2:
 	return (call(_buf[i].anim, i, pos)
-			if safe_truthy('anim', _buf[i]) else pos)
+			if exists_in('anim', _buf[i]) else pos)
 
 
 #                     a n i m a t i o n s
@@ -244,13 +245,21 @@ func do_anim(i, pos) -> Vector2:
 func wavy(i, pos) -> Vector2:
 	return pos + Vector2(
 		0, # cos((time * 10) - i),
-		sin((time * 8) - i * 0.8) * 1.6
+		sin((time * 10) - i * 0.5) * 1
 	)
 
 func wavy2(i, pos):
 	return pos + Vector2(
 		cos((time * 10) - i * 1.5) * 1,
 		sin((time * 10) - i * 1.5) * 2
+	)
+
+func shaky(i, pos):
+	return pos + Vector2(
+		0 if sin(i * 2 + time) < 2 % (i + 4) - 1.2
+				else sin(time * 8 + i) * 0.7,
+		0 if sin(i * 2 + time) > 2 % (i + 4) - 1.8
+				else sin(time * 8 + i) * 0.7
 	)
 
 # seriously why do we have to do this
@@ -271,5 +280,8 @@ func get_max_lines(font_height, line_spacing, max_height):
 
 # -----------------------------------------------------------
 
-func safe_truthy(prop, dict):
+# note: apparently we care about whether dict[prop] is truthy,
+# not just whether it exists. (not sure why though - there
+# doesn't seem to be any usage here where it would matter)
+func exists_in(prop, dict):
 	return prop in dict and dict[prop]
