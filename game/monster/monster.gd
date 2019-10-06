@@ -149,9 +149,9 @@ func queue_animation(anim_id, loops = 0):
 # update when facing direction changes
 var time = 0
 func _physics_process(delta):
-	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
-		choose_action()
-	current_action.tick()
+#	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
+#		choose_action()
+#	current_action.tick()
 	time += delta
 
 	$orientation.cast_to = orientation * 20
@@ -193,7 +193,7 @@ func update_z():
 
 func choose_action():
 	pass
-	current_action = Action.Walk.new(self, Vector2(0, 0))
+#	current_action = Action.Walk.new(self, Vector2(0, 0))
 #	randomize()
 #	if randf() < 0.5:
 #		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)

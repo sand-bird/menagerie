@@ -17,13 +17,16 @@ func is_walkable_at_pos(pos):
 
 func is_walkable_at(x, y):
 	var tile_at = $tilemap.get_cell(x, y)
-	var navpoly = tile_at and $tilemap.tile_set.tile_get_navigation_polygon(tile_at)
+	# var navpoly = $tilemap.tile_set.tile_get_navigation_polygon(tile_at)
+	# print(tile_at, navpoly)
 	var size = $tilemap.get_used_rect().size
 	var in_bounds = (x >= 0 && y >= 0 and x < size.x && y < size.y)
-	return navpoly and in_bounds
+	return tile_at == 0 and in_bounds
 
 var path := []
 var tpath := []
+var walkable = []
+var not_walkable = []
 
 func calc_path(from_pos, to_pos):
 	path = get_simple_path(from_pos, to_pos, true)
@@ -31,7 +34,7 @@ func calc_path(from_pos, to_pos):
 	tpath = [path.front()]
 	for i in range(1, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
-		test_corner(path[i])
+		# test_corner(path[i])
 	tpath.push_back(path.back())
 	.update()
 	return tpath
@@ -40,10 +43,14 @@ func _draw():
 	var hsv = 0.0
 	var hsv_step = 1.0 / max(tpath.size(), 1)
 	for i in tpath:
-		.draw_circle(i, 2, Color.from_hsv(hsv, 1, 0.9))
+		.draw_circle(i, 4, Color.from_hsv(hsv, 1, 0.9))
 		hsv += hsv_step
 	for i in path:
-		.draw_circle(i, 1, Color(0, 0, 0))
+		.draw_circle(i, 1, Color(1, 1, 1))
+	for i in walkable:
+		.draw_circle(i, 2, Color(0, 1, 1))
+	for i in not_walkable:
+		.draw_circle(i, 2, Color(1, 0, 1))
 	path = []
 	tpath = []
 
@@ -53,5 +60,7 @@ const V = Vector2(0, 8)
 func test_corner(p):
 	for dir in [H + V, H - V, -H + V, -H - V]:
 		if !is_walkable_at_pos(p + dir):
+			not_walkable.push_back(p + dir)
 			return p - dir
+		else: walkable.push_back(p + dir)
 	return p
