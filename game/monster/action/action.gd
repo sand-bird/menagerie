@@ -3,7 +3,7 @@ extends Node
 class_name Action
 
 class Base:
-	const Status = Constants.ActionStatus
+	var Status = Constants.ActionStatus
 
 	var sleep_timer: int = 0
 	var status = Status.NEW
@@ -14,11 +14,16 @@ class Base:
 
 	func tick():
 		if status == Status.NEW:
-			_open()
+			open()
 		if sleep_timer:
 			sleep_timer -= 1
 		else:
-			return _tick()
+			_tick()
+			return status
+
+	func open():
+		status = Status.RUNNING
+		_open()
 
 	func exit(exit_status):
 		status = exit_status
@@ -42,36 +47,52 @@ class Walk extends Base:
 		self.destination = destination
 
 	func _open():
-		calc_path()
+		path = calc_path()
 
 	func _tick():
-		calc_path()
+		#calc_path()
 		if should_advance_path():
 			if path.size() <= 1:
 				return exit(Status.SUCCESS)
 			path.pop_front()
-		seek(path.front())
+
+		var steering = seek(path.front())
+		var acceleration = steering / monster.mass
+		monster.current_velocity = (monster.current_velocity + acceleration).clamped(monster.max_speed)
+
 
 	func should_advance_path():
-		return monster.get_pos().distance_squared_to(
-				path.front()) < 16
+		return monster.get_position().distance_squared_to(
+				path.front()) < 250
 
-	func seek(target: Vector2):
-		var desired_velocity = (monster.get_pos() - target
-				).normalized() * monster.max_speed
-		var steering = desired_velocity - monster.velocity
+	func seek(target):
+		var desired_velocity = (target - monster.get_position()
+				).normalized() * monster.max_velocity
+		monster.desired_velocity = desired_velocity
+
+		var steering = desired_velocity - monster.current_velocity
 		return steering
 
+	# steering_force = truncate (steering_direction, max_force)
+    # acceleration = steering_force / mass
+    # velocity = truncate (velocity + acceleration, max_speed)
+    # position = position + velocity
+
 	func calc_path():
-		path = monster.garden.calc_path(
-			monster.get_pos(), destination
+		return monster.garden.calc_path(
+			monster.get_position(), destination
 		)
 
 # -----------------------------------------------------------
 
 class Wander extends Base:
+	var destination
+
+	func _init(monster).(monster):
+		pass
+
 	func _open():
-		pick_destination()
+		destination = pick_destination()
 
 	func pick_destination():
 		randomize()
@@ -80,5 +101,4 @@ class Wander extends Base:
 			rand_range(-1, 1)
 		)
 		var distance = rand_range(80, 200)
-		var dest = (direction * distance) + monster.get_pos()
-		return dest
+		return (direction * distance) + monster.get_position()

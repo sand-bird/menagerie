@@ -81,10 +81,9 @@ var preferences = {}
 
 # movement
 # --------
-var mass = 100 # from entity definition
+var mass = 40 # from entity definition
 # position (Vector2): built-in property
 var orientation = Vector2(0, 1) setget _update_orientation
-var velocity = Vector2(0, 0) # action property?
 # action properties:
 # max_force (scalar), max_speed (scalar)
 
@@ -92,10 +91,11 @@ var collider # whatever we're about to hit next
 var collision # whatever we've just hit
 
 var destination
-var max_speed = 40
-var max_velocity = max_speed * 2
+var max_speed = 20
+var max_velocity = 0.5
 var current_velocity = Vector2(0, 0)
-var arrival_radius = max_velocity / 4
+var desired_velocity = Vector2(0, 0)
+var arrival_radius = max_velocity * 4
 
 var points = []
 var next_point = 0
@@ -149,18 +149,24 @@ func queue_animation(anim_id, loops = 0):
 # update when facing direction changes
 var time = 0
 func _physics_process(delta):
-#	if !current_action or current_action.execute() != Status.RUNNING:
-#		choose_action()
-#	current_action.execute()
+	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
+		choose_action()
+	current_action.tick()
 	time += delta
-	var rad = time * 2
-#	self.orientation = Vector2(cos(rad), sin(rad))
-	if rad > 2 * PI: time = 0
+
 	$orientation.cast_to = orientation * 20
-	if dest and position.distance_squared_to(dest) > 5:
-		move_and_slide((dest - position).normalized() * 40)
-	else:
-		dest = null
+	$velocity.cast_to = current_velocity * 20
+	$desired_velocity.cast_to = desired_velocity * 20
+	position += current_velocity
+
+#	var rad = time * 2
+#	self.orientation = Vector2(cos(rad), sin(rad))
+#	if rad > 2 * PI: time = 0
+#	$orientation.cast_to = orientation * 20
+#	if dest and position.distance_squared_to(dest) > 5:
+#		move_and_slide((dest - position).normalized() * 40)
+#	else:
+#		dest = null
 
 # -----------------------------------------------------------
 
@@ -186,8 +192,9 @@ func update_z():
 # -----------------------------------------------------------
 
 func choose_action():
-	current_action = Action.Wander.new(self)
-	randomize()
+	pass
+	current_action = Action.Walk.new(self, Vector2(0, 0))
+#	randomize()
 #	if randf() < 0.5:
 #		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)
 #	else:
