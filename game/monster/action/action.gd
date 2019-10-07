@@ -63,7 +63,7 @@ class Walk extends Base:
 
 	func should_advance_path():
 		return monster.get_position().distance_squared_to(
-				path.front()) < 250
+				path.front()) < 25
 
 	func seek(target):
 		var desired_velocity = (target - monster.get_position()

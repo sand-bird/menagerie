@@ -53,6 +53,8 @@ func _draw():
 		.draw_circle(i, 2, Color(1, 0, 1))
 	path = []
 	tpath = []
+	walkable = []
+	not_walkable = []
 
 const H = Vector2(8, 0)
 const V = Vector2(0, 8)
