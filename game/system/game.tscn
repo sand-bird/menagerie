@@ -51,4 +51,3 @@ margin_right = 230.0
 margin_bottom = 172.0
 text = "TOGGLE SIZE"
 script = SubResource( 2 )
-

@@ -1,12 +1,5 @@
 extends CanvasLayer
 
-enum Layer {
-	BACKGROUND = 0
-	HUD = 1
-	MENU = 2
-	POPUP = 3
-}
-
 const UI_PATH = "res://ui/"
 const EXT = ".tscn"
 const R = "{REF}" # placeholder string (R is for "replace")
@@ -235,7 +228,9 @@ func process_ref(ref: String): # -> String | undefined
 # -----------------------------------------------------------
 
 func load_node(path: String) -> Node:
-	return load(path).instance()
+	var script = load(path)
+	var instance = script.instance()
+	return instance
 
 # -----------------------------------------------------------
 

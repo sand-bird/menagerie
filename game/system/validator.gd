@@ -209,13 +209,13 @@ func validate_string(data: String, schema: Dictionary,
 	if 'maxLength' in schema and is_non_negative_int(schema.maxLength):
 		result &= report(
 			data.length() < schema.maxLength,
-			'max_length_exceeded', [schema.maxLength, data.length],
+			'max_length_exceeded', [schema.maxLength, data.length()],
 			breadcrumb, sources
 		)
 	if 'minLength' in schema and is_non_negative_int(schema.minLength):
 		result &= report(
 			data.length() > schema.minLength,
-			'min_length_not_met', [schema.minLength, data.length],
+			'min_length_not_met', [schema.minLength, data.length()],
 			breadcrumb, sources
 		)
 	if 'pattern' in schema:

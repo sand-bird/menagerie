@@ -23,13 +23,18 @@ custom_styles/panel = ExtResource( 2 )
 script = ExtResource( 3 )
 
 [node name="background" parent="." instance=ExtResource( 4 )]
+anchor_left = 0.000916554
+anchor_right = 1.00092
+margin_left = 3.80936
+margin_right = -4.19066
+margin_bottom = -2.0
 
 [node name="title" type="Label" parent="."]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -48.0
+margin_left = -47.8093
 margin_top = 6.0
-margin_right = 48.0
+margin_right = 48.1907
 margin_bottom = 20.0
 custom_styles/normal = ExtResource( 5 )
 text = "Records"
@@ -65,4 +70,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -6.0
 margin_right = 6.0
-

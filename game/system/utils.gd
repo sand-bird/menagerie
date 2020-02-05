@@ -116,17 +116,17 @@ static func strip_sigil(s):
 # -----------------------------------------------------------
 
 static func ordinalize(num):
-	var ord
+	var ordinal
 	num = int(num)
 	if num % 100 in range(11, 14):
-		ord = "th"
+		ordinal = "th"
 	else:
 		var ending = num % 10
-		if ending == 1: ord = "st"
-		elif ending == 2: ord = "nd"
-		elif ending == 3: ord = "rd"
-		else: ord = "th"
-	return str(num) + ord
+		if ending == 1: ordinal = "st"
+		elif ending == 2: ordinal = "nd"
+		elif ending == 3: ordinal = "rd"
+		else: ordinal = "th"
+	return str(num) + ordinal
 
 # -----------------------------------------------------------
 

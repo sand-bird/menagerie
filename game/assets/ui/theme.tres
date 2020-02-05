@@ -89,4 +89,3 @@ VButtonArray/styles/focus = null
 VButtonArray/styles/hover = ExtResource( 2 )
 VButtonArray/styles/normal = ExtResource( 2 )
 VButtonArray/styles/selected = ExtResource( 3 )
-
