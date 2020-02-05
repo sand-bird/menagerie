@@ -5,7 +5,7 @@ const MOD_DIR = "res://mods"
 const DATA_EXT= "json"
 const SCHEMA_EXT = "schema"
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # regular path resolution is "res://" + [path].
 # for a mod we must look for [path] in *every subfolder* of:
@@ -59,7 +59,7 @@ func init():
 	Log.debug(self, ["schemas: ", schemas.keys()])
 	Log.verbose(self, schemas)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get(a):
 	var args = Utils.pack(a)
@@ -85,7 +85,7 @@ func get_resource(a):
 	var path = get(a)
 	return ResourceLoader.load(path) if (path) else null
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # TODO
 #func filter(a):
@@ -93,12 +93,12 @@ func get_resource(a):
 #	match data:
 #		a: Log.info(self, "hello")
 
-# =========================================================== #
-#                     . M O D C O N F I G                     #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                             . M O D C O N F I G                             #
+# --------------------------------------------------------------------------- #
 
-# fetches modconfig from the place where we keep it. if there
-# is no modconfig, we make one (duh).
+# fetches modconfig from the place where we keep it. if there is no modconfig,
+# we make one (duh).
 func load_modconfig():
 	var modconfig = Utils.read_file(MOD_DIR.plus_file(".modconfig"))
 	if !modconfig: modconfig = {
@@ -107,20 +107,19 @@ func load_modconfig():
 	}
 	return modconfig
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_modconfig(modconfig):
 	Utils.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# checks mod directory against modconfig for any new mods.
-# we call either check_modinfo or add_modinfo for every mod
-# found, depending on whether it's in modconfig already.
-# important: both of these functions add a temporary flag to
-# that mod's info, "found", to be used by clean_modconfig,
-# which wipes the flag when it is done. this is why we call
-# clean_modconfig from here, rather than from _ready.
+# checks mod directory against modconfig for any new mods. we call either
+# check_modinfo or add_modinfo for every mod found, depending on whether it's
+# in modconfig already. important: both of these functions add a temporary flag
+# to that mod's info, "found", to be used by clean_modconfig, which wipes the
+# flag when it is done. this is why we call clean_modconfig from here, rather
+# than from _ready.
 func update_modconfig(modconfig):
 	var dir = Directory.new()
 	dir.open(MOD_DIR)
@@ -139,17 +138,16 @@ func update_modconfig(modconfig):
 		current = dir.get_next()
 	clean_modconfig(modconfig)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# looks for the presence of a "found" key, which is set by
-# add_modinfo and check_modinfo, in each entry in modconfig.
-# since update_modconfig crawls the mod directory and calls
-# one of those for each valid mod it finds, we can expect it
-# to be set for all mods ~*found*~ in the directory. we clear
-# the "found" key after we've seen it.
+# looks for the presence of a "found" key, which is set by add_modinfo and
+# check_modinfo, in each entry in modconfig. since update_modconfig crawls the
+# mod directory and calls one of those for each valid mod it finds, we can
+# expect it to be set for all mods ~*found*~ in the directory. we clear the
+# "found" key after we've seen it.
 #
-# fyi, we do these shenanigans so we don't have to crawl the
-# directory all over again in search of missing mods.
+# fyi, we do these shenanigans so we don't have to crawl the directory all over
+# again in search of missing mods.
 func clean_modconfig(modconfig):
 	for i in modconfig.load_order.size():
 		var id = modconfig.load_order[i]
@@ -162,19 +160,18 @@ func clean_modconfig(modconfig):
 			modconfig.mods.erase(id)
 			modconfig.load_order.remove(i)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# formerly it checked the entire mod directory to see if any
-# of the files inside had a more recent date_modified. now it
-# checks the version in the mod's meta.data against the one
-# known to our modconfig. right now this is mostly relevant
-# for updating the schema list.
+# formerly it checked the entire mod directory to see if any of the files
+# inside had a more recent date_modified. now it checks the version in the
+# mod's meta.data against the one known to our modconfig. right now this is
+# mostly relevant for updating the schema list.
 #
-# ALSO i just realized that we need to make sure the mod's
-# directory is what we expect it to be. phew, BUG AVERTED
+# ALSO i just realized that we need to make sure the mod's directory is what we
+# expect it to be. phew, BUG AVERTED
 #
-# note: if we're here, it means we've already validated that
-# the passed-in modinfo's id exists in modconfig.mods.
+# note: if we're here, it means we've already validated that the passed-in
+# modinfo's id exists in modconfig.mods.
 func check_modinfo(modconfig, modinfo, path):
 	var mod_id = modinfo.id
 	var saved_info = modconfig.mods[mod_id]
@@ -194,7 +191,7 @@ func check_modinfo(modconfig, modinfo, path):
 
 	saved_info.found = true
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # new mod! yay!
 func add_modinfo(modconfig, modinfo, path):
@@ -211,9 +208,9 @@ func add_modinfo(modconfig, modinfo, path):
 	modconfig.load_order.append(modinfo.id)
 
 
-# =========================================================== #
-#                   L O A D I N G   D A T A                   #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                           L O A D I N G   D A T A                           #
+# --------------------------------------------------------------------------- #
 
 func load_mod_schemas(modconfig):
 	for mod in modconfig.load_order:
@@ -225,7 +222,7 @@ func load_mod_schemas(modconfig):
 			Log.info(self, ["mod: `", mod, "` | schema: `", schema, "`"])
 			# load schema
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_mod_data(modconfig):
 	for id in modconfig.load_order:
@@ -236,7 +233,7 @@ func load_mod_data(modconfig):
 		load_data(modconfig.mods[id].path, sourceinfo)
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_data(dirname, sourceinfo):
 	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
@@ -264,11 +261,11 @@ func load_data(dirname, sourceinfo):
 		current = dir.get_next()
 	return loaded
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# basically file i/o boilerplate so we can call process_data.
-# accepts the path either in two arguments, the directory and
-# the filename, or as a single arg containing the full path.
+# basically file i/o boilerplate so we can call process_data. accepts the path
+# either in two arguments, the directory and the filename, or as a single arg
+# containing the full path.
 func load_datafile(path, sourceinfo):
 	Log.debug(self, ["loading data from file: `", path, "`"])
 	var filedata = Utils.read_file(path)
@@ -282,7 +279,7 @@ func load_datafile(path, sourceinfo):
 	filedata.sources = [sourceinfo]
 	return { filedata.id: filedata }
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_schemafile(path, sourceinfo):
 	Log.debug(self, ["loading schema from file: `", path, "`"])
@@ -294,21 +291,19 @@ func load_schemafile(path, sourceinfo):
 	return { path.get_basename().get_file(): schema }
 
 
-# =========================================================== #
-#                P R O C E S S I N G   D A T A                #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                        P R O C E S S I N G   D A T A                        #
+# --------------------------------------------------------------------------- #
 
-# okay, new plan. we don't want to resolve sigils on LOAD;
-# that would make validation (which should happen once, post-
-# load) a big headache, and open us up to a bunch of fatal
-# errors from stuff not getting found, which is exactly what
-# all this validation nonsense is supposed to prevent. plus,
-# we can't resolve @ sigils (instance properties) right now
-# anyway, for obvious reasons.
-#
-# as for fileref sigils, we should resolve the sigil to the
-# full filepath (this is the only time we will know what it
-# is), but don't load the resource yet for the reasons above.
+# okay, new plan. we don't want to resolve sigils on LOAD; that would make
+# validation (which should happen once, post- load) a big headache, and open us
+# up to a bunch of fatal errors from stuff not getting found, which is exactly
+# what all this validation nonsense is supposed to prevent. plus, we can't
+# resolve @ sigils (instance properties) right now anyway, for obvious reasons.
+
+# as for fileref sigils, we should resolve the sigil to the full filepath (this
+# is the only time we will know what it is), but don't load the resource yet
+# for the reasons above.
 func process_data(data, basedir):
 	var collection = data.size() if typeof(data) == TYPE_ARRAY else data
 	for i in collection:
@@ -318,22 +313,20 @@ func process_data(data, basedir):
 			data[i] = basedir.plus_file(Utils.strip_sigil(data[i]))
 	return data
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# if we find multiple instances of some data, we should try
-# to intelligently merge them. the second argument, the "mod"
-# dict, takes precedence over the first. we do the following:
+# if we find multiple instances of some data, we should try to intelligently
+# merge them. the second argument, the "mod" dict, takes precedence over the
+# first. we do the following:
 # - keys that do not appear in the base dict are added
-# - keys that lead to dicts in the base dict *and* in the mod
-#   dict are dealt with recursively. the goal is to prevent
-#   loss of data whenever possible, so the game ideally never
-#   misses something it's expecting (like a sub-subproperty).
-#   if the mod dict is trying to replace a dictionary
-#   property with something else, it's probably user error.
-# - for keys that lead to arrays in the base dict, whatever's
-#   in the mod dict is appended to them. there is no type
-#   checking here, obviously, so if we were expecting an
-#   array of dicts and the mod doesn't conform, we're SOL.
+# - keys that lead to dicts in the base dict *and* in the mod dict are dealt
+# 	with recursively. the goal is to prevent loss of data whenever possible,
+# 	so the game ideally never misses something it's expecting (like a nested
+# 	subproperty). if the mod dict is trying to replace a dictionary property
+# 	with something else, it's probably user error.
+# - for keys that lead to arrays in the base dict, whatever's in the mod dict
+#   is appended to them. there is no type checking here, obviously, so if we
+#   were expecting an array of dicts and the mod doesn't conform, we're SOL.
 func merge(base, mod):
 	if !mod: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
@@ -355,18 +348,18 @@ func merge(base, mod):
 		else: base[k] = mod[k]
 	return base
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # oh boy
 func validate ():
 	return true
 
 
-# =========================================================== #
-#                  M O D I F I E D   T I M E                  #
-# ----------------------------------------------------------- #
-# we're not using these right now, but there's nothing wrong
-# with them so we might as well leave em in.
+# =========================================================================== #
+#                          M O D I F I E D   T I M E                          #
+# --------------------------------------------------------------------------- #
+# we're not using these right now, but there's nothing wrong with them so we
+# might as well leave em in.
 
 func get_modified_time(dirname):
 	var modtime = 0
@@ -385,7 +378,7 @@ func get_modified_time(dirname):
 		current = dir.get_next()
 	return modtime
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func is_current(time, dirname):
 	var file = File.new()
@@ -400,8 +393,8 @@ func is_current(time, dirname):
 		current = dir.get_next()
 	return true
 
-#                 o t h e r   s t u f f
-# -----------------------------------------------------------
+#                         o t h e r   s t u f f
+# --------------------------------------------------------------------------- #
 
 func list_dir(dirname):
 	Log.info(self, "==========================")
