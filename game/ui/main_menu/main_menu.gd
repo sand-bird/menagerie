@@ -17,10 +17,9 @@ func _ready():
 	make_tabs()
 
 
-# =========================================================== #
-#                           T A B S                           #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                                   T A B S                                   #
+# --------------------------------------------------------------------------- #
 func make_tabs():
 	var chapters = Constants.MENU_CHAPTERS
 	for id in chapters:
@@ -28,7 +27,7 @@ func make_tabs():
 				Condition.resolve(chapters[id].condition)):
 			new_tab(id, chapters[id])
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func new_tab(id, data):
 	var tab = MenuTab.instance()
@@ -36,10 +35,9 @@ func new_tab(id, data):
 	$content/tabs.add_child(tab)
 
 
-# =========================================================== #
-#                       C H A P T E R S                       #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                               C H A P T E R S                               #
+# --------------------------------------------------------------------------- #
 # triggered on a `menu_open` dispatch.
 func open(input = null):
 	var chapter = Utils.unpack(input)
@@ -54,10 +52,10 @@ func open(input = null):
 	load_scene(chapter_info.scene)
 	set_current(chapter)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# updates our state and the tab array's state to reflect the
-# newly opened menu chapter.
+# updates our state and the tab array's state to reflect the newly opened menu
+# chapter.
 func set_current(chapter):
 	current = chapter
 	Log.debug(self, ["(set_current) chapter: '", current, "'"])
@@ -71,11 +69,11 @@ func set_current(chapter):
 			prev = tabs[i - 1].id if i > 0 else tabs[tabs.size() - 1].id
 		else: tabs[i].is_current = false
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_scene(scene_path):
-	# in case our new scene doesn't override all the header
-	# info set by our last scene, we reset it to default
+	# in case our new scene doesn't override all the header info set by our
+	# last scene, we reset it to default
 	reset_headers()
 
 	var new_scene = Utils.load_relative(filename, scene_path).instance()
@@ -87,14 +85,13 @@ func load_scene(scene_path):
 		$content/book/chapter.remove_child(current_scene)
 		current_scene.queue_free()
 	current_scene = new_scene
-	# note that the new chapter sends some signals to tell us
-	# to update stuff when it is initialized through _ready.
-	# it's working now, which i guess means _ready is called
-	# when a node is added to the scene tree. if chapter info
-	# ever mysteriously breaks after a godot update, look here.
+	#  note that the new chapter sends some signals to tell us to update stuff
+	#  when it is initialized through _ready. it's working now, which i guess
+	#  means _ready is called when a node is added to the scene tree. if
+	# chapter info ever mysteriously breaks after a godot update, look here.
 	$content/book/chapter.add_child(current_scene)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_chapter_info(chapter):
 	var chapters = Constants.MENU_CHAPTERS
@@ -102,12 +99,11 @@ func get_chapter_info(chapter):
 		return chapters[chapter]
 
 
-# =========================================================== #
-#                        H E A D E R S                        #
-# ----------------------------------------------------------- #
-
-#                        s e t t e r s
-# -----------------------------------------------------------
+# =========================================================================== #
+#                                H E A D E R S                                #
+# --------------------------------------------------------------------------- #
+#                                s e t t e r s
+# --------------------------------------------------------------------------- #
 
 func set_title(text):
 	$content/book/title.text = text
@@ -123,8 +119,8 @@ func reset_headers():
 	set_page_text(DEFAULT_TITLE)
 	set_arrow_visibility(0, 0)
 
-#                       t r i g g e r s
-# -----------------------------------------------------------
+#                               t r i g g e r s
+# --------------------------------------------------------------------------- #
 
 func _on_arrow(offset):
 	if current_scene and current_scene.has_method('change_page'):
@@ -138,7 +134,7 @@ func _on_page_info_changed(args):
 	set_page_text(str(args[0] + 1, " / ", args[1]))
 	set_arrow_visibility(args[0], args[1])
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _input(e):
 	if e.is_action_pressed('ui_focus_prev'): open(prev)

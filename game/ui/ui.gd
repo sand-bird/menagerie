@@ -15,17 +15,16 @@ const REFS = [
 ]
 
 const DEFAULT_MENU_PAGE = 'options'
-# we can't count on our main_menu node always being
-# instantiated, but we still want to remember the last open
-# menu page, so we'll keep track of it here instead
+
+# we can't count on our main_menu node always being instantiated, but we still
+# want to remember the last open menu page, so we keep track of it here instead
 var last_menu_page
 
-# UI used to be a singleton, where `ui_node` held a reference
-# to the instanced CanvasLayer that would hold the instances
-# of the nodes in our stack. that was silly, since (a) we
-# only have one instanced ui node, and (b) UI's primary
-# function is to instantiate scenes anyway - but let's keep
-# the variable around, just in case.
+# UI used to be a singleton, where `ui_node` held a reference to the instanced
+# CanvasLayer that would hold the instances of the nodes in our stack. that was
+# silly, since (a) we only have one instanced ui node, and (b) UI's primary
+# function is to instantiate scenes anyway - but let's keep the variable
+# around, just in case.
 var ui_node = self
 
 var stack = []
@@ -37,27 +36,25 @@ func _ready():
 	Dispatcher.connect('menu_open', self, 'open_menu')
 
 
-# =========================================================== #
-#                S I G N A L   H A N D L I N G                #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                        S I G N A L   H A N D L I N G                        #
+# --------------------------------------------------------------------------- #
 
-# can happen in a few different ways, depending on values
-# passed by the caller when it triggers the signal.
-# accepts a single argument: either a STRING representing
-# the item_ref of the ui element to open (implying default
-# for the others), or an ARRAY with the following elements:
+# can happen in a few different ways, depending on values passed by the caller
+# when it triggers the signal. accepts a single argument: either a STRING
+# representing the item_ref of the ui element to open (implying default for the
+# others), or an ARRAY with the following elements:
 # 0: item_ref (string), required
-# 1: open_type (enum), optional - determines how the element
-#    will interact with existing elements:
-#    DEFAULT (null) - uses the "layer" variable specified in
-#      the element, if it exists, else falls back to OVERLAY
-#    OVERLAY (-1) - uses the current highest layer value plus
-#      one, making restore_on_close meaningless
-#    CUSTOM (any other int) - uses the given number as the
-#      new element's layer value
-# 2: restore_on_close (boolean), optional - indicates whether
-#    the replaced elements, if there are any, should be
-#    restored when this element is closed. defaults to true.
+# 1: open_type (enum), optional - determines how the element will interact with
+#    existing elements:
+#    DEFAULT (null) - uses the "layer" variable specified in the element, if it
+#      exists, else falls back to OVERLAY
+#    OVERLAY (-1) - uses the current highest layer value plus one, making
+#      restore_on_close meaningless
+#    CUSTOM (any int) - uses the given number as the new element's layer value
+# 2: restore_on_close (boolean), optional - indicates whether the replaced
+#    elements, if there are any, should be restored when this element is
+#    closed. defaults to true.
 func open(args):
 	get_tree().paused = true
 	Log.debug(self, ["(open) args: ", args])
@@ -93,14 +90,13 @@ func open(args):
 	Log.debug(self, ["(open) pushing to ui stack: ", item])
 	return push(item)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# TODO: here we should accept a node pointer (or maybe an
-# item_ref) indicating that we want to close a specific node.
-# we search the stack for this node, pop it (and everything
-# above it) if we find it, or quit if we don't (meaning it
-# was already removed). this will help with cases that can't
-# be handled elegantly using layer values.
+# TODO: here we should accept a node pointer (or maybe an item_ref) indicating
+# that we want to close a specific node. we search the stack for this node, pop
+# it (and everything above it) if we find it, or quit if we don't (meaning it
+# was already removed). this will help with cases that can't be handled
+# elegantly using layer values.
 func close(arg = null):
 	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
 	if item.has('restore') and item.restore:
@@ -108,13 +104,12 @@ func close(arg = null):
 	if stack.empty():
 		get_tree().paused = false
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# executed when we hear a 'menu_open' signal. the main menu
-# scene listens for the signal on its own, so if it's already
-# loaded it will handle it - but if not, we need to add it to
-# the ui stack and then call its open function manually.
-# we also take this opportunity to update last_menu_page.
+# executed when we hear a 'menu_open' signal. the main menu scene listens for
+# the signal on its own, so if it's already loaded it will handle it - but if
+# not, we need to add it to the ui stack and then call its open function
+# manually. we also take this opportunity to update last_menu_page.
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
@@ -135,7 +130,7 @@ func open_menu(arg = null):
 	var menu = open(menu_path)
 	menu.open(page)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func open_select(arg):
 	var selected = Utils.unpack(arg)
@@ -143,21 +138,19 @@ func open_select(arg):
 	select_ui.initialize(selected)
 
 
-# =========================================================== #
-#               S T A C K   O P E R A T I O N S               #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                       S T A C K   O P E R A T I O N S                       #
+# --------------------------------------------------------------------------- #
 func push(item):
 	var pop_from
-	# look through the stack for items that match or exceed the
-	# layer value of our current item. these would have layered
-	# above our new item, so they need to be removed.
+	# look through the stack for items that match or exceed the layer value of
+	# our current item. these would have layered above our new item, so they
+	# need to be removed.
 	for i in stack.size():
 		if stack[i].layer < item.layer: continue
 		if pop_from == null: pop_from = i
 		if !item.has('restore'): break
-		# we want everything but the noderef, since
-		# the node will be deleted anyway.
+		# keep everything but the noderef, since the node will be deleted anyway
 		var restore_item = {
 			layer = stack[i].layer,
 			path = stack[i].path,
@@ -182,12 +175,11 @@ func push(item):
 
 	return node
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# currently only accepts an index to the stack. that's
-# probably fine; in future we will want to handle a noderef
-# argument for ui_close, so that nodes can close themselves,
-# but this can be handled in close() instead of here.
+# currently only accepts an index to the stack. that's probably fine; in future
+# we will want to handle a noderef argument for ui_close, so that nodes can
+# close themselves, but this can be handled in close() instead of here.
 # (int, bool) -> dict | undefined
 #warning-ignore:unused_argument
 func _pop(i = null, restore = true):
@@ -195,9 +187,9 @@ func _pop(i = null, restore = true):
 		Log.warn(self, "stack is empty!")
 		return
 
-	# if we're trying to pop something that isn't at the top
-	# of the stack, we have to pop everything above it first.
-	# we throw away any restore data for those items (for now)
+	# if we're trying to pop something that isn't at the top of the stack, we
+	# have to pop everything above it first. we throw away any restore data for
+	# those items (for now)
 	if i != null:
 		Log.verbose(self, ["(_pop) clearing items between our index (",
 				i, ") and the top index (", stack.size() - 1, ")"])
@@ -213,10 +205,9 @@ func _pop(i = null, restore = true):
 	return item
 
 
-# =========================================================== #
-#            A U X I L I A R Y   F U N C T I O N S            #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                    A U X I L I A R Y   F U N C T I O N S                    #
+# --------------------------------------------------------------------------- #
 func process_ref(ref: String): # -> String | undefined
 	# first we try the ref
 	var file = File.new()
@@ -225,20 +216,19 @@ func process_ref(ref: String): # -> String | undefined
 		if file.file_exists(path): return path
 	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_node(path: String) -> Node:
 	var script = load(path)
 	var instance = script.instance()
 	return instance
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# the "layer value" of a ui element determines which elements
-# it will replace (those with an equal or greater value) and
-# which it will overlay. here we look up the layer value for
-# our new element based on the open_type property that was
-# passed to open() by whoever emitted the signal (see above).
+# the "layer value" of a ui element determines which elements it will replace
+# (those with an equal or greater value) and which it will overlay. here we
+# look up the layer value for our new element based on the open_type property
+# that was passed to open() by whoever emitted the signal (see above).
 func get_layer_value(open_type, path):
 	if open_type == null:
 		var node = load_node(path)
@@ -248,7 +238,7 @@ func get_layer_value(open_type, path):
 		return get_next_layer()
 	else: return open_type
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_next_layer():
 	var max_layer = 0
@@ -258,11 +248,10 @@ func get_next_layer():
 				max_layer = element.layer
 	return max_layer + 1
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# the `process` argument lets us skip processing the ref if
-# we know it's been processed already (assuming the argument
-# is an item_ref and not a node pointer)
+# the `process` argument lets us skip processing the ref if we know it's been
+# processed already (assuming the arg is an item_ref and not a node pointer)
 func find_item(arg, process = true):
 	if arg == null: return
 	elif typeof(arg) == TYPE_STRING:
@@ -270,7 +259,7 @@ func find_item(arg, process = true):
 	elif typeof(arg) == TYPE_OBJECT:
 		return find_item_by_node(arg)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func find_item_by_path(ref, process = true):
 	var path = process_ref(ref) if process else ref
@@ -278,7 +267,7 @@ func find_item_by_path(ref, process = true):
 	for i in stack.size():
 		if stack[i].path == path: return i
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func find_item_by_node(node):
 	for i in stack.size():

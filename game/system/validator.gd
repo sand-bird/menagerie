@@ -18,22 +18,20 @@ const messages = {
 	maximum_exceeded = "is too large (should be at most %s, but is %s)."
 }
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# if the result is false (meaning error), we report it using
-# the given arguments, then pass it along.
-# - message_key: some key in our `messages` dict, for getting
-#     the error message.
-# - message_args: passed to the message we get after looking
-#     up `message_key`. currently we don't verify whether the
-#     number of args matches up... so, uh, be careful
-# - breadcrumb: eg, 'pufig.morphs.pink'; identifies the thing
-#     that failed validation. goes in front of our message
-# - sources: when data is loaded, each mod that contributes
-#     to a data definition is added to its 'sources' array.
-#     the dict we see here has 'data' and 'schema' keys with
-#     the sources array for each, corresponding to the ROOT
-#     of the breadcrumb (eg 'pufig').
+# if the result is false (meaning error), we report it using the given
+# arguments, then pass it along.
+# - message_key: some key in our `messages` dict, for getting the error message
+# - message_args: passed to the message we get after looking up `message_key`.
+#     currently we don't verify whether the number of args matches up...
+#     so, uh, be careful
+# - breadcrumb: eg, 'pufig.morphs.pink'; identifies the thing that failed
+#     validation. goes in front of our message
+# - sources: when data is loaded, each mod that contributes to a data
+#     definition is added to its 'sources' array. the dict we see here has
+#     'data' and 'schema' keys with the sources array for each, corresponding
+#     to the ROOT of the breadcrumb (eg 'pufig').
 func report(result: int, message_key: String, message_args: Array,
 		breadcrumb: String, sources: Dictionary) -> int:
 	if not result:
@@ -48,11 +46,10 @@ func report(result: int, message_key: String, message_args: Array,
 	else:
 		return 1
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# actually, we should just validate the schemas with a meta-
-# schema before running validation on our actual data files.
-# TODO: delete me
+# actually, we should just validate the schemas with a metaschema before
+# running validation on our actual data files. TODO: delete me
 func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
 	var message = str("schema warning: found bad keyword '", key,
 			"' when testing '", breadcrumb, "'.")
@@ -62,7 +59,7 @@ func warn_schema(key: String, breadcrumb: String, sources: Dictionary) -> void:
 
 	Log.warn(log_name, message)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func sources_to_string(sources: Array) -> String:
 	var source_strings: PoolStringArray = []
@@ -70,7 +67,7 @@ func sources_to_string(sources: Array) -> String:
 		source_strings.append(str(sources[i].id, " (v", sources[i].version, ")"))
 	return str("sources: ", source_strings.join(", "))
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_type(data):
 	return {
@@ -83,7 +80,7 @@ func get_type(data):
 		TYPE_BOOL: 'boolean'
 	}[typeof(data)]
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func is_non_negative_int(x):
 	return x is int and x >= 0
@@ -92,7 +89,7 @@ func is_non_negative_int(x):
 func is_number(x):
 	return x is int or x is float
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func matches_any(data, items, f):
 	var matches = false
@@ -102,7 +99,7 @@ func matches_any(data, items, f):
 			break
 	return matches
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func matches_type(data, type):
 	match type:
@@ -115,10 +112,10 @@ func matches_type(data, type):
 		'integer': return data is int
 	return true
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# using hashes for a cheap deep equals. not sure if this is a
-# viable shortcut -- keep an eye on it in future
+# using hashes for a cheap deep equals. 
+# not sure if this is a viable shortcut -- keep an eye on it in future
 func deep_equals(a, b):
 	if typeof(a) != typeof(b):
 		return false
@@ -127,12 +124,12 @@ func deep_equals(a, b):
 	return a == b
 
 
-# =========================================================== #
-#             V A L I D A T E   F U N C T I O N S             #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                     V A L I D A T E   F U N C T I O N S                     #
+# --------------------------------------------------------------------------- #
 
-# maybe todo: make this do_validate (called internally), and
-# make the validate function first validate the schema
+# maybe todo: make this do_validate (called internally), and make the validate 
+# function first validate the schema
 func validate(data, schema: Dictionary, breadcrumb: String = "",
 		sources: Dictionary = {}) -> int:
 	Log.verbose(log_name, ["(validate) ", breadcrumb])
@@ -179,7 +176,7 @@ func validate(data, schema: Dictionary, breadcrumb: String = "",
 	Log.verbose(log_name, ["(validate) ", breadcrumb, " | result: ", result])
 	return result
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func validate_integer(data, schema, breadcrumb, sources) -> int:
 	return validate_number(data, schema, breadcrumb, sources)
@@ -201,7 +198,7 @@ func validate_number(data, schema: Dictionary,
 	Log.verbose(log_name, ["(validate_number) ", breadcrumb, " | result: ", result])
 	return result
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func validate_string(data: String, schema: Dictionary,
 		breadcrumb: String = "", sources: Dictionary = {}) -> int:
@@ -229,7 +226,7 @@ func validate_string(data: String, schema: Dictionary,
 	Log.verbose(log_name, ["(validate_string) ", breadcrumb, " | result: ", result])
 	return result
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func validate_array(data: Array, schema: Dictionary,
 		breadcrumb: String, sources: Dictionary) -> int:

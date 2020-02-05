@@ -11,7 +11,7 @@ func _ready():
 	$pages/arrows.connect("change_page", self, "change_page")
 	load_page(0)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func add_save_item(index, save_info):
 	Log.verbose(self, ["adding save item: ", save_info])
@@ -19,7 +19,7 @@ func add_save_item(index, save_info):
 	save_item.load_info(index, save_info)
 	$container.add_child(save_item)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func change_page(offset): load_page(current_page + offset)
 
@@ -41,7 +41,7 @@ func load_page(pagenum):
 
 	update_page_display()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func update_page_display():
 	var total_pages = ((saves.size() - 1) / SAVES_PER_PAGE) + 1

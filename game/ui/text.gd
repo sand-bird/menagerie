@@ -16,10 +16,9 @@ onready var LINE_HEIGHT = FONT_HEIGHT + line_spacing
 
 var _buf = []
 
-# =========================================================== #
-#                  I N P U T   P A R S I N G                  #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                          I N P U T   P A R S I N G                          #
+# --------------------------------------------------------------------------- #
 const TOKENS = {
 	'+': { key = 'anim', value = 'shaky' },
 	'~': { key = 'anim', value = 'wavy' },
@@ -56,11 +55,11 @@ var _last_space = 0
 var _current_line = ''
 var _line_count = 1
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _ready(): tokenize(text)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func tokenize(raw: String) -> void:
 	var current_at = 0
@@ -68,18 +67,17 @@ func tokenize(raw: String) -> void:
 
 	var i = 0
 	while i < raw.length():
-		# if '\', escape the next character. `is_escaped` is
-		# reset to false after each character is processed.
+		# if '\', escape the next character. `is_escaped` is reset to false after
+		# each character is processed.
 		if raw[i] == '\\' and !is_escaped:
 			is_escaped = true
 			i += 1
 			continue
 
-		# if it's a tag, we parse it, then continue processing
-		# the string from the end of the tag. if the tag is a
-		# substitution, it manipulates `raw`, and sets i to the
-		# beginning of the substitution string. if somebody sets
-		# up recursive looping substitutions, we are in trouble
+		# if it's a tag, we parse it, then continue processing the string from the
+		# end of the tag. if the tag is a substitution, it manipulates `raw`, and
+		# sets i to the beginning of the substitution string. if somebody sets up
+		# recursive looping substitutions, we are in trouble
 		elif raw[i] == '{' and !is_escaped:
 			i = parse_tag(i, raw) + 1
 			continue
@@ -97,19 +95,18 @@ func tokenize(raw: String) -> void:
 					else DEFAULT_COLOR)
 		})
 
-		# if this character has associated pause data, we add
-		# it to `current_at` AFTER pushing the character to the
-		# render buffer, so that the pause occurs between the
-		# current character and the next one.
+		# if this character has associated pause data, we add it to `current_at`
+		# AFTER pushing the character to the render buffer, so that the pause
+		# occurs between the current character and the next one.
 		if raw[i] in PAUSES and !is_escaped:
 			current_at += PAUSES[raw[i]]
 
 		if raw[i] == ' ':
 			_last_space = _buf.size() - 1
-		# if we pass individual characters to get_string_size(),
-		# it can't account for kerning, so we have to give it the
-		# whole string at once. as we process each character, we
-		# dump it into `current_line`, then measure the result.
+
+		# if we pass individual characters to get_string_size(), it can't account
+		# for kerning, so we give it the whole string so far at once. as we process
+		# each character, we dump it into `current_line`, then measure the result.
 		_current_line += raw[i]
 		if font.get_string_size(_current_line).x > MAX_WIDTH:
 			insert_newline(true)
@@ -118,7 +115,7 @@ func tokenize(raw: String) -> void:
 		is_escaped = false
 		i += 1
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func insert_newline(use_last_space = false):
 	_current_line = ''
@@ -133,12 +130,12 @@ func insert_newline(use_last_space = false):
 	_last_space = 0
 	_line_count += 1
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func parse_tag(i: int, raw: String) -> int:
-	# find the bounds of our tag. we always skip over the tab
-	# opener unless it was explicitly escaped; but if the tag
-	# is invalid, we can return without doing anything else.
+	# find the bounds of our tag. we always skip over the tab opener unless it
+	# was explicitly escaped; but if the tag is invalid, we can return without
+	# doing anything else.
 	var end_of_tag: int = raw.find('}', i)
 	var start_of_next_tag: int = raw.find('{', i + 1)
 	if end_of_tag < 0 or (start_of_next_tag > 0
@@ -163,7 +160,7 @@ func parse_tag(i: int, raw: String) -> int:
 
 	return end_of_tag
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func set_modifier(token, arg):
 	var mod = TOKENS[token]
@@ -186,10 +183,9 @@ func reset_modifier(token):
 	_modifiers[modkey] = MOD_DEFAULTS[modkey]
 
 
-# =========================================================== #
-#                      R E N D E R I N G                      #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                              R E N D E R I N G                              #
+# --------------------------------------------------------------------------- #
 onready var rid = get_canvas_item()
 onready var START_POS = Vector2(0, font.get_ascent())
 
@@ -199,7 +195,7 @@ func _physics_process(delta: float):
 	time += delta
 	update()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _draw():
 	var pos = START_POS
@@ -213,8 +209,8 @@ func _draw():
 				pos.x += do_draw_char(i, pos)
 
 
-#               r e n d e r   f u n c t i o n s
-# -----------------------------------------------------------
+#                       r e n d e r   f u n c t i o n s
+# --------------------------------------------------------------------------- #
 
 func do_draw_char(i: int, pos: Vector2) -> int:
 	return font.draw_char(
@@ -227,8 +223,8 @@ func do_draw_char(i: int, pos: Vector2) -> int:
 func draw_image(i: int, pos: Vector2) -> int:
 	return 0
 
-#                        h e l p e r s
-# -----------------------------------------------------------
+#                                h e l p e r s
+# --------------------------------------------------------------------------- #
 
 func next_char(i):
 	return _buf[i + 1].uni if (i < _buf.size() - 1
@@ -239,8 +235,8 @@ func do_anim(i, pos) -> Vector2:
 			if exists_in('anim', _buf[i]) else pos)
 
 
-#                     a n i m a t i o n s
-# -----------------------------------------------------------
+#                             a n i m a t i o n s
+# --------------------------------------------------------------------------- #
 
 func wavy(i, pos) -> Vector2:
 	return pos + Vector2(
@@ -266,10 +262,9 @@ func shaky(i, pos):
 func float(x): return float(x)
 
 
-# =========================================================== #
-#                          U T I L S                          #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                                  U T I L S                                  #
+# --------------------------------------------------------------------------- #
 func get_max_lines(font_height, line_spacing, max_height):
 	var max_lines = 0
 	var total_height = font_height
@@ -278,10 +273,10 @@ func get_max_lines(font_height, line_spacing, max_height):
 		max_lines += 1
 	return max_lines
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# note: apparently we care about whether dict[prop] is truthy,
-# not just whether it exists. (not sure why though - there
-# doesn't seem to be any usage here where it would matter)
+# note: apparently we care about whether dict[prop] is truthy, not just whether
+# it exists. (not sure why though - there doesn't seem to be any usage here
+# where it would matter)
 func exists_in(prop, dict):
 	return prop in dict and dict[prop]
