@@ -1,24 +1,23 @@
 extends Node
 
-# disable erroneous "unused class variable" warnings, as of
-# godot 3.1. maybe something about the enum imports?
+# disable erroneous "unused class variable" warnings, as of godot 3.1. maybe
+# something about the enum imports?
 #warning-ignore-all:unused_class_variable
 
-# =========================================================== #
-#                      C O N S T A N T S                      #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                              C O N S T A N T S                              #
+# --------------------------------------------------------------------------- #
 var ControlMode = Constants.ControlMode
 var ScrollMode = Constants.ScrollMode
 var InventorySize = Constants.InventorySize
 var Language = Constants.Language
 
-# =========================================================== #
-#                        O P T I O N S                        #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                                O P T I O N S                                #
+# --------------------------------------------------------------------------- #
 
-#                           g a m e                           #
-# ----------------------------------------------------------- #
+#                                   g a m e                                   #
+# --------------------------------------------------------------------------- #
 
 const TextSpeed = {
 	1: 16.0,
@@ -31,13 +30,13 @@ const TextSpeed = {
 var autosave_interval = "hour"
 var text_speed = TextSpeed[3] # characters per second
 
-#                      i n v e n t o r y                      #
-# ----------------------------------------------------------- #
+#                              i n v e n t o r y                              #
+# --------------------------------------------------------------------------- #
 
 var inventory_size = InventorySize.SMALL
 
-#                          i n p u t                          #
-# ----------------------------------------------------------- #
+#                                  i n p u t                                  #
+# --------------------------------------------------------------------------- #
 
 var control_mode = ControlMode.MOUSE_AND_KEY
 
@@ -48,17 +47,17 @@ var keybindings = {
 	camera_right = KEY_D
 }
 
-# presumably called by game.gd when it detects a change in input - or by
-# the settings ui when we change it manually
+# presumably called by game.gd when it detects a change in input - or by the
+# settings ui when we change it manually
 func set_control_mode(mode):
 	control_mode = mode
 
-#                         c a m e r a                         #
-# ----------------------------------------------------------- #
+#                                 c a m e r a                                 #
+# --------------------------------------------------------------------------- #
 
-# these are both the defaults (for now) and all the possible
-# scroll mode options for each control mode; remember to keep
-# track of both these things elsewhere
+# these are both the defaults (for now) and all the possible scroll mode
+# options for each control mode; remember to keep track of both these things
+# elsewhere
 var scroll_modes = {
 	ControlMode.MOUSE_AND_KEY: [
 		ScrollMode.EDGE_SCROLL,
@@ -99,10 +98,9 @@ func set_scroll_disabled(mode):
 		scroll_modes[control_mode].erase(mode)
 
 
-# =========================================================== #
-#                  S E R I A L I Z A T I O N                  #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
 func _ready():
 #	print(InputMap.get_signal_list())
 #	print(InputMap.get_actions())
