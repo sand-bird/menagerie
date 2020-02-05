@@ -2,8 +2,8 @@ extends Camera2D
 
 var ScrollMode = Constants.ScrollMode
 
-# so we can turn off drag scrolling if we are using
-# drag for something else, such as laying tiles.
+# so we can turn off drag scrolling if we are using drag for something else,
+# such as laying tiles.
 var drag_action = "scroll"
 
 # options used for drag scroll
@@ -37,7 +37,7 @@ var max_pos
 onready var last_mouse_pos = get_local_mouse_position()
 var target_pos = Vector2()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _ready():
 	get_tree().connect("screen_resized", self, "_on_screen_resized")
@@ -48,11 +48,11 @@ func _ready():
 	set_process(true)
 #	set_process_input(true) # we'll need this for joystick & button scroll (maybe)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # func _input(event): pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _on_screen_resized():
 	get_screen_settings()
@@ -60,7 +60,7 @@ func _on_screen_resized():
 	center()
 
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_screen_settings():
 	screen_size = get_viewport_rect().size
@@ -68,16 +68,15 @@ func get_screen_settings():
 	edge_width = screen_size * EDGE_SIZE
 	dead_zone_radius = screen_radius - edge_width
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# calculates and stores the properties of the camera's parent
-# node (the garden) so we can initialize it to the center and
-# stop it from scrolling too far past the parent's boundaries.
-# no relation to the screen size properties.
+# calculates and stores the properties of the camera's parent node (the garden)
+# so we can initialize it to the center and stop it from scrolling too far past
+# the parent's boundaries. no relation to the screen size properties.
 #
-# for now, lets us view a fifth of the parent's size or a
-# quarter of the screen size, whichever's smaller, of space
-# outside the bounds of the parent (magic numbers below).
+# for now, lets us view a fifth of the parent's size or a quarter of the screen
+# size, whichever's smaller, of space outside the bounds of the parent (magic
+# numbers below).
 func get_bounds():
 	# set up our member vars
 # 	base_pos = get_parent().get_global_pos() # i guess not???
@@ -93,18 +92,17 @@ func get_bounds():
 	min_pos = Utils.vmin((parent_min - bound_padding).round(), center_pos)
 	max_pos = Utils.vmax((parent_max + bound_padding - screen_size).round(), center_pos)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func center():
 	position = center_pos
 	target_pos = center_pos
 	align()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# scroll based on touch (or click) input. moves the camera
-# opposite the drag direction and magnitude to create the
-# impression of dragging the screen.
+# scroll based on touch (or click) input. moves the camera opposite the drag
+# direction and magnitude to create the impression of dragging the screen.
 func do_drag_scroll():
 	if Input.is_mouse_button_pressed(1) && drag_action == "scroll":
 		# calculate move delta
@@ -115,12 +113,11 @@ func do_drag_scroll():
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# RTS-style scroll based on cursor position, only suitable
-# for mouse input. scrolls the camera when the cursor reaches
-# EDGE_SIZE from the edge of the window, proportionate to
-# the cursor's distance from the absolute edge.
+# RTS-style scroll based on cursor position, only suitable for mouse input.
+# scrolls the camera when the cursor reaches EDGE_SIZE from the edge of the
+# window, proportionate to the cursor's distance from the absolute edge.
 func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
@@ -133,26 +130,24 @@ func do_edge_scroll():
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.1))
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# moves the camera up, down, left, and/or right based on key
-# input. suitable for mouse-and-keyboard or keyboard only
-# input schemes. naturally also works for joypad buttons,
-# since the primary purpose of key-only is for all inputs to
-# be externally remappable to an unrecognized controller.
+# moves the camera up, down, left, and/or right based on key input. suitable
+# for mouse-and-keyboard or keyboard only input schemes. naturally also works
+# for joypad buttons, since the primary purpose of key-only is for all inputs
+# to be externally remappable to an unrecognized controller.
 func do_key_scroll():
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# scrolls based on joystick axis (-1.0 to 1.0 vertical and
-# horizontal). hopefully identifying joystick axes won't be too bad :(
+# scrolls based on joystick axis (-1.0 to 1.0 vertical and horizontal).
+# hopefully identifying joystick axes won't be too bad :(
 func do_joystick_scroll():
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-#warning-ignore:unused_argument
 func _process(delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
@@ -175,7 +170,7 @@ func _process(delta):
 	# update saved cursor position (for drag scroll)
 	last_mouse_pos = get_local_mouse_position()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func deserialize(data):
 	for i in ["x", "y"]:

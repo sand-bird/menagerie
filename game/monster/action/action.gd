@@ -37,8 +37,7 @@ class Base:
 		if duration > 0:
 			sleep_timer = duration
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 class Walk extends Base:
 	var destination: Vector2
 	var path: Array
@@ -74,17 +73,16 @@ class Walk extends Base:
 		return steering
 
 	# steering_force = truncate (steering_direction, max_force)
-    # acceleration = steering_force / mass
-    # velocity = truncate (velocity + acceleration, max_speed)
-    # position = position + velocity
+	# acceleration = steering_force / mass
+	# velocity = truncate (velocity + acceleration, max_speed)
+	# position = position + velocity
 
 	func calc_path():
 		return monster.garden.calc_path(
 			monster.get_position(), destination
 		)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 class Wander extends Base:
 	var destination
 

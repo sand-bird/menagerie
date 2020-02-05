@@ -15,8 +15,7 @@ var lerp_val = 0.3
 var is_free = true
 # var is_enabled = true
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 func _ready():
 	$anim.play("cursor_bob")
 	connect("item_rect_changed", self, "reset_anim")
@@ -25,21 +24,18 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	set_process(true)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 func reset_anim():
 	$anim.seek(0)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 func _notification(n):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	if n == NOTIFICATION_PAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 func stick(body):
 	if (curr_body and curr_body != body): unstick(curr_body)
 	curr_body = body
@@ -52,8 +48,7 @@ func stick(body):
 		hand_height = sprite_size + VERTICAL_HAND_OFFSET
 		Dispatcher.emit_signal("entity_highlighted", body)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 func unstick(body):
 	if body == curr_body:
 		hand_height = DEFAULT_HAND_HEIGHT
@@ -61,8 +56,7 @@ func unstick(body):
 		curr_body = null
 		Dispatcher.emit_signal("entity_unhighlighted", body)
 
-# -----------------------------------------------------------
-
+# --------------------------------------------------------------------------- #
 #warning-ignore:unused_argument
 func _process(delta):
 	$stick_area.position = get_global_mouse_position()

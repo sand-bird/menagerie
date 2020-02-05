@@ -5,9 +5,9 @@ extends Control
 # const GardenObject = preload("res://garden/object.tscn")
 # const GardenItem = preload("res://garden/item.tscn")
 
-# todo: move the color logic to the actual tint node whenever
-# it becomes relevant. we will probably want to tint locales
-# too, so it should be independent from the garden.
+# todo: move the color logic to the actual tint node whenever it becomes
+# relevant. we will probably want to tint locales too, so it should be 
+# independent from the garden.
 var colors = {
 	6: Color("db9ab4"), # dawn
 	8: Color("dbc2b8"), # morning
@@ -18,13 +18,12 @@ var colors = {
 	23: Color("66588c") # night
 }
 
-# we maintain a lookup table for our entities, primarily so
-# that conditions can check what's in the garden (though it
-# also makes serialization slightly easier). these should
-# match one to one with the actual entities in the garden,
-# just like the ui singleton's stack should match with the
-# instanced ui node's children. we have no way to guarantee
-# this, though, unfortunately - we just have to be careful.
+# we maintain a lookup table for our entities, primarily so that conditions can
+# check what's in the garden (though it also makes serialization slightly
+# easier). these should match 1 to 1 with the actual entities in the garden,
+# just like the ui singleton's stack should match with the instanced ui node's
+# children. we have no way to guarantee this, though, unfortunately - we just
+# have to be careful.
 var monsters = {}
 var items = {}
 var objects = {}
@@ -56,17 +55,15 @@ func _input(e):
 func calc_path(start, end):
 	return $nav.calc_path(start, end)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# if we're using a cursor, it'll trigger the "highlighted"
-# dispatch when it bumps into an entity. it also give us the
-# node pointer. when we're using touch, somebody else has to
-# handle that input, and it will probably be us.
+# if we're using a cursor, it'll trigger the "highlighted" dispatch when it
+# bumps into an entity. it also give us the node pointer. when we're using 
+# touch, somebody else has to handle that input, and it will probably be us.
 #
-# we don't want our entities listening to the dispatches for
-# *everyone* (at least for now? maybe someday they should,
-# and get jealous of each other or something?), so we listen
-# and delegate from the garden.
+# we don't want our entities listening to the dispatches for *everyone* (at 
+# least for now? maybe someday they should, and get jealous of each other or 
+# something?), so we listen and delegate from the garden.
 func highlight(entity):
 	print("(garden) entity ", entity, " has been highlighted!")
 	if entity.has_method("highlight"): entity.highlight()
@@ -75,7 +72,7 @@ func highlight(entity):
 func unhighlight(entity):
 	$ui/select_hud.unselect(entity)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 # color stuff
 
 #func get_anim_duration(hour):
@@ -89,12 +86,11 @@ func update_color(hour):
 
 	$tint/anim.play("tint")
 
-# =========================================================== #
-#                  S E R I A L I Z A T I O N                  #
-# ----------------------------------------------------------- #
-# man, the save and load functions for all the entities are
-# literally identical. we COULD dry them... but let's not, it
-# isn't worth it :(
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
+# man, the save and load functions for all the entities are literally
+# identical. we COULD dry them... but let's not, it isn't worth it :(
 
 func serialize():
 	return {
@@ -113,7 +109,7 @@ func deserialize(data):
 #	if data.has("camera"):
 #		$camera.deserialize(data.camera)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_terrain():
 	var size = $terrain.get_used_rect().size
@@ -135,7 +131,7 @@ func load_terrain(data):
 	Log.debug(self, ["terrain used rect: ", $terrain.get_used_rect()])
 	Log.verbose(self, ["terrain used cells: ", $terrain.get_used_cells()])
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_objects():
 	var data = {}
@@ -151,7 +147,7 @@ func load_objects(data):
 #		objects[uid] = object
 #		$entities.add_child(object)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_monsters():
 	var data = {}
@@ -168,7 +164,7 @@ func load_monsters(data):
 		monster.garden = self
 		$entities.add_child(monster)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_items():
 	var data = {}

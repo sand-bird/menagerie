@@ -9,9 +9,9 @@ var garden
 
 signal drives_changed
 
-# =========================================================== #
-#                     P R O P E R T I E S                     #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                             P R O P E R T I E S                             #
+# --------------------------------------------------------------------------- #
 
 var id
 var monster_name
@@ -102,9 +102,9 @@ var next_point = 0
 
 var dest
 
-# =========================================================== #
-#                        M E T H O D S                        #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                                M E T H O D S                                #
+# --------------------------------------------------------------------------- #
 
 func _ready():
 	Dispatcher.connect('tick_changed', self, '_update_drives', [])
@@ -112,7 +112,7 @@ func _ready():
 	set_physics_process(true)
 	choose_action()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_position():
 	return Vector2(
@@ -124,7 +124,7 @@ func set_position(pos):
 	position.x = pos.x - $shape.shape.radius
 	position.y = pos.y - $shape.shape.radius
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func initialize(data):
 	deserialize(data)
@@ -143,10 +143,10 @@ func play_animation(anim_id, loops = 0):
 func queue_animation(anim_id, loops = 0):
 	$sprite/anim.queue_anim(anim_id, loops)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# (temp) spin our monster to check that animations correctly
-# update when facing direction changes
+# (temp) spin our monster to check that animations correctly update when facing
+# direction changes
 var time = 0
 func _physics_process(delta):
 	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
@@ -168,19 +168,18 @@ func _physics_process(delta):
 #	else:
 #		dest = null
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# update the AnimationPlayer's `facing` vector when our
-# `orientation` vector has changed enough to signify a new
-# facing direction. running orientation through ceil() will
-# result in either (1, 1), (0, 1), (1, 0), or (0, 0).
+# update the AnimationPlayer's `facing` vector when our `orientation` vector has
+# changed enough to signify a new facing direction. running orientation through
+# ceil() will result in either (1, 1), (0, 1), (1, 0), or (0, 0).
 func _update_orientation(new_o):
 	var old_o = orientation
 	orientation = new_o
 	if old_o.ceil() != new_o.ceil():
 		$sprite/anim.facing = new_o.ceil()
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # update the z-index of our sprite so that monsters appear
 # in front of or behind other entities according to their
@@ -189,7 +188,7 @@ func update_z():
 	pass
 	# z_index = position.y + $sprite.texture.get_height() / 2
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func choose_action():
 	current_action = Action.Walk.new(self, Vector2(0, 0))
@@ -201,12 +200,12 @@ func choose_action():
 	print("chose action: ", current_action)
 
 
-# =========================================================== #
-#                         D R I V E S                         #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                                 D R I V E S                                 #
+# --------------------------------------------------------------------------- #
 
-# updates the pet's drive meters (mood, hunger, etc). called
-# once per "tick" unit of game time (~0.5 seconds)
+# updates the pet's drive meters (mood, hunger, etc).
+# called once per "tick" unit of game time (~0.5 seconds)
 func _update_drives() -> void:
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
@@ -214,21 +213,19 @@ func _update_drives() -> void:
 #	social += calc_social_delta()
 	emit_signal('drives_changed')
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 
-# actions are defined with `energy_cost` values that describe
-# how fast a pet loses (or recovers) energy while performing
-# the action. these are in delta energy PER HOUR (positive
-# for recovery, negative for drain), but since the drive is
-# updated every tick, we must first translate `energy_mod`
-# to its per-tick equivalent.
+# actions are defined with `energy_cost` values that describe how fast a pet
+# loses (or recovers) energy while performing the action. these are in delta
+# energy PER HOUR (positive for recovery, negative for drain), but since the
+# drive is updated every tick, we must first translate `energy_mod` to its
+# per-tick equivalent.
 #
-# vigor is stored as a float from 0 to 1; we translate it to
-# 0 to 2 so we can use it as a multiplier. vigor has a
-# positive effect on energy recovery and an INVERSE effect on
-# energy drain, so we must invert the multiplier if the delta
+# vigor is stored as a float from 0 to 1; we translate it to 0 to 2 so we can
+# use it as a multiplier. vigor has a positive effect on energy recovery and an
+# INVERSE effect on energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func calc_energy_delta():
 	var has_energy_cost = current_action and 'energy_cost' in current_action
@@ -242,22 +239,21 @@ func calc_energy_delta():
 		delta_energy = action_val * (2.0 - vig_mod)
 	return delta_energy
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 const BASE_BELLY_DECAY = -0.28 # full to starving in ~30h
 const D_ENERGY_FACTOR = 0.5
 
-# unlike delta energy, delta belly is always negative (pets
-# recover belly in chunks, via EAT actions on food items).
+# unlike delta energy, delta belly is always negative (pets recover belly in
+# chunks, via EAT actions on food items).
 #
-# delta belly is modified by our appetite trait (converted to
-# a multiplier, as with vigor) and our current delta energy,
-# which means delta energy must always be calculated first.
+# delta belly is modified by our appetite trait (converted to a multiplier, as
+# with vigor) and our current delta energy, which means delta energy must
+# always be calculated first.
 #
-# if delta energy is positive (recovery), our d_energy_mod
-# multiplier is < 1, causing belly to drain slower; if it's
-# negative, the modifier is > 1, which will drain it faster.
-# D_ENERGY_FACTOR controls the strength of the effect.
+# if delta energy is positive (recovery), our d_energy_mod multiplier is < 1,
+# causing belly to drain slower; if it's negative, the modifier is > 1, which
+# will drain it faster. D_ENERGY_FACTOR controls the strength of the effect.
 func calc_belly_delta(delta_energy):
 	var base_rate = BASE_BELLY_DECAY
 	var app_mod = traits.appetite * 2.0
@@ -266,25 +262,25 @@ func calc_belly_delta(delta_energy):
 	var delta_belly = base_rate * app_mod * d_energy_mod
 	return delta_belly
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func calc_social_delta():
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func update_preferences(discipline_type):
 	print(discipline_type)
 	# updates pet's likes and dislikes via discipline
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func update_mood(discipline_type):
 	print(discipline_type)
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func update_attributes():
 	# INT, VIT, CON... these are supposed to depend directly
@@ -292,9 +288,9 @@ func update_attributes():
 	pass
 
 
-# =========================================================== #
-#                    I N T E R A C T I O N                    #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                            I N T E R A C T I O N                            #
+# --------------------------------------------------------------------------- #
 
 func highlight():
 	# possibly a third (or rather first) interaction state:
@@ -305,7 +301,7 @@ func highlight():
 	# and then again to select)
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func focus():
 	# touch input: first tap
@@ -325,7 +321,7 @@ func focus():
 	# game.focused_pet = self
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func select():
 	# touch: second tap
@@ -334,7 +330,7 @@ func select():
 	# hud: show interaction buttons
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func unfocus():
 	# touch: tap outside of pet
@@ -344,7 +340,7 @@ func unfocus():
 	# game.focused_pet = null
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _on_discipline(discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
@@ -355,7 +351,7 @@ func _on_discipline(discipline_type):
 	# decide whether to stop current action
 	pass
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func _on_action_finished():
 	print("action finished!")
@@ -368,9 +364,9 @@ func _on_action_finished():
 	else: choose_action()
 
 
-# =========================================================== #
-#                  S E R I A L I Z A T I O N                  #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
 
 const SAVE_KEYS = [
 	'monster_name', 'type', 'morph',
@@ -380,7 +376,7 @@ const SAVE_KEYS = [
 	'past_actions', 'current_action', 'next_action'
 ]
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func serialize():
 	var data = {}
@@ -393,7 +389,7 @@ func serialize():
 #		data.traits[i.name] = i.serialize()
 	return data
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func deserialize(data):
 	for key in SAVE_KEYS:
