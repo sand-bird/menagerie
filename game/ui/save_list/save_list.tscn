@@ -14,17 +14,22 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -104.0
-margin_top = -96.0
+margin_top = -98.0
 margin_right = 104.0
-margin_bottom = 96.0
+margin_bottom = 98.0
 rect_min_size = Vector2( 208, 180 )
 theme = ExtResource( 1 )
 custom_styles/panel = ExtResource( 2 )
 script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="background" parent="." instance=ExtResource( 4 )]
 anchor_left = 0.000916554
+anchor_top = -0.000953255
 anchor_right = 1.00092
+anchor_bottom = 0.999047
 margin_left = 3.80936
 margin_right = -4.19066
 margin_bottom = -2.0
@@ -44,7 +49,7 @@ uppercase = true
 
 [node name="container" type="VBoxContainer" parent="."]
 margin_left = 8.0
-margin_top = 23.0
+margin_top = 24.0
 margin_right = 11.0
 margin_bottom = 23.0
 mouse_filter = 0
@@ -56,7 +61,7 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 margin_left = -24.0
-margin_top = -18.0
+margin_top = -20.0
 margin_right = 24.0
 margin_bottom = -5.0
 custom_styles/normal = ExtResource( 6 )
@@ -64,6 +69,9 @@ text = "* * *"
 align = 1
 valign = 1
 uppercase = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="arrows" parent="pages" instance=ExtResource( 7 )]
 anchor_right = 1.0
