@@ -10,10 +10,9 @@ var current_save_dir
 # var dir = Directory.new()
 
 
-# =========================================================== #
-#              G E T T I N G   S A V E   I N F O              #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                      G E T T I N G   S A V E   I N F O                      #
+# --------------------------------------------------------------------------- #
 # scans the SAVE_ROOT dir for valid save directories.
 func get_save_list():
 	var dir = Directory.new()
@@ -30,14 +29,14 @@ func get_save_list():
 	saves.sort_custom(self, "sort_by_date")
 	return saves
 
-# ------------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func sort_by_date(a, b):
 	var file = File.new()
 	return (file.get_modified_time(get_filepath(a, PLAYER))
 			> file.get_modified_time(get_filepath(b, PLAYER)))
 
-# ------------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 # gets the following info for display on the save list menu:
 # - player name
@@ -54,12 +53,12 @@ func get_save_info(save_dir):
 	save_info.save_dir = save_dir
 	return save_info
 
-# ------------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_save_time(save_dir):
 	return File.new().get_modified_time(get_filepath(save_dir, PLAYER))
 
-# ------------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_save_info_list():
 	var saves = []
@@ -70,9 +69,9 @@ func get_save_info_list():
 	return saves
 
 
-# =========================================================== #
-#          S A V I N G   &   L O A D I N G   D A T A          #
-# ----------------------------------------------------------- #
+# =========================================================================== #
+#                  S A V I N G   &   L O A D I N G   D A T A                  #
+# --------------------------------------------------------------------------- #
 
 func new_save(pname):
 	# load fresh save data
@@ -90,13 +89,13 @@ func new_save(pname):
 
 	return current_save_dir
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func save_game(data, save_dir = current_save_dir):
 	Utils.write_file(get_filepath(save_dir, PLAYER), data.player)
 	Utils.write_file(get_filepath(save_dir, GARDEN), data.garden)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func load_game(save_dir):
 	current_save_dir = save_dir
@@ -106,10 +105,9 @@ func load_game(save_dir):
 	}
 
 
-# =========================================================== #
-#              U T I L I T Y   F U N C T I O N S              #
-# ----------------------------------------------------------- #
-
+# =========================================================================== #
+#                      U T I L I T Y   F U N C T I O N S                      #
+# --------------------------------------------------------------------------- #
 func is_save(dir_name):
 	var dir = Directory.new()
 	var save_path = SAVE_ROOT.plus_file(dir_name)
@@ -117,28 +115,26 @@ func is_save(dir_name):
 			dir.file_exists(save_path.plus_file(PLAYER)) and
 			dir.file_exists(save_path.plus_file(GARDEN)))
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
 func get_filepath(save_dir, file_name):
 	return SAVE_ROOT.plus_file(save_dir).plus_file(file_name)
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# order save info by timestamp, so the most recent save will
-# show first on the save list.
+# order save info by timestamp, so the most recent save will show first on the
+# save list.
 func sort_save_info(a, b):
 	if get_save_time(a.save_dir) > get_save_time(b.save_dir):
 		return true
 	return false
 
-# -----------------------------------------------------------
+# --------------------------------------------------------------------------- #
 
-# strips numbers and any char not a-z, then lowercases.
-# (in future, should convert unicode chars eg. 'e-acute' to
-# their plain ascii counterpart eg. 'e' when possible.)
-#
-# then appends the current unix time to the formatted result
-# to ensure a unique directory name.
+# strips numbers and any char not a-z, lowercases, then appends the current
+# unix time to the formatted result to ensure a unique directory name.
+# (TODO: should ideally convert unicode chars eg. 'e-acute' to their plain
+# ascii counterpart eg. 'e' when possible, rather than just stripping them out)
 #
 # only used once, when creating a new save directory.
 func create_dirname(name):
