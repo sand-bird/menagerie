@@ -20,7 +20,7 @@ func is_walkable_at(x, y):
 	# var navpoly = $tilemap.tile_set.tile_get_navigation_polygon(tile_at)
 	# print(tile_at, navpoly)
 	var size = $tilemap.get_used_rect().size
-	var in_bounds = (x >= 0 && y >= 0 and x < size.x && y < size.y)
+	var in_bounds = (x >= 0 && y >= 0 and x <= size.x && y <= size.y)
 	return tile_at == 0 and in_bounds
 
 var path := []
@@ -46,9 +46,9 @@ func _draw():
 		.draw_circle(i, 4, Color.from_hsv(hsv, 1, 0.9))
 		hsv += hsv_step
 	for i in path:
-		.draw_circle(i, 1, Color(1, 1, 1))
+		.draw_circle(i, 2, Color(1, 1, 1))
 	for i in walkable:
-		.draw_circle(i, 2, Color(0, 1, 1))
+		.draw_circle(i, 2, Color(1, 1, 0))
 	for i in not_walkable:
 		.draw_circle(i, 2, Color(1, 0, 1))
 	path = []

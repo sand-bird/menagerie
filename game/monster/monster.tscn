@@ -50,4 +50,3 @@ visible = false
 [node name="velocity" type="RayCast2D" parent="."]
 
 [node name="desired_velocity" type="RayCast2D" parent="."]
-
