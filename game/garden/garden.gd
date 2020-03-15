@@ -6,7 +6,7 @@ extends Control
 # const GardenItem = preload("res://garden/item.tscn")
 
 # todo: move the color logic to the actual tint node whenever it becomes
-# relevant. we will probably want to tint locales too, so it should be 
+# relevant. we will probably want to tint locales too, so it should be
 # independent from the garden.
 var colors = {
 	6: Color("db9ab4"), # dawn
@@ -58,11 +58,11 @@ func calc_path(start, end):
 # --------------------------------------------------------------------------- #
 
 # if we're using a cursor, it'll trigger the "highlighted" dispatch when it
-# bumps into an entity. it also give us the node pointer. when we're using 
+# bumps into an entity. it also give us the node pointer. when we're using
 # touch, somebody else has to handle that input, and it will probably be us.
 #
-# we don't want our entities listening to the dispatches for *everyone* (at 
-# least for now? maybe someday they should, and get jealous of each other or 
+# we don't want our entities listening to the dispatches for *everyone* (at
+# least for now? maybe someday they should, and get jealous of each other or
 # something?), so we listen and delegate from the garden.
 func highlight(entity):
 	print("(garden) entity ", entity, " has been highlighted!")

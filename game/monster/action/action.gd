@@ -57,7 +57,9 @@ class Walk extends Base:
 
 		var steering = seek(path.front())
 		var acceleration = steering / monster.mass
-		monster.current_velocity = (monster.current_velocity + acceleration).clamped(monster.max_speed)
+		monster.current_velocity = (
+			monster.current_velocity + acceleration
+		).clamped(monster.max_speed)
 
 
 	func should_advance_path():

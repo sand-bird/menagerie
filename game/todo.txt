@@ -1,3 +1,8 @@
+BEHAVIOR
+--------
+- animate monster while walking/turning
+- 
+
 DATA FILES
 ----------
 - $time.season
@@ -5,6 +10,7 @@ DATA FILES
 - $locations (world global? weather, location state, events, etc)
 - animations/spritestate representations in .data
 - object state transitions in .data
+- 
 
 
 UI

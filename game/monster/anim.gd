@@ -46,10 +46,12 @@ func _play_next(old_anim = null):
 
 # each facing direction is a separate animation, so when our direction changes,
 # we need to start playing the animation for the new one. in order to prevent
-# it starting over from the beginning, we save our position from the old 
+# it starting over from the beginning, we save our position from the old
 # animation and seek to it in the new one.
 func _update_facing(new_facing):
-	facing = new_facing
+	# important because rotation produces values of -0, which throw off our
+	# string interpolation (x and y should be either 0 or 1)
+	facing = new_facing.abs()
 	var anim_pos = current_animation_position
 	current_animation = str(current, "_", facing.y, "_", facing.x)
 	seek(anim_pos)
@@ -60,7 +62,7 @@ func _update_facing(new_facing):
 # --------------------------------------------------------------------------- #
 
 # creates four animations for a given `anim_id` - one in each facing direction
-# - which are added to the AnimationPlayer for our sprite. 
+# - which are added to the AnimationPlayer for our sprite.
 #
 # the resulting animations are identified by a string in "{anim_id}_{y}_{x}"
 # format, where y and x are either 0 or 1, and represent the monster's

@@ -113,6 +113,8 @@ func _ready():
 	choose_action()
 
 # --------------------------------------------------------------------------- #
+# position by default is the top-left corner of the node, but we generally
+# want to use the center of its collision circle instead
 
 func get_position():
 	return Vector2(
@@ -131,11 +133,14 @@ func initialize(data):
 	var size = Data.get([type, 'size'])
 	$shape.shape.radius = size
 	$shape.position.y -= size
+
 	var anim_data = Data.get([type, 'morphs', morph, 'animations'])
+	Log.info(self, ['anim data: ', anim_data])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
-		play_animation(Constants.Anim.LIE_DOWN)
-		queue_animation(Constants.Anim.SLEEP)
+		Log.debug(self, ['animations: ', $sprite/anim.get_animation_list()])
+		# play_animation(Constants.Anim.LIE_DOWN)
+		play_animation(Constants.Anim.IDLE, 1)
 
 func play_animation(anim_id, loops = 0):
 	$sprite/anim.play_anim(anim_id, loops)
@@ -149,24 +154,25 @@ func queue_animation(anim_id, loops = 0):
 # direction changes
 var time = 0
 func _physics_process(delta):
-	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
-		choose_action()
-	current_action.tick()
+#	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
+#		choose_action()
+#	current_action.tick()
 	time += delta
+	self.orientation = current_velocity
 
 	$orientation.cast_to = orientation * 20
 	$velocity.cast_to = current_velocity * 20
 	$desired_velocity.cast_to = desired_velocity * 20
 	position += current_velocity
 
-#	var rad = time * 2
-#	self.orientation = Vector2(cos(rad), sin(rad))
-#	if rad > 2 * PI: time = 0
-#	$orientation.cast_to = orientation * 20
-#	if dest and position.distance_squared_to(dest) > 5:
-#		move_and_slide((dest - position).normalized() * 40)
-#	else:
-#		dest = null
+	var rad = time * 2
+	self.orientation = Vector2(cos(rad), sin(rad))
+	if rad > 2 * PI: time = 0
+	$orientation.cast_to = orientation * 20
+	if dest and position.distance_squared_to(dest) > 5:
+		move_and_slide((dest - position).normalized() * 40)
+	else:
+		dest = null
 
 # --------------------------------------------------------------------------- #
 
