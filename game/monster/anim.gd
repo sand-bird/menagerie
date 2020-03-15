@@ -31,7 +31,6 @@ func queue_anim(anim_id, loops = 0):
 # we execute this on our own `animation_finished` signal, which passes the
 # finished animation's id. no choice but to accept the argument, even though we
 # don't need it.
-#warning-ignore:unused_argument
 func _play_next(old_anim = null):
 	if loop_counter - 1 > 0:
 		loop_counter = loop_counter - 1
@@ -39,7 +38,7 @@ func _play_next(old_anim = null):
 		var new_anim = queue.pop_front()
 		current = new_anim.id
 		loop_counter = new_anim.loops
-	else: current = "idle"
+	# else: current = "idle"
 	play_anim()
 
 # --------------------------------------------------------------------------- #
