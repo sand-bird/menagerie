@@ -30,12 +30,14 @@ var parent_center # global pos of parent's center
 var center_pos # global pos to center the view on the parent's center
 
 # parent boundaries so we can't scroll forever
-var min_pos
-var max_pos
+var min_pos = Vector2(-INF, -INF)
+var max_pos = Vector2(INF, INF)
 
 # mouse info, used for edge and drag scroll
 onready var last_mouse_pos = get_local_mouse_position()
 var target_pos = Vector2()
+
+var stick_target = null
 
 # --------------------------------------------------------------------------- #
 
@@ -58,7 +60,6 @@ func _on_screen_resized():
 	get_screen_settings()
 	get_bounds()
 	center()
-
 
 # --------------------------------------------------------------------------- #
 
@@ -88,7 +89,10 @@ func get_bounds():
 	# calculate pos values for our bounds
 	var parent_min = base_pos
 	var parent_max = base_pos + parent_size
-	var bound_padding = Utils.vmin(parent_size * 0.2, screen_size * 0.25)
+	var bound_padding = Utils.vmax(
+		Vector2(200, 200),
+		Utils.vmin(parent_size * 0.2, screen_size * 0.25)
+	)
 	min_pos = Utils.vmin((parent_min - bound_padding).round(), center_pos)
 	max_pos = Utils.vmax((parent_max + bound_padding - screen_size).round(), center_pos)
 
@@ -155,6 +159,9 @@ func _process(delta):
 	# (not sure if these will be here or in _process_input)
 	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
 	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
+
+	if stick_target:
+		target_pos = stick_target.position - screen_radius
 
 	# clamp target to camera bounds
 	target_pos = Utils.vclamp(target_pos, min_pos, max_pos).round()
