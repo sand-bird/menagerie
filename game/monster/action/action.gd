@@ -3,6 +3,7 @@ extends Node
 class_name Action
 
 class Base:
+	var action_id = 'base'
 	var Status = Constants.ActionStatus
 
 	var sleep_timer: int = 0
@@ -38,11 +39,14 @@ class Base:
 			sleep_timer = duration
 
 # --------------------------------------------------------------------------- #
+
 class Walk extends Base:
 	var destination: Vector2
 	var path: Array
+	var energy_cost = -0.05
 
 	func _init(monster, destination).(monster):
+		action_id = 'walk'
 		self.destination = destination
 
 	func _open():
@@ -88,10 +92,12 @@ class Walk extends Base:
 		)
 
 # --------------------------------------------------------------------------- #
+
 class Wander extends Base:
 	var destination
 
 	func _init(monster).(monster):
+		action_id = 'wander'
 		pass
 
 	func _open():
@@ -106,4 +112,26 @@ class Wander extends Base:
 		var distance = rand_range(80, 200)
 		return (direction * distance) + monster.get_position()
 
+# --------------------------------------------------------------------------- #
 
+class Sleep extends Base:
+	var duration
+	var duration_remaining
+	var energy_cost = 0.1
+
+	func _init(monster, duration).(monster):
+		action_id = 'sleep'
+		self.duration = duration
+		self.duration_remaining = duration
+
+	func _open():
+		monster.play_anim('lie_down')
+		monster.queue_anim('sleep')
+		pass
+
+	func _tick():
+		duration_remaining -= 1
+		if duration_remaining <= 0:
+			return exit(Status.SUCCESS)
+		else:
+			return Status.RUNNING

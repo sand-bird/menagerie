@@ -142,21 +142,6 @@ func initialize(data):
 		# play_animation(Constants.Anim.LIE_DOWN)
 		play_anim(Constants.Anim.WALK)
 
-# =========================================================================== #
-#                             A N I M A T I O N S                             #
-# --------------------------------------------------------------------------- #
-
-func play_anim(anim_id, loops = 0):
-	$sprite/anim.play_anim(anim_id, loops)
-
-func queue_anim(anim_id, loops = 0):
-	$sprite/anim.queue_anim(anim_id, loops)
-
-func set_anim_speed(speed):
-	$sprite/anim.set_speed_scale(speed)
-
-# --------------------------------------------------------------------------- #
-
 var time = 0
 func _physics_process(delta):
 	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
@@ -189,9 +174,8 @@ func _update_orientation(new_o):
 
 # --------------------------------------------------------------------------- #
 
-# update the z-index of our sprite so that monsters appear
-# in front of or behind other entities according to their
-# y-position in the garden
+# update the z-index of our sprite so that monsters appear in front of or
+# behind other entities according to their y-position in the garden
 func update_z():
 	pass
 	# z_index = position.y + $sprite.texture.get_height() / 2
@@ -201,14 +185,31 @@ func update_z():
 func choose_action():
 	# current_action = Action.Walk.new(self, Vector2(0, 0))
 	randomize()
-	if randf() < 1.0:
+	var rand = randf()
+	if rand < 0.5:
 		current_action = Action.Walk.new(
 			self,
 			Vector2(Utils.randi_to(200), Utils.randi_to(100))
 		)
 	else:
-		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
+		current_action = Action.Sleep.new(self, Utils.randi_range(200, 1000))
+	print(rand)
 	Log.debug(self, ["chose action: ", current_action])
+
+
+# =========================================================================== #
+#                             A N I M A T I O N S                             #
+# --------------------------------------------------------------------------- #
+
+func play_anim(anim_id, loops = 0):
+	$sprite/anim.play_anim(anim_id, loops)
+
+func queue_anim(anim_id, loops = 0):
+	$sprite/anim.queue_anim(anim_id, loops)
+
+func set_anim_speed(speed):
+	$sprite/anim.set_speed_scale(speed)
+
 
 # =========================================================================== #
 #                                 D R I V E S                                 #
