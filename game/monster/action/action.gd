@@ -2,6 +2,12 @@ extends Node
 
 class_name Action
 
+const energy_values = {
+	sleep = 10,
+	walk = -5,
+	base = 0
+}
+
 class Base:
 	var action_id = 'base'
 	var Status = Constants.ActionStatus
@@ -9,9 +15,14 @@ class Base:
 	var sleep_timer: int = 0
 	var status = Status.NEW
 	var monster
+	var energy_value setget ,get_energy_value
+
+	func get_energy_value():
+		return energy_values[action_id]
 
 	func _init(monster):
 		self.monster = monster
+		print('energy value: ', energy_value)
 
 	func tick():
 		if status == Status.NEW:
@@ -43,7 +54,6 @@ class Base:
 class Walk extends Base:
 	var destination: Vector2
 	var path: Array
-	var energy_value = -5
 
 	func _init(monster, destination).(monster):
 		action_id = 'walk'
@@ -117,7 +127,6 @@ class Wander extends Base:
 class Sleep extends Base:
 	var duration
 	var duration_remaining
-	var energy_value = 10
 
 	func _init(monster, duration).(monster):
 		action_id = 'sleep'

@@ -71,7 +71,7 @@ var traits = {
 	# N/A
 	openness = 0,
 	appetite = 0,
-	pep = 0,
+	pep = 0.5,
 	sociability = 0
 }
 
@@ -107,6 +107,7 @@ var dest
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	# this is gonna fire twice a second and may become a perf problem someday
 	Dispatcher.connect('tick_changed', self, '_update_drives', [])
 	update_z()
 	set_physics_process(true)
@@ -183,18 +184,25 @@ func update_z():
 # --------------------------------------------------------------------------- #
 
 func choose_action():
-	# current_action = Action.Walk.new(self, Vector2(0, 0))
-	randomize()
-	var rand = randf()
-	if rand < 0.5:
+	var target_energy = get_target_energy()
+	if energy < target_energy:
+		# get a range for how long we should sleep.
+		# this math is wrong - actions "tick" once per process delta (~0.04s),
+		# not once per game tick (0.5s). we need to either convert from ticks
+		# to deltas (and rename the "tick" fn), or actually tick once per tick
+		# and handle the realtime stuff (eg updating pos) in _physics_process.
+		var ticks_to_fill = Action.energy_values.sleep
+		var max_sleep = lerp(target_energy, 100, 0.6) * ticks_to_fill
+		var min_sleep = lerp(target_energy, energy, 0.6) * ticks_to_fill
+		print('min_sleep: ', min_sleep, ' | max_sleep: ', max_sleep)
+
+		current_action = Action.Sleep.new(self, Utils.randi_range(min_sleep, max_sleep))
+	else:
 		current_action = Action.Walk.new(
 			self,
 			Vector2(Utils.randi_to(200), Utils.randi_to(100))
 		)
-	else:
-		current_action = Action.Sleep.new(self, Utils.randi_range(200, 1000))
-	print(rand)
-	Log.debug(self, ["chose action: ", current_action])
+	Log.debug(self, ["chose action: ", current_action.action_id])
 
 
 # =========================================================================== #
@@ -248,7 +256,6 @@ func calc_energy_delta():
 		delta_energy = action_val * vig_mod
 	else:
 		delta_energy = action_val * (2.0 - vig_mod)
-	print('delta energy: ', delta_energy)
 	return delta_energy
 
 # --------------------------------------------------------------------------- #
@@ -278,6 +285,14 @@ func calc_belly_delta(delta_energy):
 
 func calc_social_delta():
 	pass
+
+# --------------------------------------------------------------------------- #
+
+# target energy reflects the pet's preference for activity or rest, and is
+# determined by the inverse of its pep trait (which ranges from 0 to 1).
+# high pep & low target energy means a more active pet, and vice versa.
+func get_target_energy():
+	return 100 * (1 - traits.pep)
 
 # --------------------------------------------------------------------------- #
 
