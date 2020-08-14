@@ -4,6 +4,7 @@ class_name Action
 
 const energy_values = {
 	sleep = 20,
+	idle = 5,
 	walk = -10,
 	base = 0
 }
@@ -128,23 +129,36 @@ class Wander extends Base:
 
 # --------------------------------------------------------------------------- #
 
-class Sleep extends Base:
+class Timed extends Base:
 	# keep these both for now in case we need to look at total duration later.
 	# (probably not actually necessary)
 	var duration
 	var duration_remaining
 
 	func _init(monster, duration).(monster):
-		action_id = 'sleep'
 		self.duration = duration
 		self.duration_remaining = duration
-
-	func _open():
-		monster.play_anim('lie_down')
-		monster.queue_anim('sleep')
-		pass
 
 	func _tick():
 		duration_remaining -= 1
 		if duration_remaining <= 0:
 			exit(Status.SUCCESS)
+
+# --------------------------------------------------------------------------- #
+
+class Sleep extends Timed:
+	func _init(monster, duration).(monster, duration):
+		action_id = 'sleep'
+
+	func _open():
+		monster.play_anim('lie_down')
+		monster.queue_anim('sleep')
+
+# --------------------------------------------------------------------------- #
+
+class Idle extends Timed:
+	func _init(monster, duration).(monster, duration):
+		action_id = 'idle'
+
+	func _open():
+		monster.play_anim('idle')
