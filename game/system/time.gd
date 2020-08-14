@@ -8,7 +8,7 @@ const months = [ "verne", "tempest", "zenith",
 
 const ACTUAL_SECONDS_IN_TICK := 0.5
 const TICKS_IN_HOUR := 12
-const HOURS_IN_DAY := 24
+const HOURS_IN_DAY := 12
 const DAYS_IN_WEEK := 7
 const DAYS_IN_MONTH := 21
 const MONTHS_IN_YEAR := 8
