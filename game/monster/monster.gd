@@ -187,11 +187,12 @@ func update_z():
 func choose_action():
 	var target_energy = get_target_energy()
 	if energy < target_energy:
-		# get a range for how long we should sleep.
-		var ticks_to_fill = Action.energy_values.sleep
-		var max_sleep = lerp(target_energy, 100, 0.6) * ticks_to_fill
-		var min_sleep = lerp(target_energy, energy, 0.6) * ticks_to_fill
-		current_action = Action.Sleep.new(self, Utils.randi_range(min_sleep, max_sleep))
+		var energy_per_tick = float(Action.energy_values.sleep) / float(Time.TICKS_IN_HOUR)
+		var energy_to_recover = Utils.randi_range(target_energy, 100) - energy
+		var sleep_time = energy_to_recover * energy_per_tick
+		Log.debug(self, ['going to sleep! energy to recover: ', energy_to_recover,
+			' | sleep time: ', sleep_time])
+		current_action = Action.Sleep.new(self, max(Time.TICKS_IN_HOUR, sleep_time))
 	else:
 		current_action = Action.Walk.new(
 			self,
@@ -222,8 +223,9 @@ func set_anim_speed(speed):
 # called once per "tick" unit of game time (~0.5 seconds)
 func update_drives():
 	var delta_energy = calc_energy_delta()
-	energy += delta_energy
-	belly += calc_belly_delta(delta_energy)
+	energy = clamp(energy + delta_energy, 0, 100)
+	var delta_belly = calc_belly_delta(delta_energy)
+	belly = clamp(belly + delta_belly, 0, 100)
 #	social += calc_social_delta()
 	emit_signal('drives_changed')
 

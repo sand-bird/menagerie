@@ -4,7 +4,7 @@ class_name Action
 
 const energy_values = {
 	sleep = 10,
-	walk = -5,
+	walk = -15,
 	base = 0
 }
 
