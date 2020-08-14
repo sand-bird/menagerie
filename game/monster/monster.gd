@@ -186,10 +186,9 @@ func update_z():
 
 func choose_action():
 	randomize()
-
 	var target_energy = get_target_energy()
 
-	if energy < target_energy and randf() < 0.8:
+	if energy < target_energy and randf() > energy / 100.0:
 		var energy_per_tick = float(Action.energy_values.sleep) / float(Time.TICKS_IN_HOUR)
 		var energy_to_recover = Utils.randi_range(target_energy, 100) - energy
 		var sleep_time = energy_to_recover / energy_per_tick
@@ -197,12 +196,11 @@ func choose_action():
 			' | sleep time: ', sleep_time])
 		current_action = Action.Sleep.new(self,
 			clamp(sleep_time, Time.TICKS_IN_HOUR, Time.TICKS_IN_HOUR * 8))
-
 	elif randf() > traits.pep:
-		current_action = Action.Idle.new(self,
-			Utils.randi_range(Time.TICKS_IN_HOUR / 2, Time.TICKS_IN_HOUR * 2))
+		current_action = Action.Idle.new(self, Utils.randi_range(2, 8))
 	else:
-		current_action = Action.Walk.new(self, Utils.vrandi(garden.rect_size))
+		current_action = Action.Walk.new(self, # so ugly :(
+			position + Vector2(rand_range(-80, 80), rand_range(-80, 80)))
 
 	Log.debug(self, ["chose action: ", current_action.action_id])
 
