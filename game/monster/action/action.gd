@@ -47,6 +47,8 @@ class Walk extends Base:
 
 	func _open():
 		path = calc_path()
+		monster.play_anim(Constants.Anim.WALK)
+		monster.get_node('sprite/anim').set_speed_scale(2.0)
 
 	func _tick():
 		#calc_path()
@@ -60,7 +62,8 @@ class Walk extends Base:
 		monster.current_velocity = (
 			monster.current_velocity + acceleration
 		).clamped(monster.max_speed)
-
+		monster.orientation = monster.current_velocity
+		monster.position += monster.current_velocity
 
 	func should_advance_path():
 		return monster.get_position().distance_squared_to(
@@ -68,7 +71,7 @@ class Walk extends Base:
 
 	func seek(target):
 		var desired_velocity = (target - monster.get_position()
-				).normalized() * monster.max_velocity
+			).normalized() * monster.max_velocity
 		monster.desired_velocity = desired_velocity
 
 		var steering = desired_velocity - monster.current_velocity
@@ -102,3 +105,5 @@ class Wander extends Base:
 		)
 		var distance = rand_range(80, 200)
 		return (direction * distance) + monster.get_position()
+
+

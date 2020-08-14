@@ -135,44 +135,46 @@ func initialize(data):
 	$shape.position.y -= size
 
 	var anim_data = Data.get([type, 'morphs', morph, 'animations'])
-	Log.info(self, ['anim data: ', anim_data])
+	Log.verbose(self, ['anim data: ', anim_data])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
 		Log.debug(self, ['animations: ', $sprite/anim.get_animation_list()])
 		# play_animation(Constants.Anim.LIE_DOWN)
-		play_animation(Constants.Anim.IDLE, 1)
+		play_anim(Constants.Anim.WALK)
 
-func play_animation(anim_id, loops = 0):
+# =========================================================================== #
+#                             A N I M A T I O N S                             #
+# --------------------------------------------------------------------------- #
+
+func play_anim(anim_id, loops = 0):
 	$sprite/anim.play_anim(anim_id, loops)
 
-func queue_animation(anim_id, loops = 0):
+func queue_anim(anim_id, loops = 0):
 	$sprite/anim.queue_anim(anim_id, loops)
+
+func set_anim_speed(speed):
+	$sprite/anim.set_speed_scale(speed)
 
 # --------------------------------------------------------------------------- #
 
-# (temp) spin our monster to check that animations correctly update when facing
-# direction changes
 var time = 0
 func _physics_process(delta):
-#	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
-#		choose_action()
-#	current_action.tick()
-	time += delta
-	self.orientation = current_velocity
+	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
+		choose_action()
+#	time += delta
+#	self.orientation = current_velocity
+#	position += current_velocity
 
+	# (temp) spin our monster to check that animations correctly update when
+	# facing direction changes
+#	var rad = time * 2
+#	self.orientation = Vector2(cos(rad), sin(rad))
+#	if rad > 2 * PI: time = 0
+
+	# debug
 	$orientation.cast_to = orientation * 20
 	$velocity.cast_to = current_velocity * 20
 	$desired_velocity.cast_to = desired_velocity * 20
-	position += current_velocity
-
-	var rad = time * 2
-	self.orientation = Vector2(cos(rad), sin(rad))
-	if rad > 2 * PI: time = 0
-	$orientation.cast_to = orientation * 20
-	if dest and position.distance_squared_to(dest) > 5:
-		move_and_slide((dest - position).normalized() * 40)
-	else:
-		dest = null
 
 # --------------------------------------------------------------------------- #
 
@@ -197,14 +199,16 @@ func update_z():
 # --------------------------------------------------------------------------- #
 
 func choose_action():
-	current_action = Action.Walk.new(self, Vector2(0, 0))
-#	randomize()
-#	if randf() < 0.5:
-#		current_action = Action.Move.new(self, Vector2(Utils.randi_to(200), Utils.randi_to(100)), 10)
-#	else:
-#		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
-	print("chose action: ", current_action)
-
+	# current_action = Action.Walk.new(self, Vector2(0, 0))
+	randomize()
+	if randf() < 1.0:
+		current_action = Action.Walk.new(
+			self,
+			Vector2(Utils.randi_to(200), Utils.randi_to(100))
+		)
+	else:
+		current_action = Action.Sleep.new(self, Utils.randi_range(1000, 5000))
+	Log.debug(self, ["chose action: ", current_action])
 
 # =========================================================================== #
 #                                 D R I V E S                                 #
