@@ -37,15 +37,11 @@ var test_mon
 func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
-#	print("tint color: ", $tint.color)
-#	$tint.color = color1
 	Time.start()
 #	Dispatcher.connect("hour_changed", self, "update_color")
 #	$tint/anim.play("tint")
 	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
-
-var path = []
-var tpath = []
+	$camera.stick_target = test_mon
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
@@ -65,7 +61,6 @@ func calc_path(start, end):
 # least for now? maybe someday they should, and get jealous of each other or
 # something?), so we listen and delegate from the garden.
 func highlight(entity):
-	print("(garden) entity ", entity, " has been highlighted!")
 	if entity.has_method("highlight"): entity.highlight()
 	$ui/select_hud.select(entity)
 
@@ -89,8 +84,6 @@ func update_color(hour):
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
-# man, the save and load functions for all the entities are literally
-# identical. we COULD dry them... but let's not, it isn't worth it :(
 
 func serialize():
 	return {

@@ -17,8 +17,6 @@ func is_walkable_at_pos(pos):
 
 func is_walkable_at(x, y):
 	var tile_at = $tilemap.get_cell(x, y)
-	# var navpoly = $tilemap.tile_set.tile_get_navigation_polygon(tile_at)
-	# print(tile_at, navpoly)
 	var size = $tilemap.get_used_rect().size
 	var in_bounds = (x >= 0 && y >= 0 and x <= size.x && y <= size.y)
 	return tile_at == 0 and in_bounds
@@ -34,7 +32,6 @@ func calc_path(from_pos, to_pos):
 	tpath = [path.front()]
 	for i in range(1, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
-		# test_corner(path[i])
 	tpath.push_back(path.back())
 	.update()
 	return tpath

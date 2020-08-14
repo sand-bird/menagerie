@@ -1,5 +1,14 @@
 extends Control
 
+# the cursor has two parts: a collsion circle that tracks the mouse cursor
+# (or is moved via joystick/keyboard input), and the hand graphic. when the
+# circle overlaps an entity, the cursor becomes "stuck" to that entity.
+# when stuck:
+# - both parts of the cursor should follow that entity around
+# - the camera should probably center on the entity (or save this for when the
+#   entity is "selected"?)
+# - (maybe) when the entity is too close to the edge of the garden for the
+#   camera to center on it, we should update the actual mouse position
 onready var hand = $graphic/hand_anchor
 
 const HAND_X = 4
@@ -12,7 +21,6 @@ var curr_body
 var graphic_dest = Vector2()
 var lerp_val = 0.3
 
-var is_free = true
 # var is_enabled = true
 
 # --------------------------------------------------------------------------- #
@@ -21,7 +29,7 @@ func _ready():
 	connect("item_rect_changed", self, "reset_anim")
 	$stick_area.connect("body_entered", self, "stick")
 	$unstick_area.connect("body_exited", self, "unstick")
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	# Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	set_process(true)
 
 # --------------------------------------------------------------------------- #
@@ -39,7 +47,6 @@ func _notification(n):
 func stick(body):
 	if (curr_body and curr_body != body): unstick(curr_body)
 	curr_body = body
-	is_free = false
 	# var sprite_size = body.get_node("sprite").texture.get_size()
 	graphic_dest = body.position
 	var shape_node = body.get_node('shape')
@@ -52,7 +59,6 @@ func stick(body):
 func unstick(body):
 	if body == curr_body:
 		hand_height = DEFAULT_HAND_HEIGHT
-		is_free = true
 		curr_body = null
 		Dispatcher.emit_signal("entity_unhighlighted", body)
 
@@ -60,10 +66,9 @@ func unstick(body):
 #warning-ignore:unused_argument
 func _process(delta):
 	$stick_area.position = get_global_mouse_position()
-	$unstick_area.position = $stick_area.position
 
-	if is_free:
-		graphic_dest = get_global_mouse_position().round()
+	$unstick_area.position = $stick_area.position
+	graphic_dest = $stick_area.position
 
 	var new_graphic_pos = Utils.vlerp(
 			$graphic.rect_position, graphic_dest, lerp_val).round()
@@ -76,4 +81,4 @@ func _process(delta):
 
 	var new_hand_y = lerp(hand.rect_position.y,
 			-hand_height, lerp_val)
-	hand.rect_position = Vector2(HAND_X, new_hand_y)
+	hand.rect_position = Vector2(HAND_X, new_hand_y).round()
