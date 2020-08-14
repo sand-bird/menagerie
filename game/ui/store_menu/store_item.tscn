@@ -50,14 +50,12 @@ text = "99"
 align = 1
 
 [node name="left" type="Sprite" parent="."]
-position = Vector2( 97.2443, 15.7115 )
-scale = Vector2( 0.683568, 0.692333 )
+position = Vector2( 95.2443, 15.7115 )
 texture = ExtResource( 5 )
 flip_h = true
 
 [node name="right" type="Sprite" parent="."]
-position = Vector2( 132.113, 15.1231 )
-scale = Vector2( 0.626949, 0.655733 )
+position = Vector2( 135.113, 16.1231 )
 texture = ExtResource( 5 )
 
 [node name="name" type="Label" parent="."]
