@@ -33,7 +33,7 @@ func calc_path(from_pos, to_pos):
 	for i in range(1, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
 	tpath.push_back(path.back())
-	.update()
+	# .update()
 	return tpath
 
 func _draw():
