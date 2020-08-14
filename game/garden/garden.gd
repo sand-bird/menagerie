@@ -5,25 +5,10 @@ extends Control
 # const GardenObject = preload("res://garden/object.tscn")
 # const GardenItem = preload("res://garden/item.tscn")
 
-# todo: move the color logic to the actual tint node whenever it becomes
-# relevant. we will probably want to tint locales too, so it should be
-# independent from the garden.
-var colors = {
-	6: Color("db9ab4"), # dawn
-	8: Color("dbc2b8"), # morning
-	11: Color("fbffe6"), # midday
-	14: Color("fcdec3"), # afternoon
-	18: Color("e48b9a"), # evening
-	20: Color("b268dc"), # dusk
-	23: Color("66588c") # night
-}
-
-# we maintain a lookup table for our entities, primarily so that conditions can
-# check what's in the garden (though it also makes serialization slightly
-# easier). these should match 1 to 1 with the actual entities in the garden,
-# just like the ui singleton's stack should match with the instanced ui node's
-# children. we have no way to guarantee this, though, unfortunately - we just
-# have to be careful.
+# we maintain a lookup table for our entities, primarily so that conditions
+# can check what's in the garden (though it also makes serialization easier).
+# these should match 1 to 1 with the actual entities in the garden, just like
+# the ui singleton's stack should match with the instanced ui node's children.
 var monsters = {}
 var items = {}
 var objects = {}
@@ -38,8 +23,6 @@ func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
 	Time.start()
-#	Dispatcher.connect("hour_changed", self, "update_color")
-#	$tint/anim.play("tint")
 	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
 	$camera.stick_target = test_mon
 
@@ -67,19 +50,6 @@ func highlight(entity):
 func unhighlight(entity):
 	$ui/select_hud.unselect(entity)
 
-# --------------------------------------------------------------------------- #
-# color stuff
-
-#func get_anim_duration(hour):
-#	pass
-
-func update_color(hour):
-	var anim = $tint/anim.get_animation("tint")
-	anim.track_set_key_value(0, 0, $tint.color)
-	anim.set_length(1)
-	anim.track_insert_key(0, 1, colors[hour])
-
-	$tint/anim.play("tint")
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

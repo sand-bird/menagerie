@@ -68,6 +68,7 @@ class Walk extends Base:
 	func _open():
 		path = calc_path()
 		monster.play_anim(Constants.Anim.WALK)
+		# TODO: add speed scale to monster.play_anim api
 		monster.get_node('sprite/anim').set_speed_scale(2.0)
 
 	func _proc(_delta):
