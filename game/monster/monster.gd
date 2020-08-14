@@ -108,7 +108,7 @@ var dest
 
 func _ready():
 	# this is gonna fire twice a second and may become a perf problem someday
-	Dispatcher.connect('tick_changed', self, '_update_drives', [])
+	Dispatcher.connect('tick_changed', self, '_on_tick_changed', [])
 	update_z()
 	set_physics_process(true)
 	choose_action()
@@ -143,24 +143,25 @@ func initialize(data):
 		# play_animation(Constants.Anim.LIE_DOWN)
 		play_anim(Constants.Anim.WALK)
 
-var time = 0
-func _physics_process(delta):
-	if !current_action or current_action.tick() != Constants.ActionStatus.RUNNING:
-		choose_action()
-#	time += delta
-#	self.orientation = current_velocity
-#	position += current_velocity
+# --------------------------------------------------------------------------- #
 
-	# (temp) spin our monster to check that animations correctly update when
-	# facing direction changes
-#	var rad = time * 2
-#	self.orientation = Vector2(cos(rad), sin(rad))
-#	if rad > 2 * PI: time = 0
+func _physics_process(delta):
+	if current_action and !current_action.done:
+		current_action.proc(delta)
+	else:
+		choose_action()
 
 	# debug
 	$orientation.cast_to = orientation * 20
 	$velocity.cast_to = current_velocity * 20
 	$desired_velocity.cast_to = desired_velocity * 20
+
+# --------------------------------------------------------------------------- #
+
+func _on_tick_changed():
+	if current_action and !current_action.done:
+		current_action.tick()
+	update_drives()
 
 # --------------------------------------------------------------------------- #
 
@@ -187,15 +188,9 @@ func choose_action():
 	var target_energy = get_target_energy()
 	if energy < target_energy:
 		# get a range for how long we should sleep.
-		# this math is wrong - actions "tick" once per process delta (~0.04s),
-		# not once per game tick (0.5s). we need to either convert from ticks
-		# to deltas (and rename the "tick" fn), or actually tick once per tick
-		# and handle the realtime stuff (eg updating pos) in _physics_process.
 		var ticks_to_fill = Action.energy_values.sleep
 		var max_sleep = lerp(target_energy, 100, 0.6) * ticks_to_fill
 		var min_sleep = lerp(target_energy, energy, 0.6) * ticks_to_fill
-		print('min_sleep: ', min_sleep, ' | max_sleep: ', max_sleep)
-
 		current_action = Action.Sleep.new(self, Utils.randi_range(min_sleep, max_sleep))
 	else:
 		current_action = Action.Walk.new(
@@ -225,7 +220,7 @@ func set_anim_speed(speed):
 
 # updates the pet's drive meters (mood, hunger, etc).
 # called once per "tick" unit of game time (~0.5 seconds)
-func _update_drives():
+func update_drives():
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)

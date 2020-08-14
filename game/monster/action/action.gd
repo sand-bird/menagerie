@@ -8,9 +8,12 @@ const energy_values = {
 	base = 0
 }
 
+# basic behavior tree style action. has two active methods, "proc" and "tick".
+# the former runs on the physics clock, and the latter runs every in-game tick.
 class Base:
 	var action_id = 'base'
 	var Status = Constants.ActionStatus
+	var done = false
 
 	var sleep_timer: int = 0
 	var status = Status.NEW
@@ -18,30 +21,32 @@ class Base:
 	var energy_value setget ,get_energy_value
 
 	func get_energy_value():
-		return energy_values[action_id]
+		return energy_values[self.action_id]
 
 	func _init(monster):
 		self.monster = monster
-		print('energy value: ', energy_value)
-
-	func tick():
-		if status == Status.NEW:
-			open()
-		if sleep_timer:
-			sleep_timer -= 1
-		else:
-			_tick()
-			return status
 
 	func open():
 		status = Status.RUNNING
 		_open()
 
+	func proc(delta):
+		if status == Status.NEW:
+			open()
+		if sleep_timer:
+			sleep_timer -= 1
+		else:
+			_proc(delta)
+
+	func tick():
+		_tick()
+
 	func exit(exit_status):
 		status = exit_status
-		return status
+		done = true
 
 	func _open(): pass
+	func _proc(delta): pass
 	func _tick(): pass
 
 	# sleep for a certain number of ticks
@@ -64,7 +69,7 @@ class Walk extends Base:
 		monster.play_anim(Constants.Anim.WALK)
 		monster.get_node('sprite/anim').set_speed_scale(2.0)
 
-	func _tick():
+	func _proc(_delta):
 		#calc_path()
 		if should_advance_path():
 			if path.size() <= 1:
@@ -76,8 +81,6 @@ class Walk extends Base:
 		monster.current_velocity = (
 			monster.current_velocity + acceleration
 		).clamped(monster.max_speed)
-		monster.orientation = monster.current_velocity
-		monster.position += monster.current_velocity
 
 	func should_advance_path():
 		return monster.get_position().distance_squared_to(
@@ -87,6 +90,8 @@ class Walk extends Base:
 		var desired_velocity = (target - monster.get_position()
 			).normalized() * monster.max_velocity
 		monster.desired_velocity = desired_velocity
+		monster.orientation = monster.current_velocity
+		monster.position += monster.current_velocity
 
 		var steering = desired_velocity - monster.current_velocity
 		return steering
@@ -108,7 +113,6 @@ class Wander extends Base:
 
 	func _init(monster).(monster):
 		action_id = 'wander'
-		pass
 
 	func _open():
 		destination = pick_destination()
@@ -125,6 +129,8 @@ class Wander extends Base:
 # --------------------------------------------------------------------------- #
 
 class Sleep extends Base:
+	# keep these both for now in case we need to look at total duration later.
+	# (probably not actually necessary)
 	var duration
 	var duration_remaining
 
@@ -141,6 +147,4 @@ class Sleep extends Base:
 	func _tick():
 		duration_remaining -= 1
 		if duration_remaining <= 0:
-			return exit(Status.SUCCESS)
-		else:
-			return Status.RUNNING
+			exit(Status.SUCCESS)
