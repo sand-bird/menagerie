@@ -29,10 +29,10 @@ var next_action
 
 # drives
 # ------
-var belly
+var belly  # 0 to 100
 var mood
-var energy
-var social
+var energy # 0 to 100
+var social # 0 to 8?
 
 # personality
 # -----------
@@ -51,7 +51,7 @@ var traits = {
 	# VIT
 	size = 0,
 	strength = 0,
-	vigor = 0,
+	vigor = 0.5,
 	# CON
 	composure = 0,
 	patience = 0,
@@ -217,7 +217,7 @@ func set_anim_speed(speed):
 
 # updates the pet's drive meters (mood, hunger, etc).
 # called once per "tick" unit of game time (~0.5 seconds)
-func _update_drives() -> void:
+func _update_drives():
 	var delta_energy = calc_energy_delta()
 	energy += delta_energy
 	belly += calc_belly_delta(delta_energy)
@@ -228,7 +228,7 @@ func _update_drives() -> void:
 
 const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 
-# actions are defined with `energy_cost` values that describe how fast a pet
+# actions are defined with `energy_value` values that describe how fast a pet
 # loses (or recovers) energy while performing the action. these are in delta
 # energy PER HOUR (positive for recovery, negative for drain), but since the
 # drive is updated every tick, we must first translate `energy_mod` to its
@@ -239,15 +239,16 @@ const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 # INVERSE effect on energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func calc_energy_delta():
-	var has_energy_cost = current_action and 'energy_cost' in current_action
-	var action_val = (current_action.energy_cost / Time.TICKS_IN_HOUR
-			if has_energy_cost else DEFAULT_ENERGY_DECAY)
+	var has_energy_value = current_action and 'energy_value' in current_action
+	var action_val = (float(current_action.energy_value) / Time.TICKS_IN_HOUR
+			if has_energy_value else DEFAULT_ENERGY_DECAY)
 	var vig_mod = traits.vigor * 2.0
 	var delta_energy = 0.0
 	if action_val > 0:
 		delta_energy = action_val * vig_mod
 	else:
 		delta_energy = action_val * (2.0 - vig_mod)
+	print('delta energy: ', delta_energy)
 	return delta_energy
 
 # --------------------------------------------------------------------------- #

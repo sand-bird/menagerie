@@ -43,7 +43,7 @@ class Base:
 class Walk extends Base:
 	var destination: Vector2
 	var path: Array
-	var energy_cost = -0.05
+	var energy_value = -5
 
 	func _init(monster, destination).(monster):
 		action_id = 'walk'
@@ -117,7 +117,7 @@ class Wander extends Base:
 class Sleep extends Base:
 	var duration
 	var duration_remaining
-	var energy_cost = 0.1
+	var energy_value = 10
 
 	func _init(monster, duration).(monster):
 		action_id = 'sleep'
