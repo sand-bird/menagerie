@@ -3,8 +3,8 @@ extends Node
 class_name Action
 
 const energy_values = {
-	sleep = 10,
-	walk = -15,
+	sleep = 20,
+	walk = -10,
 	base = 0
 }
 
