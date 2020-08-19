@@ -56,12 +56,12 @@ func initialize(grid_config = null, state = null):
 
 # --------------------------------------------------------------------------- #
 
-func load_items(items):
+func load_items(new_items):
 	clear_items()
-	item_count = items.size()
+	item_count = new_items.size()
 	for i in item_count:
 		var item = Item.instance()
-		item.initialize(i, items[i], props.item_size)
+		item.initialize(i, new_items[i], props.item_size)
 		$items.add_child(item)
 
 # --------------------------------------------------------------------------- #
@@ -83,8 +83,7 @@ func update_current_item(new_index):
 	#  it's not completely full. doing this here ensures it always happens, so
 	#  that we have less bounds- checking to do elsewhere.
 	new_index = min(new_index, item_count - 1)
-	Log.debug(self, ["(update_current_item) new: ",
-			new_index, " | old: ", current_item])
+	Log.debug(self, ["(update_current_item) new: ", new_index, " | old: ", current_item])
 
 	move_selector(new_index)
 	if current_item < item_count:
@@ -179,8 +178,7 @@ func change_page(offset, wrap = false):
 		if (offset > 0):
 			# in case we are going to the last page and it is not full, we must
 			# restrict our new cursor to the maximum row for that page. since the
-			# cursor snaps to the left, and rows are left-aligned, this will be
-			# safe.
+			# cursor snaps to the left, and rows are left-aligned, this is safe.
 			var new_row = min(current_row, get_page_row())
 			new_index = coords_to_index(0, new_row)
 		if (offset < 0):

@@ -20,6 +20,7 @@ func _ready():
 # =========================================================================== #
 #                                   T A B S                                   #
 # --------------------------------------------------------------------------- #
+
 func make_tabs():
 	var chapters = Constants.MENU_CHAPTERS
 	for id in chapters:
@@ -38,6 +39,7 @@ func new_tab(id, data):
 # =========================================================================== #
 #                               C H A P T E R S                               #
 # --------------------------------------------------------------------------- #
+
 # triggered on a `menu_open` dispatch.
 func open(input = null):
 	var chapter = Utils.unpack(input)
@@ -102,6 +104,9 @@ func get_chapter_info(chapter):
 # =========================================================================== #
 #                                H E A D E R S                                #
 # --------------------------------------------------------------------------- #
+# the title and page number nodes are children of main_menu, so we control their
+# displays here from signals sent by property setters in our menu chapters.
+
 #                                s e t t e r s
 # --------------------------------------------------------------------------- #
 

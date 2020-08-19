@@ -23,7 +23,7 @@ func initialize(i, iref, item_size):
 	set_qty(item.qty)
 	$icon.texture = Data.get_resource([item.id, "icon"])
 
-func set_size(size):
+func set_size(size, _keep_margins = false):
 	rect_min_size = size
 	rect_size = size
 

@@ -10,7 +10,6 @@ onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 # an array of ints, each an index within Player.inventory. represents the
 # subset of the player's inventory that we can SEE & INTERACT WITH. possible
 # reasons an inventory item doesn't show up in this list:
-
 # - it's being filtered out by our current filter settings
 # - the data for its entity id was not found; an uncommon but expected case,
 #   eg. if an entity belongs to a mod that's currently disabled.
