@@ -1,0 +1,12 @@
+{
+  "id": "fat_palm",
+  "name": {
+    "en": "Fat Palm"
+  },
+  "description": {
+    "en": "A squat, chubby palm tree."
+  },
+  "sprite": "~fat_palm.png",
+  "width": 1,
+  "height": 1
+}

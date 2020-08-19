@@ -111,5 +111,9 @@
   "id": {
     "type": "string",
     "maxLength": 32
+  },
+  "file": {
+    "$comment": "we should validate that the file exists, if possible",
+    "type": "string"
   }
 }

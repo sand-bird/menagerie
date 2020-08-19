@@ -9,7 +9,12 @@
     },
     "category": {"$ref": "definitions/category"},
     "name": {"$ref": "definitions/text"},
-    "description": {"$ref": "definitions/text"}
+    "description": {"$ref": "definitions/text"},
+    "icon": {"$ref": "definitions/file"},
+    "value": {
+      "type": "number",
+      "minValue": 0
+    }
   },
-  "required": []
+  "required": [ "id", "type", "name", "description", "icon", "value" ]
 }
