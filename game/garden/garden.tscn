@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://garden/garden.gd" type="Script" id=1]
 [ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=2]
@@ -11,7 +11,6 @@
 [ext_resource path="res://ui/garden/clock_hud.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ui/garden/select_hud.tscn" type="PackedScene" id=10]
 [ext_resource path="res://ui/garden/interact_hud.tscn" type="PackedScene" id=11]
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=12]
 
 [sub_resource type="TileSet" id=1]
 0/name = ""
@@ -77,6 +76,9 @@ pause_mode = 1
 margin_right = 384.0
 margin_bottom = 212.0
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="bg" type="TextureRect" parent="."]
 visible = false
@@ -121,11 +123,11 @@ __meta__ = {
 [node name="anim" type="AnimationPlayer" parent="tint"]
 anims/tint = SubResource( 2 )
 
-[node name="cursor" parent="." instance=ExtResource( 8 )]
-
 [node name="entities" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+
+[node name="cursor" parent="." instance=ExtResource( 8 )]
 
 [node name="ui" type="CanvasLayer" parent="."]
 
@@ -135,4 +137,3 @@ anchor_bottom = 1.0
 
 [node name="interact_hud" parent="ui" instance=ExtResource( 11 )]
 show_behind_parent = true
-theme = ExtResource( 12 )

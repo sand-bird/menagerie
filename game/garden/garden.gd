@@ -70,7 +70,7 @@ func highlight(entity):
 	$ui/select_hud.select(entity)
 
 func unhighlight(entity):
-	$ui/select_hud.unselect(entity)
+	if !$cursor.selecting: $ui/select_hud.unselect(entity)
 
 # --------------------------------------------------------------------------- #
 
@@ -78,13 +78,14 @@ func select(entity):
 	print('garden select')
 	if entity.has_method("select"): entity.select()
 	$camera.stick(entity)
-	$ui/interact_hud.show_options(entity)
-	pass
+	$ui/select_hud.select(entity)
+	$ui/interact_hud.attach(entity)
 
 func unselect():
 	print('garden unselect')
 	$camera.stick_target = null
-	pass
+	$ui/select_hud.unselect()
+	$ui/interact_hud.detach()
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

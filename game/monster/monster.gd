@@ -81,7 +81,7 @@ var preferences = {}
 
 # movement
 # --------
-var mass = 40 # from entity definition
+var mass = 20 # from entity definition
 # position (Vector2): built-in property
 var orientation = Vector2(0, 1) setget _update_orientation
 # action properties:
@@ -91,8 +91,8 @@ var collider # whatever we're about to hit next
 var collision # whatever we've just hit
 
 var destination
-var max_speed = 20
-var max_velocity = 0.5
+var max_speed = 40
+var max_velocity = 0.8
 var current_velocity = Vector2(0, 0)
 var desired_velocity = Vector2(0, 0)
 var arrival_radius = max_velocity * 4
@@ -119,13 +119,13 @@ func _ready():
 
 func get_position():
 	return Vector2(
-		position.x + $shape.shape.radius,
-		position.y + $shape.shape.radius
+		position.x,
+		position.y - $shape.shape.radius
 	)
 
 func set_position(pos):
-	position.x = pos.x - $shape.shape.radius
-	position.y = pos.y - $shape.shape.radius
+	position.x = pos.x + $shape.shape.radius
+	position.y = pos.y + $shape.shape.radius
 
 # --------------------------------------------------------------------------- #
 
