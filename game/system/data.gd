@@ -304,14 +304,14 @@ func load_schemafile(path, sourceinfo):
 # as for fileref sigils, we should resolve the sigil to the full filepath (this
 # is the only time we will know what it is), but don't load the resource yet
 # for the reasons above.
-func process_data(data, basedir):
-	var collection = data.size() if typeof(data) == TYPE_ARRAY else data
+func process_data(d, basedir):
+	var collection = d.size() if typeof(d) == TYPE_ARRAY else d
 	for i in collection:
-		if typeof(data[i]) == TYPE_ARRAY or typeof(data[i]) == TYPE_DICTIONARY:
-			data[i] = process_data(data[i], basedir)
-		elif data[i] and typeof(data[i]) == TYPE_STRING and data[i][0] == '~':
-			data[i] = basedir.plus_file(Utils.strip_sigil(data[i]))
-	return data
+		if typeof(d[i]) == TYPE_ARRAY or typeof(d[i]) == TYPE_DICTIONARY:
+			d[i] = process_data(d[i], basedir)
+		elif d[i] and typeof(d[i]) == TYPE_STRING and d[i][0] == '~':
+			d[i] = basedir.plus_file(Utils.strip_sigil(d[i]))
+	return d
 
 # --------------------------------------------------------------------------- #
 
