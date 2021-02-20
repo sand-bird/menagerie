@@ -91,6 +91,7 @@ margin_bottom = 10.0
 text = " X "
 script = SubResource( 1 )
 __meta__ = {
+"_edit_use_anchors_": false,
 "_editor_icon": ExtResource( 5 )
 }
 

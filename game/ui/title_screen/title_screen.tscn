@@ -61,4 +61,3 @@ playback_speed = 0.8
 anims/title = SubResource( 1 )
 
 [node name="menu" parent="." instance=ExtResource( 2 )]
-

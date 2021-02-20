@@ -54,6 +54,9 @@ margin_right = 11.0
 margin_bottom = 23.0
 mouse_filter = 0
 custom_constants/separation = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="pages" type="Label" parent="."]
 anchor_left = 0.5

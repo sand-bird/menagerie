@@ -43,6 +43,7 @@ margin_top = 30.0
 margin_right = 96.0
 margin_bottom = 49.0
 text = "Load Game"
+clip_text = true
 script = SubResource( 1 )
 __meta__ = {
 "_editor_icon": ExtResource( 3 )
@@ -68,4 +69,3 @@ script = SubResource( 3 )
 __meta__ = {
 "_editor_icon": ExtResource( 3 )
 }
-
