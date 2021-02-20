@@ -46,7 +46,7 @@ signal item_selected(item_info)
 signal entity_highlighted(entity)
 signal entity_unhighlighted(entity)
 signal entity_selected(entity)
-signal entity_unselected(entity)
+signal entity_unselected()
 
 #                                o p t i o n s                                #
 # --------------------------------------------------------------------------- #
