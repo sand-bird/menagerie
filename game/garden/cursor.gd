@@ -35,6 +35,7 @@ func _ready():
 	$anim.play("cursor_bob")
 	connect("item_rect_changed", self, "reset_anim")
 	$stick_area.connect("body_entered", self, "stick")
+	$unstick_area.connect("body_entered", self, "stick")
 	$unstick_area.connect("body_exited", self, "unstick")
 	set_process(true)
 
@@ -54,7 +55,9 @@ func _notification(n):
 # --------------------------------------------------------------------------- #
 
 func stick(body):
-	if (curr_body and curr_body != body): unstick(curr_body)
+	if curr_body:
+		if body == curr_body: return
+		else: unstick(curr_body)
 	curr_body = body
 	var shape_node = body.get_node('shape')
 	if shape_node:
