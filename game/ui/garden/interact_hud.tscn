@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://ui/garden/interact_hud.gd" type="Script" id=1]
+[ext_resource path="res://addons/event_button/button.gd" type="Script" id=2]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=3]
+
+[node name="interact_hud" type="CenterContainer"]
+margin_left = -20.2327
+margin_top = -18.5665
+margin_right = 19.7673
+margin_bottom = 21.4335
+theme = ExtResource( 3 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="h" type="HSplitContainer" parent="."]
+margin_left = 2.0
+margin_top = 15.0
+margin_right = 38.0
+margin_bottom = 34.0
+split_offset = 20
+
+[node name="left" type="Button" parent="h"]
+margin_right = 12.0
+margin_bottom = 19.0
+script = ExtResource( 2 )
+
+[node name="right" type="Button" parent="h"]
+margin_left = 24.0
+margin_right = 36.0
+margin_bottom = 19.0
+script = ExtResource( 2 )
+
+[node name="v" type="VSplitContainer" parent="."]
+margin_left = 14.0
+margin_right = 26.0
+margin_bottom = 50.0
+
+[node name="top" type="Button" parent="v"]
+margin_right = 12.0
+margin_bottom = 19.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="bottom" type="Button" parent="v"]
+margin_top = 31.0
+margin_right = 12.0
+margin_bottom = 50.0
+script = ExtResource( 2 )

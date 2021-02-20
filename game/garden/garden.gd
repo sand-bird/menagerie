@@ -16,6 +16,8 @@ var objects = {}
 func _ready():
 	Dispatcher.connect("entity_highlighted", self, "highlight")
 	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
+	Dispatcher.connect("entity_selected", self, "select")
+	Dispatcher.connect("entity_unselected", self, "unselect")
 
 # added to test pathing, camera sticking, etc. todo: remove someday
 var test_mon
@@ -51,6 +53,9 @@ func set_mouse_position(mouse_pos):
 func get_screen_relative_mouse_pos():
 	return get_global_mouse_position() - $camera.get_camera_position()
 
+func get_screen_relative_position(pos):
+	return pos - $camera.get_camera_position()
+
 # --------------------------------------------------------------------------- #
 
 # if we're using a cursor, it'll trigger the "highlighted" dispatch when it
@@ -67,6 +72,19 @@ func highlight(entity):
 func unhighlight(entity):
 	$ui/select_hud.unselect(entity)
 
+# --------------------------------------------------------------------------- #
+
+func select(entity):
+	print('garden select')
+	if entity.has_method("select"): entity.select()
+	$camera.stick(entity)
+	$ui/interact_hud.show_options(entity)
+	pass
+
+func unselect():
+	print('garden unselect')
+	$camera.stick_target = null
+	pass
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

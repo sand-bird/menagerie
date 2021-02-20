@@ -16,6 +16,7 @@ const DEFAULT_HAND_HEIGHT = 16
 const VERTICAL_HAND_OFFSET = 8
 var hand_height = DEFAULT_HAND_HEIGHT
 
+var selecting = false
 # holds a pointer to the entity the cursor is currently stuck to, if one exists
 var curr_body = null
 # time in seconds to wait since the mouse was last moved before we warp the
@@ -88,11 +89,23 @@ func measure_mouse_movement(delta):
 
 # --------------------------------------------------------------------------- #
 
+func _input(e):
+	if e is InputEventMouseButton and e.is_pressed():
+		if curr_body:
+			Dispatcher.emit_signal("entity_selected", curr_body)
+			print('clicked target')
+			selecting = true
+		else:
+			Dispatcher.emit_signal("entity_unselected")
+			selecting = false
+		get_tree().set_input_as_handled()
+	
+
 func _process(delta):
 	measure_mouse_movement(delta)
 	# decide whether to follow a highlighted entity. if player has moved the
 	# mouse recently, then stop following so we don't get stuck.
-	if curr_body and time_since_mouse_moved > MOUSE_FOLLOW_DELAY:
+	if curr_body && time_since_mouse_moved > MOUSE_FOLLOW_DELAY and !selecting:
 		get_parent().set_mouse_position(curr_body.position)
 		# get_global_mouse_position doesn't update until the player moves the
 		# mouse manually, so we have to set this separately
@@ -102,7 +115,7 @@ func _process(delta):
 	
 	$unstick_area.position = $stick_area.position
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
-	
+
 	var new_graphic_pos = Utils.vlerp(
 			$graphic.rect_position, graphic_dest, lerp_val).round()
 

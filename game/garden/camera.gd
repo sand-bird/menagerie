@@ -103,6 +103,12 @@ func center():
 	target_pos = center_pos
 	align()
 
+func stick(target):
+	print('camera stick | to: ', target.position, ' | target_pos: ', target_pos)
+	# target_pos = target.position - screen_radius
+	stick_target = target
+	align()
+
 # --------------------------------------------------------------------------- #
 
 # scroll based on touch (or click) input. moves the camera opposite the drag

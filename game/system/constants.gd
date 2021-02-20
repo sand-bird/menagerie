@@ -31,6 +31,10 @@ enum Category {
 	FRUIT, FLOWER, TREE, DECORATION, FLOORING
 }
 
+enum Direction {
+	TOP, BOTTOM, LEFT, RIGHT
+}
+
 # ------- #
 #  PATHS  #
 # ------- #

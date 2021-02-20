@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://garden/garden.gd" type="Script" id=1]
 [ext_resource path="res://assets/garden/Arkanos.png" type="Texture" id=2]
@@ -10,6 +10,8 @@
 [ext_resource path="res://garden/cursor.tscn" type="PackedScene" id=8]
 [ext_resource path="res://ui/garden/clock_hud.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ui/garden/select_hud.tscn" type="PackedScene" id=10]
+[ext_resource path="res://ui/garden/interact_hud.tscn" type="PackedScene" id=11]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=12]
 
 [sub_resource type="TileSet" id=1]
 0/name = ""
@@ -130,3 +132,7 @@ anchor_bottom = 1.0
 [node name="clock_hud" parent="ui" instance=ExtResource( 9 )]
 
 [node name="select_hud" parent="ui" instance=ExtResource( 10 )]
+
+[node name="interact_hud" parent="ui" instance=ExtResource( 11 )]
+show_behind_parent = true
+theme = ExtResource( 12 )
