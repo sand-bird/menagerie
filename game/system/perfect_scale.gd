@@ -21,6 +21,8 @@ const MIN_SCALE = 1
 const DEBOUNCE_TIME = 0.1
 var timer: SceneTreeTimer = null
 
+var current_scale
+
 func _ready():
 	get_tree().connect("screen_resized", self, "debounce")
 	var base_size = update_screen()
@@ -51,9 +53,10 @@ func update_screen():
 	var viewport = get_tree().get_root()
 	var win_size = OS.window_size
 
-	var new_scale = get_scale(win_size)
-	var base_size = get_new_size(win_size, new_scale)
-	var scaled_size = base_size * new_scale
+	current_scale = get_scale(win_size)
+ 
+	var base_size = get_new_size(win_size, current_scale)
+	var scaled_size = base_size * current_scale
 
 	viewport.set_size(base_size)
 
@@ -66,7 +69,7 @@ func update_screen():
 	Log.debug(self, ["window size: ", OS.window_size,
 			" | scaled size: ", scaled_size,
 			" | base size: ", base_size, " | viewport size: ",
-			viewport.size, " | scale: ", new_scale])
+			viewport.size, " | scale: ", current_scale])
 
 	return base_size
 
