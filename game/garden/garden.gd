@@ -17,6 +17,7 @@ func _ready():
 	Dispatcher.connect("entity_highlighted", self, "highlight")
 	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
 
+# added to test pathing, camera sticking, etc. todo: remove someday
 var test_mon
 
 func init(data):
@@ -24,15 +25,31 @@ func init(data):
 	deserialize(data)
 	Time.start()
 	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
-	$camera.stick_target = test_mon
+	# camera.stick_target = test_mon
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
 		test_mon.current_action = Action.Walk.new(test_mon, get_global_mouse_position())
 
+# --------------------------------------------------------------------------- #
+
 func calc_path(start, end):
 	return $nav.calc_path(start, end)
+
+# --------------------------------------------------------------------------- #
+
+# takes a position relative to the garden and moves the mouse there.
+# warp_mouse expects a position relative to the screen, so we convert between
+# the two with get_camera_position, which returns the difference.
+func set_mouse_position(mouse_pos):
+	var new_mouse_pos = mouse_pos - $camera.get_camera_position()
+	warp_mouse(new_mouse_pos)
+
+# it seems that get_global_mouse_position and get_local_mouse_position both
+# return the mouse's position relative to the garden ¯\_(ツ)_/¯
+func get_screen_relative_mouse_pos():
+	return get_global_mouse_position() - $camera.get_camera_position()
 
 # --------------------------------------------------------------------------- #
 

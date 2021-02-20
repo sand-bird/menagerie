@@ -15,7 +15,13 @@ const HAND_X = 4
 const DEFAULT_HAND_HEIGHT = 16
 const VERTICAL_HAND_OFFSET = 8
 var hand_height = DEFAULT_HAND_HEIGHT
-var curr_body
+
+# holds a pointer to the entity the cursor is currently stuck to, if one exists
+var curr_body = null
+# time in seconds to wait since the mouse was last moved before we warp the
+# mouse cursor on top of the entity it's stuck to (if one exists). we do this
+# to keep the cursor stuck to a moving monster until the player moves it away.
+const MOUSE_FOLLOW_DELAY = 0.1
 
 # for lerping the cursor graphic
 var graphic_dest = Vector2()
@@ -24,19 +30,21 @@ var lerp_val = 0.3
 # var is_enabled = true
 
 # --------------------------------------------------------------------------- #
+
 func _ready():
 	$anim.play("cursor_bob")
 	connect("item_rect_changed", self, "reset_anim")
 	$stick_area.connect("body_entered", self, "stick")
 	$unstick_area.connect("body_exited", self, "unstick")
-	# Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	set_process(true)
 
 # --------------------------------------------------------------------------- #
+
 func reset_anim():
 	$anim.seek(0)
 
 # --------------------------------------------------------------------------- #
+
 func _notification(n):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
@@ -44,11 +52,10 @@ func _notification(n):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 # --------------------------------------------------------------------------- #
+
 func stick(body):
 	if (curr_body and curr_body != body): unstick(curr_body)
 	curr_body = body
-	# var sprite_size = body.get_node("sprite").texture.get_size()
-	graphic_dest = body.position
 	var shape_node = body.get_node('shape')
 	if shape_node:
 		var sprite_size = shape_node.shape.radius * 2
@@ -56,6 +63,7 @@ func stick(body):
 		Dispatcher.emit_signal("entity_highlighted", body)
 
 # --------------------------------------------------------------------------- #
+
 func unstick(body):
 	if body == curr_body:
 		hand_height = DEFAULT_HAND_HEIGHT
@@ -63,13 +71,35 @@ func unstick(body):
 		Dispatcher.emit_signal("entity_unhighlighted", body)
 
 # --------------------------------------------------------------------------- #
-#warning-ignore:unused_argument
+
+var last_mouse_speed = Vector2()
+var time_since_mouse_moved = 0.0
+
+func measure_mouse_movement(delta):
+	var current_mouse_speed = Input.get_last_mouse_speed()
+	if current_mouse_speed != last_mouse_speed:
+		last_mouse_speed = current_mouse_speed
+		time_since_mouse_moved = 0.0
+	else:
+		time_since_mouse_moved += delta
+
+# --------------------------------------------------------------------------- #
+
 func _process(delta):
-	$stick_area.position = get_global_mouse_position()
-
+	measure_mouse_movement(delta)
+	# decide whether to follow a highlighted entity. if player has moved the
+	# mouse recently, then stop following so we don't get stuck.
+	if curr_body and time_since_mouse_moved > MOUSE_FOLLOW_DELAY:
+		get_parent().set_mouse_position(curr_body.position)
+		# get_global_mouse_position doesn't update until the player moves the
+		# mouse manually, so we have to set this separately
+		$stick_area.position = curr_body.position
+	else:
+		$stick_area.position = get_local_mouse_position()
+	
 	$unstick_area.position = $stick_area.position
-	graphic_dest = $stick_area.position
-
+	graphic_dest = curr_body.position if curr_body else $stick_area.position
+	
 	var new_graphic_pos = Utils.vlerp(
 			$graphic.rect_position, graphic_dest, lerp_val).round()
 

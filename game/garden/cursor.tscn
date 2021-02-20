@@ -44,17 +44,20 @@ tracks/0/keys = {
 
 [node name="cursor" type="Control"]
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="graphic" type="Container" parent="."]
+[node name="graphic" type="Control" parent="."]
 
-[node name="hand_anchor" type="Container" parent="graphic"]
+[node name="hand_anchor" type="Control" parent="graphic"]
 
 [node name="Sprite" type="Sprite" parent="graphic/hand_anchor"]
 z_index = 999
 z_as_relative = false
 texture = ExtResource( 2 )
 
-[node name="shadow_anchor" type="Container" parent="graphic"]
+[node name="shadow_anchor" type="Control" parent="graphic"]
 
 [node name="shadow" type="Sprite" parent="graphic/shadow_anchor"]
 texture = ExtResource( 3 )
@@ -72,4 +75,3 @@ shape = SubResource( 2 )
 [node name="anim" type="AnimationPlayer" parent="."]
 anims/click = SubResource( 3 )
 anims/cursor_bob = SubResource( 4 )
-
