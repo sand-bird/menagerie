@@ -70,9 +70,8 @@ static func unpack(arg):
 
 # --------------------------------------------------------------------------- #
 
-# for functions that use argument arrays as bootleg varargs,
-# because boxing a lone argument in an array[1] is a crime
-# against fashion
+# for functions that use argument arrays as bootleg varargs, because boxing a
+# lone argument in an array[1] is a crime against fashion
 static func pack(arg):
 	if typeof(arg) == TYPE_ARRAY: return arg
 	else: return [arg]

@@ -48,14 +48,14 @@ class Logfile:
 		else:
 			return File.READ_WRITE # append
 
-	func validate_path(path):
+	func validate_path(p):
 		"""Validate the path given as argument, making it possible to write to
 		the designated file or folder. Returns whether the path is valid."""
-		if !(path.is_abs_path() or path.is_rel_path()):
-			print("[ERROR] [logger] The given path '%s' is not valid." % path)
+		if !(p.is_abs_path() or p.is_rel_path()):
+			print("[ERROR] [logger] The given path '%s' is not valid." % p)
 			return false
 		var dir = Directory.new()
-		var base_dir = path.get_base_dir()
+		var base_dir = p.get_base_dir()
 		if not dir.dir_exists(base_dir):
 			# TODO: Move directory creation to the function that will actually *write*
 			var err = dir.make_dir_recursive(base_dir)

@@ -24,8 +24,8 @@ class Base:
 	func get_energy_value():
 		return energy_values[self.action_id]
 
-	func _init(monster):
-		self.monster = monster
+	func _init(m):
+		self.monster = m
 
 	func open():
 		status = Status.RUNNING
@@ -61,9 +61,9 @@ class Walk extends Base:
 	var destination: Vector2
 	var path: Array
 
-	func _init(monster, destination).(monster):
+	func _init(monster, dest).(monster):
 		action_id = 'walk'
-		self.destination = destination
+		self.destination = dest
 
 	func _open():
 		path = calc_path()
@@ -136,9 +136,9 @@ class Timed extends Base:
 	var duration
 	var duration_remaining
 
-	func _init(monster, duration).(monster):
-		self.duration = duration
-		self.duration_remaining = duration
+	func _init(monster, dur).(monster):
+		self.duration = dur
+		self.duration_remaining = dur
 
 	func _tick():
 		duration_remaining -= 1

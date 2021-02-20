@@ -91,9 +91,11 @@ func update_current_item(new_index):
 	show_quantity(new_index, false)
 	current_item = new_index
 
+
 # =========================================================================== #
 #                      S E L E C T O R   C O N T R O L S                      #
 # --------------------------------------------------------------------------- #
+
 func init_selector():
 	if !item_count: return
 	$selector.texture = Utils.load_resource(
@@ -120,9 +122,11 @@ func move_selector(index):
 	$selector.move_to(get_selector_dest(index))
 	$selector.show()
 
+
 # =========================================================================== #
 #                         I N P U T   H A N D L I N G                         #
 # --------------------------------------------------------------------------- #
+
 func _input(e):
 	if e.is_action_pressed("ui_left"): move_left()
 	elif e.is_action_pressed("ui_right"): move_right()
@@ -185,6 +189,7 @@ func change_page(offset, wrap = false):
 			new_index = coords_to_index(cols - 1, current_row)
 
 	update_current_item(new_index)
+
 
 # =========================================================================== #
 #                              U T I L I T I E S                              #

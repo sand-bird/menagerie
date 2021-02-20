@@ -150,6 +150,7 @@ func _physics_process(delta):
 		current_action.proc(delta)
 	else:
 		choose_action()
+	update_z()
 
 	# debug
 	$orientation.cast_to = orientation * 20
@@ -179,8 +180,7 @@ func _update_orientation(new_o):
 # update the z-index of our sprite so that monsters appear in front of or
 # behind other entities according to their y-position in the garden
 func update_z():
-	pass
-	# z_index = position.y + $sprite.texture.get_height() / 2
+	z_index = position.y + $sprite.texture.get_height() / 2
 
 # --------------------------------------------------------------------------- #
 
