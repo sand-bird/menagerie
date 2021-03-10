@@ -16,28 +16,30 @@ func select(new_target: Node2D = null):
 	match target.entity_type:
 		# TODO: connect to monster so we can update on the fly
 		EntityType.MONSTER: connect_monster()
+		EntityType.OBJECT: connect_object()
 
 	show()
 
 # --------------------------------------------------------------------------- #
 
-func unselect(entity = null) -> void:
+func unselect(entity = null):
 	hide()
 	if !target: return
-	print("self: ", get_incoming_connections())
 	for connection in get_incoming_connections():
 		if connection.source == target:
-			target.disconnect(connection.signal_name,
-					self, connection.method_name)
-			print("disconnected! ", connection)
+			target.disconnect(connection.signal_name, self, connection.method_name)
 
-func connect_monster() -> void:
+func connect_monster():
 	target.connect('drives_changed', self, 'update_monster')
 	update_monster()
 
-func update_monster() -> void:
+func update_monster():
 	$name_bar/label.text = target.monster_name
 	$horizontal.show()
 	$horizontal/belly.value = target.belly
 	$horizontal/energy.value = target.energy
 	$horizontal/social.value = target.social
+
+func connect_object():
+	$name_bar/label.text = 'an object'
+	$horizontal.hide()

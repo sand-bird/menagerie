@@ -24,4 +24,3 @@ custom_constants/vseparation = 3
 custom_constants/hseparation = 3
 
 [node name="selector" parent="." instance=ExtResource( 3 )]
-

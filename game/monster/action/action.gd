@@ -83,6 +83,7 @@ class Walk extends Base:
 		monster.current_velocity = (
 			monster.current_velocity + acceleration
 		).clamped(monster.max_speed)
+		monster.move_and_slide(monster.current_velocity / _delta)
 
 	func should_advance_path():
 		return monster.get_position().distance_squared_to(
@@ -93,7 +94,6 @@ class Walk extends Base:
 			).normalized() * monster.max_velocity
 		monster.desired_velocity = desired_velocity
 		monster.orientation = monster.current_velocity
-		monster.position += monster.current_velocity
 
 		var steering = desired_velocity - monster.current_velocity
 		return steering

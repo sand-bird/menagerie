@@ -63,7 +63,11 @@ func stick(body):
 	curr_body = body
 	var shape_node = body.get_node('shape')
 	if shape_node:
-		var sprite_size = shape_node.shape.radius * 2
+		var sprite_size = 8
+		if shape_node is CircleShape2D:
+			sprite_size = shape_node.shape.radius * 2
+		elif shape_node is RectangleShape2D:
+			sprite_size = shape_node.extents.y * 2
 		hand_height = sprite_size + VERTICAL_HAND_OFFSET
 		Dispatcher.emit_signal("entity_highlighted", body)
 

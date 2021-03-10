@@ -139,12 +139,20 @@ func save_objects():
 	return data
 
 func load_objects(data):
+	var GardenObject = load('res://object/garden_object.tscn')
 	print(data)
-#	for uid in data:
-#		var object = GardenObject.instance()
-#		object.initialize(data[uid])
-#		objects[uid] = object
-#		$entities.add_child(object)
+	for uid in data:
+		var object = GardenObject.instance()
+		object.initialize(data[uid])
+		objects[uid] = object
+		$entities.add_child(object)
+		place_object(object)
+
+# make the object 
+func place_object(object):
+	var position = $nav/tilemap.map_to_world(object.coordinates)
+	object.position = position
+	$nav/tilemap.set_cellv(object.coordinates, -1)
 
 # --------------------------------------------------------------------------- #
 

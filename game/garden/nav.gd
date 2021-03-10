@@ -21,6 +21,8 @@ func is_walkable_at(x, y):
 	var in_bounds = (x >= 0 && y >= 0 and x <= size.x && y <= size.y)
 	return tile_at == 0 and in_bounds
 
+
+
 var path := []
 var tpath := []
 var walkable = []
@@ -33,7 +35,7 @@ func calc_path(from_pos, to_pos):
 	for i in range(1, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
 	tpath.push_back(path.back())
-	# .update()
+	.update()
 	return tpath
 
 func _draw():

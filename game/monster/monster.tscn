@@ -35,7 +35,6 @@ script = SubResource( 1 )
 script = ExtResource( 3 )
 
 [node name="shape" type="CollisionShape2D" parent="."]
-visible = false
 shape = SubResource( 2 )
 
 [node name="perception" type="Area2D" parent="."]
@@ -49,4 +48,3 @@ shape = SubResource( 3 )
 [node name="velocity" type="RayCast2D" parent="."]
 
 [node name="desired_velocity" type="RayCast2D" parent="."]
-
