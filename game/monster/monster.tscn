@@ -44,6 +44,7 @@ visible = false
 shape = SubResource( 3 )
 
 [node name="orientation" type="RayCast2D" parent="."]
+visible = false
 
 [node name="velocity" type="RayCast2D" parent="."]
 

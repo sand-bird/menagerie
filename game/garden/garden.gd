@@ -34,6 +34,12 @@ func _input(e):
 		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
 		test_mon.current_action = Action.Walk.new(test_mon, get_global_mouse_position())
 
+func _process(delta):
+	update()
+
+func _draw():
+	.draw_circle(test_mon.get_position(), 4, Color.from_hsv(0, 1, 1))
+
 # --------------------------------------------------------------------------- #
 
 func calc_path(start, end):

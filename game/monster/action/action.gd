@@ -71,11 +71,11 @@ class Walk extends Base:
 		# TODO: add speed scale to monster.play_anim api
 		monster.get_node('sprite/anim').set_speed_scale(2.0)
 
-	func _proc(_delta):
-		#calc_path()
+	func _proc(delta):
+		path = calc_path()
+		if reached_dest():
+			return exit(Status.SUCCESS)
 		if should_advance_path():
-			if path.size() <= 1:
-				return exit(Status.SUCCESS)
 			path.pop_front()
 
 		var steering = seek(path.front())
@@ -83,17 +83,19 @@ class Walk extends Base:
 		monster.current_velocity = (
 			monster.current_velocity + acceleration
 		).clamped(monster.max_speed)
-		monster.move_and_slide(monster.current_velocity / _delta)
+		var collision = monster.move_and_slide(monster.current_velocity / delta)
 
 	func should_advance_path():
-		return monster.get_position().distance_squared_to(
-				path.front()) < 25
+		return monster.position.distance_squared_to(path.front()) < 30
+		
+	func reached_dest():
+		return monster.position.distance_squared_to(path.back()) < 30
 
 	func seek(target):
-		var desired_velocity = (target - monster.get_position()
+		var desired_velocity = (target - monster.position
 			).normalized() * monster.max_velocity
 		monster.desired_velocity = desired_velocity
-		monster.orientation = monster.current_velocity
+		monster.orientation = monster.current_velocity.normalized()
 
 		var steering = desired_velocity - monster.current_velocity
 		return steering
@@ -104,9 +106,7 @@ class Walk extends Base:
 	# position = position + velocity
 
 	func calc_path():
-		return monster.garden.calc_path(
-			monster.get_position(), destination
-		)
+		return monster.garden.calc_path(monster.position, destination)
 
 # --------------------------------------------------------------------------- #
 

@@ -81,6 +81,7 @@ __meta__ = {
 }
 
 [node name="bg" type="TextureRect" parent="."]
+visible = false
 show_behind_parent = true
 margin_left = -427.23
 margin_top = -507.424

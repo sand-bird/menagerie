@@ -14,7 +14,7 @@ func initialize(data):
 	update_z()
 
 func _physics_process(delta):
-	z_index = position.y
+	z_index = position.y + 16
 
 # --------------------------------------------------------------------------- #
 
