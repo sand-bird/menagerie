@@ -10,11 +10,17 @@ func cmd_test(args):
 	self.log('test test test')
 
 func cmd_data(args = null):
-	self.log(String(Data.data))
+	self.log(Data.data.keys())
 
-func _ready():
-	visible = false
-	Dispatcher.connect("toggle_dev_console", self, "toggle")
+func cmd_inventory(args):
+	self.log(Player.inventory)
+
+func cmd_getitem(args: Array):
+	var id = args[0]
+	if (!id or !Data.get(id)):
+		self.log("Error - '" + id + "' is not a valid id")
+	var qty = args[1] if args.size() > 1 else 1
+	Player.inventory.append({ id = id, qty = qty })
 
 func _input(event):
 	if visible and event.is_pressed() and event is InputEventKey:
@@ -62,7 +68,8 @@ func update_user_input():
 	$input.text = "> " + user_input
 
 
-func log(str_to_log: String):
+func log(x):
+	var str_to_log = String(x)
 	for line in str_to_log.split("\n"):
 		log_line(line)
 

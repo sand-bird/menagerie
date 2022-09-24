@@ -55,6 +55,7 @@ func filter_items(filter: Dictionary):
 # =========================================================================== #
 #                         U P D A T I N G   S T A T E                         #
 # --------------------------------------------------------------------------- #
+
 func update_current_item(new_index):
 	$item_grid.update_current_item(new_index)
 	update_item_details(new_index)

@@ -22,7 +22,6 @@ signal new_game
 signal load_game
 signal save_game
 signal quit_game
-signal toggle_dev_console
 
 #                                   t i m e                                   #
 # --------------------------------------------------------------------------- #
@@ -34,8 +33,9 @@ signal year_changed
 
 #                                     u i                                     #
 # --------------------------------------------------------------------------- #
-signal ui_open(args)
+signal ui_open(args) # item_ref, open_type, restore_on_close
 signal ui_close
+signal ui_toggle(item_ref)
 
 signal menu_open(args)
 
@@ -71,7 +71,7 @@ func _unhandled_input(e):
 	elif e.is_action_pressed("ui_cancel"):
 		emit_signal("ui_close")
 	elif e.is_action_pressed("dev_console"):
-		emit_signal("toggle_dev_console")
+		emit_signal("ui_toggle", "dev_console")
 
 # --------------------------------------------------------------------------- #
 

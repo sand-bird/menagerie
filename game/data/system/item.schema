@@ -2,19 +2,38 @@
   "title": "Item",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions/id"},
+    "id": {
+      "$ref": "definitions/id"
+    },
     "type": {
       "type": "string",
-      "enum": ["item"]
+      "enum": [
+        "item"
+      ]
     },
-    "category": {"$ref": "definitions/category"},
-    "name": {"$ref": "definitions/text"},
-    "description": {"$ref": "definitions/text"},
-    "icon": {"$ref": "definitions/file"},
+    "category": {
+      "$ref": "definitions/category"
+    },
+    "name": {
+      "$ref": "definitions/text"
+    },
+    "description": {
+      "$ref": "definitions/text"
+    },
+    "icon": {
+      "$ref": "definitions/file"
+    },
     "value": {
       "type": "number",
       "minValue": 0
     }
   },
-  "required": [ "id", "type", "name", "description", "icon", "value" ]
+  "required": [
+    "id",
+    "type",
+    "name",
+    "description",
+    "icon",
+    "value"
+  ]
 }

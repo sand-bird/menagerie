@@ -1,28 +1,52 @@
 {
-    "title": "Object",
-    "type": "object",
-    "properties": {
-      "id": {"$ref": "definitions/id"},
-      "type": {
-        "type": "string",
-        "enum": ["tree", "furniture", "egg"]
-      },
-      "name": {"$ref": "definitions/text16"},
-      "description": {"$ref": "definitions/text128"},
-      "sprite": {"$ref": "definitions/file"},
-      "size": {
-        "$comment": "in grid squares. number for a square object, array of [x, y] for rectangular.",
-        "anyOf": [
-          { "type": "number", "minValue": 1 },
-          { 
-            "type": "array",
-            "items": { "type": "number", "minValue": 1 },
-            "minItems": 2,
-            "maxItems": 2
-          }
-        ]
-      }
+  "title": "Object",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "definitions/id"
     },
-    "required": [ "id", "type", "name", "description", "sprite", "size" ]
-  }
-  
+    "type": {
+      "type": "string",
+      "enum": [
+        "tree",
+        "furniture",
+        "egg"
+      ]
+    },
+    "name": {
+      "$ref": "definitions/text16"
+    },
+    "description": {
+      "$ref": "definitions/text128"
+    },
+    "sprite": {
+      "$ref": "definitions/file"
+    },
+    "size": {
+      "$comment": "in grid squares. number for a square object, array of [x, y] for rectangular.",
+      "anyOf": [
+        {
+          "type": "number",
+          "minValue": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minValue": 1
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "name",
+    "description",
+    "sprite",
+    "size"
+  ]
+}

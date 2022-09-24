@@ -2,10 +2,14 @@
   "title": "NPC",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions.schema#/id"},
+    "id": {
+      "$ref": "definitions.schema#/id"
+    },
     "type": {
       "type": "string",
-      "enum": ["npc"]
+      "enum": [
+        "npc"
+      ]
     },
     "birthday": {
       "type": "object",
@@ -14,9 +18,14 @@
           "type": "string",
           "note": "should be a valid month enum"
         },
-        "date": {"type": "integer"}
+        "date": {
+          "type": "integer"
+        }
       },
-      "required": ["month", "date"]
+      "required": [
+        "month",
+        "date"
+      ]
     },
     "sprites": {
       "type": "object",
@@ -30,16 +39,30 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "when": {"$ref": "definitions.schema#/condition"},
+          "when": {
+            "$ref": "definitions.schema#/condition"
+          },
           "priority": {
             "type": "integer",
             "minimum": 0,
             "maximum": 8
           },
-          "dialogue": {"type": "object"}
+          "dialogue": {
+            "type": "object"
+          }
         },
-        "required": ["when", "priority", "dialogue"]
+        "required": [
+          "when",
+          "priority",
+          "dialogue"
+        ]
       }
     },
-    "required": ["id", "name", "birthday", "locations"]
+    "required": [
+      "id",
+      "name",
+      "birthday",
+      "locations"
+    ]
   }
+}

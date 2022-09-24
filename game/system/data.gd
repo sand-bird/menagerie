@@ -81,6 +81,8 @@ func get(a):
 
 	return result
 
+# --------------------------------------------------------------------------- #
+
 func get_resource(a):
 	var path = get(a)
 	return ResourceLoader.load(path) if (path) else null

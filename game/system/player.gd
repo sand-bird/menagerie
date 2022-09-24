@@ -16,6 +16,12 @@ var garden
 
 # the big boys
 var encyclopedia = {}
+
+# array of { id: string, qty: int, ... }
+# the idea is that inventory items (entities of type "item", like fruits, or
+# "object", like trees) can have arbitrary internal state, so you can't just
+# stack up multiples with the same id. in fact though, it should probably be a
+# dict of arrays so we can look up items by key.
 var inventory = []
 
 # this should store the letter fragments the player has seen, and how often
@@ -43,7 +49,7 @@ var relationships
 # ui elements are loaded and unloaded as needed, so they can't hold state (and
 # shouldn't anyway). but we do want to remember some state info, like what page
 # we were on and what we had selected, so we should save that here.
-var current_inventory_item = 5
+var current_inventory_item = 0
 var current_inventory_filter = {}
 
 # --------------------------------------------------------------------------- #

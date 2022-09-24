@@ -30,7 +30,7 @@ var not_walkable = []
 
 func calc_path(from_pos, to_pos):
 	path = get_simple_path(from_pos, to_pos, true)
-	Log.debug(self, ['path: ', path])
+#	Log.verbose(self, ['path: ', path])
 	tpath = [path.front()]
 	for i in range(1, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
@@ -42,6 +42,7 @@ func _draw():
 	var hsv = 0.0
 	var hsv_step = 1.0 / max(tpath.size(), 1)
 	for i in tpath:
+		if !i: continue # sometimes tpath gets filled with nulls i guess
 		.draw_circle(i, 4, Color.from_hsv(hsv, 1, 0.9))
 		hsv += hsv_step
 	for i in path:

@@ -83,13 +83,13 @@ class Walk extends Base:
 		monster.current_velocity = (
 			monster.current_velocity + acceleration
 		).clamped(monster.max_speed)
-		var collision = monster.move_and_slide(monster.current_velocity / delta)
+		var _collision = monster.move_and_slide(monster.current_velocity / delta)
 
 	func should_advance_path():
 		return monster.position.distance_squared_to(path.front()) < 30
 		
 	func reached_dest():
-		return monster.position.distance_squared_to(path.back()) < 30
+		return !path.back() or monster.position.distance_squared_to(path.back()) < 30
 
 	func seek(target):
 		var desired_velocity = (target - monster.position

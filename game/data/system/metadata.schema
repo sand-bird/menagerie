@@ -2,22 +2,36 @@
   "title": "Metadata",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions/id"},
+    "id": {
+      "$ref": "definitions/id"
+    },
     "type": {
       "type": "string",
-      "enum": ["metadata"]
+      "enum": [
+        "metadata"
+      ]
     },
-    "name": {"$ref": "definitions/name"},
-    "author": {"type": "string"},
-    "date": {"type": "date"},
+    "name": {
+      "$ref": "definitions/name"
+    },
+    "author": {
+      "type": "string"
+    },
+    "date": {
+      "type": "date"
+    },
     "version": {
       "type": "string",
       "pattern": "^(?:\\d{1,3}?\\.){2}\\d{1,4}?$"
     },
-    "description": {"$ref": "definitions/description"},
+    "description": {
+      "$ref": "definitions/description"
+    },
     "tags": {
       "type": "array",
-      "items": {"type": "string"}
+      "items": {
+        "type": "string"
+      }
     },
     "schemas": {
       "type": "object",
@@ -27,5 +41,12 @@
       }
     }
   },
-  "required": ["id", "type", "name", "author", "version", "description"]
+  "required": [
+    "id",
+    "type",
+    "name",
+    "author",
+    "version",
+    "description"
+  ]
 }

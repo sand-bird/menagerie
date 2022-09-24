@@ -35,6 +35,7 @@ func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
 	Dispatcher.connect('ui_open', self, 'open')
 	Dispatcher.connect('ui_close', self, 'close')
+	Dispatcher.connect('ui_toggle', self, 'toggle')
 	Dispatcher.connect('menu_open', self, 'open_menu')
 
 
@@ -100,11 +101,22 @@ func open(args):
 # was already removed). this will help with cases that can't be handled
 # elegantly using layer values.
 func close(arg = null):
+	if stack.empty(): return
 	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
 	if item.has('restore') and item.restore:
 		for stack_item in item.restore: push(stack_item)
 	if stack.empty():
 		get_tree().paused = false
+
+# --------------------------------------------------------------------------- #
+
+# removes the item if it already exists in the stack, otherwise opens it.
+# unlike `open`, only takes a single arg for the item ref. we're not even using
+# those overlay/restore args anywhere (yet??)
+func toggle(item_ref):
+	var item_idx = find_item(item_ref)
+	if (item_idx): close(item_idx)
+	else: open(item_ref)
 
 # --------------------------------------------------------------------------- #
 
@@ -115,7 +127,7 @@ func close(arg = null):
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
-	var noarg = true if page == null else false
+	var noarg = !page
 	if !page: page = last_menu_page
 	if !page: page = DEFAULT_MENU_PAGE
 	last_menu_page = page
@@ -184,7 +196,7 @@ func push(item):
 # close themselves, but this can be handled in close() instead of here.
 # (int, bool) -> dict | undefined
 #warning-ignore:unused_argument
-func _pop(i = null, restore = true):
+func _pop(i = null):
 	if !stack or (i and i >= stack.size()):
 		Log.warn(self, "stack is empty!")
 		return
@@ -196,7 +208,7 @@ func _pop(i = null, restore = true):
 		Log.verbose(self, ["(_pop) clearing items between our index (",
 				i, ") and the top index (", stack.size() - 1, ")"])
 		while stack.size() - 1 > i:
-			_pop(null, false)
+			_pop()
 
 	var item = stack[-1]
 	var node = item.node
@@ -210,6 +222,7 @@ func _pop(i = null, restore = true):
 # =========================================================================== #
 #                    A U X I L I A R Y   F U N C T I O N S                    #
 # --------------------------------------------------------------------------- #
+
 func process_ref(ref: String): # -> String | undefined
 	# first we try the ref
 	var file = File.new()
@@ -256,9 +269,9 @@ func get_next_layer():
 # processed already (assuming the arg is an item_ref and not a node pointer)
 func find_item(arg, process = true):
 	if arg == null: return
-	elif typeof(arg) == TYPE_STRING:
+	if typeof(arg) == TYPE_STRING:
 		return find_item_by_path(arg, process)
-	elif typeof(arg) == TYPE_OBJECT:
+	if typeof(arg) == TYPE_OBJECT:
 		return find_item_by_node(arg)
 
 # --------------------------------------------------------------------------- #

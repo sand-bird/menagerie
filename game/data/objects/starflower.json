@@ -22,7 +22,7 @@
       "sprite": "starflower_growing.png",
       "next": {
         "flowering": {
-          "if": {""}
+          "if": {}
         }
       }
     },

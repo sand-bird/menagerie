@@ -1,77 +1,118 @@
 {
   "condition": {
     "anyOf": [
-      {"$ref": "#/condition/boolean"},
+      {
+        "$ref": "#/condition/boolean"
+      },
       {
         "type": "object",
         "maxProperties": 1,
         "properties": {
-          "and": {"$ref": "#/condition/boolean"},
-           "or": {"$ref": "#/condition/boolean"},
-           "==": {"$ref": "#/condition/comparator"},
-            "<": {"$ref": "#/condition/comparator"},
-            ">": {"$ref": "#/condition/comparator"},
-           "<=": {"$ref": "#/condition/comparator"},
-           ">=": {"$ref": "#/condition/comparator"},
-           "in": {"$ref": "#/condition/comparator"}
+          "and": {
+            "$ref": "#/condition/boolean"
+          },
+          "or": {
+            "$ref": "#/condition/boolean"
+          },
+          "==": {
+            "$ref": "#/condition/comparator"
+          },
+          "<": {
+            "$ref": "#/condition/comparator"
+          },
+          ">": {
+            "$ref": "#/condition/comparator"
+          },
+          "<=": {
+            "$ref": "#/condition/comparator"
+          },
+          ">=": {
+            "$ref": "#/condition/comparator"
+          },
+          "in": {
+            "$ref": "#/condition/comparator"
+          }
         },
         "additionalProperties": false
       }
     ],
-	  "boolean": {
-	    "type": "array",
-	    "minItems": 2,
-	    "items": {"$ref": "#"}
-	  },
-	  "comparator": {
-	    "type": "array",
-	    "minItems": 2,
-	    "maxItems": 2,
-	    "items": {"$ref": "#/condition/argument"}
-	  },
-	  "argument": {
-	    "anyOf": [
-	      {"type": "string"},
-	      {"type": "number"},
-	      {
-	        "type": "object",
-	        "maxProperties": 1,
-	        "properties": {
-	          "filter": {
-	            "type": "array",
-	            "minItems": 2,
-	            "maxItems": 2,
-	            "items": [
-	              {"type": "string"},
-	              {"$ref": "#/condition"}
-	            ]
-	          },
-	          "map": {
-	            "type": "array",
-	            "minItems": 2,
-	            "maxItems": 2,
-	            "items": {"type": "string"}
-	          },
-	          "get": {
-	            "type": "array",
-	            "minItems": 2,
-	            "maxItems": 2,
-	            "items": {"type": "string"}
-	          },
-	          "mod": {
-	            "type": "array",
-	            "minItems": 2,
-	            "maxItems": 2,
-	            "items": [
-	              {"type": ["string", "number"]},
-	              {"type": "integer"}
-	            ]
-	          },
-	          "additionalProperties": false
-	        }
-	      }
-	    ]
-	  }
+    "boolean": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#"
+      }
+    },
+    "comparator": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/condition/argument"
+      }
+    },
+    "argument": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "maxProperties": 1,
+          "properties": {
+            "filter": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/condition"
+                }
+              ]
+            },
+            "map": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "string"
+              }
+            },
+            "get": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "string"
+              }
+            },
+            "mod": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": [
+                    "string",
+                    "number"
+                  ]
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "additionalProperties": false
+          }
+        }
+      ]
+    }
   },
   "weight": {
     "type": "integer",

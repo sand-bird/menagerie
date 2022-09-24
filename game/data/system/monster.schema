@@ -2,13 +2,21 @@
   "title": "Monster",
   "type": "object",
   "properties": {
-    "id": {"$ref": "definitions/id"},
+    "id": {
+      "$ref": "definitions/id"
+    },
     "type": {
       "type": "string",
-      "enum": ["monster"]
+      "enum": [
+        "monster"
+      ]
     },
-    "name": {"$ref": "definitions/text16"},
-    "description": {"$ref": "definitions/text128"},
+    "name": {
+      "$ref": "definitions/text16"
+    },
+    "description": {
+      "$ref": "definitions/text128"
+    },
     "gender_balance": {
       "type": "number",
       "minimum": 0,
@@ -20,12 +28,21 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "name": {"$ref": "definitions/text16"},
-          "if": {"$ref": "definitions/condition"},
-          "weight": {"$ref": "definitions/weight"},
+          "name": {
+            "$ref": "definitions/text16"
+          },
+          "if": {
+            "$ref": "definitions/condition"
+          },
+          "weight": {
+            "$ref": "definitions/weight"
+          },
           "sprites": {}
         },
-        "required": ["name", "sprites"]
+        "required": [
+          "name",
+          "sprites"
+        ]
       },
       "minProperties": 1
     },
@@ -35,13 +52,21 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "if": {"$ref": "definitions/condition"},
-          "weight": {"$ref": "definitions/weight"}
+          "if": {
+            "$ref": "definitions/condition"
+          },
+          "weight": {
+            "$ref": "definitions/weight"
+          }
         }
       }
     }
   },
   "required": [
-    "id", "type", "name", "description", "morphs"
+    "id",
+    "type",
+    "name",
+    "description",
+    "morphs"
   ]
 }

@@ -3,7 +3,6 @@
 [ext_resource path="res://ui/main_menu/inventory/inventory.tscn" type="PackedScene" id=1]
 
 [sub_resource type="GDScript" id=1]
-
 resource_name = "objects"
 script/source = "extends \"res://ui/main_menu/inventory/inventory.gd\"
 
@@ -12,10 +11,6 @@ func _ready():
 	# init_items()
 	.initialize({\"type\": \"object\"})
 "
-_sections_unfolded = [ "Resource" ]
 
 [node name="inventory" instance=ExtResource( 1 )]
-
 script = SubResource( 1 )
-
-

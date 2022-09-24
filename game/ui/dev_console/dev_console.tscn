@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/other/fonts_old/menagerieheartsm.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://ui/console/dev_console.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=3]
+[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=2]
+[ext_resource path="res://ui/dev_console/dev_console.gd" type="Script" id=3]
 
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 1 )
@@ -10,8 +10,8 @@ font_data = ExtResource( 1 )
 [node name="dev_console" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 3 )
-script = ExtResource( 2 )
+theme = ExtResource( 2 )
+script = ExtResource( 3 )
 
 [node name="tint" type="ColorRect" parent="."]
 anchor_right = 1.0
