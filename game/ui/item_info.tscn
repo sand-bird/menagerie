@@ -84,8 +84,8 @@ margin_top = -17.0
 margin_right = -7.0
 margin_bottom = -6.0
 rect_clip_content = true
-custom_styles/normal = ExtResource( 7 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 0 )
+custom_styles/normal = ExtResource( 7 )
 align = 2
 
 [node name="item_name" type="Panel" parent="."]
@@ -123,4 +123,3 @@ custom_constants/line_spacing = 2
 text = "Soft, silky fur from a pufig's fluffy tail. It's said that stuffing a pillow with it will bring quite good dreams."
 autowrap = true
 max_lines_visible = 6
-

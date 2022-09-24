@@ -8,7 +8,7 @@ const months = [ "verne", "tempest", "zenith",
 
 const ACTUAL_SECONDS_IN_TICK := 0.5
 const TICKS_IN_HOUR := 12
-const HOURS_IN_DAY := 12
+const HOURS_IN_DAY := 24
 const DAYS_IN_WEEK := 7
 const DAYS_IN_MONTH := 21
 const MONTHS_IN_YEAR := 8
@@ -159,8 +159,6 @@ func to_dict(dict, unit = null):
 
 # --------------------------------------------------------------------------- #
 
-# for some reason the linter thinks that `unit` isn't used?
-#warning-ignore:unused_argument
 func get_total_time(dict = null, unit := "tick"):
 	if dict == null:
 		dict = get_dict()
@@ -185,7 +183,7 @@ func get_total_time(dict = null, unit := "tick"):
 
 # --------------------------------------------------------------------------- #
 
-func parse_total_time(time, unit = "year"):
+func parse_total_time(time, unit := "year"):
 	var dict = {}
 	var units = ["tick", "hour", "date", "month", "year"]
 	var relations = [TICKS_IN_HOUR, HOURS_IN_DAY, DAYS_IN_MONTH, MONTHS_IN_YEAR]

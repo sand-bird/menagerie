@@ -14,7 +14,7 @@ const messages = {
 	pattern_mismatch = "does not match the required pattern '%s' (is %s).",
 	max_length_exceeded = "is too long (should be up to %s characters, but is %s).",
 	min_length_not_met = "is too short (should be at least %s characters, but is %s).",
-	not_divisible = "should be divisible by %s, but is not (remainder: %s).",
+	not_divisible = "is not divisible by %s (is %s).",
 	maximum_exceeded = "is too large (should be at most %s, but is %s)."
 }
 
@@ -187,7 +187,7 @@ func validate_number(data, schema: Dictionary,
 	if 'multipleOf' in schema and is_number(schema.multipleOf):
 		result &= report(
 			data % schema.multipleOf == 0,
-			'not_divisible', [schema.multipleOf, data % schema.multipleOf],
+			'not_divisible', [schema.multipleOf, data],
 			breadcrumb, sources)
 	if 'maximum' in schema and is_number(schema.maximum):
 		result &= report(

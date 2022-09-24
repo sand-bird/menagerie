@@ -81,4 +81,3 @@ centered = false
 autoplay = "bob"
 playback_speed = 0.6
 anims/bob = SubResource( 4 )
-

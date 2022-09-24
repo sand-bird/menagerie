@@ -1,6 +1,6 @@
 extends Node
 
-# as of godot 3.1, we're getting a bunch of unused signal warnings for signals
+# as of godot 3.5, we're getting a bunch of unused signal warnings for signals
 # that are in fact being used - probably still some bugs in the new linter.
 # disable warnings for now
 #warning-ignore-all:unused_signal
@@ -22,6 +22,7 @@ signal new_game
 signal load_game
 signal save_game
 signal quit_game
+signal toggle_dev_console
 
 #                                   t i m e                                   #
 # --------------------------------------------------------------------------- #
@@ -69,6 +70,8 @@ func _unhandled_input(e):
 		emit_signal("menu_open", "monsters")
 	elif e.is_action_pressed("ui_cancel"):
 		emit_signal("ui_close")
+	elif e.is_action_pressed("dev_console"):
+		emit_signal("toggle_dev_console")
 
 # --------------------------------------------------------------------------- #
 

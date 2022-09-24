@@ -27,6 +27,8 @@ var last_menu_page
 # around, just in case.
 var ui_node = self
 
+# stack items are dicts with `path` and `layer` keys and an optional `restore`
+# key, which contains an array of elements to restore when the item is closed.
 var stack = []
 
 func _ready():

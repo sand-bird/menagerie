@@ -184,6 +184,15 @@ func update_z():
 
 # --------------------------------------------------------------------------- #
 
+# debug logging, shows up in garden ui
+func log_message(msg):
+	var l = garden.get_node('ui/log')
+	l.add_text('[' + name + '] ' + msg + '\n')
+	l.scroll_to_line(l.get_line_count() - 1)
+	
+
+# --------------------------------------------------------------------------- #
+
 func choose_action():
 	randomize()
 	var target_energy = get_target_energy()
@@ -203,7 +212,6 @@ func choose_action():
 			position + Vector2(rand_range(-80, 80), rand_range(-80, 80)))
 
 	Log.debug(self, ["chose action: ", current_action.action_id])
-
 
 # =========================================================================== #
 #                             A N I M A T I O N S                             #

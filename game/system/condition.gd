@@ -69,7 +69,7 @@ static func resolve(data, caller = null, parent = null):
 	# be used to fetch data declaratively (eg in an entity definition). note that
 	# `eval_arg` also calls `resolve` (if the arg evaluates to a dictionary).
 	# some more testing should probably be done to ensure we don't have any
-	# infinite recursion situations.	
+	# infinite recursion situations.
 	elif typeof(data) == TYPE_STRING:
 		result = eval_arg(data, caller, parent)
 

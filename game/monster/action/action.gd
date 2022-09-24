@@ -147,13 +147,23 @@ class Timed extends Base:
 
 # --------------------------------------------------------------------------- #
 
-class Sleep extends Timed:
-	func _init(monster, duration).(monster, duration):
+class Sleep extends Base:
+	var duration
+	var duration_remaining
+	
+	func _init(monster, dur).(monster):
 		action_id = 'sleep'
-
+		self.duration = dur
+		self.duration_remaining = dur
+	
 	func _open():
 		monster.play_anim('lie_down')
 		monster.queue_anim('sleep')
+	
+	func _tick():
+		duration_remaining -= 1
+		if duration_remaining <= 0:
+			exit(Status.SUCCESS)
 
 # --------------------------------------------------------------------------- #
 

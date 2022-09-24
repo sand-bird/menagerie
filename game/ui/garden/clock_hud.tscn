@@ -41,8 +41,9 @@ func move_hand():
 	$hand.set_frame(Time.hour % 12)
 
 func move_pendulum():
-	var frame = (Time.tick / 2) + ((Time.hour % 2) * 2)
-	$pendulum.set_frame((frame + 1) % 4)
+#	var frame = (Time.tick / 2) + ((Time.hour % 2) * 2)
+#	$pendulum.set_frame((frame + 1) % 4)
+	$pendulum.set_frame(Time.tick % 4)
 "
 
 [node name="garden_clock_hud" type="ReferenceRect"]
@@ -96,8 +97,8 @@ margin_bottom = 17.0
 [node name="sprite" type="Sprite" parent="date_info/month_inset"]
 texture = ExtResource( 3 )
 centered = false
-vframes = 2
 hframes = 4
+vframes = 2
 frame = 1
 
 [node name="clock" type="TextureRect" parent="."]
@@ -109,15 +110,15 @@ script = SubResource( 2 )
 [node name="hand" type="Sprite" parent="clock"]
 position = Vector2( 15, 15 )
 texture = ExtResource( 5 )
-vframes = 4
 hframes = 3
+vframes = 4
 region_rect = Rect2( 0, 0, 19, 19 )
 
 [node name="pendulum" type="Sprite" parent="clock"]
 position = Vector2( 15, 35 )
 texture = ExtResource( 6 )
-vframes = 2
 hframes = 2
+vframes = 2
 region_rect = Rect2( 0, 10, 11, 10 )
 
 [node name="weather_circle" type="TextureRect" parent="."]
@@ -131,6 +132,5 @@ texture = ExtResource( 7 )
 position = Vector2( 3, 3 )
 texture = ExtResource( 8 )
 centered = false
-vframes = 2
 hframes = 2
-
+vframes = 2
