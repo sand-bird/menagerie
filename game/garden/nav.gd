@@ -31,10 +31,10 @@ var not_walkable = []
 func calc_path(from_pos, to_pos):
 	path = get_simple_path(from_pos, to_pos, true)
 #	Log.verbose(self, ['path: ', path])
-	tpath = [path.front()]
-	for i in range(1, path.size() - 1):
+	tpath = []
+	for i in range(0, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
-	tpath.push_back(path.back())
+#	tpath.push_back(path.back())
 	.update()
 	return tpath
 

@@ -25,7 +25,7 @@ var test_mon
 func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
-	Time.start()
+	Clock.start()
 	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
 	# camera.stick_target = test_mon
 

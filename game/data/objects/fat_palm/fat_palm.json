@@ -1,12 +1,15 @@
 {
   "id": "fat_palm",
+  "type": "object",
+  "category": "plant",
   "name": {
     "en": "Fat Palm"
   },
   "description": {
     "en": "A squat, chubby palm tree."
   },
-  "sprite": "~fat_palm.png",
-  "width": 1,
-  "height": 1
+  "sprite": "~/fat_palm.png",
+  "icon": "~/fat_palm.png",
+  "size": [1, 1],
+  "value": 180
 }

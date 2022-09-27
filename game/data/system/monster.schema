@@ -1,6 +1,13 @@
 {
   "title": "Monster",
   "type": "object",
+  "required": [
+    "id",
+    "type",
+    "name",
+    "description",
+    "morphs"
+  ],
   "properties": {
     "id": {
       "$ref": "definitions/id"
@@ -61,12 +68,5 @@
         }
       }
     }
-  },
-  "required": [
-    "id",
-    "type",
-    "name",
-    "description",
-    "morphs"
-  ]
+  }
 }

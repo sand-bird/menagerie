@@ -1,5 +1,51 @@
 extends Node
 
+# move (pos, speed)
+# completed when pos is reached
+
+# look_at (entity, duration)
+
+# approach (entity, speed, duration?)
+# calls move to pos of target, recalculate path every tick
+# success when target is reached
+# fail if duration runs out
+# longish default duration - used as a timeout in case pet gets stuck
+
+# flee (entity, speed, duration)
+# boids flee behavior from target
+# success when duration runs out
+# fail if reached by target
+
+# eat (item)
+# prepend other actions targeting item if necessary (approach, steal)
+# success when item is eaten
+# fail if item is lost or if previous steps fail
+
+# pick_up (item)
+# prepend approach if necessary
+
+# put_down (item)
+# fail if item is lost
+
+# move_item (item, pos)
+# pick_up(item) -> walk(pos) -> put_down(item)
+# on each tick, check if still has item - fail if item is lost
+
+# steal_item (monster)
+# approach(monster) -> pick_up(item)
+# can do different things with the item - eat if it's food, keep away if a toy
+
+
+
+
+# dig (pos)
+# only if monster has a dig animation
+
+# bury(item, pos)
+# prepend actions to get item if necessary
+# dig(pos)
+
+
 class_name Action
 
 const energy_values = {

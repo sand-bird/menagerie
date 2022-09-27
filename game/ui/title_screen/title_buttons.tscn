@@ -9,20 +9,23 @@ script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
 	signal_name = \"ui_open\"
-	args = \"save_list\""
+	args = \"save_list\"
+"
 
 [sub_resource type="GDScript" id=2]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
 	signal_name = \"ui_open\"
-	args = [\"name_input\", 1, false]"
+	args = [\"name_input\", 1, false]
+"
 
 [sub_resource type="GDScript" id=3]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): 
-	signal_name = \"quit_game\""
+	signal_name = \"quit_game\"
+"
 
 [node name="title_buttons" type="VBoxContainer"]
 anchor_left = 0.5
@@ -39,9 +42,8 @@ script = ExtResource( 2 )
 
 [node name="load_game" type="Button" parent="."]
 visible = false
-margin_top = 30.0
 margin_right = 96.0
-margin_bottom = 49.0
+margin_bottom = 21.0
 text = "Load Game"
 clip_text = true
 script = SubResource( 1 )
@@ -50,19 +52,16 @@ __meta__ = {
 }
 
 [node name="new_game" type="Button" parent="."]
-margin_top = 7.0
+margin_top = 6.0
 margin_right = 96.0
 margin_bottom = 26.0
 text = "New Game"
 script = SubResource( 2 )
-__meta__ = {
-"_editor_icon": ExtResource( 3 )
-}
 
 [node name="quit_game" type="Button" parent="."]
 margin_top = 30.0
 margin_right = 96.0
-margin_bottom = 49.0
+margin_bottom = 50.0
 text = "Exit"
 clip_text = true
 script = SubResource( 3 )

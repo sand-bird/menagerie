@@ -3,8 +3,8 @@
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
 [ext_resource path="res://ui/item_info.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/ui/panels/box_outset_light.tres" type="StyleBox" id=4]
 [ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=6]
 
 [node name="inventory" type="Control"]
 margin_right = 296.0
@@ -14,22 +14,17 @@ theme = ExtResource( 1 )
 script = ExtResource( 2 )
 
 [node name="item_info" parent="." instance=ExtResource( 3 )]
+margin_top = -3.0
+margin_bottom = 125.0
 
-[node name="Button" type="Button" parent="item_info"]
+[node name="place_button" type="Button" parent="item_info"]
 margin_left = 4.0
-margin_top = 123.0
-margin_right = 52.0
+margin_top = 122.0
+margin_right = 136.0
 margin_bottom = 142.0
-text = "test"
-
-[node name="Button2" type="Button" parent="item_info"]
-margin_left = 89.0
-margin_top = 123.0
-margin_right = 137.0
-margin_bottom = 140.0
-custom_styles/normal = ExtResource( 4 )
-text = "TEST"
-clip_text = true
+theme = ExtResource( 1 )
+custom_styles/disabled = ExtResource( 6 )
+text = "Place in garden"
 
 [node name="item_grid" parent="." instance=ExtResource( 5 )]
 anchor_left = 1.0

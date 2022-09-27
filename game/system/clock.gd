@@ -90,7 +90,7 @@ func calculate_day(input = null):
 # this is problematic for dispatching time events from within the update logic,
 # as the lesser units (eg. tick and hour) have not yet been updated when a
 # greater unit (eg. date) finishes updating and sends its dispatch. so other
-# classes that listen to eg. "date_changed" will see a Time gobal with the
+# classes that listen to eg. "date_changed" will see a Clock gobal with the
 # correct date, but incorrect hours and ticks, at the time of the dispatch.
 #
 # to solve this, we queue all the units we need to dispatch updates for, and
@@ -124,9 +124,9 @@ func deserialize(time):
 # =========================================================================== #
 #                        T I M E   F O R M A T T I N G                        #
 # --------------------------------------------------------------------------- #
-# public Time methods should accept an optional input time, either as a
+# public Clock methods should accept an optional input time, either as a
 # time_dict or a total_time integer. if no input is given, they should use the
-# current values from the Time class itself.
+# current values from the Clock class itself.
 
 func get_dict():
 	var dict = {}

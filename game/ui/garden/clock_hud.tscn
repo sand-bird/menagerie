@@ -20,11 +20,11 @@ func _ready():
 	update_month()
 
 func update_date():
-	$week_day.set_text(Time.get_printable_day_abbr())
-	$date.set_text(Time.get_printable_date())
+	$week_day.set_text(Clock.get_printable_day_abbr())
+	$date.set_text(Clock.get_printable_date())
 
 func update_month():
-	$month_inset.get_node(\"sprite\").set_frame(Time.month)
+	$month_inset.get_node(\"sprite\").set_frame(Clock.month)
 "
 
 [sub_resource type="GDScript" id=2]
@@ -38,12 +38,12 @@ func _ready():
 	move_pendulum()
 
 func move_hand():
-	$hand.set_frame(Time.hour % 12)
+	$hand.set_frame(Clock.hour % 12)
 
 func move_pendulum():
-#	var frame = (Time.tick / 2) + ((Time.hour % 2) * 2)
+#	var frame = (Clock.tick / 2) + ((Clock.hour % 2) * 2)
 #	$pendulum.set_frame((frame + 1) % 4)
-	$pendulum.set_frame(Time.tick % 4)
+	$pendulum.set_frame(Clock.tick % 4)
 "
 
 [node name="garden_clock_hud" type="ReferenceRect"]

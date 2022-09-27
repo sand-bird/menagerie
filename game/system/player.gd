@@ -17,12 +17,11 @@ var garden
 # the big boys
 var encyclopedia = {}
 
-# array of { id: string, qty: int, ... }
+# keyed by entity id. values can be either an array of objects or an integer.
 # the idea is that inventory items (entities of type "item", like fruits, or
 # "object", like trees) can have arbitrary internal state, so you can't just
-# stack up multiples with the same id. in fact though, it should probably be a
-# dict of arrays so we can look up items by key.
-var inventory = []
+# stack up multiples with the same id.
+var inventory = {}
 
 # this should store the letter fragments the player has seen, and how often
 # they've occurred (i guess)

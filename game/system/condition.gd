@@ -15,7 +15,7 @@ const seperators = {
 static func resolve_global(arg):
 	match (arg):
 		'player': return Player
-		'time': return Time
+		'time': return Clock
 		'data': return Data
 		'garden': return Player.garden
 

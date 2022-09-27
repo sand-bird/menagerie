@@ -69,7 +69,7 @@ Data="*res://system/data.gd"
 Options="*res://system/options.gd"
 PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
-Time="*res://system/time.gd"
+Clock="*res://system/clock.gd"
 
 [debug]
 
@@ -99,7 +99,7 @@ use_2d_pixel_snap=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "event_button" )
+enabled=PoolStringArray( "res://addons/event_button/plugin.cfg" )
 
 [image_loader]
 

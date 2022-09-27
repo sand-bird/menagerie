@@ -37,7 +37,7 @@ func load_game(save_dir):
 func load_player(data):
 	# process the player data
 	Player.deserialize(data)
-	Time.deserialize(data.time)
+	Clock.deserialize(data.time)
 
 # --------------------------------------------------------------------------- #
 
@@ -65,7 +65,7 @@ func save_game():
 
 func save_player():
 	var data = Player.serialize()
-	data.time = Time.serialize()
+	data.time = Clock.serialize()
 	data.monster_count = garden.monsters.size() if garden else 0
 	return data
 

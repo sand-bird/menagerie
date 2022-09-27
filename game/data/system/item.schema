@@ -1,6 +1,16 @@
 {
   "title": "Item",
   "type": "object",
+  "required": [
+    "id",
+    "name",
+    "type",
+    "category",
+    "description",
+    "icon",
+    "sprite",
+    "value"
+  ],
   "properties": {
     "id": {
       "$ref": "definitions/id"
@@ -27,13 +37,5 @@
       "type": "number",
       "minValue": 0
     }
-  },
-  "required": [
-    "id",
-    "type",
-    "name",
-    "description",
-    "icon",
-    "value"
-  ]
+  }
 }

@@ -62,11 +62,12 @@ anchor_right = 0.25
 margin_left = -48.0
 margin_top = 7.0
 margin_right = 48.0
-margin_bottom = 21.0
-rect_min_size = Vector2( 96, 14 )
+margin_bottom = 20.0
+rect_min_size = Vector2( 96, 13 )
 custom_styles/normal = ExtResource( 4 )
 align = 1
 valign = 1
+autowrap = true
 uppercase = true
 
 [node name="pages" type="Label" parent="content/book"]
@@ -75,8 +76,8 @@ anchor_right = 0.75
 margin_left = -28.0
 margin_top = 7.0
 margin_right = 28.0
-margin_bottom = 21.0
-rect_min_size = Vector2( 56, 14 )
+margin_bottom = 20.0
+rect_min_size = Vector2( 56, 13 )
 custom_styles/normal = ExtResource( 4 )
 align = 1
 valign = 1
@@ -91,7 +92,6 @@ margin_bottom = 10.0
 text = " X "
 script = SubResource( 1 )
 __meta__ = {
-"_edit_use_anchors_": false,
 "_editor_icon": ExtResource( 5 )
 }
 

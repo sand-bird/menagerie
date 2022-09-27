@@ -10,6 +10,7 @@
 [ext_resource path="res://assets/ui/elements/portrait_bg.png" type="Texture" id=8]
 
 [node name="select_hud" type="ReferenceRect"]
+visible = false
 margin_left = 4.0
 margin_top = 4.0
 theme = ExtResource( 1 )

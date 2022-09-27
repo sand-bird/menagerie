@@ -198,13 +198,13 @@ func choose_action():
 	var target_energy = get_target_energy()
 
 	if energy < target_energy and randf() > energy / 100.0:
-		var energy_per_tick = float(Action.energy_values.sleep) / float(Time.TICKS_IN_HOUR)
+		var energy_per_tick = float(Action.energy_values.sleep) / float(Clock.TICKS_IN_HOUR)
 		var energy_to_recover = Utils.randi_range(target_energy, 100) - energy
 		var sleep_time = energy_to_recover / energy_per_tick
 		Log.debug(self, ['going to sleep! energy to recover: ', energy_to_recover,
 			' | sleep time: ', sleep_time])
 		current_action = Action.Sleep.new(self,
-			clamp(sleep_time, Time.TICKS_IN_HOUR, Time.TICKS_IN_HOUR * 8))
+			clamp(sleep_time, Clock.TICKS_IN_HOUR, Clock.TICKS_IN_HOUR * 8))
 	elif randf() > traits.pep:
 		current_action = Action.Idle.new(self, Utils.randi_range(2, 8))
 	else:
@@ -257,7 +257,7 @@ const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
 # energy will be negative.
 func calc_energy_delta():
 	var has_energy_value = current_action and 'energy_value' in current_action
-	var action_val = (float(current_action.energy_value) / Time.TICKS_IN_HOUR
+	var action_val = (float(current_action.energy_value) / Clock.TICKS_IN_HOUR
 			if has_energy_value else DEFAULT_ENERGY_DECAY)
 	var vig_mod = traits.vigor * 2.0
 	var delta_energy = 0.0

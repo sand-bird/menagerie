@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=2]
 
 [sub_resource type="GDScript" id=1]
-
 resource_name = "name_input"
 script/source = "extends Panel
 
@@ -15,18 +13,17 @@ func _ready():
 
 func _update_button(text):
 	$submit_button.args = text
-	$submit_button.disabled = text.length() < 1"
-_sections_unfolded = [ "Resource" ]
+	$submit_button.disabled = text.length() < 1
+"
 
 [sub_resource type="GDScript" id=2]
-
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): 
-	signal_name = \"new_game\""
+	signal_name = \"new_game\"
+"
 
-[node name="panel" type="Panel" index="0"]
-
+[node name="panel" type="Panel"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -35,87 +32,29 @@ margin_left = -72.0
 margin_top = -28.0
 margin_right = 72.0
 margin_bottom = 28.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
 theme = ExtResource( 1 )
 script = SubResource( 1 )
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Theme" ]
 
-[node name="input_field" type="LineEdit" parent="." index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="input_field" type="LineEdit" parent="."]
 margin_left = 8.0
 margin_top = 29.0
 margin_right = 99.0
 margin_bottom = 48.0
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 1
-size_flags_horizontal = 1
-size_flags_vertical = 1
-focus_mode = 2
-context_menu_enabled = true
-placeholder_alpha = 0.6
-caret_blink = false
-caret_blink_speed = 0.65
-caret_position = 0
-_sections_unfolded = [ "Caret", "Placeholder" ]
 
-[node name="label" type="Label" parent="." index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="label" type="Label" parent="."]
 margin_left = 4.0
 margin_top = 12.0
 margin_right = 139.0
 margin_bottom = 21.0
-rect_pivot_offset = Vector2( 0, 0 )
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Please enter your name."
 align = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
 
-[node name="submit_button" type="Button" parent="." index="2"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="submit_button" type="Button" parent="."]
 margin_left = 103.0
 margin_top = 29.0
 margin_right = 132.0
 margin_bottom = 48.0
-rect_pivot_offset = Vector2( 0, 0 )
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
+theme = ExtResource( 1 )
+custom_colors/font_color_disabled = Color( 0.588235, 0.517647, 0.478431, 1 )
 text = "OK!"
-flat = false
-align = 1
 script = SubResource( 2 )
-_sections_unfolded = [ "Rect" ]
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-
-

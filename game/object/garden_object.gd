@@ -4,17 +4,17 @@ var entity_type = Constants.EntityType.OBJECT
 var garden
 
 var id
-var type
+var type = "fat_palm"
 var coordinates = Vector2()
 
 func initialize(data):
 	deserialize(data)
-	$sprite.texture = Data.get_resource([data.type, 'states', 'default', 'sprite'])
+	$sprite.texture = Data.get_resource([data.type, 'sprite'])
 	# $shape.shape.radius = 8
 	update_z()
 
 func _physics_process(delta):
-	z_index = position.y + 16
+	z_index = int(position.y) + 16
 
 # --------------------------------------------------------------------------- #
 

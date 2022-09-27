@@ -1,6 +1,17 @@
 {
   "title": "Object",
   "type": "object",
+  "required": [
+    "id",
+    "name",
+    "type",
+    "category",
+    "description",
+    "icon",
+    "sprite",
+    "value",
+    "size"
+  ],
   "properties": {
     "id": {
       "$ref": "definitions/id"
@@ -40,13 +51,5 @@
         }
       ]
     }
-  },
-  "required": [
-    "id",
-    "type",
-    "name",
-    "description",
-    "sprite",
-    "size"
-  ]
+  }
 }
