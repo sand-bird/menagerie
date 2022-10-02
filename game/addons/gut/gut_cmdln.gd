@@ -1,31 +1,31 @@
-################################################################################
+# ##############################################################################
 #(G)odot (U)nit (T)est class
 #
-################################################################################
-#The MIT License (MIT)
-#=====================
+# ##############################################################################
+# The MIT License (MIT)
+# =====================
 #
-#Copyright (c) 2019 Tom "Butch" Wesley
+# Copyright (c) 2020 Tom "Butch" Wesley
 #
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-#The above copyright notice and this permission notice shall be included in
-#all copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 #
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-#THE SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 #
-################################################################################
+# ##############################################################################
 # Description
 # -----------
 # Command line interface for the GUT unit testing tool.  Allows you to run tests
@@ -36,185 +36,14 @@
 #
 # See the readme for a list of options and examples.  You can also use the -gh
 # option to get more information about how to use the command line interface.
-#
-# Version 6.6.2
-################################################################################
+# ##############################################################################
 extends SceneTree
 
-#-------------------------------------------------------------------------------
-# Parses the command line arguments supplied into an array that can then be
-# examined and parsed based on how the gut options work.
-#-------------------------------------------------------------------------------
-class CmdLineParser:
-	var _opts = []
+var Optparse = load('res://addons/gut/optparse.gd')
+var Gut = load('res://addons/gut/gut.gd')
+var GutRunner = load('res://addons/gut/gui/GutRunner.tscn')
 
-	func _init():
-		for i in range(OS.get_cmdline_args().size()):
-			_opts.append(OS.get_cmdline_args()[i])
-
-	# Search _opts for an element that starts with the option name
-	# specified.
-	func find_option(name):
-		var found = false
-		var idx = 0
-
-		while(idx < _opts.size() and !found):
-			if(_opts[idx].find(name) == 0):
-				found = true
-			else:
-				idx += 1
-
-		if(found):
-			return idx
-		else:
-			return -1
-
-	# Parse out the value of an option.  Values are separated from
-	# the option name with "="
-	func get_option_value(full_option):
-		var split = full_option.split('=')
-
-		if(split.size() > 1):
-			return split[1]
-		else:
-			return null
-
-	# Parse out multiple comma delimited values from a command line
-	# option.  Values are separated from option name with "=" and
-	# additional values are comma separated.
-	func get_option_array_value(full_option):
-		var value = get_option_value(full_option)
-		var split = value.split(',')
-		return split
-
-	func get_array_value(option):
-		var to_return = []
-		var opt_loc = find_option(option)
-		if(opt_loc != -1):
-			to_return = get_option_array_value(_opts[opt_loc])
-			_opts.remove(opt_loc)
-
-		return to_return
-
-	# returns the value of an option if it was specfied, null otherwise.  This
-	# used to return the default but that became problemnatic when trying to
-	# punch layer the different places where values could be specified.
-	func get_value(option):
-		var to_return = null
-		var opt_loc = find_option(option)
-		if(opt_loc != -1):
-			to_return = get_option_value(_opts[opt_loc])
-			_opts.remove(opt_loc)
-
-		return to_return
-
-	# returns true if it finds the option, false if not.
-	func was_specified(option):
-		return find_option(option) != -1
-
-#-------------------------------------------------------------------------------
-# Simple class to hold a command line option
-#-------------------------------------------------------------------------------
-class Option:
-	var value = null
-	var option_name = ''
-	var default = null
-	var description = ''
-
-	func _init(name, default_value, desc=''):
-		option_name = name
-		default = default_value
-		description = desc
-		value = null#default_value
-
-	func pad(value, size, pad_with=' '):
-		var to_return = value
-		for i in range(value.length(), size):
-			to_return += pad_with
-
-		return to_return
-
-	func to_s(min_space=0):
-		var subbed_desc = description
-		if(subbed_desc.find('[default]') != -1):
-			subbed_desc = subbed_desc.replace('[default]', str(default))
-		return pad(option_name, min_space) + subbed_desc
-
-#-------------------------------------------------------------------------------
-# The high level interface between this script and the command line options
-# supplied.  Uses Option class and CmdLineParser to extract information from
-# the command line and make it easily accessible.
-#-------------------------------------------------------------------------------
-class Options:
-	var options = []
-	var _opts = []
-	var _banner = ''
-
-	func add(name, default, desc):
-		options.append(Option.new(name, default, desc))
-
-	func get_value(name):
-		var found = false
-		var idx = 0
-
-		while(idx < options.size() and !found):
-			if(options[idx].option_name == name):
-				found = true
-			else:
-				idx += 1
-
-		if(found):
-			return options[idx].value
-		else:
-			print("COULD NOT FIND OPTION " + name)
-			return null
-
-	func set_banner(banner):
-		_banner = banner
-
-	func print_help():
-		var longest = 0
-		for i in range(options.size()):
-			if(options[i].option_name.length() > longest):
-				longest = options[i].option_name.length()
-
-		print('---------------------------------------------------------')
-		print(_banner)
-
-		print("\nOptions\n-------")
-		for i in range(options.size()):
-			print('  ' + options[i].to_s(longest + 2))
-		print('---------------------------------------------------------')
-
-	func print_options():
-		for i in range(options.size()):
-			print(options[i].option_name + '=' + str(options[i].value))
-
-	func parse():
-		var parser = CmdLineParser.new()
-
-		for i in range(options.size()):
-			var t = typeof(options[i].default)
-			# only set values that were specified at the command line so that
-			# we can punch through default and config values correctly later.
-			# Without this check, you can't tell the difference between the
-			# defaults and what was specified, so you can't punch through
-			# higher level options.
-			if(parser.was_specified(options[i].option_name)):
-				if(t == TYPE_INT):
-					options[i].value = int(parser.get_value(options[i].option_name))
-				elif(t == TYPE_STRING):
-					options[i].value = parser.get_value(options[i].option_name)
-				elif(t == TYPE_ARRAY):
-					options[i].value = parser.get_array_value(options[i].option_name)
-				elif(t == TYPE_BOOL):
-					options[i].value = parser.was_specified(options[i].option_name)
-				elif(t == TYPE_NIL):
-					print(options[i].option_name + ' cannot be processed, it has a nil datatype')
-				else:
-					print(options[i].option_name + ' cannot be processsed, it has unknown datatype:' + str(t))
-
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Helper class to resolve the various different places where an option can
 # be set.  Using the get_value method will enforce the order of precedence of:
 # 	1.  command line value
@@ -224,7 +53,7 @@ class Options:
 # The idea is that you set the base_opts.  That will get you a copies of the
 # hash with null values for the other types of values.  Lower precedented hashes
 # will punch through null values of higher precedented hashes.
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class OptionResolver:
 	var base_opts = null
 	var cmd_opts = null
@@ -239,6 +68,7 @@ class OptionResolver:
 		cmd_opts = _null_copy(opts)
 		config_opts = _null_copy(opts)
 
+	# creates a copy of a hash with all values null.
 	func _null_copy(h):
 		var new_hash = {}
 		for key in h:
@@ -258,7 +88,7 @@ class OptionResolver:
 
 	func to_s():
 		return str("base:\n", _string_it(base_opts), "\n", \
-		           "config:\n", _string_it(config_opts), "\n", \
+				   "config:\n", _string_it(config_opts), "\n", \
 				   "cmd:\n", _string_it(cmd_opts), "\n", \
 				   "resolved:\n", _string_it(get_resolved_values()))
 
@@ -274,229 +104,205 @@ class OptionResolver:
 		for key in base_opts:
 			to_return += str(key, "\n")
 			to_return += str('  default: ', _nvl(base_opts[key], 'NULL'), "\n")
-			to_return += str('  config:  ', _nvl(config_opts[key], 'NULL'), "\n")
-			to_return += str('  cmd:     ', _nvl(cmd_opts[key], 'NULL'), "\n")
+			to_return += str('  config:  ', _nvl(config_opts[key], ' --'), "\n")
+			to_return += str('  cmd:     ', _nvl(cmd_opts[key], ' --'), "\n")
 			to_return += str('  final:   ', _nvl(resolved[key], 'NULL'), "\n")
 
 		return to_return
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Here starts the actual script that uses the Options class to kick off Gut
 # and run your tests.
-#-------------------------------------------------------------------------------
-var _utils = load('res://addons/gut/utils.gd').new()
+# ------------------------------------------------------------------------------
+var _utils = load('res://addons/gut/utils.gd').get_instance()
+var _gut_config = load('res://addons/gut/gut_config.gd').new()
 # instance of gut
 var _tester = null
 # array of command line options specified
-var _opts = []
-# Hash for easier access to the options in the code.  Options will be
-# extracted into this hash and then the hash will be used afterwards so
-# that I don't make any dumb typos and get the neat code-sense when I
-# type a dot.
-var options = {
-	should_maximize = false,
-	should_exit = false,
-	log_level = 1,
-	ignore_pause_before_teardown = false,
-	tests = [],
-	dirs = [],
-	selected = '',
-	prefix = 'test_',
-	suffix = '.gd',
-	gut_location = 'res://addons/gut/gut.gd',
-	unit_test_name = '',
-	show_help = false,
-	config_file = 'res://.gutconfig.json',
-	inner_class = '',
-	opacity = 100,
-	include_subdirs = false,
-	double_strategy = 'partial'
-}
+var _final_opts = []
 
-# flag to say if we should run the scripts or not.  It is only
-# set to false if you specify a script to run with the -gselect
-# option and it cannot find the script.
-var _auto_run = true
-# flag to indicate if only a single script should be run.
-var _run_single = false
 
-func setup_options():
-	var opts = Options.new()
+func setup_options(options, font_names):
+	var opts = Optparse.new()
 	opts.set_banner(('This is the command line interface for the unit testing tool Gut.  With this ' +
-	                'interface you can run one or more test scripts from the command line.  In order ' +
-	                'for the Gut options to not clash with any other godot options, each option starts ' +
-	                'with a "g".  Also, any option that requires a value will take the form of ' +
-	                '"-g<name>=<value>".  There cannot be any spaces between the option, the "=", or ' +
-	                'inside a specified value or godot will think you are trying to run a scene.'))
+					'interface you can run one or more test scripts from the command line.  In order ' +
+					'for the Gut options to not clash with any other godot options, each option starts ' +
+					'with a "g".  Also, any option that requires a value will take the form of ' +
+					'"-g<name>=<value>".  There cannot be any spaces between the option, the "=", or ' +
+					'inside a specified value or godot will think you are trying to run a scene.'))
 	opts.add('-gtest', [], 'Comma delimited list of full paths to test scripts to run.')
-	opts.add('-gdir', [], 'Comma delimited list of directories to add tests from.')
-	opts.add('-gprefix', 'test_', 'Prefix used to find tests when specifying -gdir.  Default "[default]"')
-	opts.add('-gsuffix', '.gd', 'Suffix used to find tests when specifying -gdir.  Default "[default]"')
+	opts.add('-gdir', options.dirs, 'Comma delimited list of directories to add tests from.')
+	opts.add('-gprefix', options.prefix, 'Prefix used to find tests when specifying -gdir.  Default "[default]".')
+	opts.add('-gsuffix', options.suffix, 'Test script suffix, including .gd extension.  Default "[default]".')
+	opts.add('-ghide_orphans', false, 'Display orphan counts for tests and scripts.  Default "[default]".')
 	opts.add('-gmaximize', false, 'Maximizes test runner window to fit the viewport.')
+	opts.add('-gcompact_mode', false, 'The runner will be in compact mode.  This overrides -gmaximize.')
 	opts.add('-gexit', false, 'Exit after running tests.  If not specified you have to manually close the window.')
-	opts.add('-glog', 1, 'Log level.  Default [default]')
+	opts.add('-gexit_on_success', false, 'Only exit if all tests pass.')
+	opts.add('-glog', options.log_level, 'Log level.  Default [default]')
 	opts.add('-gignore_pause', false, 'Ignores any calls to gut.pause_before_teardown.')
-	opts.add('-gselect', '', ('Select a sccript to run initially.  The first script that ' +
-	                          'was loaded using -gtest or -gdir that contains the specified ' +
-	                          'string will be executed.  You may run others by interacting ' +
-                              'with the GUI.'))
+	opts.add('-gselect', '', ('Select a script to run initially.  The first script that ' +
+							'was loaded using -gtest or -gdir that contains the specified ' +
+							'string will be executed.  You may run others by interacting ' +
+							'with the GUI.'))
 	opts.add('-gunit_test_name', '', ('Name of a test to run.  Any test that contains the specified ' +
-                                 'text will be run, all others will be skipped.'))
-	opts.add('-gutloc', 'res://addons/gut/gut.gd', 'Full path (including name) of the gut script.  Default [default]')
-	opts.add('-gh', false, 'Print this help')
+								'text will be run, all others will be skipped.'))
+	opts.add('-gh', false, 'Print this help, then quit')
 	opts.add('-gconfig', 'res://.gutconfig.json', 'A config file that contains configuration information.  Default is res://.gutconfig.json')
 	opts.add('-ginner_class', '', 'Only run inner classes that contain this string')
-	opts.add('-gopacity', 100, 'Set opacity of test runner window. Use range 0 - 100. 0 = transparent, 100 = opaque.')
+	opts.add('-gopacity', options.opacity, 'Set opacity of test runner window. Use range 0 - 100. 0 = transparent, 100 = opaque.')
 	opts.add('-gpo', false, 'Print option values from all sources and the value used, then quit.')
 	opts.add('-ginclude_subdirs', false, 'Include subdirectories of -gdir.')
 	opts.add('-gdouble_strategy', 'partial', 'Default strategy to use when doubling.  Valid values are [partial, full].  Default "[default]"')
+	opts.add('-gdisable_colors', false, 'Disable command line colors.')
+	opts.add('-gpre_run_script', '', 'pre-run hook script path')
+	opts.add('-gpost_run_script', '', 'post-run hook script path')
+	opts.add('-gprint_gutconfig_sample', false, 'Print out json that can be used to make a gutconfig file then quit.')
+
+	opts.add('-gfont_name', options.font_name, str('Valid values are:  ', font_names, '.  Default "[default]"'))
+	opts.add('-gfont_size', options.font_size, 'Font size, default "[default]"')
+	opts.add('-gbackground_color', options.background_color, 'Background color as an html color, default "[default]"')
+	opts.add('-gfont_color',options.font_color, 'Font color as an html color, default "[default]"')
+
+	opts.add('-gjunit_xml_file', options.junit_xml_file, 'Export results of run to this file in the Junit XML format.')
+	opts.add('-gjunit_xml_timestamp', options.junit_xml_timestamp, 'Include a timestamp in the -gjunit_xml_file, default [default]')
 	return opts
 
 
 # Parses options, applying them to the _tester or setting values
 # in the options struct.
 func extract_command_line_options(from, to):
-	to.tests = from.get_value('-gtest')
-	to.dirs = from.get_value('-gdir')
-	to.should_exit = from.get_value('-gexit')
-	to.should_maximize = from.get_value('-gmaximize')
-	to.log_level = from.get_value('-glog')
-	to.ignore_pause_before_teardown = from.get_value('-gignore_pause')
-	to.selected = from.get_value('-gselect')
-	to.prefix = from.get_value('-gprefix')
-	to.suffix = from.get_value('-gsuffix')
-	to.gut_location = from.get_value('-gutloc')
-	to.unit_test_name = from.get_value('-gunit_test_name')
 	to.config_file = from.get_value('-gconfig')
-	to.inner_class = from.get_value('-ginner_class')
-	to.opacity = from.get_value('-gopacity')
-	to.include_subdirs = from.get_value('-ginclude_subdirs')
+	to.dirs = from.get_value('-gdir')
+	to.disable_colors =  from.get_value('-gdisable_colors')
 	to.double_strategy = from.get_value('-gdouble_strategy')
+	to.ignore_pause = from.get_value('-gignore_pause')
+	to.include_subdirs = from.get_value('-ginclude_subdirs')
+	to.inner_class = from.get_value('-ginner_class')
+	to.log_level = from.get_value('-glog')
+	to.opacity = from.get_value('-gopacity')
+	to.post_run_script = from.get_value('-gpost_run_script')
+	to.pre_run_script = from.get_value('-gpre_run_script')
+	to.prefix = from.get_value('-gprefix')
+	to.selected = from.get_value('-gselect')
+	to.should_exit = from.get_value('-gexit')
+	to.should_exit_on_success = from.get_value('-gexit_on_success')
+	to.should_maximize = from.get_value('-gmaximize')
+	to.compact_mode = from.get_value('-gcompact_mode')
+	to.hide_orphans = from.get_value('-ghide_orphans')
+	to.suffix = from.get_value('-gsuffix')
+	to.tests = from.get_value('-gtest')
+	to.unit_test_name = from.get_value('-gunit_test_name')
 
-func get_value(dict, index, default):
-	if(dict.has(index)):
-		return dict[index]
-	else:
-		return default
+	to.font_size = from.get_value('-gfont_size')
+	to.font_name = from.get_value('-gfont_name')
+	to.background_color = from.get_value('-gbackground_color')
+	to.font_color = from.get_value('-gfont_color')
 
-func load_options_from_config_file(file_path, into):
-	# SHORTCIRCUIT
-	var f = File.new()
-	if(!f.file_exists(file_path)):
-		if(file_path != 'res://.gutconfig.json'):
-			print('ERROR:  Config File "', file_path, '" does not exist.')
-			return -1
-		else:
-			return 1
-
-	f.open(file_path, f.READ)
-	var json = f.get_as_text()
-	f.close()
-
-	var results = JSON.parse(json)
-	# SHORTCIRCUIT
-	if(results.error != OK):
-		print("\n\n",'!! ERROR parsing file:  ', file_path)
-		print('    at line ', results.error_line, ':')
-		print('    ', results.error_string)
-		return -1
-
-	into.dirs = get_value(results.result, 'dirs', [])
-	into.should_maximize = get_value(results.result, 'should_maximize', false)
-	into.should_exit = get_value(results.result, 'should_exit', false)
-	into.ignore_pause_before_teardown = get_value(results.result, 'ignore_pause', false)
-	into.log_level = get_value(results.result, 'log', 1)
-	into.inner_class = get_value(results.result, 'inner_class', '')
-	into.opacity = get_value(results.result, 'opacity', 100)
-	into.double_strategy = get_value(results.result, 'double_strategy', 'partial')
-
-	return 1
-
-# apply all the options specified to _tester
-func apply_options(opts):
-	_tester = load(opts.gut_location).new()
-	get_root().add_child(_tester)
-	_tester.connect('tests_finished', self, '_on_tests_finished', [opts.should_exit])
-	_tester.set_yield_between_tests(true)
-	_tester.set_modulate(Color(1.0, 1.0, 1.0, min(1.0, float(opts.opacity) / 100)))
-	_tester.show()
-
-	_tester.set_include_subdirectories(opts.include_subdirs)
-
-	if(opts.should_maximize):
-		_tester.maximize()
-
-	if(opts.inner_class != ''):
-		_tester.set_inner_class_name(opts.inner_class)
-	_tester.set_log_level(opts.log_level)
-	_tester.set_ignore_pause_before_teardown(opts.ignore_pause_before_teardown)
-
-	for i in range(opts.dirs.size()):
-		_tester.add_directory(opts.dirs[i], opts.prefix, opts.suffix)
-
-	for i in range(opts.tests.size()):
-		_tester.add_script(opts.tests[i])
-
-	if(opts.selected != ''):
-		_auto_run = _tester.select_script(opts.selected)
-		_run_single = true
-		if(!_auto_run):
-			_tester.p("Could not find a script that matched:  " + opts.selected)
-
-	if(opts.double_strategy == 'full'):
-		_tester.set_double_strategy(_utils.DOUBLE_STRATEGY.FULL)
-	elif(opts.double_strategy == 'partial'):
-		_tester.set_double_strategy(_utils.DOUBLE_STRATEGY.PARTIAL)
-
-	_tester.set_unit_test_name(opts.unit_test_name)
+	to.junit_xml_file = from.get_value('-gjunit_xml_file')
+	to.junit_xml_timestamp = from.get_value('-gjunit_xml_timestamp')
 
 
-# Loads any scripts that have been configured to be loaded through the project
-# settings->autoload.
-func load_auto_load_scripts():
-	var f = ConfigFile.new()
-	f.load('res://project.godot')
 
-	for key in f.get_section_keys('autoload'):
-		# There's an * in my autoload path, at the start, idk why.  It breaks
-		# things so I'm removing all * from the value.
-		var obj = load(f.get_value('autoload', key).replace('*', '')).new()
-		obj.set_name(key)
-		get_root().add_child(obj)
+func _print_gutconfigs(values):
+	var header = """Here is a sample of a full .gutconfig.json file.
+You do not need to specify all values in your own file.  The values supplied in
+this sample are what would be used if you ran gut w/o the -gprint_gutconfig_sample
+option (option priority:  command-line, .gutconfig, default)."""
+	print("\n", header.replace("\n", ' '), "\n\n")
+	var resolved = values
+
+	# remove some options that don't make sense to be in config
+	resolved.erase("config_file")
+	resolved.erase("show_help")
+
+	print("Here's a config with all the properties set based off of your current command and config.")
+	print(JSON.print(resolved, '  '))
+
+	for key in resolved:
+		resolved[key] = null
+
+	print("\n\nAnd here's an empty config for you fill in what you want.")
+	print(JSON.print(resolved, ' '))
+
 
 # parse options and run Gut
-func _init():
+func _run_gut():
 	var opt_resolver = OptionResolver.new()
-	opt_resolver.set_base_opts(options)
+	opt_resolver.set_base_opts(_gut_config.default_options)
 
 	print("\n\n", ' ---  Gut  ---')
-	var o = setup_options()
-	o.parse()
+	var o = setup_options(_gut_config.default_options, _gut_config.valid_fonts)
+
+	var all_options_valid = o.parse()
 	extract_command_line_options(o, opt_resolver.cmd_opts)
-	var load_result = \
-			load_options_from_config_file(opt_resolver.get_value('config_file'), opt_resolver.config_opts)
-	if(load_result == -1): # -1 indicates json parse error
-		quit()
+
+	var load_result = _gut_config.load_options_no_defaults(
+		opt_resolver.get_value('config_file'))
+
+	# SHORTCIRCUIT
+	if(!all_options_valid or load_result == -1):
+		quit(1)
 	else:
+		opt_resolver.config_opts = _gut_config.options
+
 		if(o.get_value('-gh')):
+			print(_utils.get_version_text())
 			o.print_help()
 			quit()
 		elif(o.get_value('-gpo')):
 			print('All command line options and where they are specified.  ' +
-			      'The "final" value shows which value will actually be used ' +
-				  'based on order of precedence (default < .gutconfig < cmd line).' + "\n")
+				'The "final" value shows which value will actually be used ' +
+				'based on order of precedence (default < .gutconfig < cmd line).' + "\n")
 			print(opt_resolver.to_s_verbose())
 			quit()
+		elif(o.get_value('-gprint_gutconfig_sample')):
+			_print_gutconfigs(opt_resolver.get_resolved_values())
+			quit()
 		else:
-			load_auto_load_scripts()
-			apply_options(opt_resolver.get_resolved_values())
+			_final_opts = opt_resolver.get_resolved_values();
+			_gut_config.options = _final_opts
 
-			if(_auto_run):
-				_tester.test_scripts(!_run_single)
+			var runner = GutRunner.instance()
+			runner.set_cmdln_mode(true)
+			runner.set_gut_config(_gut_config)
+
+			_tester = runner.get_gut()
+			_tester.connect('tests_finished', self, '_on_tests_finished',
+				[_final_opts.should_exit, _final_opts.should_exit_on_success])
+
+			get_root().add_child(runner)
+			runner.run_tests()
+
 
 # exit if option is set.
-func _on_tests_finished(should_exit):
+func _on_tests_finished(should_exit, should_exit_on_success):
+	if(_final_opts.dirs.size() == 0):
+		if(_tester.get_summary().get_totals().scripts == 0):
+			var lgr = _tester.get_logger()
+			lgr.error('No directories configured.  Add directories with options or a .gutconfig.json file.  Use the -gh option for more information.')
+
 	if(_tester.get_fail_count()):
 		OS.exit_code = 1
-	if(should_exit):
+
+	# Overwrite the exit code with the post_script
+	var post_inst = _tester.get_post_run_script_instance()
+	if(post_inst != null and post_inst.get_exit_code() != null):
+		OS.exit_code = post_inst.get_exit_code()
+
+	if(should_exit or (should_exit_on_success and _tester.get_fail_count() == 0)):
 		quit()
+	else:
+		print("Tests finished, exit manually")
+
+# ------------------------------------------------------------------------------
+# MAIN
+# ------------------------------------------------------------------------------
+func _init():
+	if(!_utils.is_version_ok()):
+		print("\n\n", _utils.get_version_text())
+		push_error(_utils.get_bad_version_text())
+		OS.exit_code = 1
+		quit()
+	else:
+		_run_gut()
