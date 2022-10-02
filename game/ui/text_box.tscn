@@ -29,7 +29,7 @@ margin_right = -10.0
 margin_bottom = -8.0
 theme = ExtResource( 1 )
 script = ExtResource( 4 )
-text = "{+}Turn back now!{/} Return to your chamber and rejoin the rest of your {~}pathetic{/} kind!"
+text = "{+}Turn back now!{/} Return to {~}your chamber{/} and rejoin the rest of your {o}pathetic{/} kind! supercalifragilisticexpialidocious supercalifragilisticexpialidocious supercalifragilisticexpialidocious"
 
 [node name="Panel" type="Panel" parent="text"]
 visible = false

@@ -58,6 +58,13 @@ rounded = true
 texture_under = ExtResource( 4 )
 texture_progress = ExtResource( 5 )
 
+[node name="current_action" type="Label" parent="horizontal"]
+margin_left = 60.0
+margin_top = 1.0
+margin_right = 149.0
+margin_bottom = 12.0
+text = "test"
+
 [node name="vertical" type="TextureRect" parent="."]
 visible = false
 margin_left = 7.0

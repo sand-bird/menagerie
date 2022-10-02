@@ -39,6 +39,7 @@ func update_monster():
 	$horizontal/belly.value = target.belly
 	$horizontal/energy.value = target.energy
 	$horizontal/social.value = target.social
+	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
 
 func connect_object():
 	$name_bar/label.text = 'an object'

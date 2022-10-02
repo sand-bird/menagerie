@@ -31,12 +31,12 @@
           {
             "sprites": "~walk_back.png",
             "frames": 4,
-            "fps": 4.0
+            "fps": 6.0
           },
           {
             "sprites": "~walk_front.png",
             "frames": 4,
-            "fps": 4.0
+            "fps": 6.0
           }
         ],
         "sleep": [

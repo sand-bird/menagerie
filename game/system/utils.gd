@@ -42,7 +42,7 @@ static func write_file(path, data):
 # --------------------------------------------------------------------------- #
 
 static func read_file(path):
-	Log.info(log_name, ["reading file: ", path])
+	Log.debug(log_name, ["reading file: ", path])
 	var file = File.new()
 	if !file.file_exists(path):
 		Log.warn(log_name, ["could not load `", path, "`: file does not exist!"])
@@ -238,13 +238,13 @@ static func randi_thresh(anchor, threshold):
 
 # --------------------------------------------------------------------------- #
 
-static func randi_range(minimum, maximum):
-	return minimum + randi() % (int(maximum) - int(minimum) + 1)
+static func randi_range(a, b):
+	return a + randi() % (int(b) - int(a) + 1)
 
 # --------------------------------------------------------------------------- #
 
-static func randi_to(maximum):
-	return randi() % (int(maximum) + 1)
+static func randi_to(x):
+	return randi() % (int(x) + 1)
 
 # --------------------------------------------------------------------------- #
 
@@ -255,7 +255,6 @@ static func rand_tri(a, b, c):
 		return round(a + sqrt(u * (b - a) * (c - a)))
 	else:
 		return round(b - sqrt((1 - u) * (b - a) * (b - c)))
-	pass
 
 # --------------------------------------------------------------------------- #
 
@@ -274,5 +273,10 @@ static func rand_parab(a, b, c):
 	var x = randf()
 	var k = float(c - a) / float(b - a)
 	if x < k:
-		return round(c + pow(((2*x*(a-b) - 3) * pow((a-c), 2) - pow(c,3)) * (1 / 9), 1.0/3.0))
+		return round(
+			c + pow(
+				((2*x*(a-b) - 3) * pow((a-c), 2) - pow(c,3)) * (1 / 9),
+				1.0/3.0
+			)
+		)
 	else: return b

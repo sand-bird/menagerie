@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "Action",
 "language": "GDScript",
-"path": "res://monster/action/action.gd"
+"path": "res://monster/actions/action.gd"
 }, {
 "base": "Reference",
 "class": "Condition",
@@ -24,10 +24,40 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://system/constants.gd"
 }, {
+"base": "Node",
+"class": "Decider",
+"language": "GDScript",
+"path": "res://monster/decider.gd"
+}, {
+"base": "Reference",
+"class": "GutHookScript",
+"language": "GDScript",
+"path": "res://addons/gut/hook_script.gd"
+}, {
+"base": "Node",
+"class": "GutTest",
+"language": "GDScript",
+"path": "res://addons/gut/test.gd"
+}, {
+"base": "Action",
+"class": "IdleAction",
+"language": "GDScript",
+"path": "res://monster/actions/idle.gd"
+}, {
 "base": "KinematicBody2D",
 "class": "Monster",
 "language": "GDScript",
 "path": "res://monster/monster.gd"
+}, {
+"base": "Action",
+"class": "MoveAction",
+"language": "GDScript",
+"path": "res://monster/actions/move.gd"
+}, {
+"base": "Action",
+"class": "SleepAction",
+"language": "GDScript",
+"path": "res://monster/actions/sleep.gd"
 }, {
 "base": "Node",
 "class": "Utils",
@@ -38,14 +68,26 @@ _global_script_classes=[ {
 "class": "Validator",
 "language": "GDScript",
 "path": "res://system/validator.gd"
+}, {
+"base": "Action",
+"class": "WanderAction",
+"language": "GDScript",
+"path": "res://monster/actions/wander.gd"
 } ]
 _global_script_class_icons={
 "Action": "",
 "Condition": "",
 "Constants": "",
+"Decider": "",
+"GutHookScript": "",
+"GutTest": "",
+"IdleAction": "",
 "Monster": "",
+"MoveAction": "",
+"SleepAction": "",
 "Utils": "",
-"Validator": ""
+"Validator": "",
+"WanderAction": ""
 }
 
 [application]
@@ -99,7 +141,7 @@ use_2d_pixel_snap=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/event_button/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/event_button/plugin.cfg", "res://addons/gut/plugin.cfg" )
 
 [image_loader]
 

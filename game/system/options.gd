@@ -60,7 +60,7 @@ func set_control_mode(mode):
 # elsewhere
 var scroll_modes = {
 	ControlMode.MOUSE_AND_KEY: [
-		ScrollMode.EDGE_SCROLL,
+#		ScrollMode.EDGE_SCROLL,
 		ScrollMode.DRAG_SCROLL
 #		ScrollMode.KEY_SCROLL
 	],

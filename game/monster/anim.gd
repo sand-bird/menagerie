@@ -13,7 +13,7 @@ func _ready():
 # --------------------------------------------------------------------------- #
 
 # calling this will immediately start playing the new anim. currently, this
-# leaves the queue intact, so that previously queued animtions will resume
+# leaves the queue intact, so that previously queued animations will resume
 # after the current one is over. doesn't matter right now; can change it later
 # if necessary.
 func play_anim(anim_id = null, loops = null):

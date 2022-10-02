@@ -32,7 +32,9 @@ func init(data):
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
-		test_mon.current_action = Action.Walk.new(test_mon, get_global_mouse_position())
+		test_mon.set_current_action(
+			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
+		)
 
 func _process(delta):
 	update()

@@ -9,6 +9,11 @@ var garden
 
 signal drives_changed
 
+const MAX_BELLY = 100.0
+const MAX_ENERGY = 100.0
+const MAX_SOCIAL = 100.0
+const MAX_MOOD = 200.0
+
 # =========================================================================== #
 #                             P R O P E R T I E S                             #
 # --------------------------------------------------------------------------- #
@@ -24,8 +29,8 @@ var father
 # memory
 # ------
 var past_actions = []
-var current_action
-var next_action
+var current_action: Action
+var next_action # ?
 
 # drives
 # ------
@@ -46,33 +51,66 @@ var attributes = {
 }
 var traits = {
 	# INT
-	iq = 0,
-	learning = 0,
+	# ---
+	# heritable, sticky trait governing how quickly a pet learns skills and how
+	# likely it is to undertake complex actions.
+	iq = 0.5,
+	# accumulative trait reflecting how much a pet has learned over its lifetime.
+	# exists to boost the INT attribute.
+	learning = 0.0,
+	
 	# VIT
-	size = 0,
-	strength = 0,
+	# ---
+	# 
+	size = 0.5,
+	strength = 0.5,
 	vigor = 0.5,
+	
 	# CON
-	composure = 0,
-	patience = 0,
+	# ---
+	# governs the success of composure rolls (overcoming a mood hit).
+	# increased by encouraging a pet during a composure rol or praising it after
+	# a successful roll.
+	composure = 0.3,
+	# governs how long it takes for a pet to start suffering mood hits as a
+	# result of unmet needs (drives out of equilibrium).
+	# increased by correcting drives after patience procs but before a mood hit.
+	patience = 0.4,
+	
 	# CHA
-	confidence = 0,
-	beauty = 0,
-	poise = 0,
+	# ---
+	# governs how likely a pet is to undertake social actions (via utility mods).
+	# increased by performing social actions with positive results.
+	confidence = 0.4,
+	# boosts CHA attribute. maybe also affects other pets' preferences.
+	# heritable and can be modified (maybe temporarily) by items.
+	beauty = 0.5,
+	# accumulative trait. affects mood losses from social events, and mood-based
+	# utility modifiers on social actions. ("A high POISE monster will be less
+	# likely to take out its bad mood on others, and won't let negative inter-
+	# actions affect its MOOD as much.")
+	poise = 0.1,
+	
 	# AMI
-	kindness = 0,
-	empathy = 0,
-	humility = 0,
-	aggressiveness = 0,
+	# ---
+	# range from -1 to 1. sticky. affects preference for actions that raise or
+	# lower other pets' moods.
+	kindness = 0.0,
+	# multiplies mood gains for actions that affect other pets' mood.
+	empathy = 0.5,
+	humility = 0.5,
+	aggressiveness = 0.5,
+	
 	# SPI
-	happiness = 0,
-	loyalty = 0,
-	actualization = 0,
+	happiness = 0.5,
+	loyalty = 0.5,
+	actualization = 0.5,
+	
 	# N/A
-	openness = 0,
-	appetite = 0,
+	openness = 0.5,
+	appetite = 0.5,
 	pep = 0.5,
-	sociability = 0
+	extraversion = 0.5
 }
 
 # preferences
@@ -107,11 +145,9 @@ var dest
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	# this is gonna fire twice a second and may become a perf problem someday
 	Dispatcher.connect('tick_changed', self, '_on_tick_changed', [])
 	update_z()
 	set_physics_process(true)
-	choose_action()
 
 # --------------------------------------------------------------------------- #
 # position by default is the top-left corner of the node, but we generally
@@ -146,10 +182,9 @@ func initialize(data):
 # --------------------------------------------------------------------------- #
 
 func _physics_process(delta):
-	if current_action and !current_action.done:
+	if current_action:
 		current_action.proc(delta)
-	else:
-		choose_action()
+	
 	update_z()
 
 	# debug
@@ -160,9 +195,10 @@ func _physics_process(delta):
 # --------------------------------------------------------------------------- #
 
 func _on_tick_changed():
-	if current_action and !current_action.done:
-		current_action.tick()
-	update_drives()
+	if current_action:
+		var action_result = current_action.tick()
+		update_drives(action_result)
+	else: choose_action()
 
 # --------------------------------------------------------------------------- #
 
@@ -185,39 +221,59 @@ func update_z():
 # --------------------------------------------------------------------------- #
 
 # debug logging, shows up in garden ui
-func log_message(msg):
+func announce(msg):
 	var l = garden.get_node('ui/log')
-	l.add_text('[' + name + '] ' + msg + '\n')
+	l.add_text('[' + monster_name + '] ' + msg + '\n')
 	l.scroll_to_line(l.get_line_count() - 1)
-	
+
+
+# =========================================================================== #
+#                                A C T I O N S                                #
+# --------------------------------------------------------------------------- #
+
+func set_current_action(action, queue_current = true):
+	prints('setting current action',action,queue_current)
+	if queue_current and current_action and !next_action:
+		next_action = current_action
+		next_action.status = Action.Status.PAUSED
+	current_action = action
+	current_action.connect('exit', self, '_on_action_exit')
 
 # --------------------------------------------------------------------------- #
 
 func choose_action():
-	randomize()
-	var target_energy = get_target_energy()
+	set_current_action(Decider.choose_action(self))
+	Log.info(self, '(choose_action) ' + current_action.name)
 
-	if energy < target_energy and randf() > energy / 100.0:
-		var energy_per_tick = float(Action.energy_values.sleep) / float(Clock.TICKS_IN_HOUR)
-		var energy_to_recover = Utils.randi_range(target_energy, 100) - energy
-		var sleep_time = energy_to_recover / energy_per_tick
-		Log.debug(self, ['going to sleep! energy to recover: ', energy_to_recover,
-			' | sleep time: ', sleep_time])
-		current_action = Action.Sleep.new(self,
-			clamp(sleep_time, Clock.TICKS_IN_HOUR, Clock.TICKS_IN_HOUR * 8))
-	elif randf() > traits.pep:
-		current_action = Action.Idle.new(self, Utils.randi_range(2, 8))
+# --------------------------------------------------------------------------- #
+
+func _on_action_exit(status):
+	prints('action exited with status', status, '|', current_action)
+	current_action.disconnect('exit', self, '_on_action_exit')
+	past_actions.append(current_action)
+	current_action = null
+	
+	if past_actions.size() > get_memory_size():
+		past_actions.pop_front().queue_free()
+	if next_action:
+		set_current_action(next_action, false)
+		next_action = null
 	else:
-		current_action = Action.Walk.new(self, # so ugly :(
-			position + Vector2(rand_range(-80, 80), rand_range(-80, 80)))
+		choose_action()
 
-	Log.debug(self, ["chose action: ", current_action.action_id])
+# --------------------------------------------------------------------------- #
+
+# number of past actions to remember: 2-8 depending on pet iq.
+func get_memory_size():
+	return 2 + int(6.0 * traits.iq)
+
 
 # =========================================================================== #
 #                             A N I M A T I O N S                             #
 # --------------------------------------------------------------------------- #
 
-func play_anim(anim_id, loops = 0):
+func play_anim(anim_id, speed = 1.0, loops = 0):
+	$sprite/anim.set_speed_scale(speed)
 	$sprite/anim.play_anim(anim_id, loops)
 
 func queue_anim(anim_id, loops = 0):
@@ -231,68 +287,67 @@ func set_anim_speed(speed):
 #                                 D R I V E S                                 #
 # --------------------------------------------------------------------------- #
 
-# updates the pet's drive meters (mood, hunger, etc).
-# called once per "tick" unit of game time (~0.5 seconds)
-func update_drives():
-	var delta_energy = calc_energy_delta()
-	energy = clamp(energy + delta_energy, 0, 100)
-	var delta_belly = calc_belly_delta(delta_energy)
-	belly = clamp(belly + delta_belly, 0, 100)
-#	social += calc_social_delta()
+#const BASE_ENERGY_DECAY = -0.05 # 0.5% per tick = 6%/hr
+const BASE_BELLY_DECAY = -0.28 # full to starving in ~30h
+const D_ENERGY_FACTOR = 0.5
+
+# updates the pet's drive meters (mood, belly, energy, and social).
+# called once per "tick" unit of game time (~0.5 seconds).
+#
+# `diff` is a hash of drive names to float amounts by which to modify the drive.
+# these are "base deltas", which are passed through the appropriate
+# `calc_x_delta` function to compute a final delta modified by the pet's traits.
+#
+# there are several possible sources of drive updates:
+# - action results: Action's `tick` method returns a summary of drive updates
+#    generated by the action on that tick (`action_result`). actions could just
+#    modify drives directly, but we should let pets handle their own affairs.
+# - drive decay: the creeping hegemony of entropy. drives should decay by a
+#    static base amount per tick.
+# - event and interactions: basically TODO.
+func update_drives(diff):
+	var modded_diff = apply_drive_mods(diff if diff else {})
+	energy = clamp(energy + modded_diff.energy, 0.0, MAX_ENERGY)
+	belly = clamp(belly + modded_diff.belly, 0.0, MAX_BELLY)
+	
 	emit_signal('drives_changed')
 
 # --------------------------------------------------------------------------- #
 
-const DEFAULT_ENERGY_DECAY = -0.005 # 0.5% per tick = 6%/hr
-
-# actions are defined with `energy_value` values that describe how fast a pet
-# loses (or recovers) energy while performing the action. these are in delta
-# energy PER HOUR (positive for recovery, negative for drain), but since the
-# drive is updated every tick, we must first translate `energy_mod` to its
-# per-tick equivalent.
-#
-# vigor is stored as a float from 0 to 1; we translate it to 0 to 2 so we can
-# use it as a multiplier. vigor has a positive effect on energy recovery and an
-# INVERSE effect on energy drain, so we must invert the multiplier if the delta
-# energy will be negative.
-func calc_energy_delta():
-	var has_energy_value = current_action and 'energy_value' in current_action
-	var action_val = (float(current_action.energy_value) / Clock.TICKS_IN_HOUR
-			if has_energy_value else DEFAULT_ENERGY_DECAY)
-	var vig_mod = traits.vigor * 2.0
-	var delta_energy = 0.0
-	if action_val > 0:
-		delta_energy = action_val * vig_mod
-	else:
-		delta_energy = action_val * (2.0 - vig_mod)
-	return delta_energy
+func apply_drive_mods(diff):
+	return {
+		energy = _mod_energy_delta(diff.get('energy', 0.0)),
+		belly = _mod_belly_delta(diff.get('belly', 0.0)),
+	}
 
 # --------------------------------------------------------------------------- #
 
-const BASE_BELLY_DECAY = -0.28 # full to starving in ~30h
-const D_ENERGY_FACTOR = 0.5
+# given a base delta energy value (per tick), modifies it by the pet's vigor.
+# vigor is stored as a float from 0 to 1; we translate it to 0 to 2 so we can
+# use it as a multiplier. vigor has a positive effect on energy recovery and an
+# inverse effect on energy drain, so we must invert the multiplier if the delta
+# energy will be negative.
+func _mod_energy_delta(base_delta: float):
+	var vig_mod = traits.vigor * 2.0
+	if base_delta > 0: return base_delta * vig_mod
+	else: return base_delta * (2.0 - vig_mod)
 
-# unlike delta energy, delta belly is always negative (pets recover belly in
-# chunks, via EAT actions on food items).
-#
+
 # delta belly is modified by our appetite trait (converted to a multiplier, as
-# with vigor) and our current delta energy, which means delta energy must
-# always be calculated first.
+# with vigor) - higher appetite causes belly to drain faster and fill slower.
 #
 # if delta energy is positive (recovery), our d_energy_mod multiplier is < 1,
 # causing belly to drain slower; if it's negative, the modifier is > 1, which
 # will drain it faster. D_ENERGY_FACTOR controls the strength of the effect.
-func calc_belly_delta(delta_energy):
-	var base_rate = BASE_BELLY_DECAY
+func _mod_belly_delta(base_delta: float, delta_energy: float = 0.0):
 	var app_mod = traits.appetite * 2.0
 	# if energy is increasing, decrease belly decay rate.
 	var d_energy_mod = 1.0 - (delta_energy * D_ENERGY_FACTOR)
-	var delta_belly = base_rate * app_mod * d_energy_mod
+	var delta_belly = base_delta * app_mod * d_energy_mod
 	return delta_belly
 
-# --------------------------------------------------------------------------- #
 
-func calc_social_delta():
+func _mod_social_delta():
 	pass
 
 # --------------------------------------------------------------------------- #
@@ -301,27 +356,10 @@ func calc_social_delta():
 # determined by the inverse of its pep trait (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
 func get_target_energy():
-	return 100 * (1 - traits.pep)
+	return MAX_ENERGY * (1.0 - traits.pep)
 
-# --------------------------------------------------------------------------- #
-
-func update_preferences(discipline_type):
-	print(discipline_type)
-	# updates pet's likes and dislikes via discipline
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func update_mood(discipline_type):
-	print(discipline_type)
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func update_attributes():
-	# INT, VIT, CON... these are supposed to depend directly
-	# on the traits that feed into them
-	pass
+func get_target_social():
+	return MAX_SOCIAL * (1.0 - traits.extraversion)
 
 
 # =========================================================================== #
@@ -380,24 +418,10 @@ func unfocus():
 
 func _on_discipline(discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
-
-	update_preferences(discipline_type)
-	update_mood(discipline_type)
-
+	# update_preferences(discipline_type)
+	# update_mood(discipline_type)
 	# decide whether to stop current action
 	pass
-
-# --------------------------------------------------------------------------- #
-
-func _on_action_finished():
-	print("action finished!")
-	past_actions.append(current_action)
-	if past_actions.size() > 5:
-		past_actions.pop_front()
-	if (next_action):
-		current_action = next_action
-		next_action = null
-	else: choose_action()
 
 
 # =========================================================================== #
@@ -409,7 +433,7 @@ const SAVE_KEYS = [
 	'birthday', 'mother', 'father',
 	'traits', 'preferences',
 	'belly', 'mood', 'energy', 'social',
-	'past_actions', 'current_action', 'next_action'
+	# 'past_actions', 'current_action', 'next_action'
 ]
 
 # --------------------------------------------------------------------------- #

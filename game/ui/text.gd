@@ -11,8 +11,8 @@ enum BufType {
 export var line_spacing: int = 2
 export var text: String = '{_1.0}We can do syntax-based pauses... (or not\\.\\.\\.){n}Insert newlines and {_0.5}manual pauses{_1.0}, {>0.2}change the{/} {>1.5}speeeeeeed{/}, and use {#FF00FF}colors{/} and {~}effects!{/}'
 
-onready var FONT_HEIGHT = font.get_height()
-onready var LINE_HEIGHT = FONT_HEIGHT + line_spacing
+onready var font_height = font.get_height()
+onready var line_height = font_height + line_spacing
 
 var _buf = []
 
@@ -22,6 +22,7 @@ var _buf = []
 const TOKENS = {
 	'+': { key = 'anim', value = 'shaky' },
 	'~': { key = 'anim', value = 'wavy' },
+	'o': { key = 'anim', value = 'loopy' },
 	'#': { key = 'color' },
 	'>': { key = 'speed', apply = 'float' },
 	'_': { key = 'pause', apply = 'float' }
@@ -38,7 +39,7 @@ const PAUSES = {
 #warning-ignore:unused_class_variable
 onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
 onready var MAX_WIDTH = rect_size.x
-onready var MAX_LINES = get_max_lines(FONT_HEIGHT, line_spacing, rect_size.y)
+onready var MAX_LINES = get_max_lines(rect_size.y)
 onready var CHAR_DELAY = 1 / Options.text_speed
 
 onready var MOD_DEFAULTS = {
@@ -204,7 +205,7 @@ func _draw():
 		match _buf[i].type:
 			BufType.NEWLINE:
 				pos.x = START_POS.x
-				pos.y += LINE_HEIGHT
+				pos.y += line_height
 			BufType.CHAR:
 				pos.x += do_draw_char(i, pos)
 
@@ -244,17 +245,17 @@ func wavy(i, pos) -> Vector2:
 		sin((time * 10) - i * 0.5) * 1
 	)
 
-func wavy2(i, pos):
+func loopy(i, pos):
 	return pos + Vector2(
-		cos((time * 10) - i * 1.5) * 1,
-		sin((time * 10) - i * 1.5) * 2
+		cos((time * 10) - i * 0.4) * 1,
+		sin((time * 10) - i * 0.4) * 2
 	)
 
 func shaky(i, pos):
 	return pos + Vector2(
-		0 if sin(i * 2 + time) < 2 % (i + 4) - 1.2
+		0.0 if sin(i * 2 + time) < 2 % (i + 4) - 1.2
 				else sin(time * 8 + i) * 0.7,
-		0 if sin(i * 2 + time) > 2 % (i + 4) - 1.8
+		0.0 if sin(i * 2 + time) > 2 % (i + 4) - 1.8
 				else sin(time * 8 + i) * 0.7
 	)
 
@@ -265,7 +266,8 @@ func float(x): return float(x)
 # =========================================================================== #
 #                                  U T I L S                                  #
 # --------------------------------------------------------------------------- #
-func get_max_lines(font_height, line_spacing, max_height):
+
+func get_max_lines(max_height):
 	var max_lines = 0
 	var total_height = font_height
 	while total_height < max_height:
