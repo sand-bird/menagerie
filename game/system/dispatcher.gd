@@ -70,8 +70,8 @@ func _unhandled_input(e):
 		emit_signal("menu_open", "monsters")
 	elif e.is_action_pressed("ui_cancel"):
 		emit_signal("ui_close")
-	elif e.is_action_pressed("dev_console"):
-		emit_signal("ui_toggle", "dev_console")
+	elif e.is_action_pressed("ui_console"):
+		emit_signal("ui_toggle", "console")
 
 # --------------------------------------------------------------------------- #
 

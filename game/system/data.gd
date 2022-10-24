@@ -25,11 +25,12 @@ var schemas = {}
 var data = {}
 
 func _ready():
+	pass
 #	var rg = RegEx.new()
 #	rg.compile("^(?:\\d{1,3}?\\.){2}\\d{1,4}?$")
 #	print(rg.is_valid())
 #	print(rg.search("1.2.3"), rg.search("1"), rg.search("1.2"), rg.search(""), rg.search("..1"), rg.search("12345.2.3"), rg.search("123.123.1234"))
-	var val = Validator.new()
+#	var val = Validator.new()
 #	val.validate(["1.2.3", "1", "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"pattern": "^(?:\\d{1,3}?\\.){2}\\d{1,4}?$"}}, "test")
 #	val.validate(["1.2.3", 1, "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"type": "string"}}, "str")#	init()
 

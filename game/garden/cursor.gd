@@ -47,6 +47,8 @@ func reset_anim():
 
 # --------------------------------------------------------------------------- #
 
+# hide the actual cursor when the garden is paused, because we replace it with
+# a hand graphic. unhide it for menus until we implement a custom menu cursor.
 func _notification(n):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)

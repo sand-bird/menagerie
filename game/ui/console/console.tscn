@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/other/fonts_old/menagerieheartsm.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=2]
-[ext_resource path="res://ui/dev_console/dev_console.gd" type="Script" id=3]
+[ext_resource path="res://ui/console/console.gd" type="Script" id=3]
 
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 1 )
