@@ -1,9 +1,77 @@
 extends Control
 
+"""
+custom text rendering, meant to be used for dialogue boxes.
+
+- renders text character-by-character, with delays after punctuation
+- automatically inserts newlines when tokenizing text, so that words which would
+  extend past the container's width are pushed to the next line
+- supports various tags to modify the rendered text
+
+TAGS & TOKENS
+-------------
+tokens are special characters in the input text that are not rendered as regular
+text, and instead control how the text is to be rendered.
+
+tags are tokens wrapped in curly braces, and may have argments. some tags apply
+modifiers to subsequent text until they are closed.
+
+the {/} tag closes the last modifier applied. you can also close a specific
+modifier by adding its token as an argument, eg {/#} to close a color modifier.
+
+the following tags are supported:
+* animation modifier - {+} {~} {o}
+* color modifier - {#f0f}
+  - requires a hex color code as an argument
+* text speed modifier - {>0.5}
+  - requires a numeric argument. this is a multipler of the default text speed.
+* pause - {_1.0}
+  - requires a numeric argument for how long to pause (in seconds, i think)
+* newline - {n}
+
+you can escape tokens with '\'. in godot you also have to escape the backslash,
+so `\\{` will render `{` (which would otherwise be ignored).
+
+you can also avoid built-in pauses after puncutation by escaping the punctuation
+mark - eg, `\\.\\.\\.` will render an ellipsis at the same speed as normal text.
+
+EXECUTION
+---------
+first the input text is tokenized. this populates the buffer (_buf) with objects
+having the following properties (only `type` is relevant for NEWLINEs):
+
+* type - BufType (CHAR or NEWLINE, IMAGE isn't fully supported yet)
+* uni - the unicode value of the character
+* at - time at which to render the character
+* anim - animation modifier, if applicable
+* color - color of the text, either from modifier or DEFAULT_COLOR
+
+RENDERING
+---------
+we rerender the entire buffer on every frame. characters first appear when the
+time is greater than their `at` value. if the character has an animation, its
+position is modified when we rerender it so that it appears to move around.
+
+rendering a character uses the bitmap font's `draw_char` method, which draws the
+character to the given position relative to its parent container, and returns
+the position for the next character with kerning applied. (i am not sure why
+animations that move the character horizontally don't affect subsequent chars,
+but it seems to work fine.)
+
+NOTES
+-----
+* no support for pagination yet - we can calculate the max number of lines based
+  on the size of the parent container, but we don't currently use it.
+* forever incrementing `time` might cause integer overflow errors eventually
+* no support yet for clearing or replacing/appending text. appending is tricky
+  because rendering depends on `time` - if we reset it, it resets animations,
+  but if we don't reset it then the appended text may appear instantly.
+"""
+
 onready var font = theme.default_font
 
 enum BufType {
-	CHAR,START_POS
+	CHAR,
 	IMAGE,
 	NEWLINE
 }
@@ -49,11 +117,21 @@ onready var MOD_DEFAULTS = {
 	'pause': 0
 }
 
+# modifiers to apply to the next character we push to the buffer
 onready var _modifiers = MOD_DEFAULTS.duplicate(true)
-var _last_modifiers = [] # for automatically closing
+# used for automatically closing modifiers. if we get a close tag without a
+# token, pop off the last (most recent) one from here.
+var _mod_tokens = []
 
+# used during tokenization for automatic newlines. `_current_line` tells us if
+# the line is too long for the container, while `_last_space` holds the index of
+# the last space character in the buffer, which is replaced by a newline.
 var _last_space = 0
 var _current_line = ''
+var current_at = 0
+
+# updated during tokenization.
+# this would be used for pagination but it's not implemented yet.
 var _line_count = 1
 
 # --------------------------------------------------------------------------- #
@@ -63,7 +141,9 @@ func _ready(): tokenize(text)
 # --------------------------------------------------------------------------- #
 
 func tokenize(raw: String) -> void:
-	var current_at = 0
+	# time at which to render the current character. this is incremented by the
+	# standard amount for each character we push to the buffer, plus any extra
+	# pauses (either from punctuation or from pause tokens).
 	var is_escaped = false
 
 	var i = 0
@@ -75,10 +155,10 @@ func tokenize(raw: String) -> void:
 			i += 1
 			continue
 
-		# if it's a tag, we parse it, then continue processing the string from the
-		# end of the tag. if the tag is a substitution, it manipulates `raw`, and
-		# sets i to the beginning of the substitution string. if somebody sets up
-		# recursive looping substitutions, we are in trouble
+		# if it's a tag, we parse it, then continue processing the string from
+		# the end of the tag. if the tag is a substitution, it manipulates `raw`,
+		# and sets i to the beginning of the substitution string. if somebody
+		# sets up recursive looping substitutions, we are in trouble
 		elif raw[i] == '{' and !is_escaped:
 			i = parse_tag(i, raw) + 1
 			continue
@@ -102,6 +182,8 @@ func tokenize(raw: String) -> void:
 		if raw[i] in PAUSES and !is_escaped:
 			current_at += PAUSES[raw[i]]
 
+		# track the position of the last space so that we can replace it with a
+		# newline if the following word is too big to fit on the same line.
 		if raw[i] == ' ':
 			_last_space = _buf.size() - 1
 
@@ -118,13 +200,16 @@ func tokenize(raw: String) -> void:
 
 # --------------------------------------------------------------------------- #
 
+# adds a newline to the buffer. if use_last_space is true, it replaces the last
+# space in the buffer with the newline, so that all text after the last space
+# gets rendered to the next line. otherwise, it just appends the newline to the
+# end of the buffer.
 func insert_newline(use_last_space = false):
 	_current_line = ''
 	if use_last_space and _last_space:
 		_buf[_last_space] = { type = BufType.NEWLINE }
 		for i in _buf.size() - _last_space:
 			if 'uni' in _buf[i]:
-				print(char(_buf[i].uni))
 				_current_line += char(_buf[i].uni)
 	else:
 		_buf.push_back({ type = BufType.NEWLINE })
@@ -134,7 +219,7 @@ func insert_newline(use_last_space = false):
 # --------------------------------------------------------------------------- #
 
 func parse_tag(i: int, raw: String) -> int:
-	# find the bounds of our tag. we always skip over the tab opener unless it
+	# find the bounds of our tag. we always skip over the tag opener unless it
 	# was explicitly escaped; but if the tag is invalid, we can return without
 	# doing anything else.
 	var end_of_tag: int = raw.find('}', i)
@@ -154,8 +239,8 @@ func parse_tag(i: int, raw: String) -> int:
 		set_modifier(tag[0], arg)
 	elif tag[0] == '/':
 		if arg: reset_modifier(arg)
-		elif !_last_modifiers.empty():
-			reset_modifier(_last_modifiers.pop_back())
+		elif !_mod_tokens.empty():
+			reset_modifier(_mod_tokens.pop_back())
 	elif tag[0] == 'n':
 		insert_newline()
 
@@ -177,7 +262,8 @@ func set_modifier(token, arg):
 			if 'value' in mod
 			else MOD_DEFAULTS[mod.key]
 		)
-	_last_modifiers.push_back(token)
+	_mod_tokens.push_back(token)
+
 
 func reset_modifier(token):
 	var modkey = TOKENS[token].key
@@ -215,8 +301,10 @@ func _draw():
 
 func do_draw_char(i: int, pos: Vector2) -> int:
 	return font.draw_char(
-		rid, do_anim(i, pos),
-		_buf[i].uni, next_char(i),
+		rid,
+		do_anim(i, pos),
+		_buf[i].uni,
+		next_char(i), # passing the next char allows the font to apply kerning
 		_buf[i].color
 	)
 
@@ -227,10 +315,13 @@ func draw_image(i: int, pos: Vector2) -> int:
 #                                h e l p e r s
 # --------------------------------------------------------------------------- #
 
+# returns the unicode value of the next character in the buffer
 func next_char(i):
 	return _buf[i + 1].uni if (i < _buf.size() - 1
 			and 'uni' in _buf[i + 1]) else -1
 
+# returns the position at which we should render the character.
+# this is modified by the animation on that character, if there is one.
 func do_anim(i, pos) -> Vector2:
 	return (call(_buf[i].anim, i, pos)
 			if exists_in('anim', _buf[i]) else pos)
@@ -238,6 +329,9 @@ func do_anim(i, pos) -> Vector2:
 
 #                             a n i m a t i o n s
 # --------------------------------------------------------------------------- #
+# these take an index and a starting position, and return a modified position
+# based on the index and the current time. using the index allows us to
+# "stagger" the animation from one character to the next to create wavy effects.
 
 func wavy(i, pos) -> Vector2:
 	return pos + Vector2(
