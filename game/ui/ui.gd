@@ -115,7 +115,7 @@ func close(arg = null):
 # those overlay/restore args anywhere (yet??)
 func toggle(item_ref):
 	var item_idx = find_item(item_ref)
-	if (item_idx): close(item_idx)
+	if item_idx != null: close(item_idx)
 	else: open(item_ref)
 
 # --------------------------------------------------------------------------- #

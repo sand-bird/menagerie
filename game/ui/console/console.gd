@@ -49,12 +49,9 @@ func _input(event):
 		update_user_input()
 		
 
-
+# User chose to enter their current input. Try to execute a command.
 func handle_user_input():
-	"""
-	User chose to enter their current input. Try to execute a command.
-	"""
-	self.log(user_input)
+	self.log('> ' + user_input)
 	# Split into space-separated tokens
 	var tokens = Array(user_input.split(" "))
 	user_input = ""
@@ -79,29 +76,6 @@ func update_user_input():
 
 
 func log(x):
-	var str_to_log = String(x)
-	for line in str_to_log.split("\n"):
-		log_line(line)
-
-
-func log_line(line: String):
-	var l = $console
-	l.add_text(line)
-	l.newline()
-	#l.scroll_to_line(l.get_line_count() - 1)
-
-func toggle():
-	if visible: hide()
-	else: show()
-
-
-func show():
-	user_input = ""
-	update_user_input()
-#	get_tree().set_paused(true)
-	.show()
-
-
-func hide():
-	.hide()
-#	get_tree().set_paused(false)
+	for line in String(x).split("\n"):
+		$output.add_text(line)
+		$output.newline()
