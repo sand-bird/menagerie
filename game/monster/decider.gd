@@ -5,14 +5,14 @@ const log_name = 'Decider'
 """
 logic to choose which action to perform next. here's how it should work:
 
-1. poll sources in range. sources are other monsters, items, objects, games, and
-   self. these tell us which specific, parameterized actions are available.
+1. poll sources in range.  sources are other monsters, items, objects, games,
+   and self.  these tell us which specific, parameterized actions are available.
    eg, there are two different food items in range: each of these will advertise
-   valid item actions like eat, pick up, move, bury, etc. a monster will pick
+   valid item actions like eat, pick up, move, bury, etc.  a monster will pick
    one action to perform on one item.
    
 2. sources advertise drive updates according to a function that depends on the
-   monster, the target, and the action. all actions should implement this function.
+   monster, the target, and the action.  all actions should implement this.
    for each possible action on each source, the decider calls the function with
    the monster and target.
    - eg, if the action involves moving to the target, estimate the energy cost.
@@ -25,23 +25,24 @@ logic to choose which action to perform next. here's how it should work:
 3. now we have a list of drive updates associated with potential actions.
    a general function chooses one of those based on the monster's current drives
    and traits.
-   - eg, a monster is kind but starving. there is one other monster and it has
-	 the only food. this function should weigh the mood hit from stealing against
-	 the belly gain from eating the food.
-   - the utility calculation should not be perfect. eg, monsters may only compare
-	 a subset of possible actions.
+   - eg, a monster is kind but starving.  there is one other monster and it has
+	 the only food.  this function should weigh the mood hit from stealing
+	 against the belly gain from eating the food.
+   - the utility calculation should not be perfect.  eg, monsters may only
+	 compare a subset of possible actions.
    - the utility of different drive updates should be modified by the monster's
-	 traits. eg, a high pep monster should put greater weight on actions that
+	 traits.  eg, a high pep monster should put greater weight on actions that
 	 reduce energy.
 
 4. when a monster is engaged in an action, it stops polling for sources, but it
-   still listens for interrupts. an interrupt is an event that advertises an
+   still listens for interrupts.  an interrupt is an event that advertises an
    action (an "active" source vs a passive source) - eg, another monster starts
-   a game. the monster compares the utility of the advertised action against its
-   current action, and may decide to cancel or postpone the current action in
-   favor of the advertised action.
+   a game.  the monster compares the utility of the advertised action against
+   its current action, and may decide to cancel or postpone the current action
+   in favor of the advertised action.
 """
 
+# actions advertised by the monster itself.  these are always available.
 static func self_actions(m):
 	return [
 		WanderAction.new(m), 
@@ -51,7 +52,7 @@ static func self_actions(m):
 
 # --------------------------------------------------------------------------- #
 
-# polls the sources around the monster for possible actions. returns a list of
+# polls the sources around the monster for possible actions.  returns a list of
 # possible actions.
 static func poll_sources(m):
 	var actions = []
