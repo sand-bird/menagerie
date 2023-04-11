@@ -3,7 +3,7 @@ extends Node
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
-const NEW_SAVE = "res://data/system/new_save.json"
+const NEW_SAVE = "res://data/system/new.save"
 
 var current_save_dir
 # probably not the best idea, but seems to work fine for now
