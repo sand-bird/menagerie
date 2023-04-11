@@ -18,11 +18,7 @@
     },
     "type": {
       "type": "string",
-      "enum": [
-        "tree",
-        "furniture",
-        "egg"
-      ]
+      "const": "object"
     },
     "name": {
       "$ref": "definitions/text16"

@@ -2,7 +2,9 @@
   "id": "pufig",
   "type": "monster",
   "localization": "monsters",
-  "name": "Pufig",
+  "name": {
+    "en": "Pufig"
+  },
   "description": {
     "en": "A fluffy pig-like monster with a superb sense of smell. Intelligent and social, Pufig make great pets for children and families."
   },

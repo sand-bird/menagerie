@@ -24,16 +24,6 @@ const SCHEMA_EXT = "schema"
 var schemas = {}
 var data = {}
 
-func _ready():
-	pass
-#	var rg = RegEx.new()
-#	rg.compile("^(?:\\d{1,3}?\\.){2}\\d{1,4}?$")
-#	print(rg.is_valid())
-#	print(rg.search("1.2.3"), rg.search("1"), rg.search("1.2"), rg.search(""), rg.search("..1"), rg.search("12345.2.3"), rg.search("123.123.1234"))
-#	var val = Validator.new()
-#	val.validate(["1.2.3", "1", "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"pattern": "^(?:\\d{1,3}?\\.){2}\\d{1,4}?$"}}, "test")
-#	val.validate(["1.2.3", 1, "1.2", "", "..1", "12345.2.3", "123.123.1234"], {"items": {"type": "string"}}, "str")#	init()
-
 func init():
 	# loads schemas and datafiles from data/
 	var sourceinfo = {
@@ -290,8 +280,10 @@ func load_schemafile(path, sourceinfo):
 	if !schema:
 		Log.error(self, ["error loading schema from `", path, "`!"])
 		return
+	var filename = path.get_basename().get_file()
+	schema = process_schema(schema, filename)
 	schema.sources = [sourceinfo]
-	return { path.get_basename().get_file(): schema }
+	return { filename: schema }
 
 
 # =========================================================================== #
@@ -301,12 +293,16 @@ func load_schemafile(path, sourceinfo):
 # okay, new plan. we don't want to resolve sigils on LOAD; that would make
 # validation (which should happen once, post- load) a big headache, and open us
 # up to a bunch of fatal errors from stuff not getting found, which is exactly
-# what all this validation nonsense is supposed to prevent. plus, we can't
+# what all this validation nonsense is supposed to prevent.  plus, we can't
 # resolve @ sigils (instance properties) right now anyway, for obvious reasons.
-
+#
 # as for fileref sigils, we should resolve the sigil to the full filepath (this
 # is the only time we will know what it is), but don't load the resource yet
 # for the reasons above.
+#
+# here we also coerce integer values to ints by casting them to an int and then
+# checking for equality.  this is necessary because json doesn't have a concept
+# of integer types, but we want to be able to validate them.
 func process_data(d, basedir):
 	var collection = d.size() if typeof(d) == TYPE_ARRAY else d
 	for i in collection:
@@ -314,7 +310,28 @@ func process_data(d, basedir):
 			d[i] = process_data(d[i], basedir)
 		elif d[i] and typeof(d[i]) == TYPE_STRING and d[i][0] == '~':
 			d[i] = basedir.plus_file(Utils.strip_sigil(d[i]))
+		elif d[i] and typeof(d[i]) == TYPE_REAL and int(d[i]) == d[i]:
+			d[i] = int(d[i])
 	return d
+
+# --------------------------------------------------------------------------- #
+
+# keeping it simple: processing a schema involves resolving local reference
+# paths to absolute paths by replacing the '#' with the basename.  this is
+# enough for now since we only support static references ($ref).
+func process_schema(s, filename):
+	var collection = s.size() if typeof(s) == TYPE_ARRAY else s
+	for i in collection:
+		if typeof(s[i]) == TYPE_ARRAY or typeof(s[i]) == TYPE_DICTIONARY:
+			s[i] = process_schema(s[i], filename)
+		elif i is String and i == '$ref':
+			if s[i] is String:
+				s[i] = s[i].replace('#', filename)
+			else: Log.warn(self, [
+				"found $ref keyword in schema whose value is not a string | schema: ",
+				filename
+			])
+	return s
 
 # --------------------------------------------------------------------------- #
 
@@ -355,6 +372,8 @@ func merge(base, mod):
 
 # oh boy
 func validate ():
+	var val = Validator.new(schemas)
+	val.validate(data)
 	return true
 
 

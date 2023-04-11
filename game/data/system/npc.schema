@@ -3,20 +3,18 @@
   "type": "object",
   "properties": {
     "id": {
-      "$ref": "definitions.schema#/id"
+      "$ref": "definitions/id"
     },
     "type": {
       "type": "string",
-      "enum": [
-        "npc"
-      ]
+      "const": "npc"
     },
     "birthday": {
       "type": "object",
       "properties": {
         "month": {
           "type": "string",
-          "note": "should be a valid month enum"
+          "$comment": "should be a valid month enum"
         },
         "date": {
           "type": "integer"
@@ -31,7 +29,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "string",
-        "note": "should be a valid filepath"
+        "$comment": "should be a valid filepath"
       }
     },
     "locations": {
@@ -40,7 +38,7 @@
         "type": "object",
         "properties": {
           "when": {
-            "$ref": "definitions.schema#/condition"
+            "$ref": "definitions/condition"
           },
           "priority": {
             "type": "integer",

@@ -38,17 +38,68 @@
           "name": {
             "$ref": "definitions/text16"
           },
-          "if": {
+          "cond": {
             "$ref": "definitions/condition"
           },
           "weight": {
             "$ref": "definitions/weight"
           },
-          "sprites": {}
+          "animations": {
+            "type": "object",
+            "$comment": "",
+            "required": [
+              "walk",
+              "idle",
+              "sleep"
+            ],
+            "propertyNames": {
+              "type": "string",
+              "enum": [
+                "walk",
+                "run",
+                "idle",
+                "sleep",
+                "eat",
+                "dig",
+                "attack",
+                "lie_down"
+              ]
+            },
+            "additionalProperties": {
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "sprites",
+                  "frames",
+                  "fps"
+                ],
+                "properties": {
+                  "sprites": {
+                    "ref": "definitions/file"
+                  },
+                  "frames": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "fps": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "loop": {
+                    "type": "boolean",
+                    "default": "true"
+                  }
+                }
+              }
+            }
+          }
         },
         "required": [
           "name",
-          "sprites"
+          "animations"
         ]
       },
       "minProperties": 1
@@ -59,7 +110,7 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "if": {
+          "cond": {
             "$ref": "definitions/condition"
           },
           "weight": {

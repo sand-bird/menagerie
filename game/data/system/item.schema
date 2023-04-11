@@ -17,18 +17,20 @@
     },
     "type": {
       "type": "string",
-      "enum": [
-        "item"
-      ]
+      "const": "item"
     },
     "category": {
-      "$ref": "definitions/category"
+      "type": "string",
+      "enum": [
+        "food",
+        "resource"
+      ]
     },
     "name": {
-      "$ref": "definitions/text"
+      "$ref": "definitions/text16"
     },
     "description": {
-      "$ref": "definitions/text"
+      "$ref": "definitions/text128"
     },
     "icon": {
       "$ref": "definitions/file"
