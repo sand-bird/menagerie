@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=2 format=3 uid="uid://brxpo2y3gemm5"]
 
-[ext_resource type="FontFile" uid="uid://0k6q5tfie0n2" path="res://assets/ui/menagerie.font" id="1_1rslv"]
+[ext_resource type="FontFile" uid="uid://0k6q5tfie0n2" path="res://assets/other/fonts_old/menagerieheartsm_fixed.ttf" id="1_1rslv"]
 
 [resource]
 default_font = ExtResource("1_1rslv")

@@ -60,11 +60,11 @@ use_2d_pixel_snap=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/event_button/plugin.cfg", "res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/event_button/plugin.cfg")
 
 [gui]
 
-theme/custom_font="res://assets/other/fonts_old/menagerieheartsm_fixed.ttf"
+theme/custom_font="res://assets/other/fonts_old/menagerie_white/font.fnt"
 
 [image_loader]
 
