@@ -13,10 +13,11 @@ var move_action: MoveAction
 var wait_counter = 0
 
 # TODO: allow speed to be passed in here
-func _init(m, t = null).(m):
+func _init(m, t = null):
+	super(m)
 	name = 'wander'
 	if !t: t = Utils.randi_range(min_dur, max_dur)
-	._init(m, t)
+	super._init(m, t)
 
 func estimate_result():
 	return { energy = -0.2 * t }
@@ -45,19 +46,19 @@ func _timeout():
 func new_move():
 	var dest = pick_dest()
 	move_action = MoveAction.new(m, dest, 0.6, min_dur)
-	move_action.connect('exit', self, '_on_move_exit')
+	move_action.connect('exit', Callable(self, '_on_move_exit'))
 
 func pick_dest():
 	randomize()
 	var direction = Vector2(
-		rand_range(-1, 1),
-		rand_range(-1, 1)
+		randf_range(-1, 1),
+		randf_range(-1, 1)
 	)
-	var distance = rand_range(40, 60)
-	return (direction * distance) + m.get_position()
+	var distance = randf_range(40, 60)
+	return (direction * distance) + m.get_pos()
 
 func cleanup_move():
-	move_action.disconnect('exit', self, '_on_move_exit')
+	move_action.disconnect('exit', Callable(self, '_on_move_exit'))
 	move_action.queue_free()
 	move_action = null
 	m.play_anim('idle')

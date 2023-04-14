@@ -7,5 +7,6 @@ extends Action
 # target can either be a position, an object, or null. if null, drop item at
 # current position.
 
-func _init(m, item, target = null).(m):
+func _init(m, item, target = null):
+	super(m)
 	pass

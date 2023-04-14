@@ -5,5 +5,5 @@ func _ready():
 	initialize()
 
 func initialize(args = null):
-	.initialize(args)
+	super.initialize(args)
 	# specific stuff goes here

@@ -21,18 +21,18 @@ func initialize(i, iref, item_size):
 	set_size(item_size)
 	var item = Player.inventory[iref]
 	set_qty(item.qty)
-	$icon.texture = Data.get_resource([item.id, "icon"])
+	$icon.texture = Data.fetch_res([item.id, "icon"])
 
 func set_size(size, _keep_margins = false):
-	rect_min_size = size
-	rect_size = size
+	custom_minimum_size = size
+	size = size
 
 func set_qty(item_qty):
 	qty = item_qty
 	if qty == 1: $quantity.hide()
 	else:
 		$quantity.text = str(qty)
-		$quantity.margin_left = -$quantity.get_minimum_size().x
+		$quantity.offset_left = -$quantity.get_minimum_size().x
 
 func _pressed():
 	Dispatcher.emit_signal("item_selected", index)

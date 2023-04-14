@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var Speed = Constants.Speed
 
@@ -64,9 +64,9 @@ func seek(target_pos, delta, do_arrive):
 		target_velocity = target_velocity * distance / arrival_radius
 #		print("tgt: ", target_velocity, "\t| dist: ", distance, "\t| rad: ", arrival_radius)
 	
-	var steering = (target_velocity - current_velocity).clamped(10)
-	current_velocity = (current_velocity + steering).clamped(max_speed)
-	$raycast.cast_to = current_velocity.normalized() * 50
+	var steering = (target_velocity - current_velocity).limit_length(10)
+	current_velocity = (current_velocity + steering).limit_length(max_speed)
+	$raycast.target_position = current_velocity.normalized() * 50
 	$raycast.enabled = true
 	if $raycast.is_colliding() and $raycast.get_collider() != collider:
 		collider = $raycast.get_collider()
@@ -76,7 +76,9 @@ func seek(target_pos, delta, do_arrive):
 	# if (is_on_wall()): print("wall")
 	
 	# current_velocity = target_velocity
-	return move_and_slide(current_velocity)
+	set_velocity(current_velocity)
+	move_and_slide()
+	return velocity
 #	update()
 
 # add steering force to velocity

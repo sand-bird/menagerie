@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/images/bgtest2.png" type="Texture" id=2]
+[ext_resource path="res://assets/images/bgtest2.png" type="Texture2D" id=2]
 
 
 
@@ -50,7 +50,7 @@ margin/top = 25.0
 margin/right = 60.0
 margin/bottom = 39.0
 toggle_mode = false
-enabled_focus_mode = 2
+focus_mode = 2
 shortcut = null
 text = "button 1"
 flat = false
@@ -67,7 +67,7 @@ margin/top = 43.0
 margin/right = 60.0
 margin/bottom = 57.0
 toggle_mode = false
-enabled_focus_mode = 2
+focus_mode = 2
 shortcut = null
 text = "button 2"
 flat = false
@@ -84,7 +84,7 @@ margin/top = 61.0
 margin/right = 60.0
 margin/bottom = 75.0
 toggle_mode = false
-enabled_focus_mode = 2
+focus_mode = 2
 shortcut = null
 text = "button 3"
 flat = false

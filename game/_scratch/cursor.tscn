@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://assets/garden/cursor.png" type="Texture" id=1]
+[ext_resource path="res://assets/garden/cursor.png" type="Texture2D" id=1]
 
 
 
@@ -15,7 +15,7 @@ func _ready():
 	print(Input.get_connected_joysticks())
 	set_process(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	Input.connect(\"joy_connection_changed\", self, \"_on_joy_connection_changed\")
+	Input.connect(\"joy_connection_changed\", Callable(self, \"_on_joy_connection_changed\"))
 	pass
 
 func _process(delta):
@@ -50,7 +50,7 @@ script/script = SubResource( 1 )
 [node name="camera" type="Camera2D" parent="."]
 
 anchor_mode = 1
-rotating = false
+ignore_rotation =true # reversed "rotating" for Camera2D
 current = false
 zoom = Vector2( 1, 1 )
 limit/left = -10000000
@@ -66,7 +66,7 @@ drag_margin/top = 0.2
 drag_margin/right = 0.2
 drag_margin/bottom = 0.2
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 
 transform/pos = Vector2( 0, -12.9516 )
 texture = ExtResource( 1 )

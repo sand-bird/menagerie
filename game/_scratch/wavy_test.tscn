@@ -6,7 +6,7 @@ script/source = "extends Control
 const text = \"Hello World\"
 const font = preload(\"res://assets/ui/menagerie.font\")
 
-onready var rid = get_canvas_item()
+@onready var rid = get_canvas_item()
 
 var start_pos = Vector2(50, 100)
 
@@ -36,8 +36,8 @@ anchor_bottom = 1.0
 script = SubResource( 1 )
 
 [node name="Label" type="Label" parent="."]
-margin_left = 1.58887
-margin_top = 2.7805
-margin_right = 139.589
-margin_bottom = 18.7805
+offset_left = 1.58887
+offset_top = 2.7805
+offset_right = 139.589
+offset_bottom = 18.7805
 

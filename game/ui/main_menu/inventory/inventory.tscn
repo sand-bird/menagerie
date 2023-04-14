@@ -7,29 +7,29 @@
 [ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=6]
 
 [node name="inventory" type="Control"]
-margin_right = 296.0
-margin_bottom = 142.0
-rect_min_size = Vector2( 296, 142 )
+offset_right = 296.0
+offset_bottom = 142.0
+custom_minimum_size = Vector2( 296, 142 )
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 
 [node name="item_info" parent="." instance=ExtResource( 3 )]
-margin_top = -3.0
-margin_bottom = 125.0
+offset_top = -3.0
+offset_bottom = 125.0
 
 [node name="place_button" type="Button" parent="item_info"]
-margin_left = 4.0
-margin_top = 122.0
-margin_right = 136.0
-margin_bottom = 142.0
+offset_left = 4.0
+offset_top = 122.0
+offset_right = 136.0
+offset_bottom = 142.0
 theme = ExtResource( 1 )
-custom_styles/disabled = ExtResource( 6 )
+theme_override_styles/disabled = ExtResource( 6 )
 text = "Place in garden"
 
 [node name="item_grid" parent="." instance=ExtResource( 5 )]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -138.0
-margin_top = 3.0
-margin_right = -3.0
-margin_bottom = 138.0
+offset_left = -138.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 138.0

@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://ui/main_menu/menu_tab.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/elements/menu_tab.png" type="Texture" id=2]
-[ext_resource path="res://assets/ui/icons/monster.png" type="Texture" id=3]
+[ext_resource path="res://assets/ui/elements/menu_tab.png" type="Texture2D" id=2]
+[ext_resource path="res://assets/ui/icons/monster.png" type="Texture2D" id=3]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -17,20 +17,20 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 90.0
-margin_right = 114.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 24, 23 )
-rect_pivot_offset = Vector2( 0, 0 )
-focus_neighbour_left = NodePath("../options")
+offset_left = 90.0
+offset_right = 114.0
+offset_bottom = 20.0
+custom_minimum_size = Vector2( 24, 23 )
+pivot_offset = Vector2( 0, 0 )
+focus_neighbor_left = NodePath("../options")
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-custom_styles/focus = SubResource( 1 )
+theme_override_styles/focus = SubResource( 1 )
 toggle_mode = false
-enabled_focus_mode = 2
+focus_mode = 2
 shortcut = null
 group = null
 flat = true
@@ -38,12 +38,12 @@ align = 1
 script = ExtResource( 1 )
 _sections_unfolded = [ "Anchor", "Focus", "Hint", "Margin", "Mouse", "Rect", "Size Flags", "Theme", "Visibility", "custom_colors", "custom_constants", "custom_fonts", "custom_styles" ]
 
-[node name="sprite" type="Sprite" parent="." index="0"]
+[node name="sprite" type="Sprite2D" parent="." index="0"]
 
 show_behind_parent = true
 texture = ExtResource( 2 )
 centered = false
-_sections_unfolded = [ "Offset", "Transform", "Visibility", "Z Index" ]
+_sections_unfolded = [ "Offset", "Transform3D", "Visibility", "Z Index" ]
 
 [node name="icon" type="TextureRect" parent="sprite" index="0"]
 
@@ -51,11 +51,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -5.0
-margin_top = -4.5
-margin_right = 5.0
-margin_bottom = 3.5
-rect_pivot_offset = Vector2( 0, 0 )
+offset_left = -5.0
+offset_top = -4.5
+offset_right = 5.0
+offset_bottom = 3.5
+pivot_offset = Vector2( 0, 0 )
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1

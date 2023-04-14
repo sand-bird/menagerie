@@ -14,7 +14,7 @@ const log_name = "Utils"
 # this way)
 static func load_relative(own_fn, sib_fn, ext = "tscn"):
 	var file = str(sib_fn, ".", ext)
-	var path = own_fn.get_base_dir().plus_file(file)
+	var path = own_fn.get_base_dir().path_join(file)
 	Log.debug(log_name, ["loading: ", path])
 	return load(path)
 
@@ -25,7 +25,7 @@ static func load_relative(own_fn, sib_fn, ext = "tscn"):
 # already have an extension.
 static func load_resource(res_path, res_fn, ext = "png"):
 	var file = str(res_fn, ".", ext)
-	var path = res_path.plus_file(file)
+	var path = res_path.path_join(file)
 	Log.debug(log_name, ["loading resource: ", path])
 	return ResourceLoader.load(path)
 
@@ -34,25 +34,25 @@ static func load_resource(res_path, res_fn, ext = "png"):
 static func write_file(path, data):
 	Log.info(log_name, ["writing file: ", path])
 	Log.verbose(log_name, data)
-	var file = File.new()
-	file.open(path, File.WRITE)
-	file.store_string(to_json(data))
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
 	file.close()
 
 # --------------------------------------------------------------------------- #
 
 static func read_file(path):
 	Log.debug(log_name, ["reading file: ", path])
-	var file = File.new()
-	if !file.file_exists(path):
+	if !FileAccess.file_exists(path):
 		Log.warn(log_name, ["could not load `", path, "`: file does not exist!"])
 		return null
-	file.open(path, File.READ)
-	var data = parse_json(file.get_as_text())
+	var file = FileAccess.open(path, FileAccess.READ)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(file.get_as_text())
+	var data = test_json_conv.get_data()
 	file.close()
 	# even for verbose, this is a little much, but i'll
 	# leave it here in case we need to re-enable it
-#	Log.verbose(log_name, data)
+	Log.verbose(log_name, data)
 	return data
 
 
@@ -183,7 +183,7 @@ static func vclamp(a, b, c):
 
 # sugar for Vector2.linear_interpolate(Vector2, float)
 static func vlerp(a, b, w):
-	return a.linear_interpolate(b, w)
+	return a.lerp(b, w)
 
 # --------------------------------------------------------------------------- #
 

@@ -9,7 +9,7 @@ func _ready():
 	pass
 
 func _process(delta):
-	var curr_cell = world_to_map(get_local_mouse_position())
+	var curr_cell = local_to_map(get_local_mouse_position())
 	if curr_cell != last_cell:
 		last_cell = curr_cell
 		print("cell: ", curr_cell, " | tile: ", get_cellv(curr_cell))

@@ -2,9 +2,9 @@
 
 [ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/main_menu/main_menu.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/elements/book.png" type="Texture" id=3]
+[ext_resource path="res://assets/ui/elements/book.png" type="Texture2D" id=3]
 [ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=4]
-[ext_resource path="res://addons/event_button/icon_button.png" type="Texture" id=5]
+[ext_resource path="res://addons/event_button/icon_button.png" type="Texture2D" id=5]
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=6]
 
 [sub_resource type="GDScript" id=1]
@@ -13,7 +13,7 @@ script/source = "extends \"res://ui/event_button.gd\"
 func _ready():
 	signal_name = 'ui_close'
 	args = 'main_menu'
-	Dispatcher.connect(\"control_mode_changed\", self, \"update_visibility\")
+	Dispatcher.connect(\"control_mode_changed\", Callable(self, \"update_visibility\"))
 	update_visibility(Options.control_mode)
 
 func update_visibility(control_mode):
@@ -32,39 +32,39 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -158.0
-margin_top = -95.0
-margin_right = 158.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 316, 190 )
+offset_left = -158.0
+offset_top = -95.0
+offset_right = 158.0
+offset_bottom = 64.0
+custom_minimum_size = Vector2( 316, 190 )
 
 [node name="tabs" type="HBoxContainer" parent="content"]
 show_behind_parent = true
 anchor_right = 1.0
-margin_bottom = 20.0
-custom_constants/separation = 8
+offset_bottom = 20.0
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="book" type="TextureRect" parent="content"]
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = -158.0
-margin_top = 17.0
-margin_right = 158.0
-margin_bottom = -3.0
-rect_min_size = Vector2( 316, 170 )
+offset_left = -158.0
+offset_top = 17.0
+offset_right = 158.0
+offset_bottom = -3.0
+custom_minimum_size = Vector2( 316, 170 )
 texture = ExtResource( 3 )
 
 [node name="title" type="Label" parent="content/book"]
 anchor_left = 0.25
 anchor_right = 0.25
-margin_left = -48.0
-margin_top = 7.0
-margin_right = 48.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 96, 13 )
-custom_styles/normal = ExtResource( 4 )
+offset_left = -48.0
+offset_top = 7.0
+offset_right = 48.0
+offset_bottom = 20.0
+custom_minimum_size = Vector2( 96, 13 )
+theme_override_styles/normal = ExtResource( 4 )
 align = 1
 valign = 1
 autowrap = true
@@ -73,12 +73,12 @@ uppercase = true
 [node name="pages" type="Label" parent="content/book"]
 anchor_left = 0.75
 anchor_right = 0.75
-margin_left = -28.0
-margin_top = 7.0
-margin_right = 28.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 56, 13 )
-custom_styles/normal = ExtResource( 4 )
+offset_left = -28.0
+offset_top = 7.0
+offset_right = 28.0
+offset_bottom = 20.0
+custom_minimum_size = Vector2( 56, 13 )
+theme_override_styles/normal = ExtResource( 4 )
 align = 1
 valign = 1
 uppercase = true
@@ -86,9 +86,9 @@ uppercase = true
 [node name="close_button" type="Button" parent="content/book"]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -20.0
-margin_top = -6.0
-margin_bottom = 10.0
+offset_left = -20.0
+offset_top = -6.0
+offset_bottom = 10.0
 text = " X "
 script = SubResource( 1 )
 __meta__ = {
@@ -98,15 +98,15 @@ __meta__ = {
 [node name="chapter" type="Control" parent="content/book"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 10.0
-margin_top = 22.0
-margin_right = -10.0
-margin_bottom = -6.0
+offset_left = 10.0
+offset_top = 22.0
+offset_right = -10.0
+offset_bottom = -6.0
 
 [node name="arrows" parent="content" instance=ExtResource( 6 )]
 anchor_left = 0.75
 anchor_right = 0.75
-margin_left = -34.0
-margin_top = 24.0
-margin_right = 34.0
-margin_bottom = 38.0
+offset_left = -34.0
+offset_top = 24.0
+offset_right = 34.0
+offset_bottom = 38.0

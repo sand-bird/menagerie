@@ -3,9 +3,9 @@ extends NinePatchRect
 enum GridSize { SMALL, LARGE }
 
 # grid properties
-export(GridSize) var grid_size = GridSize.SMALL
-export(int) var cols = 6
-export(int) var rows = 6
+@export var grid_size: GridSize = GridSize.SMALL
+@export var cols: int = 6
+@export var rows: int = 6
 var props
 
 # state
@@ -13,7 +13,7 @@ var items = []
 var current_item = 0
 var current_page = 0
 
-onready var Item = Utils.load_relative(filename, "grid_item")
+@onready var Item = Utils.load_relative(scene_file_path, "grid_item")
 var item_count = 0
 
 func init_bg(grid_width, cells):
@@ -41,7 +41,7 @@ func initialize(grid_config = null, state = null):
 	props = Constants.GRID_PROPERTIES[grid_size]
 	$items.columns = cols
 	texture = Utils.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
-	rect_size = calc_size(props.item_size)
+	size = calc_size(props.item_size)
 	patch_margin_left = props.item_size.x + 2
 	patch_margin_right = props.item_size.y + 1
 	patch_margin_top = patch_margin_left
@@ -60,7 +60,7 @@ func load_items(new_items):
 	clear_items()
 	item_count = new_items.size()
 	for i in item_count:
-		var item = Item.instance()
+		var item = Item.instantiate()
 		item.initialize(i, new_items[i], props.item_size)
 		$items.add_child(item)
 
@@ -101,7 +101,7 @@ func init_selector():
 	$selector.texture = Utils.load_resource(
 			Constants.UI_ELEMENT_PATH, props.selector)
 	var selector_pos = get_selector_dest(0)
-	$selector.rect_position = selector_pos
+	$selector.position = selector_pos
 	$selector.dest_pos = selector_pos
 
 # --------------------------------------------------------------------------- #

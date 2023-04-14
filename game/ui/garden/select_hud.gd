@@ -9,7 +9,7 @@ func select(new_target: Node2D = null):
 		return
 
 	if target and target != new_target:
-		unselect()
+		deselect()
 
 	target = new_target
 
@@ -22,15 +22,15 @@ func select(new_target: Node2D = null):
 
 # --------------------------------------------------------------------------- #
 
-func unselect(entity = null):
+func deselect(entity = null):
 	hide()
 	if !target: return
 	for connection in get_incoming_connections():
 		if connection.source == target:
-			target.disconnect(connection.signal_name, self, connection.method_name)
+			target.disconnect(connection.signal_name, Callable(self, connection.method_name))
 
 func connect_monster():
-	target.connect('drives_changed', self, 'update_monster')
+	target.connect('drives_changed', Callable(self, 'update_monster'))
 	update_monster()
 
 func update_monster():

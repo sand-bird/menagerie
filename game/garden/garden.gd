@@ -14,10 +14,10 @@ var items = {}
 var objects = {}
 
 func _ready():
-	Dispatcher.connect("entity_highlighted", self, "highlight")
-	Dispatcher.connect("entity_unhighlighted", self, "unhighlight")
-	Dispatcher.connect("entity_selected", self, "select")
-	Dispatcher.connect("entity_unselected", self, "unselect")
+	Dispatcher.connect("entity_highlighted", Callable(self, "highlight"))
+	Dispatcher.connect("entity_unhighlighted", Callable(self, "unhighlight"))
+	Dispatcher.connect("entity_selected", Callable(self, "select"))
+	Dispatcher.connect("entity_unselected", Callable(self, "deselect"))
 
 # added to test pathing, camera sticking, etc. todo: remove someday
 var test_mon
@@ -26,21 +26,21 @@ func init(data):
 	Log.info(self, "initializing!")
 	deserialize(data)
 	Clock.start()
-	if !monsters.empty(): test_mon = monsters[monsters.keys().front()]
+	if !monsters.is_empty(): test_mon = monsters[monsters.keys().front()]
 	# camera.stick_target = test_mon
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
-		$nav.calc_path(test_mon.get_position(), get_global_mouse_position())
+		$nav.calc_path(test_mon.get_pos(), get_global_mouse_position())
 		test_mon.set_current_action(
 			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
 		)
 
-func _process(delta):
-	update()
+func _process(_delta):
+	queue_redraw()
 
 func _draw():
-	.draw_circle(test_mon.get_position(), 4, Color.from_hsv(0, 1, 1))
+	super.draw_circle(test_mon.get_pos(), 4, Color.from_hsv(0, 1, 1))
 
 # --------------------------------------------------------------------------- #
 
@@ -78,7 +78,7 @@ func highlight(entity):
 	$ui/select_hud.select(entity)
 
 func unhighlight(entity):
-	if !$cursor.selecting: $ui/select_hud.unselect(entity)
+	if !$cursor.selecting: $ui/select_hud.deselect(entity)
 
 # --------------------------------------------------------------------------- #
 
@@ -89,10 +89,10 @@ func select(entity):
 	$ui/select_hud.select(entity)
 	$ui/interact_hud.attach(entity)
 
-func unselect():
-	print('garden unselect')
+func deselect():
+	print('garden deselect')
 	$camera.stick_target = null
-	$ui/select_hud.unselect()
+	$ui/select_hud.deselect()
 	$ui/interact_hud.detach()
 
 # =========================================================================== #
@@ -119,24 +119,24 @@ func deserialize(data):
 # --------------------------------------------------------------------------- #
 
 func save_terrain():
-	var size = $terrain.get_used_rect().size
+	var grid_size = $terrain.get_used_rect().size
 	var data = []
-	data.resize(size.y)
-	for y in range(size.y):
+	data.resize(grid_size.y)
+	for y in range(grid_size.y):
 		data[y] = []
-		data[y].resize(size.x)
-		for x in range(size.x):
+		data[y].resize(grid_size.x)
+		for x in range(grid_size.x):
 			data[y][x] = $terrain.get_cell(x, y)
 	return data
 
 func load_terrain(data):
 	for y in data.size():
 		for x in data[y].size():
-			$terrain.set_cell(x, y, data[y][x])
-	rect_size = Vector2(data[0].size(), data.size()) * $terrain.cell_size
-	Log.debug(self, ["garden size: ", rect_size])
+			$terrain.set_cell(0, Vector2i(x, y), data[y][x])
+	size = Vector2(data[0].size(), data.size()) * $terrain.cell_quadrant_size
+	Log.debug(self, ["garden size: ", size])
 	Log.debug(self, ["terrain used rect: ", $terrain.get_used_rect()])
-	Log.verbose(self, ["terrain used cells: ", $terrain.get_used_cells()])
+	Log.verbose(self, ["terrain used cells: ", $terrain.get_used_cells(0)])
 
 # --------------------------------------------------------------------------- #
 
@@ -150,17 +150,17 @@ func load_objects(data):
 	var GardenObject = load('res://object/garden_object.tscn')
 	print(data)
 	for uid in data:
-		var object = GardenObject.instance()
+		var object = GardenObject.instantiate()
 		object.initialize(data[uid])
 		objects[uid] = object
 		$entities.add_child(object)
-		place_object(object)
+#		place_object(object)
 
 # make the object 
-func place_object(object):
-	var position = $nav/tilemap.map_to_world(object.coordinates)
-	object.position = position
-	$nav/tilemap.set_cellv(object.coordinates, -1)
+#func place_object(object):
+#	var position = $nav/tilemap.map_to_local(object.coordinates)
+#	object.position = position
+#	$nav/tilemap.set_cellv(object.coordinates, -1)
 
 # --------------------------------------------------------------------------- #
 
@@ -173,7 +173,7 @@ func save_monsters():
 func load_monsters(data):
 	var Monster = load('res://monster/monster.tscn')
 	for uid in data:
-		var monster = Monster.instance()
+		var monster = Monster.instantiate()
 		monster.initialize(data[uid])
 		monsters[uid] = monster
 		monster.garden = self

@@ -34,7 +34,7 @@ var min_pos = Vector2(-INF, -INF)
 var max_pos = Vector2(INF, INF)
 
 # mouse info, used for edge and drag scroll
-onready var last_mouse_pos = get_local_mouse_position()
+@onready var last_mouse_pos = get_local_mouse_position()
 var target_pos = Vector2()
 
 var stick_target = null
@@ -42,8 +42,8 @@ var stick_target = null
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	get_tree().connect("screen_resized", self, "_on_screen_resized")
-	$"..".connect("resized", self, "_on_screen_resized")
+	get_tree().connect("screen_resized", Callable(self, "_on_screen_resized"))
+	$"..".connect("resized", Callable(self, "_on_screen_resized"))
 
 	_on_screen_resized()
 

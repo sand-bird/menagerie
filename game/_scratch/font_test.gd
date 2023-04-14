@@ -1,4 +1,4 @@
-extends ReferenceFrame
+extends Control
 
 const kern_pairs = {
 	'A': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
@@ -53,31 +53,42 @@ const kern_pairs_2 = {
 	'k': ['l']
 }
 
-export(String) var base_font = "res://assets/fonts/menagerie_kerned.fnt"
-export(String) var already_kerned = "res://assets/fonts/menagerie_kerned.fnt"
+@export var base_font: String = "res://assets/other/fonts_old/menagerieheartsm.ttf"
+@export var already_kerned: String = "res://assets/other/fonts_old/menagerieheartsm_fixed.ttf"
 
-onready var font = load(base_font)
-onready var font_kerned = load(already_kerned)
+@onready var font: FontFile = load(base_font)
+@onready var font_kerned: FontFile = load(already_kerned)
+
+var label_font = 'font'
+var cache = 0
+var vsize
+var font_size
 
 func _ready():
-	$test_label.add_font_override("font", font)
+	vsize = font.get_size_cache_list(cache)[0]
+	font_size = vsize.x
+	print('size cache list', font_size)
+	print('glyphs ', font.get_glyph_list(cache, vsize))
+	$test_label.add_theme_font_override("font", font)
 	var button = get_node("button")
 	if button:
 		print(button)
-		button.connect("pressed", self, "process_pairs")
+		button.connect("pressed", Callable(self, "process_pairs"))
 	var button_switch = get_node("button_switch")
 	if button_switch:
-		button_switch.connect("pressed", self, "switch_fonts")
+		button_switch.connect("pressed", Callable(self, "switch_fonts"))
 	pass
 	
 func switch_fonts():
-	$test_label.add_font_override("font", font_kerned)
+	$test_label.add_theme_font_override("font", font_kerned)
 
 func kern(a, b, value):
-	font.add_kerning_pair(a.ord_at(0), b.ord_at(0), value)
+	
+	font.set_kerning(cache, font_size, Vector2i(a.unicode_at(0), b.unicode_at(0)), Vector2(value, 0))
 	pass
 
 func process_pairs():
+	print('before kerning ', font.get_kerning_list(cache, font_size))
 	# apply kernings
 	for pair_first in kern_pairs:
 		for pair_second in kern_pairs[pair_first]:
@@ -85,8 +96,10 @@ func process_pairs():
 	# second pass: double these if necessary
 	for pair_first in kern_pairs_2:
 		for pair_second in kern_pairs_2[pair_first]:
-			if (font.get_kerning_pair(pair_first.ord_at(0), pair_second.ord_at(0))):
+			if (font.get_kerning(cache, font_size, Vector2i(pair_first.unicode_at(0), pair_second.unicode_at(0)))):
 				kern(pair_first, pair_second, 2)
 			else: kern(pair_first, pair_second, 1)
-	font.update_changes()
+	$test_label.queue_redraw()
+	print('after kerning', font.get_kerning_list(cache, font_size))
+#	font.update_changes()
 #	ResourceSaver.save("res://assets/fonts/menagerie_kerned.fnt", font)

@@ -19,5 +19,5 @@ func pop():
 	list.remove(min_i)
 	return node
 
-func empty():
-	return list.empty()
+func is_empty():
+	return list.is_empty()

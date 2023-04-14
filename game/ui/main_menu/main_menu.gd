@@ -1,6 +1,6 @@
 extends Control
 
-onready var MenuTab = Utils.load_relative(filename, 'menu_tab')
+@onready var MenuTab = Utils.load_relative(scene_file_path, 'menu_tab')
 
 const DEFAULT_TITLE = "\u2727 \u2726 \u2727"
 
@@ -12,8 +12,8 @@ var next
 var prev
 
 func _ready():
-	Dispatcher.connect('menu_open', self, 'open')
-	$content/arrows.connect('change_page', self, '_on_arrow')
+	Dispatcher.connect('menu_open', Callable(self, 'open'))
+	$content/arrows.connect('change_page', Callable(self, '_on_arrow'))
 	open("items")
 	make_tabs()
 
@@ -32,7 +32,7 @@ func make_tabs():
 # --------------------------------------------------------------------------- #
 
 func new_tab(id, data):
-	var tab = MenuTab.instance()
+	var tab = MenuTab.instantiate()
 	tab.load_info(id, data)
 	$content/tabs.add_child(tab)
 
@@ -79,9 +79,9 @@ func load_scene(scene_path):
 	# last scene, we reset it to default
 	reset_headers()
 
-	var new_scene = Utils.load_relative(filename, scene_path).instance()
-	new_scene.connect('page_info_changed', self, '_on_page_info_changed')
-	new_scene.connect('title_changed', self, '_on_title_changed')
+	var new_scene = Utils.load_relative(filename, scene_path).instantiate()
+	new_scene.connect('page_info_changed', Callable(self, '_on_page_info_changed'))
+	new_scene.connect('title_changed', Callable(self, '_on_title_changed'))
 
 	# update current scene (and destroy old scene)
 	if (current_scene):

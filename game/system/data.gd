@@ -52,7 +52,7 @@ func init():
 
 # --------------------------------------------------------------------------- #
 
-func get(a):
+func fetch(a):
 	var args = Utils.pack(a)
 	Log.debug(self, ["get ", args])
 
@@ -66,7 +66,7 @@ func get(a):
 	for arg in args:
 		if !result.has(arg):
 			Log.warn(self, ["could not find data for ", arg,
-					": ", PoolStringArray(args).join(".")])
+					": ", ".".join(PackedStringArray(args))])
 			return null
 		else: result = result[arg]
 
@@ -74,8 +74,8 @@ func get(a):
 
 # --------------------------------------------------------------------------- #
 
-func get_resource(a):
-	var path = get(a)
+func fetch_res(a):
+	var path = fetch(a)
 	return ResourceLoader.load(path) if (path) else null
 
 # --------------------------------------------------------------------------- #
@@ -93,8 +93,8 @@ func get_resource(a):
 # fetches modconfig from the place where we keep it. if there is no modconfig,
 # we make one (duh).
 func load_modconfig():
-	var modconfig = Utils.read_file(MOD_DIR.plus_file(".modconfig"))
-	if !modconfig: modconfig = {
+	var modconfig = Utils.read_file(MOD_DIR.path_join(".modconfig"))
+	if modconfig == null: modconfig = {
 		"load_order": [],
 		"mods": {}
 	}
@@ -103,7 +103,7 @@ func load_modconfig():
 # --------------------------------------------------------------------------- #
 
 func save_modconfig(modconfig):
-	Utils.write_file(MOD_DIR.plus_file(".modconfig"), modconfig)
+	Utils.write_file(MOD_DIR.path_join(".modconfig"), modconfig)
 
 # --------------------------------------------------------------------------- #
 
@@ -114,16 +114,15 @@ func save_modconfig(modconfig):
 # flag when it is done. this is why we call clean_modconfig from here, rather
 # than from _ready.
 func update_modconfig(modconfig):
-	var dir = Directory.new()
-	dir.open(MOD_DIR)
-	dir.list_dir_begin(true)
+	var dir = DirAccess.open(MOD_DIR)
+	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var current = dir.get_next()
 	while (current != ""):
-		var path = MOD_DIR.plus_file(current)
+		var path = MOD_DIR.path_join(current)
 		if !dir.current_is_dir():
 			current = dir.get_next()
 			continue
-		var modinfo = Utils.read_file(path.plus_file("meta.data"))
+		var modinfo = Utils.read_file(path.path_join("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
 				check_modinfo(modconfig, modinfo, path)
@@ -231,15 +230,15 @@ func load_mod_data(modconfig):
 func load_data(dirname, sourceinfo):
 	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
 	var loaded = {}
-	var dir = Directory.new()
-	if dir.open(dirname) != OK:
+	var dir = DirAccess.open(dirname) 
+	if !dir:
 		Log.error(self, ["could not open `", dirname, "`!"])
 		return
 	# start iterating through directories
-	dir.list_dir_begin(true)
+	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var current = dir.get_next()
 	while (current != ""):
-		var current_path = dirname.plus_file(current)
+		var current_path = dirname.path_join(current)
 		if dir.current_is_dir():
 			var child = load_data(current_path, sourceinfo)
 			if child: loaded = merge(loaded, child)
@@ -262,7 +261,7 @@ func load_data(dirname, sourceinfo):
 func load_datafile(path, sourceinfo):
 	Log.debug(self, ["loading data from file: `", path, "`"])
 	var filedata = Utils.read_file(path)
-	if !filedata:
+	if filedata == null:
 		Log.error(self, ["error loading data from `", path, "`!"])
 		return
 	if !filedata.has("id"):
@@ -277,7 +276,7 @@ func load_datafile(path, sourceinfo):
 func load_schemafile(path, sourceinfo):
 	Log.debug(self, ["loading schema from file: `", path, "`"])
 	var schema = Utils.read_file(path)
-	if !schema:
+	if schema == null:
 		Log.error(self, ["error loading schema from `", path, "`!"])
 		return
 	var filename = path.get_basename().get_file()
@@ -309,8 +308,8 @@ func process_data(d, basedir):
 		if typeof(d[i]) == TYPE_ARRAY or typeof(d[i]) == TYPE_DICTIONARY:
 			d[i] = process_data(d[i], basedir)
 		elif d[i] and typeof(d[i]) == TYPE_STRING and d[i][0] == '~':
-			d[i] = basedir.plus_file(Utils.strip_sigil(d[i]))
-		elif d[i] and typeof(d[i]) == TYPE_REAL and int(d[i]) == d[i]:
+			d[i] = basedir.path_join(Utils.strip_sigil(d[i]))
+		elif d[i] and typeof(d[i]) == TYPE_FLOAT and int(d[i]) == d[i]:
 			d[i] = int(d[i])
 	return d
 
@@ -348,7 +347,7 @@ func process_schema(s, filename):
 #   is appended to them. there is no type checking here, obviously, so if we
 #   were expecting an array of dicts and the mod doesn't conform, we're SOL.
 func merge(base, mod):
-	if !mod: return base
+	if mod == null: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
 
 	for key in mod:
@@ -385,32 +384,30 @@ func validate ():
 
 func get_modified_time(dirname):
 	var modtime = 0
-	var file = File.new()
-	var dir = Directory.new()
-	assert(dir.open(dirname) == OK)
-	dir.list_dir_begin(true)
+	var dir = DirAccess.open(dirname)
+	assert(!!dir)
+	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var current = dir.get_next()
 	while (current != ""):
 		if dir.current_is_dir():
 			modtime = max(modtime,
-				get_modified_time(dirname.plus_file(current)))
+				get_modified_time(dirname.path_join(current)))
 		else:
 			modtime = max(modtime,
-				file.get_modified_time(dirname.plus_file(current)))
+				FileAccess.get_modified_time(dirname.path_join(current)))
 		current = dir.get_next()
 	return modtime
 
 # --------------------------------------------------------------------------- #
 
 func is_current(time, dirname):
-	var file = File.new()
-	var dir = Directory.new()
-	assert(dir.open(dirname) == OK)
-	dir.list_dir_begin(true)
+	var dir = DirAccess.open(dirname)
+	assert(!!dir)
+	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var current = dir.get_next()
 	while (current != ""):
-		if (dir.current_is_dir() && !is_current(time, dirname.plus_file(current))
-				or file.get_modified_time(dirname.plus_file(current)) > time):
+		if (dir.current_is_dir() && !is_current(time, dirname.path_join(current))
+				or FileAccess.get_modified_time(dirname.path_join(current)) > time):
 			return false
 		current = dir.get_next()
 	return true
@@ -422,9 +419,8 @@ func list_dir(dirname):
 	Log.info(self, "==========================")
 	Log.info(self, ["listing dir: ", dirname])
 	Log.info(self, "--------------------------")
-	var dir = Directory.new()
-	dir.open(dirname)
-	dir.list_dir_begin(true)
+	var dir = DirAccess.open(dirname)
+	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var current = dir.get_next()
 	while (current != ""):
 		Log.info(self, current)

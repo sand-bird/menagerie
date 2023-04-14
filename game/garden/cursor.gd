@@ -9,7 +9,7 @@ extends Control
 #   entity is "selected"?)
 # - (maybe) when the entity is too close to the edge of the garden for the
 #   camera to center on it, we should update the actual mouse position
-onready var hand = $graphic/hand_anchor
+@onready var hand = $graphic/hand_anchor
 
 const HAND_X = 4
 const DEFAULT_HAND_HEIGHT = 16
@@ -34,10 +34,10 @@ var lerp_val = 0.3
 
 func _ready():
 	$anim.play("cursor_bob")
-	connect("item_rect_changed", self, "reset_anim")
-	$stick_area.connect("body_entered", self, "stick")
-	$unstick_area.connect("body_entered", self, "stick")
-	$unstick_area.connect("body_exited", self, "unstick")
+	connect("item_rect_changed", Callable(self, "reset_anim"))
+	$stick_area.connect("body_entered", Callable(self, "stick"))
+	$unstick_area.connect("body_entered", Callable(self, "stick"))
+	$unstick_area.connect("body_exited", Callable(self, "unstick"))
 	set_process(true)
 
 # --------------------------------------------------------------------------- #
@@ -69,7 +69,7 @@ func stick(body):
 		if shape_node is CircleShape2D:
 			sprite_size = shape_node.shape.radius * 2
 		elif shape_node is RectangleShape2D:
-			sprite_size = shape_node.extents.y * 2
+			sprite_size = shape_node.size.y * 2
 		hand_height = sprite_size + VERTICAL_HAND_OFFSET
 		Dispatcher.emit_signal("entity_highlighted", body)
 
@@ -87,7 +87,7 @@ var last_mouse_speed = Vector2()
 var time_since_mouse_moved = 0.0
 
 func measure_mouse_movement(delta):
-	var current_mouse_speed = Input.get_last_mouse_speed()
+	var current_mouse_speed = Input.get_last_mouse_velocity()
 	if current_mouse_speed != last_mouse_speed:
 		last_mouse_speed = current_mouse_speed
 		time_since_mouse_moved = 0.0
@@ -126,14 +126,14 @@ func _process(delta):
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
 
 	var new_graphic_pos = Utils.vlerp(
-			$graphic.rect_position, graphic_dest, lerp_val).round()
+			$graphic.position, graphic_dest, lerp_val).round()
 
-	if (new_graphic_pos == $graphic.rect_position.round()
+	if (new_graphic_pos == $graphic.position.round()
 			and new_graphic_pos != graphic_dest):
-		$graphic.rect_position = graphic_dest
+		$graphic.position = graphic_dest
 	else:
-		$graphic.rect_position = new_graphic_pos
+		$graphic.position = new_graphic_pos
 
-	var new_hand_y = lerp(hand.rect_position.y,
+	var new_hand_y = lerp(hand.position.y,
 			-hand_height, lerp_val)
-	hand.rect_position = Vector2(HAND_X, new_hand_y).round()
+	hand.position = Vector2(HAND_X, new_hand_y).round()

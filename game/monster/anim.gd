@@ -2,11 +2,11 @@ extends AnimationPlayer
 
 var current = null
 var queue = []
-var facing = Vector2(0, 1) setget _update_facing
+var facing = Vector2(0, 1): set = _update_facing
 var loop_counter = 0
 
 func _ready():
-	connect("animation_finished", self, "_play_next")
+	connect("animation_finished", Callable(self, "_play_next"))
 
 # =========================================================================== #
 #                               P L A Y B A C K                               #
@@ -34,7 +34,7 @@ func queue_anim(anim_id, loops = 0):
 func _play_next(old_anim = null):
 	if loop_counter - 1 > 0:
 		loop_counter = loop_counter - 1
-	elif !queue.empty():
+	elif !queue.is_empty():
 		var new_anim = queue.pop_front()
 		current = new_anim.id
 		loop_counter = new_anim.loops
@@ -89,7 +89,7 @@ func _add_facing(anim_info, anim_name, flip = false):
 	anim.step = 1.0 / anim_info.fps
 	anim.length = anim.step * anim_info.frames
 #	anim.loop = anim_info.loop if anim_info.has("loop") else true
-	anim.loop = false
+	anim.loop_mode = Animation.LOOP_NONE
 
 	# add a track to set our texture to the spritesheet specified in the datafile
 	anim.add_track(0)
@@ -122,4 +122,4 @@ func _add_facing(anim_info, anim_name, flip = false):
 		var time = anim.step * frame
 		anim.track_insert_key(2, time, frame)
 
-	add_animation(anim_name, anim)
+	add_animation_library(anim_name, anim)

@@ -28,4 +28,4 @@ func detach():
 
 func _physics_process(delta):
 	if entity:
-		rect_position = Player.garden.get_screen_relative_position(entity.get_position())
+		position = Player.garden.get_screen_relative_position(entity.get_position())

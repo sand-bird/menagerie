@@ -14,12 +14,12 @@ const DAYS_IN_MONTH := 21
 const MONTHS_IN_YEAR := 8
 
 var actual_seconds := 0.0
-var tick := 0 setget _set_tick
-var hour := 0 setget _set_hour
-var date := 0 setget _set_date
+var tick := 0: set = _set_tick
+var hour := 0: set = _set_hour
+var date := 0: set = _set_date
 var day := 0
-var month := 0 setget _set_month
-var year := 0 setget _set_year
+var month := 0: set = _set_month
+var year := 0: set = _set_year
 
 # for dispatching time events after all our updates are done
 var units_to_dispatch := []

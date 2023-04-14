@@ -23,7 +23,7 @@ margin/top = 3.0
 margin/right = 406.0
 margin/bottom = 259.0
 
-[node name="Viewport" type="Viewport" parent="."]
+[node name="SubViewport" type="SubViewport" parent="."]
 
 rect = Rect2( 0, 0, 0, 0 )
 own_world = false
@@ -40,7 +40,7 @@ audio_listener/enable_3d = false
 physics/object_picking = false
 gui/disable_input = false
 
-[node name="ViewportSprite" type="ViewportSprite" parent="Viewport"]
+[node name="ViewportSprite" type="ViewportSprite" parent="SubViewport"]
 
 viewport = NodePath("..")
 

@@ -19,7 +19,8 @@ var speed: float
 var path: Array
 
 
-func _init(m, d: Vector2, s: float, t = null).(m, t):
+func _init(m, d: Vector2, s: float, t = null):
+	super(m, t)
 	name = 'move'
 	dest = d
 	speed = s
@@ -57,7 +58,9 @@ func _proc(delta):
 	var steering = seek(path.front())
 	var acceleration = steering / m.mass
 	m.current_velocity = (m.current_velocity + acceleration)
-	var _collision = m.move_and_slide(m.current_velocity / delta)
+	m.set_velocity(m.current_velocity / delta)
+	m.move_and_slide()
+	var _collision = m.velocity
 
 # --------------------------------------------------------------------------- #
 

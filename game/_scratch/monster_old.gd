@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 # =========================================================== #
 #                     P R O P E R T I E S                     #
@@ -99,7 +99,7 @@ var traits = [
 
 func _ready(): 
 	add_to_group("monsters", true)
-	connect("item_rect_changed", self, "update_z")
+	connect("item_rect_changed", Callable(self, "update_z"))
 	set_fixed_process(true)
 	update_z()
 	choose_action()

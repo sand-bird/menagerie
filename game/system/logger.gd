@@ -16,16 +16,16 @@ class Logfile:
 	var file = null
 	var path = ""
 	var queue_mode = QUEUE_NONE
-	var buffer = PoolStringArray()
+	var buffer = PackedStringArray()
 	var buffer_idx = 0
 
 	func _init(_path, _queue_mode = QUEUE_NONE):
-		file = File.new()
 		if validate_path(_path):
 			path = _path
+		file = FileAccess.open(path, FileAccess.WRITE)
 		queue_mode = _queue_mode
 		buffer.resize(FILE_BUFFER_SIZE)
-		var err = file.open(path, File.WRITE)
+		var err = file.get_error()
 		if err:
 			print("[ERROR] [logger] Could not open the '%s' log file; exited with error %d." \
 					% [path, err])
@@ -44,18 +44,18 @@ class Logfile:
 
 	func get_write_mode():
 		if not file.file_exists(path):
-			return File.WRITE # create
+			return FileAccess.WRITE # create
 		else:
-			return File.READ_WRITE # append
+			return FileAccess.READ_WRITE # append
 
 	func validate_path(p):
 		"""Validate the path given as argument, making it possible to write to
 		the designated file or folder. Returns whether the path is valid."""
-		if !(p.is_abs_path() or p.is_rel_path()):
+		if !(p.is_absolute_path() or p.is_rel_path()):
 			print("[ERROR] [logger] The given path '%s' is not valid." % p)
 			return false
-		var dir = Directory.new()
 		var base_dir = p.get_base_dir()
+		var dir = DirAccess.open(base_dir)
 		if not dir.dir_exists(base_dir):
 			# TODO: Move directory creation to the function that will actually *write*
 			var err = dir.make_dir_recursive(base_dir)
@@ -96,8 +96,8 @@ class Logfile:
 		if queue_action == QUEUE_NONE:
 			var err = file.open(path, get_write_mode())
 			if err:
-				print("[ERROR] [logger] Could not open the '%s' log file; exited with error %d." \
-						% [path, err])
+#				print("[ERROR] [logger] Could not open the '%s' log file; exited with error %d." \
+#						% [path, err])
 				return
 			file.seek_end()
 			file.store_line(output)
@@ -245,7 +245,7 @@ func error(node, message):
 # -----------------
 
 static func get_date():
-	var date = OS.get_datetime()
+	var date = Time.get_datetime_dict_from_system()
 	var output = str(date.year)
 	output += "-" + str(date.month).pad_zeros(2)
 	output += "-" + str(date.day).pad_zeros(2)
@@ -264,7 +264,7 @@ func format_message(message):
 
 func format_arg(arg):
 	if typeof(arg) == TYPE_STRING: return arg
-	elif typeof(arg) == TYPE_DICTIONARY: return to_json(arg)
+	elif typeof(arg) == TYPE_DICTIONARY: return JSON.stringify(arg)
 	else: return str(arg)
 
 static func format(template, level, nodename, message):
@@ -390,8 +390,7 @@ func load_config(configfile = configfile_path):
 	produced by the ConfigFile API.
 	Returns an error code (OK or some ERR_*)."""
 	# Look for the file
-	var dir = Directory.new()
-	if not dir.file_exists(configfile):
+	if not FileAccess.file_exists(configfile):
 		warn("Could not load the config in '%s', the file does not exist." % configfile, PLUGIN_NAME)
 		return ERR_FILE_NOT_FOUND
 

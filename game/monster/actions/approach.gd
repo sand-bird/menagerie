@@ -5,5 +5,6 @@ extends Action
 # fail if duration runs out
 # longish default duration - used as a timeout in case pet gets stuck
 
-func _init(m, target, speed = null, t = null).(m, t):
+func _init(m, target, speed = null, t = null):
+	super(m, t)
 	pass

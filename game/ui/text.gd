@@ -68,7 +68,7 @@ NOTES
   but if we don't reset it then the appended text may appear instantly.
 """
 
-onready var font = theme.default_font
+@onready var font = theme.default_font
 
 enum BufType {
 	CHAR,
@@ -76,11 +76,11 @@ enum BufType {
 	NEWLINE
 }
 
-export var line_spacing: int = 2
-export var text: String = '{_1.0}We can do syntax-based pauses... (or not\\.\\.\\.){n}Insert newlines and {_0.5}manual pauses{_1.0}, {>0.2}change the{/} {>1.5}speeeeeeed{/}, and use {#FF00FF}colors{/} and {~}effects!{/}'
+@export var line_spacing: int = 2
+@export var text: String = '{_1.0}We can do syntax-based pauses... (or not\\.\\.\\.){n}Insert newlines and {_0.5}manual pauses{_1.0}, {>0.2}change the{/} {>1.5}speeeeeeed{/}, and use {#FF00FF}colors{/} and {~}effects!{/}'
 
-onready var font_height = font.get_height()
-onready var line_height = font_height + line_spacing
+@onready var font_height = font.get_height()
+@onready var line_height = font_height + line_spacing
 
 var _buf = []
 
@@ -105,12 +105,12 @@ const PAUSES = {
 }
 
 #warning-ignore:unused_class_variable
-onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
-onready var MAX_WIDTH = rect_size.x
-onready var MAX_LINES = get_max_lines(rect_size.y)
-onready var CHAR_DELAY = 1 / Options.text_speed
+@onready var DEFAULT_COLOR = theme.get_color('font_color', 'Label')
+@onready var MAX_WIDTH = size.x
+@onready var MAX_LINES = get_max_lines(size.y)
+@onready var CHAR_DELAY = 1 / Options.text_speed
 
-onready var MOD_DEFAULTS = {
+@onready var MOD_DEFAULTS = {
 	'anim': false,
 	'color': DEFAULT_COLOR,
 	'speed': 1,
@@ -118,7 +118,7 @@ onready var MOD_DEFAULTS = {
 }
 
 # modifiers to apply to the next character we push to the buffer
-onready var _modifiers = MOD_DEFAULTS.duplicate(true)
+@onready var _modifiers = MOD_DEFAULTS.duplicate(true)
 # used for automatically closing modifiers. if we get a close tag without a
 # token, pop off the last (most recent) one from here.
 var _mod_tokens = []
@@ -239,7 +239,7 @@ func parse_tag(i: int, raw: String) -> int:
 		set_modifier(tag[0], arg)
 	elif tag[0] == '/':
 		if arg: reset_modifier(arg)
-		elif !_mod_tokens.empty():
+		elif !_mod_tokens.is_empty():
 			reset_modifier(_mod_tokens.pop_back())
 	elif tag[0] == 'n':
 		insert_newline()
@@ -273,8 +273,8 @@ func reset_modifier(token):
 # =========================================================================== #
 #                              R E N D E R I N G                              #
 # --------------------------------------------------------------------------- #
-onready var rid = get_canvas_item()
-onready var START_POS = Vector2(0, font.get_ascent())
+@onready var rid = get_canvas_item()
+@onready var START_POS = Vector2(0, font.get_ascent())
 
 var time = 0.0
 

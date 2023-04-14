@@ -9,14 +9,14 @@ var nav # current navigation
 # get back tile centerpoints instead of corners
 #warning-ignore-all:unused_argument
 func map_to_world(tile, ignore_half_ofs = false):
-	return .map_to_world(tile) + cell_size / 2
+	return super.map_to_local(tile) + cell_size / 2
 
 #func world_to_map(pos):
 #	return .world_to_map(pos - cell_size / 2)
 
 func test(start, goal):
-	var start_tile = world_to_map(start)
-	var goal_tile = world_to_map(goal)
+	var start_tile = local_to_map(start)
+	var goal_tile = local_to_map(goal)
 	if !is_walkable_at(goal_tile) or !is_walkable_at(start_tile):
 		return
 	if nav:

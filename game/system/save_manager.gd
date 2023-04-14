@@ -15,26 +15,23 @@ var current_save_dir
 # --------------------------------------------------------------------------- #
 # scans the SAVE_ROOT dir for valid save directories.
 func get_save_list():
-	var dir = Directory.new()
+	var dir = DirAccess.open(SAVE_ROOT)
 	var saves = []
-	if dir.open(SAVE_ROOT) != OK:
-		return
-	dir.list_dir_begin(true)
+	if !dir: return
+	dir.list_dir_begin()
 	var current = dir.get_next()
 	while (current != ""):
 		if is_save(current):
 			Log.debug(self, ["Found save: ", current])
 			saves.append(current)
 		current = dir.get_next()
-	saves.sort_custom(self, "sort_by_date")
+	saves.sort_custom(Callable(self, "sort_by_date"))
 	return saves
 
 # --------------------------------------------------------------------------- #
 
 func sort_by_date(a, b):
-	var file = File.new()
-	return (file.get_modified_time(get_filepath(a, PLAYER))
-			> file.get_modified_time(get_filepath(b, PLAYER)))
+	return get_save_time(a) > get_save_time(b)
 
 # --------------------------------------------------------------------------- #
 
@@ -56,7 +53,7 @@ func get_save_info(save_dir):
 # --------------------------------------------------------------------------- #
 
 func get_save_time(save_dir):
-	return File.new().get_modified_time(get_filepath(save_dir, PLAYER))
+	return FileAccess.get_modified_time(get_filepath(save_dir, PLAYER))
 
 # --------------------------------------------------------------------------- #
 
@@ -64,7 +61,7 @@ func get_save_info_list():
 	var saves = []
 	for save in get_save_list():
 		saves.append(get_save_info(save))
-	saves.sort_custom(self, "sort_saves")
+	saves.sort_custom(Callable(self, "sort_saves"))
 	Log.debug(self, saves)
 	return saves
 
@@ -75,17 +72,16 @@ func get_save_info_list():
 
 func new_save(pname):
 	# load fresh save data
-	var new_save = Utils.read_file(NEW_SAVE)
-	new_save.player.player_name = pname
+	var save = Utils.read_file(NEW_SAVE)
+	save.player.player_name = pname
 
 	# create new save
-	var dir = Directory.new()
-	if !dir.dir_exists(SAVE_ROOT):
-		dir.make_dir(SAVE_ROOT)
+	if !DirAccess.dir_exists_absolute(SAVE_ROOT):
+		DirAccess.make_dir_absolute(SAVE_ROOT)
 
 	current_save_dir = create_dirname(pname)
-	dir.make_dir(SAVE_ROOT.plus_file(current_save_dir))
-	save_game(new_save)
+	DirAccess.make_dir_absolute(SAVE_ROOT.path_join(current_save_dir))
+	save_game(save)
 
 	return current_save_dir
 
@@ -109,16 +105,15 @@ func load_game(save_dir):
 #                      U T I L I T Y   F U N C T I O N S                      #
 # --------------------------------------------------------------------------- #
 func is_save(dir_name):
-	var dir = Directory.new()
-	var save_path = SAVE_ROOT.plus_file(dir_name)
-	return (dir.dir_exists(save_path) and
-			dir.file_exists(save_path.plus_file(PLAYER)) and
-			dir.file_exists(save_path.plus_file(GARDEN)))
+	var save_path = SAVE_ROOT.path_join(dir_name)
+	return (DirAccess.dir_exists_absolute(save_path) and
+			FileAccess.file_exists(save_path.path_join(PLAYER)) and
+			FileAccess.file_exists(save_path.path_join(GARDEN)))
 
 # --------------------------------------------------------------------------- #
 
 func get_filepath(save_dir, file_name):
-	return SAVE_ROOT.plus_file(save_dir).plus_file(file_name)
+	return SAVE_ROOT.path_join(save_dir).path_join(file_name)
 
 # --------------------------------------------------------------------------- #
 
@@ -137,11 +132,11 @@ func sort_save_info(a, b):
 # ascii counterpart eg. 'e' when possible, rather than just stripping them out)
 #
 # only used once, when creating a new save directory.
-func create_dirname(name):
+func create_dirname(dirname):
 	var newstr = ""
-	for i in name:
+	for i in dirname:
 		if (i >= 'a' and i <= 'z') or (i >= 'A' and i <= 'Z'):
 			newstr += i
 		if i == ' ':
 			newstr += '_'
-	return newstr.to_lower() + "_" + str(OS.get_unix_time())
+	return newstr.to_lower() + "_" + str(Time.get_unix_time_from_system())

@@ -9,7 +9,7 @@ script/source = "extends \"res://ui/main_menu/inventory/inventory.gd\"
 func _ready():
 	title = \"Objects\"
 	# init_items()
-	.initialize({\"type\": \"object\"})
+	super.initialize({\"type\": \"object\"})
 "
 
 [node name="inventory" instance=ExtResource( 1 )]

@@ -1,8 +1,8 @@
 [gd_resource type="TileSet" load_steps=6 format=2]
 
 [ext_resource path="res://_scratch/navpoly.tres" type="NavigationPolygon" id=1]
-[ext_resource path="res://assets/other/tiles/grass_tileset_16x16.png" type="Texture" id=2]
-[ext_resource path="res://assets/garden/tree.png" type="Texture" id=3]
+[ext_resource path="res://assets/other/tiles/grass_tileset_16x16.png" type="Texture2D" id=2]
+[ext_resource path="res://assets/garden/tree.png" type="Texture2D" id=3]
 
 
 [sub_resource type="RectangleShape2D" id=1]
@@ -13,7 +13,7 @@ extents = Vector2( 8, 8 )
 [sub_resource type="ConvexPolygonShape2D" id=2]
 
 custom_solver_bias = 0.0
-points = PoolVector2Array( 16, 16, 16, 0, 0, 0, 0, 16 )
+points = PackedVector2Array( 16, 16, 16, 0, 0, 0, 0, 16 )
 
 [resource]
 

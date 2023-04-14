@@ -95,10 +95,10 @@ func report(result: int, message_key: String, message_args: Array,
 # --------------------------------------------------------------------------- #
 
 func sources_to_string(sources: Array) -> String:
-	var source_strings: PoolStringArray = []
+	var source_strings: PackedStringArray = []
 	for i in sources.size():
 		source_strings.append(str(sources[i].id, " (v", sources[i].version, ")"))
-	return str("sources: ", source_strings.join(", "))
+	return str("sources: ", ", ".join(source_strings))
 
 # --------------------------------------------------------------------------- #
 
@@ -107,7 +107,7 @@ func get_type(data):
 		TYPE_DICTIONARY: 'dictionary',
 		TYPE_ARRAY: 'array',
 		TYPE_INT: 'integer',
-		TYPE_REAL: 'number',
+		TYPE_FLOAT: 'number',
 		TYPE_NIL: 'null',
 		TYPE_STRING: 'string',
 		TYPE_BOOL: 'boolean'
@@ -179,7 +179,7 @@ func validate(data: Dictionary) -> int:
 		var instance = data[k]
 		var type = instance.type
 		var schema = schema_root[type]
-		if !schema:
+		if schema == null:
 			Log.error(log_name, ['(validate) no schema found for type ', type])
 		else:
 			Log.debug(log_name, ['(validate) key: ', k, ' | type: ', type, ' | schema: ', schema.title])
@@ -209,7 +209,7 @@ func validate_instance(data, schema: Dictionary, breadcrumb: String = "",
 		for arg in ref_path:
 			if !ref.has(arg):
 				Log.warn(log_name, ["could not resolve ref ", arg,
-					" in ", PoolStringArray(ref_path).join('/'),
+					" in ", '/'.join(PackedStringArray(ref_path)),
 					" | breadcrumb: ", breadcrumb])
 				return 0
 			else: ref = ref.get(arg)
@@ -262,16 +262,16 @@ func validate_instance(data, schema: Dictionary, breadcrumb: String = "",
 				'type_mismatch_plural', [schema.type, data_type],
 				breadcrumb, sources
 			)
-	if 'enum' in schema and schema.enum is Array and !schema.enum.empty():
+	if 'enum' in schema and schema['enum'] is Array and !schema['enum'].is_empty():
 		result &= report(
-			matches_any(data, schema.enum, 'deep_equals'),
-			'enum_mismatch', [schema.enum, data],
+			matches_any(data, schema['enum'], 'deep_equals'),
+			'enum_mismatch', [schema['enum'], data],
 			breadcrumb, sources
 		)
 	if 'const' in schema:
 		result &= report(
-			deep_equals(data, schema.const),
-			'const_mismatch', [schema.const, data],
+			deep_equals(data, schema['const']),
+			'const_mismatch', [schema['const'], data],
 			breadcrumb, sources
 		)
 
@@ -385,12 +385,12 @@ func validate_array(data: Array, schema: Dictionary,
 		var dupes = []
 		var i = 0
 		while i < sorted.size():
-			if deep_equal(sorted[i], sorted[i + 1]):
+			if deep_equals(sorted[i], sorted[i + 1]):
 				dupes.push(sorted[i])
 				i += 1 # skip the next iteration
 			i += 1
 		result &= report(
-			dupes.empty(), 'not_unique', [dupes],
+			dupes.is_empty(), 'not_unique', [dupes],
 			breadcrumb, sources
 		)
 	# apply subschemas to array items
@@ -439,7 +439,7 @@ func validate_dictionary(data, schema, breadcrumb, sources) -> int:
 		for key in schema.required:
 			if not data.has(key): missing.append(key)
 		result &= report(
-			missing.empty(),
+			missing.is_empty(),
 			'missing_required', [missing],
 			breadcrumb, sources
 		)
@@ -451,7 +451,7 @@ func validate_dictionary(data, schema, breadcrumb, sources) -> int:
 				for key in reqs[req]:
 					if not data.has(key): missing.append(key)
 			result &= report(
-				missing.empty(),
+				missing.is_empty(),
 				'missing_required', [missing],
 				breadcrumb, sources
 			)

@@ -16,7 +16,7 @@ func open_menu(menu):
 
 func close_menu(menu):
 	var menu_node = get_node(menu)
-	menu_node.connect("closed", self, "_on_child_closed", [menu])
+	menu_node.connect("closed", Callable(self, "_on_child_closed").bind(menu))
 	menu_node.close()
 
 func _on_child_closed(menu):
@@ -25,5 +25,5 @@ func _on_child_closed(menu):
 	emit_signal("closed", menu)
 
 func load_menu(menu):
-	var new_node = load("res://ui/" + menu + ".tscn").instance()
+	var new_node = load("res://ui/" + menu + ".tscn").instantiate()
 	add_child(new_node)

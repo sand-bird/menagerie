@@ -6,30 +6,30 @@
 [ext_resource path="res://ui/text.gd" type="Script" id=4]
 
 [node name="container" type="Control"]
-margin_right = 296.0
-margin_bottom = 142.0
+offset_right = 296.0
+offset_bottom = 142.0
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 
 [node name="left" type="Panel" parent="."]
-margin_top = 3.0
-margin_right = 140.0
-margin_bottom = 140.0
+offset_top = 3.0
+offset_right = 140.0
+offset_bottom = 140.0
 
 [node name="right" type="Panel" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -142.0
-margin_top = -18.0
-margin_bottom = 140.0
+offset_left = -142.0
+offset_top = -18.0
+offset_bottom = 140.0
 
 [node name="Control" type="Control" parent="right"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 6.0
-margin_top = 4.0
-margin_right = -6.0
-margin_bottom = -4.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = -4.0
 theme = ExtResource( 3 )
 script = ExtResource( 4 )
 text = "A pair of em dashes can replace a pair of parentheses. Dashes are considered less formal than parentheses; they are also more intrusive. If you want to draw attention to the parenthetical content, use dashes. If you want to include the parenthetical content more subtly, use parentheses."

@@ -9,13 +9,13 @@ and a timeout value (to avoid infinite loops). action subclasses often take in
 addition parameters like a target.
 """
 
-signal exit(status)
+signal exited(status)
 
 enum Status {
-	NEW = 0
-	RUNNING = 1
-	SUCCESS = 2
-	FAILED = 3
+	NEW = 0,
+	RUNNING = 1,
+	SUCCESS = 2,
+	FAILED = 3,
 	PAUSED = 4
 }
 
@@ -34,7 +34,7 @@ var sleep_timer: int = 0
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	Dispatcher.connect('tick_changed', self, 'tick')
+	Dispatcher.tick_changed.connect(tick)
 
 func _init(monster, timeout = null):
 	m = monster
@@ -105,7 +105,7 @@ func tick():
 func exit(exit_status):
 	status = exit_status
 	Log.verbose(self, ['(exit) status: ', status])
-	emit_signal('exit', status)
+	emit_signal('exited', status)
 	return status
 
 # --------------------------------------------------------------------------- #

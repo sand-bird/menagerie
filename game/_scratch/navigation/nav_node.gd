@@ -3,7 +3,7 @@ extends Node
 #warning-ignore-all:unused_class_variable
 
 var pos
-var neighbors = [] setget , _get_neighbors
+var neighbors = []: get = _get_neighbors
 var bad_neighbors = []
 var parent
 var g # distance from start to node

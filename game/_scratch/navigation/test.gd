@@ -85,7 +85,7 @@ func _process(delta):
 	if timer < STEP_TIME:
 		return
 	timer -= STEP_TIME
-	if open_list and !open_list.empty():
+	if open_list and !open_list.is_empty():
 		process_node()
 	update()
 
@@ -101,7 +101,7 @@ func _process(delta):
 # 2. updating the drawstack or whatever after each call, which
 #    causes _draw to update using our many class variables
 func process_node():
-	if open_list.empty():
+	if open_list.is_empty():
 		set_process(false)
 		print("path not found!")
 
@@ -201,4 +201,4 @@ func do_draw(item, size, color):
 		elif 'position' in item:
 			pos = item.position
 	if !pos: return
-	draw_circle(map.map_to_world(pos), size, color)
+	draw_circle(map.map_to_local(pos), size, color)

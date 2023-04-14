@@ -13,26 +13,26 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="item_info" type="Panel" parent="."]
-margin_right = 151.0
-margin_bottom = 150.0
-rect_min_size = Vector2( 151, 150 )
-custom_styles/panel = ExtResource( 1 )
+offset_right = 151.0
+offset_bottom = 150.0
+custom_minimum_size = Vector2( 151, 150 )
+theme_override_styles/panel = ExtResource( 1 )
 
 [node name="background" parent="item_info" instance=ExtResource( 2 )]
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 
 [node name="item_info" parent="item_info" instance=ExtResource( 3 )]
-margin_left = 5.0
-margin_top = 5.0
-margin_right = 147.0
-margin_bottom = 147.0
-rect_min_size = Vector2( 142, 0 )
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 147.0
+offset_bottom = 147.0
+custom_minimum_size = Vector2( 142, 0 )
 
 [node name="store_item_list" parent="." instance=ExtResource( 4 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 153.0
-margin_right = 313.0
-margin_bottom = 160.0
-rect_min_size = Vector2( 160, 160 )
+offset_left = 153.0
+offset_right = 313.0
+offset_bottom = 160.0
+custom_minimum_size = Vector2( 160, 160 )
 

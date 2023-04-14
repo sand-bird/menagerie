@@ -2,7 +2,7 @@ extends "res://ui/main_menu/menu_chapter.gd"
 
 # var Wrap = Constants.Wrap
 
-onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
+@onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 
 # as in "inventory item", not as in Item (the specific type of game entity).
 # unfortunately ambiguous, but i couldn't come up with any decent alternatives :(
@@ -13,13 +13,13 @@ onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 # - it's being filtered out by our current filter settings
 # - the data for its entity id was not found; an uncommon but expected case,
 #   eg. if an entity belongs to a mod that's currently disabled.
-onready var items = []
+@onready var items = []
 
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 func _ready():
-	Dispatcher.connect("item_selected", self, "update_current_item")
+	Dispatcher.connect("item_selected", Callable(self, "update_current_item"))
 
 # --------------------------------------------------------------------------- #
 
@@ -31,7 +31,7 @@ func initialize(filter = {}):
 	$item_grid.initialize(props, {items = items})
 	if items: update_current_item(0)
 
-	.initialize()
+	super.initialize()
 
 # --------------------------------------------------------------------------- #
 
@@ -39,7 +39,7 @@ func filter_items(filter: Dictionary):
 	var results = []
 	for i in Player.inventory.size():
 		var id = Player.inventory[i].id
-		var data = Data.get(id)
+		var data = Data.fetch(id)
 		if !data: continue  # dw, Data.get already logged it
 		var matches = true
 		for key in filter.keys():

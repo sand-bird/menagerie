@@ -3,10 +3,10 @@ extends Node
 var garden
 
 func _ready():
-	Dispatcher.connect("new_game", self, "new_game")
-	Dispatcher.connect("load_game", self, "load_game")
-	Dispatcher.connect("save_game", self, "save_game")
-	Dispatcher.connect("quit_game", self, "quit_game")
+	Dispatcher.connect("new_game", Callable(self, "new_game"))
+	Dispatcher.connect("load_game", Callable(self, "load_game"))
+	Dispatcher.connect("save_game", Callable(self, "save_game"))
+	Dispatcher.connect("quit_game", Callable(self, "quit_game"))
 
 	Data.init()
 	Dispatcher.emit_signal("ui_open", "title_screen")
@@ -30,7 +30,7 @@ func load_game(save_dir):
 	var data = SaveManager.load_game(save_dir)
 	load_player(data.player)
 	load_garden(data.garden)
-	Dispatcher.connect("date_changed", self, "save_game")
+	Dispatcher.connect("date_changed", Callable(self, "save_game"))
 
 # --------------------------------------------------------------------------- #
 
@@ -45,7 +45,7 @@ func load_garden(data):
 	# process the garden data. garden is an instanced node, unlike player and
 	# time, and it must instantiate its own children depending on the contents
 	# of the save file.
-	garden = load("res://garden/garden.tscn").instance()
+	garden = load("res://garden/garden.tscn").instantiate()
 	add_child(garden)
 	garden.init(data)
 	Player.garden = garden

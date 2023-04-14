@@ -218,7 +218,7 @@ static func _filter(args, caller, parent):
 static func _empty(arg, caller, parent):
 	var data = eval_arg(arg, caller, parent)
 	if typeof(data) == TYPE_ARRAY or typeof(data) == TYPE_DICTIONARY:
-		return data.empty()
+		return data.is_empty()
 	else:
 		Log.warn(log_name, "(_empty) argument is not a collection!")
 		return true

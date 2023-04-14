@@ -5,5 +5,6 @@ extends Action
 # success when item is eaten
 # fail if item is lost or if previous steps fail
 
-func _init(m, item).(m):
+func _init(m, item):
+	super(m)
 	pass

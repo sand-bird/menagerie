@@ -9,8 +9,8 @@
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=7]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=8]
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=9]
-[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture" id=10]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=11]
+[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture2D" id=10]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture2D" id=11]
 [ext_resource path="res://ui/store_menu/funds_footer.tscn" type="PackedScene" id=12]
 
 [sub_resource type="StyleBoxFlat" id=2]
@@ -24,70 +24,70 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -77.0
-margin_top = -60.0
-margin_right = 74.0
-margin_bottom = 55.0
+offset_left = -77.0
+offset_top = -60.0
+offset_right = 74.0
+offset_bottom = 55.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme = ExtResource( 1 )
-custom_styles/panel = ExtResource( 2 )
+theme_override_styles/panel = ExtResource( 2 )
 
 [node name="background" parent="." instance=ExtResource( 3 )]
-margin_left = 4.35747
-margin_top = 4.26352
-margin_right = -3.64253
-margin_bottom = -3.73648
-custom_styles/panel = SubResource( 2 )
+offset_left = 4.35747
+offset_top = 4.26352
+offset_right = -3.64253
+offset_bottom = -3.73648
+theme_override_styles/panel = SubResource( 2 )
 
 [node name="buy" type="Button" parent="."]
 anchor_right = 1.0
-margin_left = 97.0
-margin_top = 59.0
-margin_right = -12.0
-margin_bottom = 78.0
+offset_left = 97.0
+offset_top = 59.0
+offset_right = -12.0
+offset_bottom = 78.0
 focus_mode = 0
-custom_styles/hover = ExtResource( 4 )
-custom_styles/pressed = ExtResource( 5 )
-custom_styles/normal = ExtResource( 6 )
+theme_override_styles/hover = ExtResource( 4 )
+theme_override_styles/pressed = ExtResource( 5 )
+theme_override_styles/normal = ExtResource( 6 )
 text = "BUY"
 
 [node name="arrows2" parent="." instance=ExtResource( 7 )]
-margin_left = 34.0
-margin_top = 63.0
-margin_right = 65.0
-margin_bottom = 76.0
+offset_left = 34.0
+offset_top = 63.0
+offset_right = 65.0
+offset_bottom = 76.0
 
 [node name="qty" type="PanelContainer" parent="."]
-margin_left = 34.0
-margin_top = 62.0
-margin_right = 63.0
-margin_bottom = 77.0
-rect_pivot_offset = Vector2( 212.702, -33.0049 )
-custom_styles/panel = ExtResource( 8 )
+offset_left = 34.0
+offset_top = 62.0
+offset_right = 63.0
+offset_bottom = 77.0
+pivot_offset = Vector2( 212.702, -33.0049 )
+theme_override_styles/panel = ExtResource( 8 )
 __meta__ = {
 "_edit_group_": true
 }
 
 [node name="Label" type="Label" parent="qty"]
-margin_left = 1.0
-margin_top = 2.0
-margin_right = 28.0
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+offset_left = 1.0
+offset_top = 2.0
+offset_right = 28.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
+theme_override_colors/font_shadow_color = Color( 0.898039, 0.827451, 0.678431, 1 )
 text = "999"
 align = 1
 
 [node name="name" type="Label" parent="."]
-margin_left = 39.0
-margin_top = 8.0
-margin_right = 144.0
-margin_bottom = 37.0
-custom_styles/normal = ExtResource( 9 )
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+offset_left = 39.0
+offset_top = 8.0
+offset_right = 144.0
+offset_bottom = 37.0
+theme_override_styles/normal = ExtResource( 9 )
+theme_override_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+theme_override_colors/font_shadow_color = Color( 0.898039, 0.827451, 0.678431, 1 )
 text = "Potion of Good Fortune"
 align = 1
 valign = 1
@@ -95,44 +95,44 @@ autowrap = true
 clip_text = true
 
 [node name="TextureRect" type="TextureRect" parent="."]
-margin_left = 5.0
-margin_top = 4.0
-margin_right = 45.0
-margin_bottom = 44.0
+offset_left = 5.0
+offset_top = 4.0
+offset_right = 45.0
+offset_bottom = 44.0
 texture = ExtResource( 10 )
 
 [node name="separator" type="Panel" parent="."]
-margin_left = 9.0
-margin_top = 84.0
-margin_right = 143.0
-margin_bottom = 85.0
-custom_styles/panel = SubResource( 3 )
+offset_left = 9.0
+offset_top = 84.0
+offset_right = 143.0
+offset_bottom = 85.0
+theme_override_styles/panel = SubResource( 3 )
 
 [node name="total3" type="Panel" parent="."]
-margin_left = 40.0
-margin_top = 39.0
-margin_right = 143.0
-margin_bottom = 53.0
-custom_styles/panel = ExtResource( 9 )
+offset_left = 40.0
+offset_top = 39.0
+offset_right = 143.0
+offset_bottom = 53.0
+theme_override_styles/panel = ExtResource( 9 )
 
 [node name="total" type="Label" parent="total3"]
-margin_left = -30.9265
-margin_top = 3.15778
-margin_right = -0.926449
-margin_bottom = 14.1578
-custom_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
-custom_colors/font_color_shadow = Color( 0.913725, 0.709804, 0.639216, 1 )
+offset_left = -30.9265
+offset_top = 3.15778
+offset_right = -0.926449
+offset_bottom = 14.1578
+theme_override_colors/font_color = Color( 0.556863, 0.321569, 0.321569, 1 )
+theme_override_colors/font_shadow_color = Color( 0.913725, 0.709804, 0.639216, 1 )
 text = "Total:"
 
 [node name="total_amt" type="Label" parent="total3"]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -99.0
-margin_top = 2.0
-margin_right = -17.0
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+offset_left = -99.0
+offset_top = 2.0
+offset_right = -17.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
+theme_override_colors/font_shadow_color = Color( 0.898039, 0.827451, 0.678431, 1 )
 text = "-91"
 align = 2
 
@@ -140,15 +140,15 @@ align = 2
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 1.0
-margin_top = 1.0
-margin_right = 9.0
-margin_bottom = -2.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 9.0
+offset_bottom = -2.0
 texture = ExtResource( 11 )
 
 [node name="funds3" parent="." instance=ExtResource( 12 )]
-margin_left = 5.0
-margin_top = -5.0
-margin_right = -5.0
-margin_bottom = -5.0
+offset_left = 5.0
+offset_top = -5.0
+offset_right = -5.0
+offset_bottom = -5.0
 

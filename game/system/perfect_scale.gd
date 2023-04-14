@@ -24,9 +24,9 @@ var timer: SceneTreeTimer = null
 var current_scale
 
 func _ready():
-	get_tree().connect("screen_resized", self, "debounce")
+	get_tree().connect("screen_resized", Callable(self, "debounce"))
 	var base_size = update_screen()
-	Log.info(self, ["ready! window size: ", OS.window_size,
+	Log.info(self, ["ready! window size: ", get_window().size,
 			", base size: ", base_size])
 
 # --------------------------------------------------------------------------- #
@@ -38,7 +38,7 @@ func _ready():
 func debounce():
 	if !timer:
 		timer = get_tree().create_timer(DEBOUNCE_TIME)
-		timer.connect("timeout", self, "update_screen")
+		timer.connect("timeout", Callable(self, "update_screen"))
 	else:
 		timer.time_left = DEBOUNCE_TIME
 
@@ -51,7 +51,7 @@ func update_screen():
 	timer = null
 
 	var viewport = get_tree().get_root()
-	var win_size = OS.window_size
+	var win_size = get_window().size
 
 	current_scale = get_scale(win_size)
  
@@ -60,13 +60,13 @@ func update_screen():
 
 	viewport.set_size(base_size)
 
-	if OS.is_window_maximized() or OS.is_window_fullscreen():
-		var gutter = ((OS.window_size - scaled_size) / 2).floor()
+	if (get_window().mode == Window.MODE_MAXIMIZED) or ((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN)):
+		var gutter = ((get_window().size - scaled_size) / 2).floor()
 		viewport.set_attach_to_screen_rect(Rect2(gutter, scaled_size))
 	else:
-		OS.window_size = scaled_size
+		get_window().size = scaled_size
 
-	Log.debug(self, ["window size: ", OS.window_size,
+	Log.debug(self, ["window size: ", get_window().size,
 			" | scaled size: ", scaled_size,
 			" | base size: ", base_size, " | viewport size: ",
 			viewport.size, " | scale: ", current_scale])
@@ -112,9 +112,9 @@ func get_new_size(win_size, scale):
 
 func get_primary(i, win_size, scale):
 	return max(win_size[i] / scale,
-			   MIN_SIZE[i])
+			MIN_SIZE[i])
 
 func get_secondary(i, win_size, scale, low_val, high_val):
 	return clamp(floor(win_size[i] / scale),
-				 max(low_val, MIN_SIZE[i]),
-				 min(high_val, MAX_SIZE[i]))
+				max(low_val, MIN_SIZE[i]),
+				min(high_val, MAX_SIZE[i]))

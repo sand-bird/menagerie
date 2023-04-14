@@ -95,7 +95,7 @@ static func choose_action(m):
 	return best_action
 
 # --------------------------------------------------------------------------- #
-
+"""
 func old_calc(m):
 	randomize()
 	var target_energy = m.get_target_energy()
@@ -114,6 +114,7 @@ func old_calc(m):
 		m.current_action = Action.Idle.new(m, Utils.randi_range(2, 8))
 	else:
 		m.current_action = Action.Walk.new(m, # so ugly :(
-			m.position + Vector2(rand_range(-80, 80), rand_range(-80, 80)))
+			m.position + Vector2(randf_range(-80, 80), randf_range(-80, 80)))
 
 	Log.debug(m, ["chose action: ", m.current_action.action_id])
+"""

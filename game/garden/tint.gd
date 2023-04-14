@@ -31,7 +31,7 @@ var colors = {
 func _ready():
 	load_colors()
 	$anim.play("tint")
-	Dispatcher.connect("hour_changed", self, "sync_anim")
+	Dispatcher.connect("hour_changed", Callable(self, "sync_anim"))
 
 # --------------------------------------------------------------------------- #
 
@@ -39,7 +39,7 @@ func load_colors():
 	tint_anim = $anim.get_animation("tint")
 	tint_anim.set_length(Clock.HOURS_IN_DAY)
 	var actual_seconds_in_hour: float = float(Clock.ACTUAL_SECONDS_IN_TICK) * float(Clock.TICKS_IN_HOUR)
-	$anim.playback_speed = 1.0 / actual_seconds_in_hour
+	$anim.speed_scale = 1.0 / actual_seconds_in_hour
 	for hour in colors:
 		tint_anim.track_insert_key(0, hour, colors[hour])
 

@@ -12,5 +12,6 @@ extends Action
 # the item (eg approaching, stealing, collecting from object, etc),
 # and put_item, which prepends moving to the target
 
-func _init(m, item, target).(m):
+func _init(m, item, target):
+	super(m)
 	pass

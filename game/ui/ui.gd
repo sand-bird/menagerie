@@ -32,11 +32,11 @@ var ui_node = self
 var stack = []
 
 func _ready():
-	pause_mode = Node.PAUSE_MODE_PROCESS
-	Dispatcher.connect('ui_open', self, 'open')
-	Dispatcher.connect('ui_close', self, 'close')
-	Dispatcher.connect('ui_toggle', self, 'toggle')
-	Dispatcher.connect('menu_open', self, 'open_menu')
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	Dispatcher.connect('ui_open', Callable(self, 'open'))
+	Dispatcher.connect('ui_close', Callable(self, 'close'))
+	Dispatcher.connect('ui_toggle', Callable(self, 'toggle'))
+	Dispatcher.connect('menu_open', Callable(self, 'open_menu'))
 
 
 # =========================================================================== #
@@ -76,7 +76,7 @@ func open(args):
 			restore_on_close = args[2]
 
 	var path = process_ref(item_ref)
-	if !path:
+	if path == null:
 		Log.error(self, ["(open) could not open '", item_ref,
 				"': file not found."])
 		return
@@ -101,11 +101,11 @@ func open(args):
 # was already removed). this will help with cases that can't be handled
 # elegantly using layer values.
 func close(arg = null):
-	if stack.empty(): return
+	if stack.is_empty(): return
 	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
 	if item.has('restore') and item.restore:
 		for stack_item in item.restore: push(stack_item)
-	if stack.empty():
+	if stack.is_empty():
 		get_tree().paused = false
 
 # --------------------------------------------------------------------------- #
@@ -197,7 +197,7 @@ func push(item):
 # (int, bool) -> dict | undefined
 #warning-ignore:unused_argument
 func _pop(i = null):
-	if !stack or (i and i >= stack.size()):
+	if stack == null or stack.is_empty() or (i and i >= stack.size()):
 		Log.warn(self, "stack is empty!")
 		return
 
@@ -225,17 +225,16 @@ func _pop(i = null):
 
 func process_ref(ref: String): # -> String | undefined
 	# first we try the ref
-	var file = File.new()
 	for template in REFS:
 		var path: String = template.replace(R, ref)
-		if file.file_exists(path): return path
-	Log.warn(self, ["could not find a valid .tscn file for: ", ref])
+		if FileAccess.file_exists(path): return path
+	Log.warn(self, ["could not find a valid super.tscn file for: ", ref])
 
 # --------------------------------------------------------------------------- #
 
 func load_node(path: String) -> Node:
 	var script = load(path)
-	var instance = script.instance()
+	var instance = script.instantiate()
 	return instance
 
 # --------------------------------------------------------------------------- #
@@ -257,7 +256,7 @@ func get_layer_value(open_type, path):
 
 func get_next_layer():
 	var max_layer = 0
-	if !stack.empty():
+	if !stack.is_empty():
 		for element in stack:
 			if element.layer > max_layer:
 				max_layer = element.layer

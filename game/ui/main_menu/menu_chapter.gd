@@ -3,12 +3,12 @@ extends Control
 signal title_changed(text)
 signal page_info_changed(text)
 
-var title setget set_title
+var title : set = set_title
 
 # var prev_item = 0
 var current_item = 0
-var current_page = 0 setget set_current_page
-var page_count = 0 setget set_page_count
+var current_page = 0: set = set_current_page
+var page_count = 0: set = set_page_count
 
 func initialize(args = null):
 	emit_signal('title_changed', title)

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/ui/panels/box_border_outset.tres" type="StyleBox" id=1]
 [ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=3]
+[ext_resource path="res://assets/ui/menagerie.font" type="FontFile" id=3]
 
 
 

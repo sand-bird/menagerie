@@ -12,8 +12,8 @@ class Trait:
 	var title_low = ""
 	var low_threshold = 20
 
-	var orig_value = 0 setget _set_orig
-	var value = 0 setget _set_value
+	var orig_value = 0: set = _set_orig
+	var value = 0: set = _set_value
 
 	func get_portion ():
 		return round(value / max_value)

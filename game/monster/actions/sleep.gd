@@ -7,10 +7,11 @@ const max_dur = 24 * Clock.TICKS_IN_HOUR
 const energy_per_tick = 2.0
 
 # require a duration
-func _init(m, t = null).(m, t):
+func _init(m, t = null):
+	super(m, t)
 	name = 'sleep'
 	if !t: t = calc_duration()
-	._init(m, t)
+	super._init(m, t)
 
 func estimate_result():
 	return { energy = float(t) * energy_per_tick }

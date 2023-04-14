@@ -1,34 +1,34 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture2D" id=2]
 
 [node name="total1" type="Panel"]
 visible = false
-margin_left = 7.0
-margin_top = 40.0
-margin_right = 144.0
-margin_bottom = 54.0
-custom_styles/panel = ExtResource( 1 )
+offset_left = 7.0
+offset_top = 40.0
+offset_right = 144.0
+offset_bottom = 54.0
+theme_override_styles/panel = ExtResource( 1 )
 
 [node name="total" type="Label" parent="."]
-margin_left = 8.07355
-margin_top = 2.0
-margin_right = 38.0735
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.729412, 0.458824, 0.415686, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+offset_left = 8.07355
+offset_top = 2.0
+offset_right = 38.0735
+offset_bottom = 13.0
+theme_override_colors/font_color = Color( 0.729412, 0.458824, 0.415686, 1 )
+theme_override_colors/font_shadow_color = Color( 0.898039, 0.827451, 0.678431, 1 )
 text = "Total:"
 
 [node name="total_amt" type="Label" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -91.0
-margin_top = 2.0
-margin_right = -17.0
-margin_bottom = 13.0
-custom_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
-custom_colors/font_color_shadow = Color( 0.898039, 0.827451, 0.678431, 1 )
+offset_left = -91.0
+offset_top = 2.0
+offset_right = -17.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color( 0.682353, 0.129412, 0.152941, 1 )
+theme_override_colors/font_shadow_color = Color( 0.898039, 0.827451, 0.678431, 1 )
 text = "-12,340,891"
 align = 2
 
@@ -36,9 +36,9 @@ align = 2
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 1.0
-margin_top = 1.0
-margin_right = 9.0
-margin_bottom = -2.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 9.0
+offset_bottom = -2.0
 texture = ExtResource( 2 )
 

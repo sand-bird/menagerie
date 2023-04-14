@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var speed = 10
 var target = Vector2(50, 50)
@@ -16,8 +16,8 @@ func _fixed_process(delta):
     #once target destination is reached
     if(get_pos().distance_to(target) <= 20):
         #calculate new destination
-        target.x = rand_range(xMin, xMax)       #set new random target destination
-        target.y = rand_range(yMin, yMax)
+        target.x = randf_range(xMin, xMax)       #set new random target destination
+        target.y = randf_range(yMin, yMax)
         var angle = get_angle_to(target)        #calc angle to target
         velocity.x = speed*sin(angle)           #convert linear speed into x and y components
         velocity.y = speed*cos(angle)

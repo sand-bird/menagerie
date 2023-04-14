@@ -4,7 +4,7 @@
 [ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=2]
 [ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=4]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture" id=5]
+[ext_resource path="res://assets/ui/icons/aster.png" type="Texture2D" id=5]
 [ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=6]
 [ext_resource path="res://ui/arrows.gd" type="Script" id=7]
 
@@ -14,78 +14,78 @@ bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
 [node name="store_item2" type="Panel"]
 editor/display_folded = true
 visible = false
-margin_left = 161.0
-margin_top = 144.215
-margin_right = 298.0
-margin_bottom = 184.215
-rect_min_size = Vector2( 136, 30 )
+offset_left = 161.0
+offset_top = 144.215
+offset_right = 298.0
+offset_bottom = 184.215
+custom_minimum_size = Vector2( 136, 30 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme = ExtResource( 1 )
-custom_styles/panel = ExtResource( 2 )
+theme_override_styles/panel = ExtResource( 2 )
 
 [node name="background" type="Panel" parent="." instance=ExtResource( 3 )]
 visible = false
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 4.0
-margin_right = -4.0
-margin_bottom = -4.0
-custom_styles/panel = SubResource( 1 )
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+theme_override_styles/panel = SubResource( 1 )
 
 [node name="Button" type="Button" parent="."]
-margin_left = 93.0003
-margin_top = 17.2976
-margin_right = 127.0
-margin_bottom = 37.2976
+offset_left = 93.0003
+offset_top = 17.2976
+offset_right = 127.0
+offset_bottom = 37.2976
 text = "Buy"
 
 [node name="PanelContainer2" type="PanelContainer" parent="."]
-margin_left = 24.2832
-margin_top = 20.3262
-margin_right = 66.2832
-margin_bottom = 35.3262
-rect_pivot_offset = Vector2( 212.702, -33.0049 )
-custom_styles/panel = ExtResource( 4 )
+offset_left = 24.2832
+offset_top = 20.3262
+offset_right = 66.2832
+offset_bottom = 35.3262
+pivot_offset = Vector2( 212.702, -33.0049 )
+theme_override_styles/panel = ExtResource( 4 )
 __meta__ = {
 "_edit_group_": true
 }
 
 [node name="Label" type="Label" parent="PanelContainer2"]
-margin_left = 1.0
-margin_top = 1.0
-margin_right = 41.0
-margin_bottom = 12.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 41.0
+offset_bottom = 12.0
 text = "99 / 99"
 align = 1
 
 [node name="name" type="Label" parent="."]
 visible = false
-margin_left = 36.0
-margin_right = 141.0
-margin_bottom = 30.0
+offset_left = 36.0
+offset_right = 141.0
+offset_bottom = 30.0
 text = "Fluffy Tuft"
 align = 1
 valign = 1
 
 [node name="price" type="Label" parent="."]
-margin_left = 6.74103
-margin_top = 4.28761
-margin_right = 75.741
-margin_bottom = 15.2876
+offset_left = 6.74103
+offset_top = 4.28761
+offset_right = 75.741
+offset_bottom = 15.2876
 text = "Total: 1,340,020"
 
-[node name="Sprite" type="Sprite" parent="price"]
+[node name="Sprite2D" type="Sprite2D" parent="price"]
 position = Vector2( 75.2718, 1.26352 )
 texture = ExtResource( 5 )
 centered = false
 
 [node name="arrows" type="Control" parent="." instance=ExtResource( 6 )]
-margin_left = 23.5854
-margin_top = 28.4181
-margin_right = 67.5854
-margin_bottom = 28.4181
+offset_left = 23.5854
+offset_top = 28.4181
+offset_right = 67.5854
+offset_bottom = 28.4181
 script = ExtResource( 7 )
 

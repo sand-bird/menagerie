@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 class_name Monster
 
@@ -121,7 +121,7 @@ var preferences = {}
 # --------
 var mass = 20 # from entity definition
 # position (Vector2): built-in property
-var orientation = Vector2(0, 1) setget _update_orientation
+var orientation = Vector2(0, 1): set = _update_orientation
 # action properties:
 # max_force (scalar), max_speed (scalar)
 
@@ -145,7 +145,7 @@ var dest
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	Dispatcher.connect('tick_changed', self, '_on_tick_changed', [])
+	Dispatcher.tick_changed.connect(_on_tick_changed)
 	update_z()
 	set_physics_process(true)
 
@@ -153,13 +153,13 @@ func _ready():
 # position by default is the top-left corner of the node, but we generally
 # want to use the center of its collision circle instead
 
-func get_position():
+func get_pos():
 	return Vector2(
 		position.x,
 		position.y - $shape.shape.radius
 	)
 
-func set_position(pos):
+func set_pos(pos):
 	position.x = pos.x + $shape.shape.radius
 	position.y = pos.y + $shape.shape.radius
 
@@ -167,11 +167,11 @@ func set_position(pos):
 
 func initialize(data):
 	deserialize(data)
-	var size = Data.get([type, 'size'])
+	var size = Data.fetch([type, 'size'])
 	$shape.shape.radius = size
 	$shape.position.y -= size
 
-	var anim_data = Data.get([type, 'morphs', morph, 'animations'])
+	var anim_data = Data.fetch([type, 'morphs', morph, 'animations'])
 	Log.verbose(self, ['anim data: ', anim_data])
 	if anim_data:
 		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
@@ -188,9 +188,9 @@ func _physics_process(delta):
 	update_z()
 
 	# debug
-	$orientation.cast_to = orientation * 20
-	$velocity.cast_to = current_velocity * 20
-	$desired_velocity.cast_to = desired_velocity * 20
+	$orientation.target_position = orientation * 20
+	$velocity.target_position = current_velocity * 20
+	$desired_velocity.target_position = desired_velocity * 20
 
 # --------------------------------------------------------------------------- #
 
@@ -237,7 +237,7 @@ func set_current_action(action, queue_current = true):
 		next_action = current_action
 		next_action.status = Action.Status.PAUSED
 	current_action = action
-	current_action.connect('exit', self, '_on_action_exit')
+	current_action.connect('exit', Callable(self, '_on_action_exit'))
 
 # --------------------------------------------------------------------------- #
 
@@ -249,7 +249,7 @@ func choose_action():
 
 func _on_action_exit(status):
 	prints('action exited with status', status, '|', current_action)
-	current_action.disconnect('exit', self, '_on_action_exit')
+	current_action.disconnect('exit', Callable(self, '_on_action_exit'))
 	past_actions.append(current_action)
 	current_action = null
 	

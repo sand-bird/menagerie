@@ -27,7 +27,7 @@ func cmd_inventory(args):
 
 func cmd_getitem(args: Array):
 	var id = args[0]
-	if (!id or !Data.get(id)):
+	if (!id or !Data.fetch(id)):
 		self.log("Error - '" + id + "' is not a valid id")
 	var qty = args[1] if args.size() > 1 else 1
 	Player.inventory.append({ id = id, qty = qty })
@@ -39,12 +39,12 @@ func _input(event):
 			var event_str = char(event.unicode)
 			if event_str in ["~", "`"]: return
 			user_input += event_str
-			get_tree().set_input_as_handled()
-		elif event.scancode == KEY_BACKSPACE:
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_BACKSPACE:
 			user_input = user_input.substr(0, len(user_input)-1)
-			get_tree().set_input_as_handled()
+			get_viewport().set_input_as_handled()
 		# Entering the command
-		elif event.scancode == KEY_ENTER:
+		elif event.keycode == KEY_ENTER:
 			handle_user_input()
 		update_user_input()
 		

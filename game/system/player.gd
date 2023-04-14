@@ -77,14 +77,14 @@ func serialize():
 
 func deserialize(data):
 	for k in SAVE_KEYS: set(k, data[k])
-	last_update_time = OS.get_unix_time()
+	last_update_time = Time.get_unix_time_from_system()
 
 
 # =========================================================================== #
 #                               P L A Y T I M E                               #
 # --------------------------------------------------------------------------- #
 func update_playtime():
-	var current_time = OS.get_unix_time()
+	var current_time = Time.get_unix_time_from_system()
 	var playtime_difference = current_time - last_update_time
 	playtime += playtime_difference
 	Log.info(self, ["Updated playtime: ", playtime,

@@ -1,8 +1,8 @@
-tool
+@tool
 extends Control
 
-export (Animation) var enter
-export (Animation) var exit
+@export (Animation) var enter
+@export (Animation) var exit
 var player
 var status
 
@@ -23,22 +23,22 @@ func load_player():
 			player = child
 	if !has_player: player = AnimationPlayer.new()
 	add_child(player)
-	if enter: player.add_animation("enter", enter)
-	if exit:  player.add_animation("exit", exit)
-	player.connect("finished", self, "_on_transition_finished")
+	if enter: player.add_animation_library("enter", enter)
+	if exit:  player.add_animation_library("exit", exit)
+	player.connect("finished", Callable(self, "_on_transition_finished"))
 
 func open():
 	if status == "closing":
 		print("reverse the close!!!")
 	play("enter")
 	status = "opening"
-	yield(player, "finished")
+	await player.finished
 	status = "open"
 
 func close():
 	play("exit")
 	status = "closing"
-	yield(player, "finished")
+	await player.finished
 	status = "closed"
 
 func _on_transition_finished():

@@ -1,17 +1,14 @@
-[gd_resource type="Theme" load_steps=2 format=2]
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://brxpo2y3gemm5"]
 
-[ext_resource path="res://assets/ui/menagerie.font" type="BitmapFont" id=1]
+[ext_resource type="FontFile" uid="uid://0k6q5tfie0n2" path="res://assets/ui/menagerie.font" id="1_1rslv"]
 
 [resource]
-
-default_font = ExtResource( 1 )
-Label/colors/font_color = Color( 0.439216, 0.254902, 0.231373, 1 )
-Label/colors/font_color_shadow = Color( 0.768627, 0.592157, 0.509804, 1 )
+default_font = ExtResource("1_1rslv")
+default_font_size = 0
+Label/colors/font_color = Color(0.439216, 0.254902, 0.231373, 1)
+Label/colors/font_color_shadow = Color(0.768627, 0.592157, 0.509804, 1)
 Label/constants/line_spacing = 3
 Label/constants/shadow_as_outline = 0
 Label/constants/shadow_offset_x = 0
 Label/constants/shadow_offset_y = 1
-Label/fonts/font = null
 Label/styles/normal = null
-_sections_unfolded = [ "Label", "Label/colors", "Label/constants", "Label/fonts" ]
-

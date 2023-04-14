@@ -29,7 +29,7 @@ script/source = "extends AnimationPlayer
 #var curr_target = \"\"
 
 func _ready():
-	connect(\"finished\", self, \"_on_finished\")
+	connect(\"finished\", Callable(self, \"_on_finished\"))
 	print(get_animation(\"fade_in\").track_get_path(0))
 	play(\"fade_in\")
 	get_animation(\"fade_in\").transform_track_interpolate(

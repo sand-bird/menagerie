@@ -8,7 +8,7 @@ script/source = "extends \"res://ui/main_menu/inventory/inventory.gd\"
 
 func _ready():
 	title = \"Items\"
-	.initialize({\"type\": \"item\"})
+	super.initialize({\"type\": \"item\"})
 "
 
 [node name="inventory" instance=ExtResource( 1 )]

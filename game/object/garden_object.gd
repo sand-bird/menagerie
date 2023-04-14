@@ -9,7 +9,7 @@ var coordinates = Vector2()
 
 func initialize(data):
 	deserialize(data)
-	$sprite.texture = Data.get_resource([data.type, 'sprite'])
+	$sprite.texture = Data.fetch_res([data.type, 'sprite'])
 	# $shape.shape.radius = 8
 	update_z()
 

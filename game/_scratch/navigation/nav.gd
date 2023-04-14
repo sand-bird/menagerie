@@ -1,3 +1,4 @@
+# garden navigation from < godot 4
 extends Navigation2D
 
 const WALKABLE = -1
@@ -6,13 +7,13 @@ const OBSTACLE = 0
 # get back tile centerpoints instead of corners
 #warning-ignore-all:unused_argument
 func map_to_world(tile, ignore_half_ofs = false):
-	return $tilemap.map_to_world(tile) + $tilemap.cell_size / 2
+	return $tilemap.map_to_local(tile) + $tilemap.cell_size / 2
 
-func world_to_map(pos):
-	return $tilemap.world_to_map(pos)
+func local_to_map(pos):
+	return $tilemap.local_to_map(pos)
 
 func is_walkable_at_pos(pos):
-	var coords = world_to_map(pos)
+	var coords = local_to_map(pos)
 	return is_walkable_at(coords.x, coords.y)
 
 func is_walkable_at(x, y):
@@ -35,7 +36,7 @@ func calc_path(from_pos, to_pos):
 	for i in range(0, path.size() - 1):
 		tpath.push_back(test_corner(path[i]))
 #	tpath.push_back(path.back())
-	.update()
+	super.update()
 	return tpath
 
 func _draw():
@@ -43,14 +44,14 @@ func _draw():
 	var hsv_step = 1.0 / max(tpath.size(), 1)
 	for i in tpath:
 		if !i: continue # sometimes tpath gets filled with nulls i guess
-		.draw_circle(i, 4, Color.from_hsv(hsv, 1, 0.9))
+		super.draw_circle(i, 4, Color.from_hsv(hsv, 1, 0.9))
 		hsv += hsv_step
 	for i in path:
-		.draw_circle(i, 2, Color(1, 1, 1))
+		super.draw_circle(i, 2, Color(1, 1, 1))
 	for i in walkable:
-		.draw_circle(i, 2, Color(1, 1, 0))
+		super.draw_circle(i, 2, Color(1, 1, 0))
 	for i in not_walkable:
-		.draw_circle(i, 2, Color(1, 0, 1))
+		super.draw_circle(i, 2, Color(1, 0, 1))
 	path = []
 	tpath = []
 	walkable = []

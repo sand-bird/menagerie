@@ -1,21 +1,21 @@
 extends Panel
 
-onready var SaveItem = Utils.load_relative(filename, "save_item")
+@onready var SaveItem = Utils.load_relative(scene_file_path, "save_item")
 
 var saves = []
-var current_page = 0 setget load_page
+var current_page = 0: set = load_page
 const SAVES_PER_PAGE = 3
 
 func _ready():
 	saves = SaveManager.get_save_info_list()
-	$pages/arrows.connect("change_page", self, "change_page")
+	$pages/arrows.connect("change_page", Callable(self, "change_page"))
 	load_page(0)
 
 # --------------------------------------------------------------------------- #
 
 func add_save_item(index, save_info):
 	Log.verbose(self, ["adding save item: ", save_info])
-	var save_item = SaveItem.instance()
+	var save_item = SaveItem.instantiate()
 	save_item.load_info(index, save_info)
 	$container.add_child(save_item)
 
