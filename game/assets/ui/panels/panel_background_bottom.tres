@@ -1,11 +1,10 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=2]
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://c35ixge46drr0"]
 
-[ext_resource path="res://assets/ui/panels/panel_background_bottom.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://x7o7qdkmywcu" path="res://assets/ui/panels/panel_background_bottom.png" id="1"]
 
 [resource]
-texture = ExtResource( 1 )
-region_rect = Rect2( 0, 0, 10, 17 )
-margin_bottom = 15.0
+texture = ExtResource("1")
+texture_margin_bottom = 15.0
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
-
+region_rect = Rect2(0, 0, 10, 17)

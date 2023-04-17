@@ -2,20 +2,9 @@
 
 [ext_resource path="res://assets/ui/panels/box_border_outset.tres" type="StyleBox" id=1]
 [ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/ui/menagerie.font" type="FontFile" id=3]
-
-
-
-
-
-
-
-
-
 
 [resource]
 
-default_font = ExtResource( 3 )
 Button/colors/font_color = Color( 0.4, 0.25098, 0.168627, 1 )
 Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
 Button/colors/font_color_hover = Color( 0.4, 0.25098, 0.168627, 1 )

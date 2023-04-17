@@ -1,10 +1,8 @@
 [gd_resource type="Theme" load_steps=3 format=2]
 
 [ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/ui/menagerie.font" type="FontFile" id=2]
 
 [resource]
-default_font = ExtResource( 2 )
 Label/colors/font_color = Color( 0.443137, 0.254902, 0.231373, 1 )
 Label/colors/font_color_shadow = Color( 0.772549, 0.592157, 0.509804, 1 )
 Label/constants/shadow_offset_x = 0

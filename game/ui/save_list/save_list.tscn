@@ -1,14 +1,16 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://bt1j0ft1fphft"]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
-[ext_resource path="res://ui/save_list/save_list.gd" type="Script" id=3]
-[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=4]
-[ext_resource path="res://assets/ui/panels/menu_header.tres" type="StyleBox" id=5]
-[ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=6]
-[ext_resource path="res://ui/arrows.tscn" type="PackedScene" id=7]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
+[ext_resource type="StyleBox" uid="uid://bttg6qum87qgv" path="res://assets/ui/panels/panel_frame.tres" id="2"]
+[ext_resource type="Script" path="res://ui/save_list/save_list.gd" id="3"]
+[ext_resource type="PackedScene" path="res://ui/background_panel.tscn" id="4"]
+[ext_resource type="StyleBox" uid="uid://bloajccdvxu2m" path="res://assets/ui/panels/menu_header.tres" id="5"]
+[ext_resource type="StyleBox" path="res://assets/ui/panels/qty_label_flat.tres" id="6"]
+[ext_resource type="PackedScene" path="res://ui/arrows.tscn" id="7"]
 
 [node name="save_list" type="Panel"]
+custom_minimum_size = Vector2(208, 180)
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -17,48 +19,49 @@ offset_left = -104.0
 offset_top = -98.0
 offset_right = 104.0
 offset_bottom = 98.0
-custom_minimum_size = Vector2( 208, 180 )
-theme = ExtResource( 1 )
-theme_override_styles/panel = ExtResource( 2 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme = ExtResource("1")
+theme_override_styles/panel = ExtResource("2")
+script = ExtResource("3")
 
-[node name="background" parent="." instance=ExtResource( 4 )]
+[node name="background" parent="." instance=ExtResource("4")]
+layout_mode = 0
 anchor_left = 0.000916554
 anchor_top = -0.000953255
 anchor_right = 1.00092
 anchor_bottom = 0.999047
 offset_left = 3.80936
+offset_top = 0.0
 offset_right = -4.19066
 offset_bottom = -2.0
 
 [node name="title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -47.8093
+offset_left = -48.0
 offset_top = 6.0
-offset_right = 48.1907
-offset_bottom = 20.0
-theme_override_styles/normal = ExtResource( 5 )
+offset_right = 48.0
+offset_bottom = 22.0
+grow_horizontal = 2
+theme_override_styles/normal = ExtResource("5")
 text = "Records"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 uppercase = true
 
 [node name="container" type="VBoxContainer" parent="."]
+layout_mode = 0
 offset_left = 8.0
 offset_top = 24.0
 offset_right = 11.0
 offset_bottom = 23.0
 mouse_filter = 0
 theme_override_constants/separation = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="pages" type="Label" parent="."]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -67,16 +70,12 @@ offset_left = -24.0
 offset_top = -20.0
 offset_right = 24.0
 offset_bottom = -5.0
-theme_override_styles/normal = ExtResource( 6 )
+theme_override_styles/normal = ExtResource("6")
 text = "* * *"
-align = 1
-valign = 1
 uppercase = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="arrows" parent="pages" instance=ExtResource( 7 )]
+[node name="arrows" parent="pages" instance=ExtResource("7")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -6.0

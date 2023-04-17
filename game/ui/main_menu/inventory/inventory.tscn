@@ -1,32 +1,37 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://dshs7ve7ije66"]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://ui/main_menu/inventory/inventory.gd" type="Script" id=2]
-[ext_resource path="res://ui/item_info.tscn" type="PackedScene" id=3]
-[ext_resource path="res://ui/main_menu/inventory/item_grid.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=6]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
+[ext_resource type="Script" path="res://ui/main_menu/inventory/inventory.gd" id="2"]
+[ext_resource type="PackedScene" path="res://ui/item_info.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ui/main_menu/inventory/item_grid.tscn" id="5"]
+[ext_resource type="StyleBox" uid="uid://c27udro7ac0h3" path="res://assets/ui/panels/box_outset.tres" id="6"]
 
 [node name="inventory" type="Control"]
+custom_minimum_size = Vector2(296, 142)
+layout_mode = 3
+anchors_preset = 0
 offset_right = 296.0
 offset_bottom = 142.0
-custom_minimum_size = Vector2( 296, 142 )
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("1")
+script = ExtResource("2")
 
-[node name="item_info" parent="." instance=ExtResource( 3 )]
+[node name="item_info" parent="." instance=ExtResource("3")]
+anchors_preset = 0
 offset_top = -3.0
 offset_bottom = 125.0
 
 [node name="place_button" type="Button" parent="item_info"]
+layout_mode = 0
 offset_left = 4.0
 offset_top = 122.0
 offset_right = 136.0
 offset_bottom = 142.0
-theme = ExtResource( 1 )
-theme_override_styles/disabled = ExtResource( 6 )
+theme = ExtResource("1")
+theme_override_styles/disabled = ExtResource("6")
 text = "Place in garden"
 
-[node name="item_grid" parent="." instance=ExtResource( 5 )]
+[node name="item_grid" parent="." instance=ExtResource("5")]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -138.0

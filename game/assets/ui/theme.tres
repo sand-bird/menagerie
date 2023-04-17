@@ -1,14 +1,12 @@
-[gd_resource type="Theme" load_steps=12 format=3 uid="uid://bd8yvip5xenwp"]
+[gd_resource type="Theme" load_steps=10 format=3 uid="uid://bd8yvip5xenwp"]
 
-[ext_resource type="FontFile" uid="uid://d34ymnu0dcsba" path="res://assets/ui/output_font.font" id="1"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/box_border_outset_light.tres" id="2"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/box_border_inset.tres" id="3"]
-[ext_resource type="FontFile" uid="uid://c68gb4lcfd8rm" path="res://assets/ui/menagerie.font" id="4"]
+[ext_resource type="StyleBox" uid="uid://dljlrme4cg8ve" path="res://assets/ui/panels/box_border_outset_light.tres" id="2"]
+[ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="3"]
 [ext_resource type="Texture2D" uid="uid://cjnlb0m2danlr" path="res://assets/ui/panels/panel_background_both.png" id="5"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/item_box.tres" id="6"]
-[ext_resource type="FontFile" uid="uid://0k6q5tfie0n2" path="res://assets/other/fonts_old/menagerieheartsm_fixed.ttf" id="6_uth2n"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/flat.tres" id="7"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/box_border_outset.tres" id="8"]
+[ext_resource type="StyleBox" uid="uid://dnxa3mtyis2n2" path="res://assets/ui/panels/item_box.tres" id="6"]
+[ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="7"]
+[ext_resource type="FontFile" uid="uid://ck0ev4k53qwbb" path="res://assets/other/fonts_old/menagerie_white/font.fnt" id="7_raxvl"]
+[ext_resource type="StyleBox" uid="uid://brscslj4wkjes" path="res://assets/ui/panels/box_border_outset.tres" id="8"]
 
 [sub_resource type="StyleBoxEmpty" id="2"]
 
@@ -19,7 +17,7 @@ content_margin_right = 0.0
 content_margin_bottom = 0.0
 
 [resource]
-default_font = ExtResource("6_uth2n")
+default_font = ExtResource("7_raxvl")
 /colors/font_color = Color(0.443137, 0.254902, 0.231373, 1)
 Button/colors/font_color = Color(0.443137, 0.254902, 0.231373, 1)
 Button/colors/font_color_disabled = Color(0.588235, 0.517647, 0.478431, 1)
@@ -27,7 +25,6 @@ Button/colors/font_color_focus = Color(0.443137, 0.254902, 0.231373, 1)
 Button/colors/font_color_hover = Color(0.443137, 0.254902, 0.231373, 1)
 Button/colors/font_color_pressed = Color(0.443137, 0.254902, 0.231373, 1)
 Button/constants/hseparation = 0
-Button/fonts/font = ExtResource("1")
 Button/styles/disabled = ExtResource("2")
 Button/styles/focus = SubResource("2")
 Button/styles/hover = ExtResource("8")
@@ -38,8 +35,6 @@ HButtonArray/colors/font_color = Color(0.4, 0.247059, 0.164706, 1)
 HButtonArray/colors/font_color_selected = Color(0.4, 0.247059, 0.164706, 1)
 HButtonArray/constants/button_separator = 4
 HButtonArray/constants/icon_separator = 2
-HButtonArray/fonts/font = ExtResource("4")
-HButtonArray/fonts/font_selected = ExtResource("4")
 HButtonArray/styles/focus = null
 HButtonArray/styles/hover = ExtResource("2")
 HButtonArray/styles/normal = ExtResource("2")
@@ -59,7 +54,6 @@ Label/constants/line_spacing = 0
 Label/constants/shadow_as_outline = 0
 Label/constants/shadow_offset_x = 0
 Label/constants/shadow_offset_y = 1
-Label/fonts/font = ExtResource("6_uth2n")
 LineEdit/colors/clear_button_color = Color(0.443137, 0.254902, 0.231373, 1)
 LineEdit/colors/clear_button_color_pressed = Color(0.443137, 0.254902, 0.231373, 1)
 LineEdit/colors/cursor_color = Color(0.494118, 0.337255, 0.25098, 1)
@@ -68,7 +62,6 @@ LineEdit/colors/font_color_selected = Color(0.443137, 0.254902, 0.231373, 1)
 LineEdit/colors/font_color_uneditable = Color(0.588235, 0.517647, 0.478431, 1)
 LineEdit/colors/selection_color = Color(0.792157, 0.690196, 0.631373, 1)
 LineEdit/constants/minimum_spaces = 12
-LineEdit/fonts/font = ExtResource("4")
 LineEdit/icons/clear = ExtResource("5")
 LineEdit/styles/focus = ExtResource("6")
 LineEdit/styles/normal = ExtResource("6")
@@ -82,11 +75,6 @@ RichTextLabel/colors/selection_color = Color(0.439216, 0.254902, 0.231373, 1)
 RichTextLabel/constants/line_separation = 1
 RichTextLabel/constants/table_hseparation = 3
 RichTextLabel/constants/table_vseparation = 3
-RichTextLabel/fonts/bold_font = ExtResource("4")
-RichTextLabel/fonts/bold_italics_font = ExtResource("4")
-RichTextLabel/fonts/italics_font = ExtResource("4")
-RichTextLabel/fonts/mono_font = ExtResource("4")
-RichTextLabel/fonts/normal_font = ExtResource("4")
 RichTextLabel/styles/focus = null
 RichTextLabel/styles/normal = null
 TabContainer/colors/font_color_bg = Color(0.443137, 0.254902, 0.231373, 1)
@@ -111,8 +99,6 @@ VButtonArray/colors/font_color = Color(0.443137, 0.254902, 0.231373, 1)
 VButtonArray/colors/font_color_selected = Color(0.443137, 0.254902, 0.231373, 1)
 VButtonArray/constants/button_separator = 4
 VButtonArray/constants/icon_separator = 2
-VButtonArray/fonts/font = ExtResource("4")
-VButtonArray/fonts/font_selected = ExtResource("4")
 VButtonArray/styles/focus = null
 VButtonArray/styles/hover = ExtResource("2")
 VButtonArray/styles/normal = ExtResource("2")

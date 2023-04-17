@@ -1,6 +1,6 @@
 extends Control
 
-const kern_pairs = {
+const kern_pairs_old = {
 	'A': ['"', "'", '~', 'T', 'W', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'B': ['"', "'", 'T', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
 	'C': ['"', "'", '~', 'T', 'Y', 'b', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'p', 't', 'u', 'w', 'y'],
@@ -53,11 +53,21 @@ const kern_pairs_2 = {
 	'k': ['l']
 }
 
-@export var base_font: String = "res://assets/other/fonts_old/menagerieheartsm.ttf"
-@export var already_kerned: String = "res://assets/other/fonts_old/menagerieheartsm_fixed.ttf"
+const kern_pairs = {
+	'p': ['o'],
+	'o': ['s']
+}
 
-@onready var font: FontFile = load(base_font)
-@onready var font_kerned: FontFile = load(already_kerned)
+const font_dir = "res://assets/font/"
+const input_filename = "menagerie.ttf"
+#var output_filename = str(input_filename.get_basename(), '-kerned.fnt')
+
+var input_path = font_dir.path_join(input_filename)
+#var output_path = font_dir.path_join(output_filename)
+
+@onready var font: FontFile = load(input_path)
+@onready var input_file = FileAccess.open(input_path, FileAccess.READ)
+#var output_file: FileAccess
 
 var label_font = 'font'
 var cache = 0
@@ -65,41 +75,50 @@ var vsize
 var font_size
 
 func _ready():
-	vsize = font.get_size_cache_list(cache)[0]
-	font_size = vsize.x
-	print('size cache list', font_size)
-	print('glyphs ', font.get_glyph_list(cache, vsize))
+	font_size = font.msdf_size
+	print(font_size)
 	$test_label.add_theme_font_override("font", font)
-	var button = get_node("button")
-	if button:
-		print(button)
-		button.connect("pressed", Callable(self, "process_pairs"))
-	var button_switch = get_node("button_switch")
-	if button_switch:
-		button_switch.connect("pressed", Callable(self, "switch_fonts"))
-	pass
+	$button.pressed.connect(process_pairs)
+	$button2.pressed.connect(unkern)
+
+func unkern():
+	font.clear_kerning_map(0, font_size)
+
+#var show_output = false
+#func switch_fonts():
+#	show_output = !show_output
+#	var show_font = load(output_path) if show_output else font
 	
-func switch_fonts():
-	$test_label.add_theme_font_override("font", font_kerned)
+#	$test_label.add_theme_font_override("font", show_font)
+#	$button_switch.text = str('show ', 'original' if show_output else 'output')
 
 func kern(a, b, value):
-	
-	font.set_kerning(cache, font_size, Vector2i(a.unicode_at(0), b.unicode_at(0)), Vector2(value, 0))
-	pass
+	var chars = Vector2i(a.unicode_at(0), b.unicode_at(0))
+	var kern_string = str('kerning first=', chars.x, ' second=', chars.y, ' amount=', value)
+	print(kern_string)
+#	output_file.store_line(kern_string)
+	font.set_kerning(0, font_size, chars, Vector2(value, 0))
+	$test_label.add_theme_font_override("font", font)
+	print('get kerning: ', font.get_kerning(cache, font_size, chars))
 
 func process_pairs():
-	print('before kerning ', font.get_kerning_list(cache, font_size))
+#	DirAccess.copy_absolute(input_path, output_path)
+#	output_file = FileAccess.open(output_path, FileAccess.READ_WRITE)
+#	output_file.seek_end()
+#	print('before kern ', output_file.get_as_text())
 	# apply kernings
-	for pair_first in kern_pairs:
-		for pair_second in kern_pairs[pair_first]:
-			kern(pair_first, pair_second, 1)
+	for pair_first in kern_pairs_old:
+		for pair_second in kern_pairs_old[pair_first]:
+			kern(pair_first, pair_second, -1)
 	# second pass: double these if necessary
-	for pair_first in kern_pairs_2:
-		for pair_second in kern_pairs_2[pair_first]:
-			if (font.get_kerning(cache, font_size, Vector2i(pair_first.unicode_at(0), pair_second.unicode_at(0)))):
-				kern(pair_first, pair_second, 2)
-			else: kern(pair_first, pair_second, 1)
-	$test_label.queue_redraw()
-	print('after kerning', font.get_kerning_list(cache, font_size))
-#	font.update_changes()
-#	ResourceSaver.save("res://assets/fonts/menagerie_kerned.fnt", font)
+#	for pair_first in kern_pairs_2:
+#		for pair_second in kern_pairs_2[pair_first]:
+#			kern(pair_first, pair_second, 1)
+#	output_file.close()
+#	var kerned_font: FontFile = load(output_path)
+#	var font_size = kerned_font.get_fixed_size()
+#	print('fixed size ', font_size)
+#	print('kerning pairs ', kerned_font.get_kerning_list(0, font_size))
+#	var kerning = kerned_font.get_kerning(0, font_size, Vector2i(113, 117))
+#	print('qu kerning ', kerning)
+	# if !show_output: switch_fonts()

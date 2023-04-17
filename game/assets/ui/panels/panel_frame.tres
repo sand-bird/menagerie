@@ -1,25 +1,16 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=2]
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://bttg6qum87qgv"]
 
-[ext_resource path="res://assets/ui/panels/panel_frame.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://fhlcyh5227u2" path="res://assets/ui/panels/panel_frame.png" id="1"]
 
 [resource]
-
 content_margin_left = 4.0
-content_margin_right = 4.0
 content_margin_top = 4.0
+content_margin_right = 4.0
 content_margin_bottom = 4.0
-texture = ExtResource( 1 )
-region_rect = Rect2( 0, 0, 33, 43 )
-margin_left = 16.0
-margin_right = 16.0
-margin_top = 16.0
-margin_bottom = 16.0
-expand_margin_left = 0.0
-expand_margin_right = 0.0
-expand_margin_top = 0.0
-expand_margin_bottom = 0.0
+texture = ExtResource("1")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
 axis_stretch_vertical = 1
-modulate_color = Color( 1, 1, 1, 1 )
-draw_center = true
-_sections_unfolded = [ "Axis Stretch", "Content Margin", "Expand Margin", "Margin" ]
-
+region_rect = Rect2(0, 0, 33, 43)

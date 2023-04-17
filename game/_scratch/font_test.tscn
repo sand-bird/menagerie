@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://di74pco1m6dwc"]
+[gd_scene load_steps=2 format=3 uid="uid://di74pco1m6dwc"]
 
 [ext_resource type="Script" path="res://_scratch/font_test.gd" id="2"]
-[ext_resource type="FontFile" uid="uid://fkwe65ujb1ks" path="res://assets/other/fonts_old/font/font.fnt" id="2_iut0t"]
 
 [node name="font_test" type="ReferenceRect"]
 layout_direction = 1
@@ -25,30 +24,32 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = 13.0
+offset_left = 2.0
+offset_top = 4.0
+offset_right = 2.0
+offset_bottom = 66.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_iut0t")
-text = "The primary positive thing opting for you if you find you in this situation is this essay writing help is typically that you can buy. You just have to know where you can search for it.
+text = "this that ha at is
 
-Essay-Service.biz will quickly provide standard essay writing -- services www.essay-service.biz/ suitable to obtain a college student as if you. If you find yourself desiring of level custom essay penning service providers, many of us have you could possibly constantly call for in order to meet your day-to-day scholastic necessities.
+The primary positive thing opting for you if you find you in this situation is this essay writing help is typically that you can buy. You just have to know where you can search for it.
 
-Michelle ` Ruby `"
+Essay-Service.biz will quickly provide standard essay writing -- services www.essay-service.biz/ suitable to obtain a college student as if you. If you find yourself desiring of level custom essay penning service providers, many of us have you could possibly constantly call for in order to meet your day-to-day scholastic necessities."
 autowrap_mode = 2
 
 [node name="button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 145.0
-offset_right = 55.0
-offset_bottom = 167.0
+offset_left = 155.0
+offset_top = 177.0
+offset_right = 205.0
+offset_bottom = 200.0
 text = "kern me"
 
-[node name="button_switch" type="Button" parent="."]
+[node name="button2" type="Button" parent="."]
 layout_mode = 0
-offset_left = 78.0
-offset_top = 139.0
-offset_right = 180.0
-offset_bottom = 170.0
-text = "switch fonts"
+offset_left = 213.0
+offset_top = 169.0
+offset_right = 315.0
+offset_bottom = 200.0
+text = "unkern"
