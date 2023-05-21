@@ -82,4 +82,5 @@ func seek(target):
 
 
 func calc_path():
+	return []
 	return m.garden.calc_path(m.position, dest)

@@ -100,7 +100,7 @@ func calculate_day(input = null):
 func dispatch_updates():
 	while units_to_dispatch:
 		var unit = units_to_dispatch.pop_front()
-		Dispatcher.emit_signal(str(unit, "_changed"), null,
+		Dispatcher.emit(str(unit, "_changed"), null,
 				unit != "tick") # don't log if it's a tick update
 
 

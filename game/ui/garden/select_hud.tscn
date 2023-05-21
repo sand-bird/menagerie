@@ -1,52 +1,65 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=3 uid="uid://o54onhiymp3l"]
 
-[ext_resource path="res://assets/ui/themes/label_medium_shadow.tres" type="Theme" id=1]
-[ext_resource path="res://ui/garden/select_hud.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/elements/drive_bg_horizontal.png" type="Texture2D" id=3]
-[ext_resource path="res://assets/ui/elements/drive_empty_horizontal.png" type="Texture2D" id=4]
-[ext_resource path="res://assets/ui/elements/drive_full_horizontal.png" type="Texture2D" id=5]
-[ext_resource path="res://assets/ui/elements/drive_bg_vertical.png" type="Texture2D" id=6]
-[ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=7]
-[ext_resource path="res://assets/ui/elements/portrait_bg.png" type="Texture2D" id=8]
+[ext_resource type="Script" path="res://ui/garden/select_hud.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://blwq5wkkfct1s" path="res://assets/ui/elements/drive_bg_horizontal.png" id="3"]
+[ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="3_4ljyg"]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="3_kpdta"]
+[ext_resource type="Texture2D" uid="uid://pcknbsbc2iqe" path="res://assets/ui/elements/drive_empty_horizontal.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://5774e086y88" path="res://assets/ui/elements/drive_full_horizontal.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://b5c51yxxmdugy" path="res://assets/ui/elements/drive_bg_vertical.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://bdi7d2qrt6nx5" path="res://assets/ui/elements/portrait_bg.png" id="8"]
+[ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_eddpa"]
 
 [node name="select_hud" type="ReferenceRect"]
-visible = false
 offset_left = 4.0
 offset_top = 4.0
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("3_kpdta")
+script = ExtResource("2")
+
+[node name="name_bar" type="Label" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 3.0
+offset_right = 129.0
+offset_bottom = 21.0
+theme = ExtResource("3_kpdta")
+theme_override_styles/normal = ExtResource("3_4ljyg")
+text = "Bumblebottom"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="horizontal" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 76.0
 offset_bottom = 60.0
-texture = ExtResource( 3 )
-__meta__ = {
-"_edit_group_": true
-}
+texture = ExtResource("3")
 
 [node name="belly" type="TextureProgressBar" parent="horizontal"]
+layout_mode = 0
 offset_left = 16.0
 offset_top = 4.0
 offset_right = 49.0
 offset_bottom = 11.0
 value = 70.0
 rounded = true
-texture_under = ExtResource( 4 )
-texture_progress = ExtResource( 5 )
+texture_under = ExtResource("4")
+texture_progress = ExtResource("5")
 
 [node name="energy" type="TextureProgressBar" parent="horizontal"]
+layout_mode = 0
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 49.0
 offset_bottom = 23.0
 value = 25.0
 rounded = true
-texture_under = ExtResource( 4 )
-texture_progress = ExtResource( 5 )
+texture_under = ExtResource("4")
+texture_progress = ExtResource("5")
 
 [node name="social" type="TextureProgressBar" parent="horizontal"]
+layout_mode = 0
 offset_left = 16.0
 offset_top = 28.0
 offset_right = 49.0
@@ -55,10 +68,11 @@ max_value = 8.0
 step = 0.0
 value = 4.0
 rounded = true
-texture_under = ExtResource( 4 )
-texture_progress = ExtResource( 5 )
+texture_under = ExtResource("4")
+texture_progress = ExtResource("5")
 
 [node name="current_action" type="Label" parent="horizontal"]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 1.0
 offset_right = 149.0
@@ -67,36 +81,26 @@ text = "test"
 
 [node name="vertical" type="TextureRect" parent="."]
 visible = false
+layout_mode = 0
 offset_left = 7.0
 offset_top = 23.0
 offset_right = 22.0
 offset_bottom = 75.0
-texture = ExtResource( 6 )
-
-[node name="name_bar" type="Panel" parent="."]
-offset_left = 17.0
-offset_top = 3.0
-offset_right = 129.0
-offset_bottom = 21.0
-theme_override_styles/panel = ExtResource( 7 )
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
-
-[node name="label" type="Label" parent="name_bar"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 1.0
-text = "Bunglebottom"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+texture = ExtResource("6")
 
 [node name="portrait_bg" type="TextureRect" parent="."]
 visible = false
+layout_mode = 0
 offset_right = 29.0
 offset_bottom = 29.0
-texture = ExtResource( 8 )
+texture = ExtResource("8")
+
+[node name="timer" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 79.0
+offset_top = 36.0
+offset_right = 137.0
+offset_bottom = 47.0
+theme_override_styles/normal = ExtResource("9_eddpa")
+text = "test 2"

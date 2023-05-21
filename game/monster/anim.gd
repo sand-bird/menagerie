@@ -24,7 +24,7 @@ func play_anim(anim_id = null, loops = null):
 # --------------------------------------------------------------------------- #
 func queue_anim(anim_id, loops = 0):
 	queue.push_back({"id": anim_id, "loops": loops})
-	if !current: _play_next()
+	if current == null: _play_next()
 
 # --------------------------------------------------------------------------- #
 

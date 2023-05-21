@@ -14,12 +14,9 @@ var items = {}
 var objects = {}
 
 func _ready():
-	Dispatcher.connect("entity_highlighted", Callable(self, "highlight"))
-	Dispatcher.connect("entity_unhighlighted", Callable(self, "unhighlight"))
-	Dispatcher.connect("entity_selected", Callable(self, "select"))
-	Dispatcher.connect("entity_unselected", Callable(self, "deselect"))
-
+	pass
 # added to test pathing, camera sticking, etc. todo: remove someday
+
 var test_mon
 
 func init(data):
@@ -29,12 +26,12 @@ func init(data):
 	if !monsters.is_empty(): test_mon = monsters[monsters.keys().front()]
 	# camera.stick_target = test_mon
 
-func _input(e):
-	if e is InputEventMouseButton and e.is_pressed() and test_mon:
-		$nav.calc_path(test_mon.get_pos(), get_global_mouse_position())
-		test_mon.set_current_action(
-			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
-		)
+func _input(e): pass
+#	if e is InputEventMouseButton and e.is_pressed() and test_mon:
+#		$nav.calc_path(test_mon.get_pos(), get_global_mouse_position())
+#		test_mon.set_current_action(
+#			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
+#		)
 
 func _process(_delta):
 	queue_redraw()
@@ -44,56 +41,26 @@ func _draw():
 
 # --------------------------------------------------------------------------- #
 
-func calc_path(start, end):
-	return $nav.calc_path(start, end)
+func calc_path(start, end): pass
+#	return $nav.calc_path(start, end)
 
 # --------------------------------------------------------------------------- #
 
 # takes a position relative to the garden and moves the mouse there.
 # warp_mouse expects a position relative to the screen, so we convert between
-# the two with get_camera_position, which returns the difference.
+# the two with get_target_position, which returns the difference.
 func set_mouse_position(mouse_pos):
-	var new_mouse_pos = mouse_pos - $camera.get_camera_position()
+	var new_mouse_pos = mouse_pos - $camera.get_target_position()
 	warp_mouse(new_mouse_pos)
 
 # it seems that get_global_mouse_position and get_local_mouse_position both
 # return the mouse's position relative to the garden ¯\_(ツ)_/¯
 func get_screen_relative_mouse_pos():
-	return get_global_mouse_position() - $camera.get_camera_position()
+	return get_global_mouse_position() - $camera.get_target_position()
 
 func get_screen_relative_position(pos):
-	return pos - $camera.get_camera_position()
+	return pos - $camera.get_target_position()
 
-# --------------------------------------------------------------------------- #
-
-# if we're using a cursor, it'll trigger the "highlighted" dispatch when it
-# bumps into an entity. it also give us the node pointer. when we're using
-# touch, somebody else has to handle that input, and it will probably be us.
-#
-# we don't want our entities listening to the dispatches for *everyone* (at
-# least for now? maybe someday they should, and get jealous of each other or
-# something?), so we listen and delegate from the garden.
-func highlight(entity):
-	if entity.has_method("highlight"): entity.highlight()
-	$ui/select_hud.select(entity)
-
-func unhighlight(entity):
-	if !$cursor.selecting: $ui/select_hud.deselect(entity)
-
-# --------------------------------------------------------------------------- #
-
-func select(entity):
-	print('garden select')
-	if entity.has_method("select"): entity.select()
-	$camera.stick(entity)
-	$ui/select_hud.select(entity)
-	$ui/interact_hud.attach(entity)
-
-func deselect():
-	print('garden deselect')
-	$camera.stick_target = null
-	$ui/select_hud.deselect()
-	$ui/interact_hud.detach()
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

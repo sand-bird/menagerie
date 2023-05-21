@@ -4,9 +4,9 @@
 [ext_resource type="PackedScene" path="res://garden/camera.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://clp67bw1gvg3i" path="res://assets/garden/terrains.png" id="4"]
 [ext_resource type="Script" path="res://garden/tint.gd" id="7"]
-[ext_resource type="PackedScene" path="res://garden/cursor.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://c341es5fjd78x" path="res://garden/cursor.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://dqd3uy65kfqe1" path="res://ui/garden/clock_hud.tscn" id="9"]
-[ext_resource type="PackedScene" path="res://ui/garden/select_hud.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://o54onhiymp3l" path="res://ui/garden/select_hud.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://ui/garden/interact_hud.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="12"]
 [ext_resource type="PackedScene" path="res://object/garden_object.tscn" id="13"]
@@ -177,12 +177,15 @@ position = Vector2(145, 114)
 position = Vector2(160, 130)
 
 [node name="cursor" parent="." instance=ExtResource("8")]
-anchors_preset = 0
 
 [node name="ui" type="CanvasLayer" parent="."]
 
 [node name="clock_hud" parent="ui" instance=ExtResource("9")]
-anchors_preset = 1
+offset_left = 6.0
+offset_top = -3.0
+offset_right = 6.0
+offset_bottom = -3.0
+grow_horizontal = 0
 
 [node name="time_label" type="Label" parent="ui/clock_hud"]
 visible = false
@@ -197,6 +200,10 @@ text = "12:00a.m."
 script = SubResource("3")
 
 [node name="select_hud" parent="ui" instance=ExtResource("10")]
+offset_left = -22.0
+offset_top = -3.0
+offset_right = -22.0
+offset_bottom = -3.0
 
 [node name="interact_hud" parent="ui" instance=ExtResource("11")]
 show_behind_parent = true

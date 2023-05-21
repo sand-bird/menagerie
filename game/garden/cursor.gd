@@ -34,10 +34,10 @@ var lerp_val = 0.3
 
 func _ready():
 	$anim.play("cursor_bob")
-	connect("item_rect_changed", Callable(self, "reset_anim"))
-	$stick_area.connect("body_entered", Callable(self, "stick"))
-	$unstick_area.connect("body_entered", Callable(self, "stick"))
-	$unstick_area.connect("body_exited", Callable(self, "unstick"))
+	item_rect_changed.connect(reset_anim)
+	$stick_area.body_entered.connect(stick)
+	$unstick_area.body_entered.connect(stick)
+	$unstick_area.body_exited.connect(unstick)
 	set_process(true)
 
 # --------------------------------------------------------------------------- #
@@ -71,7 +71,7 @@ func stick(body):
 		elif shape_node is RectangleShape2D:
 			sprite_size = shape_node.size.y * 2
 		hand_height = sprite_size + VERTICAL_HAND_OFFSET
-		Dispatcher.emit_signal("entity_highlighted", body)
+		Dispatcher.emit('entity_highlighted', body)
 
 # --------------------------------------------------------------------------- #
 
@@ -79,7 +79,7 @@ func unstick(body):
 	if body == curr_body:
 		hand_height = DEFAULT_HAND_HEIGHT
 		curr_body = null
-		Dispatcher.emit_signal("entity_unhighlighted", body)
+		Dispatcher.emit('entity_unhighlighted', body)
 
 # --------------------------------------------------------------------------- #
 
@@ -99,28 +99,32 @@ func measure_mouse_movement(delta):
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed():
 		if curr_body:
-			Dispatcher.emit_signal("entity_selected", curr_body)
+			Dispatcher.emit("entity_selected", curr_body)
 			print('clicked target')
 			selecting = true
 			unstick(curr_body)
 		else:
-			Dispatcher.emit_signal("entity_unselected")
+			Dispatcher.emit("entity_unselected")
 			selecting = false
 		# get_tree().set_input_as_handled()
 
 # --------------------------------------------------------------------------- #
 
 func _process(delta):
+	if curr_body:
+		$graphic/debug.text = str(curr_body)
+	else: $graphic/debug.text = str(position)
 	measure_mouse_movement(delta)
 	# decide whether to follow a highlighted entity. if player has moved the
 	# mouse recently, then stop following so we don't get stuck.
-	if curr_body && time_since_mouse_moved > MOUSE_FOLLOW_DELAY and !selecting:
-		Player.garden.set_mouse_position(curr_body.position)
+#	if curr_body && time_since_mouse_moved > MOUSE_FOLLOW_DELAY and !selecting:
+#		print('this is where we would stick to the body')
+#		Player.garden.set_mouse_position(curr_body.position)
 		# get_global_mouse_position doesn't update until the player moves the
 		# mouse manually, so we have to set this separately
-		$stick_area.position = curr_body.position
-	else:
-		$stick_area.position = get_local_mouse_position()
+#		$stick_area.position = curr_body.position
+#	else:
+	$stick_area.position = get_local_mouse_position()
 	
 	$unstick_area.position = $stick_area.position
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
@@ -134,6 +138,7 @@ func _process(delta):
 	else:
 		$graphic.position = new_graphic_pos
 
-	var new_hand_y = lerp(hand.position.y,
-			-hand_height, lerp_val)
-	hand.position = Vector2(HAND_X, new_hand_y).round()
+	var new_hand_y = 0
+	#lerp($graphic/hand_anchor.position.y,
+	#		-hand_height, lerp_val)
+	$graphic/hand_anchor.position = Vector2(HAND_X, new_hand_y).round()
