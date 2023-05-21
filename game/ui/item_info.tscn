@@ -1,52 +1,68 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=9 format=3 uid="uid://drv63ikod5fcf"]
 
-[ext_resource path="res://ui/item_info.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=2]
-[ext_resource path="res://assets/ui/panels/flat.tres" type="StyleBox" id=3]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture2D" id=4]
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=5]
-[ext_resource path="res://assets/ui/elements/item_box_detail.png" type="Texture2D" id=6]
-[ext_resource path="res://assets/ui/panels/qty_label.tres" type="StyleBox" id=7]
+[ext_resource type="Script" path="res://ui/item_info.gd" id="1"]
+[ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="2"]
+[ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="3"]
+[ext_resource type="Texture2D" uid="uid://byxaxx7xsy45d" path="res://assets/ui/icons/aster.png" id="4"]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="5"]
+[ext_resource type="Texture2D" uid="uid://df7d3kr5opmer" path="res://assets/ui/elements/item_box_detail.png" id="6"]
+[ext_resource type="StyleBox" path="res://assets/ui/panels/qty_label.tres" id="7"]
 
-[sub_resource type="GDScript" id=1]
+[sub_resource type="GDScript" id="1"]
 resource_name = "item_name"
 script/source = "extends Label
 
-func set_text(t):
+func _set_text(t):
 	if typeof(t) == TYPE_OBJECT:
-		text = t[Options.get_lang()]"
+		text = t[Options.get_lang()]
+"
 
 [node name="item_info" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 141.0
 offset_bottom = 128.0
-theme = ExtResource( 5 )
-script = ExtResource( 1 )
+theme = ExtResource("5")
+script = ExtResource("1")
 
 [node name="item_properties" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 2.0
 offset_top = 34.0
 offset_right = 139.0
 offset_bottom = 51.0
-theme = ExtResource( 2 )
-theme_override_styles/panel = ExtResource( 3 )
+theme = ExtResource("2")
+theme_override_styles/panel = ExtResource("3")
 
 [node name="category" type="Label" parent="item_properties"]
+layout_mode = 1
+anchors_preset = 9
 anchor_bottom = 1.0
-offset_left = 9.0
-offset_right = 71.0
+offset_left = 8.0
+offset_top = 3.0
+offset_right = 70.0
+offset_bottom = -1.0
+grow_vertical = 2
 text = "Resource"
-valign = 1
+vertical_alignment = 1
 
 [node name="value" type="Label" parent="item_properties"]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 73.0
+offset_top = 3.0
 offset_right = -17.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "1,230"
-align = 2
-valign = 1
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="aster" type="TextureRect" parent="item_properties/value"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -55,27 +71,31 @@ offset_left = 1.0
 offset_top = -5.0
 offset_right = 9.0
 offset_bottom = 3.0
-texture = ExtResource( 4 )
+texture = ExtResource("4")
 
 [node name="item_icon" type="TextureRect" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-theme = ExtResource( 5 )
-texture = ExtResource( 6 )
+theme = ExtResource("5")
+texture = ExtResource("6")
 
 [node name="icon" type="TextureRect" parent="item_icon"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -9.0
 offset_top = -9.0
-custom_minimum_size = Vector2( 16, 16 )
-expand = true
+expand_mode = 1
 stretch_mode = 6
 
 [node name="quantity" type="Label" parent="item_icon"]
 visible = false
+clip_contents = true
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -84,43 +104,47 @@ offset_left = -27.0
 offset_top = -17.0
 offset_right = -7.0
 offset_bottom = -6.0
-clip_contents = true
-theme_override_colors/font_shadow_color = Color( 0, 0, 0, 0 )
-theme_override_styles/normal = ExtResource( 7 )
-align = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_styles/normal = ExtResource("7")
 
 [node name="item_name" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 34.0
 offset_top = 4.0
 offset_right = 139.0
 offset_bottom = 33.0
-theme = ExtResource( 2 )
-theme_override_styles/panel = ExtResource( 3 )
+theme = ExtResource("2")
+theme_override_styles/panel = ExtResource("3")
 
 [node name="label" type="Label" parent="item_name"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-align = 1
-valign = 1
-autowrap = true
-script = SubResource( 1 )
+script = SubResource("1")
 
 [node name="item_description" type="Panel" parent="."]
+layout_mode = 0
 offset_left = 2.0
 offset_top = 52.0
 offset_right = 139.0
 offset_bottom = 121.0
-theme = ExtResource( 2 )
-theme_override_styles/panel = ExtResource( 3 )
+theme = ExtResource("2")
+theme_override_styles/panel = ExtResource("3")
 
 [node name="label" type="Label" parent="item_description"]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 7.0
-offset_top = 3.0
-offset_right = -7.0
-offset_bottom = -13.0
+offset_top = 5.0
+offset_right = -4.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/line_spacing = 2
-text = "Soft, silky fur from a pufig's fluffy tail. It's said that stuffing a pillow with it will bring good dreams."
-autowrap = true
+text = "Soft, silky fur from a Pufig's fluffy tail. It's said that stuffing your pillow with it will bring good dreams.
+This is the last line."
+autowrap_mode = 2
+clip_text = true
 max_lines_visible = 6

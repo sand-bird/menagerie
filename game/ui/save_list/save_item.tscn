@@ -1,51 +1,54 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=15 format=3 uid="uid://brsgfrfl5qe3e"]
 
-[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/box_outset.tres" type="StyleBox" id=2]
-[ext_resource path="res://assets/ui/panels/box_border_inset.tres" type="StyleBox" id=3]
-[ext_resource path="res://assets/ui/panels/box_outset_dark.tres" type="StyleBox" id=4]
-[ext_resource path="res://assets/ui/panels/box_outset_light.tres" type="StyleBox" id=5]
-[ext_resource path="res://ui/save_list/save_item.gd" type="Script" id=6]
-[ext_resource path="res://assets/ui/icons/player2.png" type="Texture2D" id=7]
-[ext_resource path="res://assets/ui/icons/town.png" type="Texture2D" id=8]
-[ext_resource path="res://assets/ui/icons/monster.png" type="Texture2D" id=9]
-[ext_resource path="res://assets/ui/icons/aster.png" type="Texture2D" id=10]
-[ext_resource path="res://assets/ui/icons/encyclopedia.png" type="Texture2D" id=11]
-[ext_resource path="res://assets/ui/icons/clock.png" type="Texture2D" id=12]
-[ext_resource path="res://assets/ui/icons/calendar.png" type="Texture2D" id=13]
-[ext_resource path="res://assets/ui/panels/item_box.tres" type="StyleBox" id=14]
+[ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="1"]
+[ext_resource type="StyleBox" uid="uid://c27udro7ac0h3" path="res://assets/ui/panels/box_outset.tres" id="2"]
+[ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="3"]
+[ext_resource type="StyleBox" uid="uid://css127p16ot1n" path="res://assets/ui/panels/box_outset_dark.tres" id="4"]
+[ext_resource type="StyleBox" uid="uid://pmkvaxixfrv2" path="res://assets/ui/panels/box_outset_light.tres" id="5"]
+[ext_resource type="Script" path="res://ui/save_list/save_item.gd" id="6"]
+[ext_resource type="Texture2D" uid="uid://doqcoknciyswj" path="res://assets/ui/icons/player2.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://da5mm13bv5u0i" path="res://assets/ui/icons/town.png" id="8"]
+[ext_resource type="Texture2D" uid="uid://ckbc0gu217au3" path="res://assets/ui/icons/monster.png" id="9"]
+[ext_resource type="Texture2D" uid="uid://byxaxx7xsy45d" path="res://assets/ui/icons/aster.png" id="10"]
+[ext_resource type="Texture2D" uid="uid://dpmrul6q2ivia" path="res://assets/ui/icons/encyclopedia.png" id="11"]
+[ext_resource type="Texture2D" uid="uid://57xg1kjq2otu" path="res://assets/ui/icons/clock.png" id="12"]
+[ext_resource type="Texture2D" uid="uid://cxc86r2wp5hwm" path="res://assets/ui/icons/calendar.png" id="13"]
+[ext_resource type="StyleBox" uid="uid://dnxa3mtyis2n2" path="res://assets/ui/panels/item_box.tres" id="14"]
 
 [node name="save_item" type="Button"]
+custom_minimum_size = Vector2(192, 48)
 offset_right = 192.0
 offset_bottom = 48.0
-custom_minimum_size = Vector2( 192, 48 )
-theme = ExtResource( 1 )
-theme_override_styles/hover = ExtResource( 2 )
-theme_override_styles/pressed = ExtResource( 3 )
-theme_override_styles/focus = ExtResource( 4 )
-theme_override_styles/normal = ExtResource( 5 )
-script = ExtResource( 6 )
+theme = ExtResource("1")
+theme_override_styles/normal = ExtResource("5")
+theme_override_styles/hover = ExtResource("2")
+theme_override_styles/pressed = ExtResource("3")
+theme_override_styles/focus = ExtResource("4")
+script = ExtResource("6")
 
 [node name="player_name" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 7.0
 offset_top = 6.0
 offset_right = 14.0
 offset_bottom = 14.0
 mouse_filter = 2
-texture = ExtResource( 7 )
+texture = ExtResource("7")
 
 [node name="label" type="Label" parent="player_name"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = 3.0
 offset_top = -1.0
 offset_right = 102.0
 offset_bottom = 10.0
-custom_minimum_size = Vector2( 64, 0 )
-theme_override_colors/font_color = Color( 0.742188, 0.318909, 0.537162, 1 )
+theme_override_colors/font_color = Color(0.742188, 0.318909, 0.537162, 1)
 text = "Michelle"
 
 [node name="town_name" type="TextureRect" parent="."]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -17.0
@@ -53,27 +56,30 @@ offset_top = 6.0
 offset_right = -7.0
 offset_bottom = 14.0
 mouse_filter = 2
-texture = ExtResource( 8 )
+texture = ExtResource("8")
 
 [node name="label" type="Label" parent="town_name"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 0
 offset_left = -80.0
 offset_top = -1.0
 offset_right = -2.0
 offset_bottom = 10.0
-custom_minimum_size = Vector2( 64, 0 )
-theme_override_colors/font_color = Color( 0.0392157, 0.596078, 0.67451, 1 )
+theme_override_colors/font_color = Color(0.0392157, 0.596078, 0.67451, 1)
 text = "Sunshine"
-align = 2
+horizontal_alignment = 2
 
 [node name="monsters" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 6.0
 offset_top = 20.0
 offset_right = 16.0
 offset_bottom = 28.0
 mouse_filter = 2
-texture = ExtResource( 9 )
+texture = ExtResource("9")
 
 [node name="label" type="Label" parent="monsters"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = 3.0
@@ -83,14 +89,16 @@ offset_bottom = 10.0
 text = "999"
 
 [node name="money" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 77.0
 offset_top = 20.0
 offset_right = 85.0
 offset_bottom = 28.0
 mouse_filter = 2
-texture = ExtResource( 10 )
+texture = ExtResource("10")
 
 [node name="label" type="Label" parent="money"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = 2.0
@@ -100,24 +108,27 @@ offset_bottom = 10.0
 text = "999,999,999"
 
 [node name="encyclopedia" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 38.2774
 offset_top = 19.7226
 offset_right = 48.2774
 offset_bottom = 27.7226
 mouse_filter = 2
-texture = ExtResource( 11 )
+texture = ExtResource("11")
 
 [node name="label" type="Label" parent="encyclopedia"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = 3.0
 offset_top = -1.0
 offset_right = 23.0
 offset_bottom = 10.0
-custom_minimum_size = Vector2( 16, 0 )
 text = "100%"
 
 [node name="playtime" type="TextureRect" parent="."]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -15.0
@@ -125,46 +136,50 @@ offset_top = 20.0
 offset_right = -6.0
 offset_bottom = 28.0
 mouse_filter = 2
-texture = ExtResource( 12 )
+texture = ExtResource("12")
 
 [node name="label" type="Label" parent="playtime"]
+custom_minimum_size = Vector2(56, 0)
+layout_mode = 0
 offset_left = -58.0
 offset_top = -1.0
 offset_right = -2.0
-offset_bottom = 10.0
-custom_minimum_size = Vector2( 56, 0 )
+offset_bottom = 12.0
 text = "9999:99"
-align = 2
+horizontal_alignment = 2
 clip_text = true
 
 [node name="time" type="TextureRect" parent="."]
+layout_mode = 0
 offset_left = 6.0
 offset_top = 33.0
 offset_right = 16.0
 offset_bottom = 41.0
 mouse_filter = 2
-texture = ExtResource( 13 )
+texture = ExtResource("13")
 
 [node name="label" type="Label" parent="time"]
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = 3.0
 offset_top = -1.0
-offset_right = 144.0
-offset_bottom = 10.0
+offset_right = 145.0
+offset_bottom = 12.0
+grow_horizontal = 0
 text = "10:45a.m. Aurora 3rd, Year 4"
 
 [node name="index" type="Label" parent="."]
 visible = false
+clip_contents = true
+layout_mode = 0
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = -15.0
 offset_top = -6.0
 offset_right = 1.0
 offset_bottom = 10.0
-clip_contents = true
 size_flags_vertical = 8
-theme_override_styles/normal = ExtResource( 14 )
+theme_override_styles/normal = ExtResource("14")
 text = "1"
-align = 1
-valign = 1

@@ -23,9 +23,10 @@ func initialize(i, iref, item_size):
 	set_qty(item.qty)
 	$icon.texture = Data.fetch_res([item.id, "icon"])
 
-func set_size(size, _keep_margins = false):
-	custom_minimum_size = size
-	size = size
+# g4 complains about overriding native set_size - not sure if we need this
+#	func set_size(size, _keep_margins = false):
+#		custom_minimum_size = size
+#		size = size
 
 func set_qty(item_qty):
 	qty = item_qty

@@ -63,6 +63,7 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
+# ui input handling. there's probably a better place for this to live
 func _unhandled_input(e):
 	if e.is_action_pressed("ui_menu"):
 		emit_signal("menu_open")

@@ -28,7 +28,7 @@ SaveManager="*res://system/save_manager.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"
-PerfectScale="*res://system/perfect_scale.gd"
+PerfectScale="res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Clock="*res://system/clock.gd"
 
@@ -64,7 +64,10 @@ enabled=PackedStringArray("res://addons/event_button/plugin.cfg")
 
 [gui]
 
-theme/custom_font="res://assets/font/menagerieall_medium_12.fnt"
+theme/custom_font="res://assets/font/menagerieall3_kerned.ttf"
+theme/default_font_antialiasing=0
+theme/default_font_hinting=0
+theme/default_font_subpixel_positioning=0
 
 [image_loader]
 

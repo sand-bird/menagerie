@@ -52,11 +52,17 @@ func init():
 
 # --------------------------------------------------------------------------- #
 
+# get a data definition.  takes a path array.
+#
+# we can't call this `get` anymore because godot 4 no longer lets you override
+# native functions :(
 func fetch(a):
 	var args = Utils.pack(a)
 	Log.debug(self, ["get ", args])
 
 	var result
+	# note: i think this was to make it compatible with native `get`.
+	# not sure if it's needed anymore
 	if args.size() > 0 and args[0] in self:
 		Log.verbose(self, ["arg `", args[0], "` is a property of Data!"])
 		result = get(args[0])
@@ -75,7 +81,7 @@ func fetch(a):
 # --------------------------------------------------------------------------- #
 
 func fetch_res(a):
-	var path = fetch(a)
+	var path = get(a)
 	return ResourceLoader.load(path) if (path) else null
 
 # --------------------------------------------------------------------------- #

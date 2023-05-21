@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://di74pco1m6dwc"]
+[gd_scene load_steps=3 format=3 uid="uid://di74pco1m6dwc"]
 
 [ext_resource type="Script" path="res://_scratch/font_test.gd" id="2"]
+[ext_resource type="FontFile" uid="uid://ca2wcwkelixkr" path="res://assets/font/menagerieall_kerned.ttf" id="2_i3p8m"]
 
 [node name="font_test" type="ReferenceRect"]
 layout_direction = 1
@@ -31,6 +32,8 @@ offset_bottom = 66.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_i3p8m")
+theme_override_font_sizes/font_size = 16
 text = "this that ha at is
 
 The primary positive thing opting for you if you find you in this situation is this essay writing help is typically that you can buy. You just have to know where you can search for it.

@@ -40,7 +40,7 @@ func filter_items(filter: Dictionary):
 	for i in Player.inventory.size():
 		var id = Player.inventory[i].id
 		var data = Data.fetch(id)
-		if !data: continue  # dw, Data.get already logged it
+		if !data: continue  # dw, Data.fetch already logged it
 		var matches = true
 		for key in filter.keys():
 			if !data.has(key) or data[key] != filter[key]:
