@@ -237,7 +237,7 @@ func set_current_action(action, queue_current = true):
 		next_action = current_action
 		next_action.status = Action.Status.PAUSED
 	current_action = action
-	current_action.connect('exit', Callable(self, '_on_action_exit'))
+#	current_action.connect('exit', Callable(self, '_on_action_exit'))
 
 # --------------------------------------------------------------------------- #
 

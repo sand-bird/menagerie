@@ -26,12 +26,12 @@ func init(data):
 	if !monsters.is_empty(): test_mon = monsters[monsters.keys().front()]
 	# camera.stick_target = test_mon
 
-func _input(e): pass
-#	if e is InputEventMouseButton and e.is_pressed() and test_mon:
+func _input(e):
+	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 #		$nav.calc_path(test_mon.get_pos(), get_global_mouse_position())
-#		test_mon.set_current_action(
-#			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
-#		)
+		test_mon.set_current_action(
+			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
+		)
 
 func _process(_delta):
 	queue_redraw()
@@ -69,14 +69,14 @@ func get_screen_relative_position(pos):
 func serialize():
 	return {
 #		camera = $camera.serialize(),
-		terrain = save_terrain(),
+		terrain = $map.save_terrain(),
 		objects = save_objects(),
 		monsters = save_monsters(),
 		items = save_items()
 	}
 
 func deserialize(data):
-	load_terrain(data.terrain)
+	$map.load_terrain(data.terrain)
 	load_objects(data.objects)
 	load_monsters(data.monsters)
 	load_items(data.items)
@@ -84,28 +84,14 @@ func deserialize(data):
 #		$camera.deserialize(data.camera)
 
 # --------------------------------------------------------------------------- #
-
-func save_terrain():
-	var grid_size = $terrain.get_used_rect().size
-	var data = []
-	data.resize(grid_size.y)
-	for y in range(grid_size.y):
-		data[y] = []
-		data[y].resize(grid_size.x)
-		for x in range(grid_size.x):
-			data[y][x] = $terrain.get_cell(x, y)
-	return data
-
-func load_terrain(data):
-	for y in data.size():
-		for x in data[y].size():
-			$terrain.set_cell(0, Vector2i(x, y), data[y][x])
-	size = Vector2(data[0].size(), data.size()) * $terrain.cell_quadrant_size
-	Log.debug(self, ["garden size: ", size])
-	Log.debug(self, ["terrain used rect: ", $terrain.get_used_rect()])
-	Log.verbose(self, ["terrain used cells: ", $terrain.get_used_cells(0)])
-
-# --------------------------------------------------------------------------- #
+# note: tilemaps can now instantiate scenes as tiles.  we may be able to use
+# this for placing objects / adding them to the navmesh as unnavigable tiles.
+# however, we probably still want to keep an index of objects in the garden,
+# so we would need to start serialization/deserialization here and delegate to
+# the tilemap only for placement/instantiation.
+#
+# note note: scene tiles literally just instance the scene at the specific tile
+# coordinates, not really useful for this
 
 func save_objects():
 	var data = {}
@@ -122,12 +108,6 @@ func load_objects(data):
 		objects[uid] = object
 		$entities.add_child(object)
 #		place_object(object)
-
-# make the object 
-#func place_object(object):
-#	var position = $nav/tilemap.map_to_local(object.coordinates)
-#	object.position = position
-#	$nav/tilemap.set_cellv(object.coordinates, -1)
 
 # --------------------------------------------------------------------------- #
 

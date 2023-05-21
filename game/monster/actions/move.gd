@@ -16,7 +16,7 @@ position = position + velocity
 
 var dest: Vector2
 var speed: float
-var path: Array
+var path: Vector2
 
 
 func _init(m, d: Vector2, s: float, t = null):
@@ -40,36 +40,38 @@ func estimate_result():
 # --------------------------------------------------------------------------- #
 
 func _start():
-	path = calc_path()
+	m.get_node('nav').set_target_position(dest)
+	path = m.get_node('nav').get_next_path_position()
 	m.play_anim(Constants.Anim.WALK, speed)
 
 func _tick():
 	return { energy = -1.0 * speed }
 
-
 func _proc(delta):
-	path = calc_path()
-	if reached_dest():
+	path = m.get_node('nav').get_next_path_position()
+	
+#	path = calc_path()
+	if m.get_node('nav').is_navigation_finished():
 		exit(Status.SUCCESS)
 		return
-	if should_advance_path():
-		path.pop_front()
+#	if should_advance_path():
+#		path.pop_front()
 
-	var steering = seek(path.front())
-	var acceleration = steering / m.mass
-	m.current_velocity = (m.current_velocity + acceleration)
-	m.set_velocity(m.current_velocity / delta)
-	m.move_and_slide()
-	var _collision = m.velocity
+#	var steering = seek(path.front())
+#	var acceleration = steering / m.mass
+#	m.current_velocity = (m.current_velocity + acceleration)
+#	m.set_velocity(m.current_velocity / delta)
+#	m.move_and_slide()
+#	var _collision = m.velocity
 
 # --------------------------------------------------------------------------- #
 
-func should_advance_path():
-	return m.position.distance_squared_to(path.front()) < 5
+#func should_advance_path():
+#	return m.position.distance_squared_to(path.front()) < 5
 
 
-func reached_dest():
-	return !path.back() or m.position.distance_squared_to(path.back()) < 5
+#func reached_dest():
+#	return !path.back() or m.position.distance_squared_to(path.back()) < 5
 
 
 func seek(target):

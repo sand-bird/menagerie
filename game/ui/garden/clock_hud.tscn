@@ -115,15 +115,17 @@ texture = ExtResource("4")
 script = SubResource("2")
 
 [node name="minute_hand" type="Sprite2D" parent="clock"]
-modulate = Color(1, 0, 0, 1)
+modulate = Color(1, 0, 0, 0.501961)
 position = Vector2(5, 5)
 texture = ExtResource("5")
 centered = false
 hframes = 3
 vframes = 4
+frame = 2
 region_rect = Rect2(0, 0, 19, 19)
 
 [node name="hand" type="Sprite2D" parent="clock"]
+modulate = Color(0.501961, 0.501961, 0.501961, 1)
 position = Vector2(5, 5)
 texture = ExtResource("5")
 centered = false
