@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bq6ckffi55cft"]
 
 [ext_resource type="Script" path="res://system/game.gd" id="1"]
-[ext_resource type="PackedScene" path="res://ui/ui.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dyajlf5oxhmg8" path="res://ui/ui.tscn" id="2"]
 
 [sub_resource type="GDScript" id="1"]
 script/source = "extends \"res://ui/event_button.gd\"

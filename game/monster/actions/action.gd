@@ -33,9 +33,6 @@ var sleep_timer: int = 0
 
 # --------------------------------------------------------------------------- #
 
-func _ready():
-	Dispatcher.tick_changed.connect(tick)
-
 func _init(monster, timeout = null):
 	m = monster
 	if timeout != null: t = timeout
@@ -105,7 +102,7 @@ func tick():
 func exit(exit_status):
 	status = exit_status
 	Log.verbose(self, ['(exit) status: ', status])
-	emit_signal('exited', status)
+	exited.emit(status)
 	return status
 
 # --------------------------------------------------------------------------- #

@@ -6,7 +6,7 @@ var facing = Vector2(0, 1): set = _update_facing
 var loop_counter = 0
 
 func _ready():
-	connect("animation_finished", Callable(self, "_play_next"))
+	animation_finished.connect(_play_next)
 
 # =========================================================================== #
 #                               P L A Y B A C K                               #

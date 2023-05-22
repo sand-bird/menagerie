@@ -25,6 +25,10 @@ radius = 72.0
 script = ExtResource("1")
 
 [node name="nav" type="NavigationAgent2D" parent="."]
+path_desired_distance = 16.0
+target_desired_distance = 8.0
+path_max_distance = 16.0
+avoidance_enabled = true
 
 [node name="sprite" type="Sprite2D" parent="."]
 texture = ExtResource("2")
@@ -46,7 +50,6 @@ visible = false
 shape = SubResource("3")
 
 [node name="orientation" type="RayCast2D" parent="."]
-visible = false
 
 [node name="velocity" type="RayCast2D" parent="."]
 

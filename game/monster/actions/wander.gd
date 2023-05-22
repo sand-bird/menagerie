@@ -46,7 +46,7 @@ func _timeout():
 func new_move():
 	var dest = pick_dest()
 	move_action = MoveAction.new(m, dest, 0.6, min_dur)
-	move_action.connect('exit', Callable(self, '_on_move_exit'))
+	move_action.exited.connect(_on_move_exit)
 
 func pick_dest():
 	randomize()
@@ -58,7 +58,7 @@ func pick_dest():
 	return (direction * distance) + m.get_pos()
 
 func cleanup_move():
-	move_action.disconnect('exit', Callable(self, '_on_move_exit'))
+	move_action.exited.disconnect(_on_move_exit)
 	move_action.queue_free()
 	move_action = null
 	m.play_anim('idle')

@@ -14,10 +14,13 @@ position = position + velocity
 # success when dest is reached
 # fail on timeout
 
+const SPEED_MULTIPLIER = 1
+
 var dest: Vector2
 var speed: float
-var path: Vector2
+var path: Array
 
+var nav: NavigationAgent2D
 
 func _init(m, d: Vector2, s: float, t = null):
 	super(m, t)
@@ -40,49 +43,46 @@ func estimate_result():
 # --------------------------------------------------------------------------- #
 
 func _start():
-	m.get_node('nav').set_target_position(dest)
-	path = m.get_node('nav').get_next_path_position()
-	m.play_anim(Constants.Anim.WALK, speed)
+	nav = m.get_node('nav')
+	nav.set_target_position(dest)
+	# nav agent with object avoidance fires a signal when it's done calculating
+	# the "safe" velocity.  this happens at the end of the physics process, so
+	# we can call `move_and_slide` in the handler
+	nav.velocity_computed.connect(move)
+#	m.play_anim(Constants.Anim.WALK, speed)
 
+# on tick, report the current path for debugging
 func _tick():
+	path = nav.get_current_navigation_path()
+	print('path: ', path)
+	m.garden.get_node('path').points = path
 	return { energy = -1.0 * speed }
 
+# on proc (physics process), do all the movement stuff
 func _proc(delta):
-	path = m.get_node('nav').get_next_path_position()
-	
-#	path = calc_path()
-	if m.get_node('nav').is_navigation_finished():
+	if nav.is_navigation_finished():
+		print('nav finished')
 		exit(Status.SUCCESS)
 		return
-#	if should_advance_path():
-#		path.pop_front()
-
-#	var steering = seek(path.front())
-#	var acceleration = steering / m.mass
-#	m.current_velocity = (m.current_velocity + acceleration)
-#	m.set_velocity(m.current_velocity / delta)
-#	m.move_and_slide()
-#	var _collision = m.velocity
+	
+	var target = nav.get_next_path_position()
+	# this initial desired velocity may be modified by the navigation agent if
+	# it needs to alter our movement to avoid obstacles.  the actual desired
+	# velocity is fired in the `velocity_computed` signal from the agent and
+	# received by the `move` function below
+	var desired_velocity = (target - m.position).normalized() * speed * SPEED_MULTIPLIER
+	nav.set_velocity(desired_velocity)
 
 # --------------------------------------------------------------------------- #
 
-#func should_advance_path():
-#	return m.position.distance_squared_to(path.front()) < 5
-
-
-#func reached_dest():
-#	return !path.back() or m.position.distance_squared_to(path.back()) < 5
-
-
-func seek(target):
-	var desired_velocity = (target - m.position).normalized() * speed
-	m.desired_velocity = desired_velocity
-	m.orientation = m.current_velocity.normalized()
-
-	var steering = desired_velocity - m.current_velocity
-	return steering
-
-
-func calc_path():
-	return []
-	return m.garden.calc_path(m.position, dest)
+func move(desired_velocity):
+	# monster orientation is used to choose a sprite/animation set
+	m.orientation = desired_velocity.normalized()
+	
+	m.velocity = desired_velocity
+	
+#	var steering = desired_velocity - m.velocity
+#	var acceleration = steering / m.mass
+#	m.velocity = m.velocity + acceleration
+	
+	var _collision = m.move_and_slide()

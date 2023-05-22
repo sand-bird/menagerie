@@ -28,21 +28,10 @@ func init(data):
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
-#		$nav.calc_path(test_mon.get_pos(), get_global_mouse_position())
 		test_mon.set_current_action(
-			MoveAction.new(test_mon, get_global_mouse_position(), 1.5)
+			MoveAction.new(test_mon, get_global_mouse_position(), 1)
 		)
-
-func _process(_delta):
-	queue_redraw()
-
-func _draw():
-	super.draw_circle(test_mon.get_pos(), 4, Color.from_hsv(0, 1, 1))
-
-# --------------------------------------------------------------------------- #
-
-func calc_path(start, end): pass
-#	return $nav.calc_path(start, end)
+		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
 
 # --------------------------------------------------------------------------- #
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bdejgafuf4gj2"]
+[gd_scene load_steps=25 format=3 uid="uid://bdejgafuf4gj2"]
 
 [ext_resource type="Script" path="res://garden/garden.gd" id="1"]
 [ext_resource type="PackedScene" path="res://garden/camera.tscn" id="3"]
@@ -85,6 +85,24 @@ func _ready():
 #	pass
 "
 
+[sub_resource type="GDScript" id="GDScript_kmer2"]
+resource_name = "nav_debug.gd"
+script/source = "extends Control
+
+var points = []
+
+func draw_point(pos: Vector2, radius, color: Color):
+	points.append({ pos = pos, radius = radius, color = color })
+	queue_redraw()
+	
+func _process(_delta):
+	queue_redraw()
+
+func _draw():
+	for p in points:
+		draw_circle(p.pos, p.radius, p.color)
+"
+
 [sub_resource type="GDScript" id="3"]
 script/source = "extends Label
 
@@ -147,6 +165,18 @@ position = Vector2(145, 114)
 position = Vector2(160, 130)
 
 [node name="cursor" parent="." instance=ExtResource("8")]
+
+[node name="path" type="Line2D" parent="."]
+width = 1.0
+default_color = Color(1, 0, 1, 1)
+
+[node name="nav_debug" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = SubResource("GDScript_kmer2")
 
 [node name="ui" type="CanvasLayer" parent="."]
 

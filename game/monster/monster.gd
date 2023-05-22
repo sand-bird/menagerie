@@ -189,7 +189,7 @@ func _physics_process(delta):
 
 	# debug
 	$orientation.target_position = orientation * 20
-	$velocity.target_position = current_velocity * 20
+	$velocity.target_position = velocity * 20
 	$desired_velocity.target_position = desired_velocity * 20
 
 # --------------------------------------------------------------------------- #
@@ -237,7 +237,7 @@ func set_current_action(action, queue_current = true):
 		next_action = current_action
 		next_action.status = Action.Status.PAUSED
 	current_action = action
-#	current_action.connect('exit', Callable(self, '_on_action_exit'))
+	current_action.exited.connect(_on_action_exit)
 
 # --------------------------------------------------------------------------- #
 
@@ -248,8 +248,8 @@ func choose_action():
 # --------------------------------------------------------------------------- #
 
 func _on_action_exit(status):
-	prints('action exited with status', status, '|', current_action)
-	current_action.disconnect('exit', Callable(self, '_on_action_exit'))
+	Log.debug(self, ['action exited with status ', status, ': ', current_action])
+	current_action.exited.disconnect(_on_action_exit)
 	past_actions.append(current_action)
 	current_action = null
 	

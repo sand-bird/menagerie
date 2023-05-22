@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4yj6jc1aiyfy"]
+
+[sub_resource type="GDScript" id="GDScript_2k2fi"]
+resource_name = "nav_debug.gd"
+script/source = "extends CanvasLayer
+
+var canvas: Canvas
+
+func draw_point(pos: Vector2, radius, color: Color):
+	canvas.points.append({ pos = pos, radius = radius, color = color })
+	canvas.queue_redraw()
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	layer = 100
+	canvas = Canvas.new()
+	add_child(canvas)
+
+
+class Canvas:
+	extends Control
+	var points = []
+	
+	func _process(_delta):
+		queue_redraw()
+	
+	func _draw():
+		for p in points:
+			draw_circle(p.pos, p.radius, p.color)
+"
+
+[node name="nav_debug" type="CanvasLayer"]
+script = SubResource("GDScript_2k2fi")
