@@ -20,4 +20,4 @@ func _pressed():
 	var use_signal_name = signal_name if signal_name else self.name
 	Log.debug(self, ["dispatching signal: ", use_signal_name,
 			", args: ", args if args else "(none)"])
-	Dispatcher.emit_signal(use_signal_name, args)
+	Dispatcher.emit(use_signal_name, args)

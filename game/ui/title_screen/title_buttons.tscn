@@ -1,10 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://gv40ojjgu6rh"]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://ui/title_screen/title_buttons.gd" type="Script" id=2]
-[ext_resource path="res://addons/event_button/icon_button.png" type="Texture2D" id=3]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
+[ext_resource type="Script" path="res://ui/title_screen/title_buttons.gd" id="2"]
 
-[sub_resource type="GDScript" id=1]
+[sub_resource type="GDScript" id="1"]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
@@ -12,7 +11,7 @@ func _ready():
 	args = \"save_list\"
 "
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id="2"]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
@@ -20,7 +19,7 @@ func _ready():
 	args = [\"name_input\", 1, false]
 "
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id="3"]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): 
@@ -28,6 +27,7 @@ func _ready():
 "
 
 [node name="title_buttons" type="VBoxContainer"]
+anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -36,35 +36,24 @@ offset_left = -48.0
 offset_top = -96.0
 offset_right = 48.0
 offset_bottom = -40.0
-theme = ExtResource( 1 )
+theme = ExtResource("1")
 alignment = 1
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="load_game" type="Button" parent="."]
 visible = false
-offset_right = 96.0
-offset_bottom = 21.0
+layout_mode = 2
 text = "Load Game"
 clip_text = true
-script = SubResource( 1 )
-__meta__ = {
-"_editor_icon": ExtResource( 3 )
-}
+script = SubResource("1")
 
 [node name="new_game" type="Button" parent="."]
-offset_top = 6.0
-offset_right = 96.0
-offset_bottom = 26.0
+layout_mode = 2
 text = "New Game"
-script = SubResource( 2 )
+script = SubResource("2")
 
 [node name="quit_game" type="Button" parent="."]
-offset_top = 30.0
-offset_right = 96.0
-offset_bottom = 50.0
+layout_mode = 2
 text = "Exit"
 clip_text = true
-script = SubResource( 3 )
-__meta__ = {
-"_editor_icon": ExtResource( 3 )
-}
+script = SubResource("3")

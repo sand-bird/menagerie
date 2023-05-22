@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://c8kvc1lmny1sr"]
 
 [ext_resource type="Texture2D" uid="uid://c44ve6066el1j" path="res://assets/other/images/title.png" id="1"]
-[ext_resource type="PackedScene" path="res://ui/title_screen/title_buttons.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://gv40ojjgu6rh" path="res://ui/title_screen/title_buttons.tscn" id="2"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "title"

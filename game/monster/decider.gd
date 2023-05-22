@@ -1,7 +1,6 @@
 extends Node
 class_name Decider
 const log_name = 'Decider'
-
 """
 logic to choose which action to perform next. here's how it should work:
 

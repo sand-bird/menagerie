@@ -1,6 +1,5 @@
 extends Action
 class_name MoveAction
-
 """
 seek a position vector via boids steering behavior.
 
@@ -8,7 +7,6 @@ steering_force = truncate (steering_direction, max_force)
 acceleration = steering_force / mass
 velocity = truncate (velocity + acceleration, max_speed)
 position = position + velocity
-
 """
 
 # success when dest is reached

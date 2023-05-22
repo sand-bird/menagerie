@@ -82,7 +82,7 @@ func _unhandled_input(e):
 # - passing null still counts as an argument to the callee
 # - signals can only accept their predefined number of args
 func emit(sig, args = null, should_log = true):
-	if should_log: Log.debug(self, ["emitting signal '", sig,
+	if should_log: Log.info(self, ["emitting signal '", sig,
 			"' | args: ", Utils.pack(args) if args != null else "(none)"])
 	if args != null: emit_signal(sig, args)
 	else: emit_signal(sig)

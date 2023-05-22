@@ -1,6 +1,15 @@
-# script: perfect_scale
-
 extends Node
+"""
+Forces the viewport to render at a multiple of a valid pixel resolution, so that
+all displayed pixels appear perfectly square.  If the window is resizable, this
+will resize it to the nearest valid resolution; if not, it will add gutters to
+the edges of the viewport.
+"""
+
+# switch: 1280 × 720
+# ds: 256 × 192 (both screens)
+# gba: 240 × 160
+# 3ds: 400 × 240 (top), 320 × 240 (bottom)
 
 # set screen size constraints here. IDEAL_SIZE determines the zoom level used
 # in large resolutions, where multiple levels of zoom are valid.
@@ -19,7 +28,7 @@ const MIN_SCALE = 1
 # DEBOUNCE_TIME represents how long we wait for resize signals to stop coming
 # before we do our thing, while the timer keeps track of this for us.
 const DEBOUNCE_TIME = 0.5
-#var timer: SceneTreeTimer = null
+var timer: SceneTreeTimer
 
 var current_scale
 
@@ -36,77 +45,78 @@ func _ready():
 	window = get_window()
 	window.set_content_scale_mode(0)
 	RenderingServer.viewport_set_render_direct_to_screen(vp_rid, true)
-	window.size_changed.connect(_on_window_resize)
-	var base_size = update_screen()
+	window.size_changed.connect(debounce)
+	var base_size = update_screen(Vector2i(0, 0))
 #	Log.info(self, ["ready! window size: ", get_window().size,
 #			", base size: ", base_size])
 
 # --------------------------------------------------------------------------- #
 
-var time_since_last_update = 0
-var permit_updates = true
-
-func _physics_process(delta):
-	time_since_last_update += delta
-
-func _on_window_resize():
-	print('window size changed! old: ', win_size, ' new: ', window.size)
-	print('_on_window_resize ', permit_updates, ' | ', time_since_last_update)
-	if permit_updates: #and time_since_last_update >= DEBOUNCE_TIME:
-		update_screen()
-		time_since_last_update = 0
-		permit_updates = true
-
-
 # manually resizing the window sends a bunch of resize events, natch, but we
 # only want to rescale once, so we wait until the signals stop coming. 
 # note that SceneTreeTimer does not free itself right away, so we must manually
 # clear our timer pointer inside update_screen().
-#func debounce():
-#	print('window size changed! old: ', win_size, ' new: ', window.size)
-#	if !timer:
-#		timer = get_tree().create_timer(DEBOUNCE_TIME)
-#		timer.timeout.connect(update_screen)
-#	else:
-#		timer.time_left = DEBOUNCE_TIME
+func debounce():
+	parent_counter.y += 1
+	var counter = Vector2i(parent_counter)
+	print(counter, ' [debounce] old: ', win_size, ' new: ', window.size, ' | updating: ', updating)
+	if updating or win_size == window.size:
+		var msg = 'clearing timer' if timer else 'no timer to clear'
+		print(counter, ' [debounce] ', msg)
+		timer = null
+		return
+	else:
+		timer = get_tree().create_timer(DEBOUNCE_TIME)
+		await timer.timeout
+		update_screen(counter)
+
 
 # --------------------------------------------------------------------------- #
+
+# var permit_updates = true
+var parent_counter = Vector2i(0, 0)
+var updating = false
 
 # for pixel perfect, the window size must exactly equal the base_size times the
 # scale (the scaled_size), or else there must be a gutter of a few pixels.
 # here we resize the window if possible, or render with a gutter if not.
-func update_screen():
-	print('update_screen | permit_updates: ', permit_updates, ' | win_size: ', window.size, ', prev: ', win_size)
+func update_screen(source_counter):
+	updating = true
+	timer = null
+	parent_counter.x += 1
+	var counter = Vector2i(parent_counter)
+	print(counter, ' ', source_counter, ' [update_screen] win_size: ', window.size, ', prev: ', win_size)
+	
 	var old_win_size = win_size
 	win_size = window.size
 	
 	current_scale = get_scale(win_size)
 	window.set_content_scale_factor(current_scale)
+	window.set_content_scale_mode(Window.CONTENT_SCALE_MODE_DISABLED)
 	
 	var base_size = get_new_size(win_size, current_scale)
 	window.set_content_scale_size(base_size)
 	var scaled_size = base_size * current_scale
 	
-	# resizing the viewport also resizes the window (or at least attempts to),
-	# which triggers the size_changed signal.  if the window cannot actually be
-	# resized, we will just keep attempting it over and over in an endless loop.
-#	window.size_changed.disconnect(debounce)
+	print(counter, ' [update_screen] scaling window to ', scaled_size)
+	window.set_size(scaled_size)
+	print(counter, ' [update_screen] new window size: ', window.size)
+	if window.size != scaled_size:
+		print('***** window scale failed, we should do a gutter *****')
 	
-	if win_size == old_win_size:
-		print('window does not seem to be resizable, adding gutter')
-		permit_updates = false
-		var gutter = ((win_size - scaled_size) / 2)
-		print('gutter: ', gutter)
-		RenderingServer.viewport_attach_to_screen(vp_rid, Rect2(gutter, scaled_size))
+	var gutter = ((win_size - scaled_size) / 2)
+	print(counter, ' [update_screen] gutter: ', gutter)
+	RenderingServer.viewport_attach_to_screen(vp_rid, Rect2(gutter, scaled_size))
 	
-	viewport.set_size(scaled_size)
+#	print(counter, ' [update_screen] scaling viewport: ', scaled_size)
+#	viewport.set_size(base_size)
 	
-	Log.info(self, ["window size: ", win_size,
+	print(counter, " [update_screen] window size: ", win_size,
 			" | scaled size: ", scaled_size,
 			" | base size: ", base_size, " | viewport size: ",
-			viewport.size, " | scale: ", current_scale])
+			viewport.size, " | scale: ", current_scale)
 	
-	#window.size_changed.connect(debounce)
+	updating = false
 	return base_size
 
 # --------------------------------------------------------------------------- #

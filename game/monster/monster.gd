@@ -1,5 +1,4 @@
 extends CharacterBody2D
-
 class_name Monster
 
 #warning-ignore-all:unused_class_variable
