@@ -3,10 +3,10 @@ extends Node
 var garden
 
 func _ready():
-	Dispatcher.connect("new_game", Callable(self, "new_game"))
-	Dispatcher.connect("load_game", Callable(self, "load_game"))
-	Dispatcher.connect("save_game", Callable(self, "save_game"))
-	Dispatcher.connect("quit_game", Callable(self, "quit_game"))
+	Dispatcher.new_game.connect(new_game)
+	Dispatcher.load_game.connect(load_game)
+	Dispatcher.save_game.connect(save_game)
+	Dispatcher.quit_game.connect(quit_game)
 
 	Data.init()
 	Dispatcher.emit_signal("ui_open", "title_screen")
@@ -30,7 +30,7 @@ func load_game(save_dir):
 	var data = SaveManager.load_game(save_dir)
 	load_player(data.player)
 	load_garden(data.garden)
-	Dispatcher.connect("date_changed", Callable(self, "save_game"))
+	Dispatcher.date_changed.connect(save_game)
 
 # --------------------------------------------------------------------------- #
 

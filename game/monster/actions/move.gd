@@ -14,7 +14,7 @@ position = position + velocity
 # success when dest is reached
 # fail on timeout
 
-const SPEED_MULTIPLIER = 1
+const SPEED_MULTIPLIER = 0.1
 
 var dest: Vector2
 var speed: float
@@ -54,7 +54,6 @@ func _start():
 # on tick, report the current path for debugging
 func _tick():
 	path = nav.get_current_navigation_path()
-	print('path: ', path)
 	m.garden.get_node('path').points = path
 	return { energy = -1.0 * speed }
 
@@ -62,6 +61,7 @@ func _tick():
 func _proc(delta):
 	if nav.is_navigation_finished():
 		print('nav finished')
+		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
 		return
 	
@@ -79,10 +79,8 @@ func move(desired_velocity):
 	# monster orientation is used to choose a sprite/animation set
 	m.orientation = desired_velocity.normalized()
 	
-	m.velocity = desired_velocity
-	
-#	var steering = desired_velocity - m.velocity
-#	var acceleration = steering / m.mass
-#	m.velocity = m.velocity + acceleration
-	
-	var _collision = m.move_and_slide()
+#	m.velocity = desired_velocity
+	var steering = desired_velocity - m.velocity
+	var acceleration = steering / m.mass
+	m.velocity = m.velocity + acceleration
+	m.move_and_collide(m.velocity)

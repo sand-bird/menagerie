@@ -128,12 +128,8 @@ var orientation = Vector2(0, 1): set = _update_orientation
 var collider # whatever we're about to hit next
 var collision # whatever we've just hit
 
-var destination
 var max_speed = 40
-var max_velocity = 0.8
-var current_velocity = Vector2(0, 0)
 var desired_velocity = Vector2(0, 0)
-var arrival_radius = max_velocity * 4
 
 var points = []
 var next_point = 0
@@ -190,6 +186,7 @@ func _physics_process(delta):
 	# debug
 	$orientation.target_position = orientation * 20
 	$velocity.target_position = velocity * 20
+	$vel_text.set_text(String.num(velocity.length(), 2))
 	$desired_velocity.target_position = desired_velocity * 20
 
 # --------------------------------------------------------------------------- #
@@ -231,11 +228,14 @@ func announce(msg):
 #                                A C T I O N S                                #
 # --------------------------------------------------------------------------- #
 
-func set_current_action(action, queue_current = true):
+func set_current_action(action, queue_current = false):
 	prints('setting current action',action,queue_current)
-	if queue_current and current_action and !next_action:
-		next_action = current_action
-		next_action.status = Action.Status.PAUSED
+	if current_action:
+		if queue_current and !next_action:
+			next_action = current_action
+			next_action.status = Action.Status.PAUSED
+		else:
+			current_action.exit(Action.Status.FAILED)
 	current_action = action
 	current_action.exited.connect(_on_action_exit)
 

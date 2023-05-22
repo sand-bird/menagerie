@@ -33,10 +33,10 @@ var stack = []
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	Dispatcher.connect('ui_open', Callable(self, 'open'))
-	Dispatcher.connect('ui_close', Callable(self, 'close'))
-	Dispatcher.connect('ui_toggle', Callable(self, 'toggle'))
-	Dispatcher.connect('menu_open', Callable(self, 'open_menu'))
+	Dispatcher.ui_open.connect(open)
+	Dispatcher.ui_close.connect(close)
+	Dispatcher.ui_toggle.connect(toggle)
+	Dispatcher.menu_open.connect(open_menu)
 
 
 # =========================================================================== #

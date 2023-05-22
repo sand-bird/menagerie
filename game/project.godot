@@ -28,7 +28,7 @@ SaveManager="*res://system/save_manager.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"
-PerfectScale="res://system/perfect_scale.gd"
+PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Clock="*res://system/clock.gd"
 
@@ -45,7 +45,6 @@ window/size/viewport_width=320
 window/size/viewport_height=208
 window/size/window_width_override=640
 window/size/window_height_override=416
-window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/stretch/shrink="1"
 window/handheld/emulate_touchscreen=true

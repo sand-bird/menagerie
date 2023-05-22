@@ -25,7 +25,7 @@ func load_player():
 	add_child(player)
 	if enter: player.add_animation_library("enter", enter)
 	if exit:  player.add_animation_library("exit", exit)
-	player.connect("finished", Callable(self, "_on_transition_finished"))
+	player.finished.connect(_on_transition_finished)
 
 func open():
 	if status == "closing":
