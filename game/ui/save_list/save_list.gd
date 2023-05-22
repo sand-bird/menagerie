@@ -8,7 +8,7 @@ const SAVES_PER_PAGE = 3
 
 func _ready():
 	saves = SaveManager.get_save_info_list()
-	$pages/arrows.connect("change_page", Callable(self, "change_page"))
+	$pages/arrows.change_page.connect(change_page)
 	load_page(0)
 
 # --------------------------------------------------------------------------- #

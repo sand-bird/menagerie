@@ -14,8 +14,8 @@ resource_name = "date_info"
 script/source = "extends TextureRect
 
 func _ready():
-	Dispatcher.connect(\"date_changed\", Callable(self, \"update_date\"))
-	Dispatcher.connect(\"month_changed\", Callable(self, \"update_month\"))
+	Dispatcher.date_changed.connect(update_date)
+	Dispatcher.month_changed.connect(update_month)
 	update_date()
 	update_month()
 
@@ -32,8 +32,8 @@ resource_name = "clock"
 script/source = "extends TextureRect
 
 func _ready():
-	Dispatcher.connect(\"hour_changed\", Callable(self, \"move_hand\"))
-	Dispatcher.connect(\"tick_changed\", Callable(self, \"move_pendulum\"))
+	Dispatcher.hour_changed.connect(move_hand)
+	Dispatcher.tick_changed.connect(move_pendulum)
 	move_hand()
 	move_pendulum()
 

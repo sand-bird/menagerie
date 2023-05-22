@@ -19,7 +19,7 @@ extends "res://ui/main_menu/menu_chapter.gd"
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 func _ready():
-	Dispatcher.connect("item_selected", Callable(self, "update_current_item"))
+	Dispatcher.item_selected.connect(update_current_item)
 
 # --------------------------------------------------------------------------- #
 

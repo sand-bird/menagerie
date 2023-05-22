@@ -8,7 +8,7 @@
 script/source = "extends Sprite2D
 
 func _ready():
-	connect(\"texture_changed\", Callable(self, \"_offset_texture\"))
+	texture_changed.connect(_offset_texture)
 	_offset_texture()
 
 func _offset_texture():

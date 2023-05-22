@@ -1,8 +1,8 @@
 extends Button
 
 func _ready():
-	connect("mouse_entered", Callable(self, "grab_focus"))
-	connect("mouse_exited", Callable(self, "release_focus"))
+	mouse_entered.connect(grab_focus)
+	mouse_exited.connect(release_focus)
 
 var save_dir
 
@@ -17,5 +17,5 @@ func load_info(index, save_info):
 	$index.text = str(index)
 
 func _pressed():
-	Dispatcher.emit_signal("ui_close")
-	Dispatcher.emit_signal("load_game", save_dir)
+	Dispatcher.emit('ui_close')
+	Dispatcher.emit('load_game', save_dir)

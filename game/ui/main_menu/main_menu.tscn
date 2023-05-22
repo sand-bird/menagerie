@@ -13,7 +13,7 @@ script/source = "extends \"res://ui/event_button.gd\"
 func _ready():
 	signal_name = 'ui_close'
 	args = 'main_menu'
-	Dispatcher.connect(\"control_mode_changed\", Callable(self, \"update_visibility\"))
+	Dispatcher.control_mode_changed.connect(update_visibility)
 	update_visibility(Options.control_mode)
 
 func update_visibility(control_mode):

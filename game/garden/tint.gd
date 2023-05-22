@@ -31,7 +31,7 @@ var colors = {
 func _ready():
 	load_colors()
 	$anim.play("tint")
-	Dispatcher.connect("hour_changed", Callable(self, "sync_anim"))
+	Dispatcher.hour_changed.connect(sync_anim)
 
 # --------------------------------------------------------------------------- #
 

@@ -48,7 +48,7 @@ func init():
 	Log.debug(self, ["data: ", data.keys()])
 	Log.verbose(self, data)
 	Log.debug(self, ["schemas: ", schemas.keys()])
-	Log.verbose(self, schemas)
+#	Log.verbose(self, schemas) # apparently this is a circular structure
 
 # --------------------------------------------------------------------------- #
 

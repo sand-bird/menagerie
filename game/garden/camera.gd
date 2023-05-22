@@ -42,8 +42,8 @@ var stick_target = null
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	get_tree().connect("screen_resized", Callable(self, "_on_screen_resized"))
-	$"..".connect("resized", Callable(self, "_on_screen_resized"))
+	get_tree().get_root().size_changed.connect(_on_screen_resized)
+	$"..".resized.connect(_on_screen_resized)
 
 	_on_screen_resized()
 

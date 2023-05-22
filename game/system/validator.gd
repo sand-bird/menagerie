@@ -215,7 +215,7 @@ func validate_instance(data, schema: Dictionary, breadcrumb: String = "",
 			else: ref = ref.get(arg)
 		schema.erase('$ref')
 		schema.merge(ref)
-		Log.verbose(log_name, ["resolved ref: ", ref_value, " | schema: ", schema])
+		Log.verbose(log_name, ["resolved ref: ", ref_value, " | breadcrumb: ", breadcrumb])
 	
 	# add the instance's and schema's sources if any
 	if data is Dictionary and 'sources' in data and data.sources:

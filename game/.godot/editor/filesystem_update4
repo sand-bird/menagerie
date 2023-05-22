@@ -18,3 +18,6 @@ res://monster/actions/wander.gd
 res://monster/anim.gd
 res://system/perfect_scale.gd
 res://garden/camera.gd
+res://system/validator.gd
+res://system/data.gd
+res://system/game.gd

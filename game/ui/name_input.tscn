@@ -9,7 +9,7 @@ script/source = "extends Panel
 func _ready():
 	$submit_button.args = \"\"
 	$submit_button.disabled = true
-	$input_field.connect(\"text_changed\", Callable(self, \"_update_button\"))
+	$input_field.text_changed.connect(_update_button)
 
 func _update_button(text):
 	$submit_button.args = text

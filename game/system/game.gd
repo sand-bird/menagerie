@@ -45,7 +45,7 @@ func load_garden(data):
 	# process the garden data. garden is an instanced node, unlike player and
 	# time, and it must instantiate its own children depending on the contents
 	# of the save file.
-	garden = load("res://garden/garden.tscn").instantiate()
+	garden = preload("res://garden/garden.tscn").instantiate()
 	add_child(garden)
 	garden.init(data)
 	Player.garden = garden

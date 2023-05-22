@@ -4,11 +4,11 @@ var is_current : set = set_is_current
 var id
 
 func _ready(): 
-	connect("mouse_entered", Callable(self, "hover"))
-	connect("focus_entered", Callable(self, "hover"))
+	mouse_entered.connect(hover)
+	focus_entered.connect(hover)
 	
-	connect("mouse_exited", Callable(self, "unhover"))
-	connect("focus_exited", Callable(self, "unhover"))
+	mouse_exited.connect(unhover)
+	focus_exited.connect(unhover)
 
 func load_info(key, data):
 	id = key

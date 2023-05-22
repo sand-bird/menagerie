@@ -61,7 +61,6 @@ func get_save_info_list():
 	var saves = []
 	for save in get_save_list():
 		saves.append(get_save_info(save))
-	saves.sort_custom(Callable(self, "sort_saves"))
 	Log.debug(self, saves)
 	return saves
 

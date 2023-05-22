@@ -12,8 +12,8 @@ var next
 var prev
 
 func _ready():
-	Dispatcher.connect('menu_open', Callable(self, 'open'))
-	$content/arrows.connect('change_page', Callable(self, '_on_arrow'))
+	Dispatcher.menu_open.connect(open)
+	$content/arrows.change_page.connect(_on_arrow)
 	open("items")
 	make_tabs()
 
@@ -80,8 +80,8 @@ func load_scene(scene_path):
 	reset_headers()
 
 	var new_scene = Utils.load_relative(filename, scene_path).instantiate()
-	new_scene.connect('page_info_changed', Callable(self, '_on_page_info_changed'))
-	new_scene.connect('title_changed', Callable(self, '_on_title_changed'))
+	new_scene.page_info_changed.connect(_on_page_info_changed)
+	new_scene.title_changed.connect(_on_title_changed)
 
 	# update current scene (and destroy old scene)
 	if (current_scene):
