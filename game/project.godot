@@ -28,7 +28,6 @@ SaveManager="*res://system/save_manager.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"
-PerfectScale="*res://system/perfect_scale.gd"
 Player="*res://system/player.gd"
 Clock="*res://system/clock.gd"
 
@@ -41,10 +40,8 @@ indicators_enabled=true
 
 [display]
 
-window/size/viewport_width=426
-window/size/viewport_height=240
-window/size/window_width_override=1280
-window/size/window_height_override=720
+window/size/viewport_width=1520
+window/size/viewport_height=720
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/stretch/shrink="1"

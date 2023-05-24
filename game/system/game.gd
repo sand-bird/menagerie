@@ -46,7 +46,7 @@ func load_garden(data):
 	# time, and it must instantiate its own children depending on the contents
 	# of the save file.
 	garden = preload("res://garden/garden.tscn").instantiate()
-	add_child(garden)
+	$viewport.add_child(garden)
 	garden.init(data)
 	Player.garden = garden
 	Dispatcher.emit_signal("ui_close", 0)

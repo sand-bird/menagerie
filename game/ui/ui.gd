@@ -277,7 +277,7 @@ func find_item(arg, process = true):
 
 func find_item_by_path(ref, process = true):
 	var path = process_ref(ref) if process else ref
-	if !path: return
+	if path == null: return
 	for i in stack.size():
 		if stack[i].path == path: return i
 
