@@ -43,7 +43,7 @@ func init():
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
 
-	validate()
+#	validate()
 
 	Log.debug(self, ["data: ", data.keys()])
 	Log.verbose(self, data)

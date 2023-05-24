@@ -41,10 +41,11 @@ indicators_enabled=true
 
 [display]
 
-window/size/viewport_width=320
-window/size/viewport_height=208
-window/size/window_width_override=640
-window/size/window_height_override=416
+window/size/viewport_width=426
+window/size/viewport_height=240
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/stretch/shrink="1"
 window/handheld/emulate_touchscreen=true

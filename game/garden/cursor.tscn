@@ -70,6 +70,7 @@ anchors_preset = 0
 z_index = 999
 z_as_relative = false
 texture = ExtResource("2")
+centered = false
 
 [node name="shadow_anchor" type="Control" parent="graphic"]
 anchors_preset = 0
