@@ -1,11 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://c2emvpplmhf20"]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/panels/panel_frame.tres" type="StyleBox" id=2]
-[ext_resource path="res://ui/background_panel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://ui/text.gd" type="Script" id=4]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
+[ext_resource type="StyleBox" uid="uid://bttg6qum87qgv" path="res://assets/ui/panels/panel_frame.tres" id="2"]
+[ext_resource type="PackedScene" path="res://ui/background_panel.tscn" id="3"]
+[ext_resource type="Script" path="res://ui/text.gd" id="4"]
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id="3"]
 script/source = "extends Panel
 
 
@@ -20,40 +20,44 @@ func _button_pressed():
 	$text.tokenize('test}\\\\{{n}test\\\\.\\\\.\\\\.\\\\.\\\\.\\\\.')
 "
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.980392, 0.839216, 0.721569, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.980392, 0.839216, 0.721569, 1)
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id="2"]
 
 [node name="text_box" type="Panel"]
+custom_minimum_size = Vector2(0, 28)
 offset_right = 300.0
 offset_bottom = 53.0
-custom_minimum_size = Vector2( 0, 28 )
-theme = ExtResource( 1 )
-theme_override_styles/panel = ExtResource( 2 )
-script = SubResource( 3 )
+theme = ExtResource("1")
+theme_override_styles/panel = ExtResource("2")
+script = SubResource("3")
 
-[node name="background" parent="." instance=ExtResource( 3 )]
-theme_override_styles/panel = SubResource( 1 )
+[node name="background" parent="." instance=ExtResource("3")]
+layout_mode = 0
+theme_override_styles/panel = SubResource("1")
 
 [node name="text" type="Control" parent="."]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
 offset_top = 8.0
 offset_right = -10.0
 offset_bottom = -8.0
-theme = ExtResource( 1 )
-script = ExtResource( 4 )
+theme = ExtResource("1")
+script = ExtResource("4")
 text = "{+}Turn back now!{/} Return to {~}your chamber{/} and rejoin the rest of your {o}pathetic{/} kind! supercalifragilisticexpialidocious supercalifragilisticexpialidocious"
 
 [node name="Panel" type="Panel" parent="text"]
 show_behind_parent = true
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_styles/panel = SubResource( 2 )
+theme_override_styles/panel = SubResource("2")
 
 [node name="button" type="Button" parent="."]
+layout_mode = 0
 offset_left = 4.0
 offset_top = 55.0
 offset_right = 47.0

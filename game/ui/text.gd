@@ -13,23 +13,23 @@ TAGS & TOKENS
 tokens are special characters in the input text that are not rendered as regular
 text, and instead control how the text is to be rendered.
 
-tags are tokens wrapped in curly braces, and may have argments. some tags apply
+tags are tokens wrapped in curly braces, and may have argments.  some tags apply
 modifiers to subsequent text until they are closed.
 
-the {/} tag closes the last modifier applied. you can also close a specific
+the {/} tag closes the last modifier applied.  you can also close a specific
 modifier by adding its token as an argument, eg {/#} to close a color modifier.
 
 the following tags are supported:
-* animation modifier - {+} {~} {o}
-* color modifier - {#f0f}
+* animation modifier: {+} {~} {o}
+* color modifier: {#f0f}
   - requires a hex color code as an argument
-* text speed modifier - {>0.5}
-  - requires a numeric argument. this is a multipler of the default text speed.
-* pause - {_1.0}
+* text speed modifier: {>0.5}
+  - requires a numeric argument.  this is a multipler of the default text speed.
+* pause: {_1.0}
   - requires a numeric argument for how long to pause (in seconds, i think)
-* newline - {n}
+* newline: {n}
 
-you can escape tokens with '\'. in godot you also have to escape the backslash,
+you can escape tokens with '\'.  in godot you also have to escape the backslash,
 so `\\{` will render `{` (which would otherwise be ignored).
 
 you can also avoid built-in pauses after puncutation by escaping the punctuation
@@ -37,7 +37,7 @@ mark - eg, `\\.\\.\\.` will render an ellipsis at the same speed as normal text.
 
 EXECUTION
 ---------
-first the input text is tokenized. this populates the buffer (_buf) with objects
+first the input text is tokenized.  this populates the buffer (_buf) with dicts
 having the following properties (only `type` is relevant for NEWLINEs):
 
 * type - BufType (CHAR or NEWLINE, IMAGE isn't fully supported yet)
@@ -48,13 +48,13 @@ having the following properties (only `type` is relevant for NEWLINEs):
 
 RENDERING
 ---------
-we rerender the entire buffer on every frame. characters first appear when the
-time is greater than their `at` value. if the character has an animation, its
+we rerender the entire buffer on every frame.  characters first appear when the
+time is greater than their `at` value.  if the character has an animation, its
 position is modified when we rerender it so that it appears to move around.
 
 rendering a character uses the bitmap font's `draw_char` method, which draws the
 character to the given position relative to its parent container, and returns
-the position for the next character with kerning applied. (i am not sure why
+the position for the next character with kerning applied.  (i am not sure why
 animations that move the character horizontally don't affect subsequent chars,
 but it seems to work fine.)
 
@@ -63,7 +63,7 @@ NOTES
 * no support for pagination yet - we can calculate the max number of lines based
   on the size of the parent container, but we don't currently use it.
 * forever incrementing `time` might cause integer overflow errors eventually
-* no support yet for clearing or replacing/appending text. appending is tricky
+* no support yet for clearing or replacing/appending text.  appending is tricky
   because rendering depends on `time` - if we reset it, it resets animations,
   but if we don't reset it then the appended text may appear instantly.
 """
@@ -169,7 +169,7 @@ func tokenize(raw: String) -> void:
 
 		_buf.push_back({
 			type = BufType.CHAR,
-			uni = raw.ord_at(i),
+			uni = raw.unicode_at(i),
 			at = current_at,
 			anim = _modifiers.anim,
 			color = (_modifiers.color if _modifiers.color
@@ -230,15 +230,16 @@ func parse_tag(i: int, raw: String) -> int:
 
 	var tag = raw.substr(i + 1, end_of_tag - i - 1).replace(' ', '')
 	# if tag is blank, we can safely skip it
-	if !tag: return end_of_tag
+	if tag == null: return end_of_tag
 
 	# whatever is not the token is the argument
-	var arg: String = tag.right(1)
+	var arg: String = tag.substr(1)
 
 	if tag[0] in TOKENS:
 		set_modifier(tag[0], arg)
 	elif tag[0] == '/':
-		if arg: reset_modifier(arg)
+		if arg:
+			reset_modifier(arg)
 		elif !_mod_tokens.is_empty():
 			reset_modifier(_mod_tokens.pop_back())
 	elif tag[0] == 'n':
@@ -280,7 +281,7 @@ var time = 0.0
 
 func _physics_process(delta: float):
 	time += delta
-	update()
+	queue_redraw()
 
 # --------------------------------------------------------------------------- #
 
@@ -299,12 +300,19 @@ func _draw():
 #                       r e n d e r   f u n c t i o n s
 # --------------------------------------------------------------------------- #
 
+# draw_char now takes a font size instead of the next char, meaning it doesn't
+# support kerning anymore (godot recommends we not use it to draw text one
+# character at a time).  screw them; we can keep using this if we can get the
+# kerning for the pair and manually offset the next position.
+# (note: line length calculation during tokenizing _does_ appear to work with
+# kerning, so all we have to do is fix rendering)
 func do_draw_char(i: int, pos: Vector2) -> int:
 	return font.draw_char(
 		rid,
 		do_anim(i, pos),
 		_buf[i].uni,
-		next_char(i), # passing the next char allows the font to apply kerning
+		16, # font size
+#		next_char(i), # passing the next char allows the font to apply kerning
 		_buf[i].color
 	)
 
