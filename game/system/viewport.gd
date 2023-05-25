@@ -6,22 +6,22 @@ will resize it to the nearest valid resolution; if not, it will add gutters to
 the edges of the viewport.
 """
 
-# switch: 1280 × 720
-# ds: 256 × 192 (both screens)
-# gba: 240 × 160
-# 3ds: 400 × 240 (top), 320 × 240 (bottom)
+# switch: 1280 × 720 -> (426,240) @ 3x + (2,0)
+# 3ds: 400 × 240 (top), 320 × 240 (bottom) -> 1x
+# ds: 256 × 192 (both screens) -> too small
+# gba: 240 × 160  -> too small
 
 # set screen size constraints here. IDEAL_SIZE determines the zoom level used
 # in large resolutions, where multiple levels of zoom are valid.
-const IDEAL_SIZE = Vector2i(460, 320)
+const IDEAL_SIZE = Vector2i(400, 320)
 # TOFIX: screen clipping in fullscreen when min sizes are inconsistent with the
 # aspect ratio constraints
 const MIN_SIZE = Vector2i(320, 208)
 const MAX_SIZE = Vector2i(480, 360)
 
 # superceded by the maximum and minimum size constraints
-const MIN_ASPECT = 9.0/19.5
-const MAX_ASPECT = 3.0/4.0
+const MIN_ASPECT = 9.0/19.5 # 0.46
+const MAX_ASPECT = 3.0/4.0  # 0.75
 
 const MIN_SCALE = 1
 
@@ -114,19 +114,40 @@ func update_screen(source_counter):
 
 # --------------------------------------------------------------------------- #
 
+# just some sugar to floating-point divide our many ints
+func div(a: int, b: int) -> float: return float(a) / float(b)
+
 # the scale is found using IDEAL_SIZE, then clamped to the minimum and maximum
 # possible scale just in case. if the window's width exceeds the maximum aspect
 # ratio, we must calculate the scale using its height.
 func get_scale(win_size) -> int:
-	var i = 'y' if float(win_size.y) / float(win_size.x) < MIN_ASPECT else 'x'
-	return max(
-		clamp(
-			round(float(win_size[i]) / float(IDEAL_SIZE[i])),
-			ceil(float(win_size[i]) / float(MAX_SIZE[i])),
-			floor(float(win_size[i]) / float(MIN_SIZE[i]))
-		),
-		MIN_SCALE
-	)
+	var scale_x = div(win_size.x, IDEAL_SIZE.x)
+	var scale_y = div(win_size.y, IDEAL_SIZE.y)
+	
+	Log.verbose(self, ['x:', scale_x, 'y:', scale_y])
+	
+	var aspect = div(win_size.y, win_size.x)
+	# if the window's aspect ratio is closer to the minimum (wider), use height
+	# to calculate scale; if closer to the maximum (taller), use width
+	var weight = inverse_lerp(MIN_ASPECT, MAX_ASPECT, aspect)
+	var i = 'y' if weight < 0.5 else 'x'
+	Log.verbose(self, ['[get_scale] aspect:', aspect, 'weight:', weight, 'i:', i])
+	Log.verbose(self, ['[get_scale] win:', win_size[i],
+		'ideal:', IDEAL_SIZE[i], 'min:', MIN_SIZE[i], 'max:', MAX_SIZE[i]
+	])
+	var scale_basis = div(win_size[i], IDEAL_SIZE[i])
+	var scale_min = ceil(div(win_size[i], MAX_SIZE[i]))
+	var scale_max = floor(div(win_size[i], MIN_SIZE[i]))
+	
+	var result = clamp(round(scale_basis), scale_min, scale_max)
+	
+	Log.verbose(self, ['[get_scale]',
+		'scale_basis:', scale_basis,
+		'scale_min:', scale_min,
+		'scale_max:', scale_max,
+		'result:', result,
+	])
+	return max(result, MIN_SCALE)
 
 # --------------------------------------------------------------------------- #
 
