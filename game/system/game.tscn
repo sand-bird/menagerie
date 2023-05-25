@@ -19,9 +19,10 @@ script = ExtResource("1")
 [node name="viewport" type="SubViewport" parent="."]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(506, 240)
+size = Vector2i(426, 240)
 render_target_update_mode = 4
 script = ExtResource("2_rt0sc")
 
 [node name="ui" type="CanvasLayer" parent="viewport"]
+layer = 2
 script = ExtResource("3_n1r56")

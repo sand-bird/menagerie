@@ -127,9 +127,9 @@ func toggle(item_ref):
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
-	var noarg = !page
-	if !page: page = last_menu_page
-	if !page: page = DEFAULT_MENU_PAGE
+	var noarg = page == null
+	if page == null: page = last_menu_page
+	if page == null: page = DEFAULT_MENU_PAGE
 	last_menu_page = page
 
 	var menu_path = process_ref('main_menu')
