@@ -109,7 +109,7 @@ static func trans(t):
 # just returns the string minus the first char
 # maybe todo: double-check if sigil before trying to strip
 static func strip_sigil(s):
-	return s.substr(1, s.length() - 1)
+	return s.substr(1)
 
 # --------------------------------------------------------------------------- #
 
@@ -238,8 +238,8 @@ static func randi_thresh(anchor, threshold):
 
 # --------------------------------------------------------------------------- #
 
-static func randi_range(a, b):
-	return a + randi() % (int(b) - int(a) + 1)
+#static func randi_range(a, b):
+#	return a + randi() % (int(b) - int(a) + 1)
 
 # --------------------------------------------------------------------------- #
 

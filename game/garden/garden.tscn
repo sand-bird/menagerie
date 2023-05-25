@@ -137,7 +137,6 @@ layer_1/tile_data = PackedInt32Array()
 script = ExtResource("4_p8gd4")
 
 [node name="tint" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0.400681, 0.34639, 0.550781, 1)
 script = ExtResource("7")
 

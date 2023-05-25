@@ -13,11 +13,11 @@ var move_action: MoveAction
 var wait_counter = 0
 
 # TODO: allow speed to be passed in here
-func _init(m, t = null):
-	super(m)
+func _init(_m, _t = null):
+	super(_m)
 	name = 'wander'
-	if !t: t = Utils.randi_range(min_dur, max_dur)
-	super._init(m, t)
+	if !t: t = randi_range(min_dur, max_dur)
+	super._init(_m, _t)
 
 func estimate_result():
 	return { energy = -0.2 * t }
@@ -63,6 +63,6 @@ func cleanup_move():
 	move_action = null
 	m.play_anim('idle')
 
-func _on_move_exit(status):
+func _on_move_exit(_status):
 	cleanup_move()
-	wait_counter = Utils.randi_range(0, 5)
+	wait_counter = randi_range(0, 5)

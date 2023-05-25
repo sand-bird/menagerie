@@ -26,6 +26,6 @@ func detach():
 	entity = null
 	hide()
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if entity:
 		position = Player.garden.get_screen_relative_position(entity.get_position())

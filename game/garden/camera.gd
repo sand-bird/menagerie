@@ -114,7 +114,7 @@ func stick(target):
 # scroll based on touch (or click) input. moves the camera opposite the drag
 # direction and magnitude to create the impression of dragging the screen.
 func do_drag_scroll():
-	if Input.is_mouse_button_pressed(1) && drag_action == "scroll":
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && drag_action == "scroll":
 		# calculate move delta
 		var mouse_pos = get_local_mouse_position()
 		var move_delta = last_mouse_pos - mouse_pos
@@ -158,7 +158,7 @@ func do_joystick_scroll():
 
 # --------------------------------------------------------------------------- #
 
-func _process(delta):
+func _process(_delta):
 	# update target_pos via our scroll methods
 	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
 	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()

@@ -20,11 +20,11 @@ var path: Array
 
 var nav: NavigationAgent2D
 
-func _init(m, d: Vector2, s: float, t = null):
-	super(m, t)
+func _init(_m, _dest: Vector2, _speed: float, _t = null):
+	super(_m, _t)
 	name = 'move'
-	dest = d
-	speed = s
+	dest = _dest
+	speed = _speed
 
 # moving costs a variable amount of energy per tick depending on speed;
 # it costs more energy to move faster over the same amount of ground.
@@ -56,7 +56,7 @@ func _tick():
 	return { energy = -1.0 * speed }
 
 # on proc (physics process), do all the movement stuff
-func _proc(delta):
+func _proc(_delta):
 	if nav.is_navigation_finished():
 		print('nav finished')
 		m.velocity = Vector2(0, 0)

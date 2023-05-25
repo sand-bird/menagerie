@@ -93,17 +93,17 @@ func update_screen(source_counter):
 	
 	var gutter = (window.size - scaled_size) / 2
 	if gutter.x < 0 or gutter.y < 0:
-		prints(c, "[update_screen] WARNING, negative gutter!", gutter,
+		prints(c, source_counter, "[update_screen] WARNING, negative gutter!", gutter,
 			"| window size:", window.size,
 			"| scaled size:", scaled_size,
 			"| base size:", base_size,
 			"| scale:", current_scale
 		)
 	parent.position = gutter
-	parent.size = scaled_size
+	parent.set_deferred('size', scaled_size)
 	parent.stretch_shrink = current_scale
 	
-	Log.verbose(self, [c,
+	Log.verbose(self, [c, source_counter,
 		"[update_screen] done! window size:", window.size,
 		"| scaled size:", scaled_size,
 		"| base size:", base_size,

@@ -151,7 +151,7 @@ static func _get_op(args, caller, parent):
 	var result
 
 	# check that data and key exist
-	if !data:
+	if data == null:
 		Log.error(log_name, ["(_get) failed: collection '", args[0],
 				"' could not be resolved"])
 		return null
@@ -169,7 +169,7 @@ static func _get_op(args, caller, parent):
 	elif typeof(data) == TYPE_DICTIONARY and data.has(key):
 		result = data[key]
 
-	if !result:
+	if result == null:
 		Log.error(log_name, ["(_get) failed: key '", key,
 				"' not found in collection ", data])
 	return result
@@ -275,7 +275,7 @@ static func expand_ops(arg):
 		var pos = op_pos[1]
 		return {seperators[op]: [
 			expand_ops(arg.left(pos)),
-			expand_ops(arg.right(pos + 1))
+			expand_ops(arg.substr(pos + 1))
 		]}
 	else: return arg
 

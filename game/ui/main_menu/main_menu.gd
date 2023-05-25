@@ -49,7 +49,7 @@ func open(input = null):
 			str("'", current, "'") if current else "(none)"])
 
 	var chapter_info = get_chapter_info(chapter)
-	if !chapter_info:
+	if chapter_info == null:
 		Log.error(self, ["(open) menu chapter '", chapter, "' not found!"])
 		return
 	load_scene(chapter_info.scene)
@@ -79,7 +79,7 @@ func load_scene(scene_path):
 	# last scene, we reset it to default
 	reset_headers()
 
-	var new_scene = Utils.load_relative(filename, scene_path).instantiate()
+	var new_scene = Utils.load_relative(scene_file_path, scene_path).instantiate()
 	new_scene.page_info_changed.connect(_on_page_info_changed)
 	new_scene.title_changed.connect(_on_title_changed)
 

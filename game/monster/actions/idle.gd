@@ -5,10 +5,10 @@ const min_dur = int(0.5 * Clock.TICKS_IN_HOUR)
 const max_dur = 3 * Clock.TICKS_IN_HOUR
 const energy_per_tick := 0.5
 
-func _init(m, t = null):
+func _init(_m, _t = null):
 	super(m)
 	name = 'idle'
-	if !t: t = Utils.randi_range(min_dur, max_dur)
+	if !_t: _t = randi_range(min_dur, max_dur)
 	super._init(m, t)
 
 func estimate_result():

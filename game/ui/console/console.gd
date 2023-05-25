@@ -10,7 +10,7 @@ var logged_lines = []
 var user_input = ""
 
 # previously executed commands
-var previous_commands = []
+var prev_commands = []
 # the current index of prev_commands
 var prev_index = null
 # the command that was in progress before we started going through prev commands
@@ -41,14 +41,15 @@ Prints the current time after modification.""".format({
 	
 	data = """Display info about data definitions.
 When called with no arguments, prints the IDs of all currently loaded data definitions.
-Call it with an ID to print the keys of that data definition instead.
+Call it with an ID to print the content of that data definition instead.
 Accepts an arbitrary number of arguments; subsequent arguments can be used to inspect nested properties of a data definition.""",
 	
 	inventory = """Print the contents of the player's inventory.""",
 	
 	get = """Add stuff to the inventory.
 Requires a single argument: the ID of the thing to add (look up valid IDs with the {c}data{/c} command).
-Takes an optional second argument for quantity (defaults to 1).""",
+Takes an optional second argument for quantity (defaults to 1).
+(Note: this is disabled for now while we decide on a schema for the inventory)""",
 	
 	save = """Save the game (assuming a safe file is loaded).""",
 	
@@ -66,14 +67,14 @@ Does not ask for confirmation. Don't do this by accident!""",
 
 func cmd_help(args = []):
 	if args.size() == 0:
-		self.log("The following commands are available:")
-		self.log("  " + ', '.join(help.keys().map(
+		put("The following commands are available:")
+		put("  " + ', '.join(help.keys().map(
 			func (key): return '{c}' + key + '{/c}'
 		)))
-		self.log("\nTry {c}help <name>{/c} for help with a specific command.")
-		self.log("Most commands can be called with arguments separated by spaces, eg {c}time 11 23{/c}.")
+		put("\nTry {c}help <name>{/c} for help with a specific command.")
+		put("Most commands can be called with arguments separated by spaces, eg {c}time 11 23{/c}.")
 	elif help.has(args[0]):
-		self.log(help[args[0]])
+		put(help[args[0]])
 
 
 func cmd_time(args):
@@ -83,12 +84,12 @@ func cmd_time(args):
 	Clock.month = int(args[3] if args.size() > 3 else Clock.month)
 	Clock.year = int(args[4] if args.size() > 4 else Clock.year)
 	
-	self.log([Clock.tick, Clock.hour, Clock.date, Clock.month, Clock.year])
-	self.log(Clock.get_printable_time())
+	put([Clock.tick, Clock.hour, Clock.date, Clock.month, Clock.year])
+	put(Clock.get_printable_time())
 
 
-func cmd_test(args):
-	self.log('test test test')
+func cmd_test(_args):
+	put('test test test')
 
 
 func cmd_data(args = []):
@@ -96,36 +97,37 @@ func cmd_data(args = []):
 	if args.size() >= 1:
 		data = Data.fetch(args)
 	
-	if args.size() < 1:
-		self.log('{ ' + ', '.join(data.keys()) + ' }')
 	# log out the keys if the element is a dict of dicts
 #	if typeof(data) == TYPE_DICTIONARY and data.values().any(
 #		func (v): return typeof(v) == TYPE_DICTIONARY
 #	):
-#		self.log('{ ' + ', '.join(data.keys()) + ' }')
+	if args.size() < 1:
+		put('{ ' + ', '.join(data.keys()) + ' }')
+	
 	else:
-		self.log(JSON.stringify(data, "  ", false))
+		put(JSON.stringify(data, "  ", false))
 
 
-func cmd_inventory(args):
-	self.log(Player.inventory)
+func cmd_inventory(_args):
+	put(Player.inventory)
 
 
 func cmd_get(args: Array):
 	if args.size() <= 0:
-		self.log("Error: {c}get{/c} requires a data ID")
+		put("Error: {c}get{/c} requires a data ID")
 		return
 	var id = args[0]
 	if (Data.fetch(id) == null):
-		self.log("Error: '" + id + "' is not a valid id")
+		put("Error: '" + id + "' is not a valid id")
 	var qty = args[1] if args.size() > 1 else 1
 #	Player.inventory.append({ id = id, qty = qty })
 
 func cmd_save(_args):
 	if SaveManager.current_save_dir == null:
-		self.log("No save file loaded!")
+		put("No save file loaded!")
 		return
 	Dispatcher.emit('save_game')
+	put("Saved " + SaveManager.current_save_dir)
 
 func cmd_exit(_args):
 	Dispatcher.emit("ui_toggle", "console")
@@ -174,32 +176,32 @@ func _input(event):
 		update_user_input()
 
 func load_previous_command(current_command):
-	if previous_commands.is_empty() or prev_index == 0:
+	if prev_commands.is_empty() or prev_index == 0:
 		return current_command
 	if prev_index == null:
 		stored_command = current_command
-		prev_index = previous_commands.size()
+		prev_index = prev_commands.size()
 	prev_index -= 1
-	return previous_commands[prev_index]
+	return prev_commands[prev_index]
 
 func load_next_command(current_command):
-	if previous_commands.is_empty() or prev_index == null:
+	if prev_commands.is_empty() or prev_index == null:
 		return current_command
-	if prev_index >= previous_commands.size() - 1:
+	if prev_index >= prev_commands.size() - 1:
 		prev_index = null
 		return stored_command
 	prev_index += 1
-	return previous_commands[prev_index]
+	return prev_commands[prev_index]
 
 # User chose to enter their current input. Try to execute a command.
 func handle_user_input():
 	$output.push_color(Color.from_string(input_color, Color(1, 1, 1)))
-	self.log('> ' + user_input)
+	put('> ' + user_input)
 	$output.push_color(Color.from_string(output_color, Color(1, 1, 1)))
 	
 	# save the command to history unless it is an exact dupe
-	if user_input != previous_commands.back():
-		previous_commands.push_back(user_input)
+	if prev_commands.is_empty() or user_input != prev_commands.back():
+		prev_commands.push_back(user_input)
 	prev_index = null
 	
 	# Split into space-separated tokens
@@ -218,7 +220,7 @@ func handle_user_input():
 	if has_method(method_name):
 		call(method_name, arglist)
 	else:
-		self.log('Unknown command {c}' + command_name + '{/c}')
+		put('Unknown command {c}' + command_name + '{/c}')
 	$output.newline()
 
 
@@ -227,7 +229,7 @@ func update_user_input():
 
 # substituting color bbcode for commands is so common that we do it every log,
 # so that text only needs to wrap the command in {c}...{/c}
-func log(x):
+func put(x):
 	for line in str(x).split("\n"):
 		$output.append_text(line.format({
 			'c': '[color=' + input_color + ']',

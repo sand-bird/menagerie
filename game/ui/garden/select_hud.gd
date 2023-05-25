@@ -80,7 +80,7 @@ func set_target(new_target: Node2D):
 # 1`get_incoming_connections` returns everything linked to a callable in this
 # script, eg `Dispatcher.entity_highlighted`.  we filter those for signals on
 # the target, and just disconnect those.
-func clear_target(entity = null):
+func clear_target(_entity = null):
 	hide()
 	if !target: return
 	for c in get_incoming_connections():

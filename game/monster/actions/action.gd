@@ -127,7 +127,7 @@ func _unpause(): _start()
 func _tick(): pass
 
 # called each process update
-func _proc(delta): pass
+func _proc(_delta): pass
 
 # behavior when the timeout expires. all actions need a timeout to prevent
 # infinite loops. by default the action fails, but this can be overridden by

@@ -13,7 +13,7 @@ func initialize(data):
 	# $shape.shape.radius = 8
 	update_z()
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	z_index = int(position.y) + 16
 
 # --------------------------------------------------------------------------- #

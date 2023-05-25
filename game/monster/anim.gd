@@ -31,7 +31,7 @@ func queue_anim(anim_id, loops = 0):
 # we execute this on our own `animation_finished` signal, which passes the
 # finished animation's id. no choice but to accept the argument, even though we
 # don't need it.
-func _play_next(old_anim = null):
+func _play_next(_old_anim = null):
 	if loop_counter - 1 > 0:
 		loop_counter = loop_counter - 1
 	elif !queue.is_empty():
@@ -92,13 +92,13 @@ func _add_facing(anim_info, anim_name, flip = false):
 	anim.loop_mode = Animation.LOOP_NONE
 
 	# add a track to set our texture to the spritesheet specified in the datafile
-	anim.add_track(0)
+	anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(0, ".:texture")
 	var spritesheet = ResourceLoader.load(anim_info.sprites)
 	anim.track_insert_key(0, 0.0, spritesheet)
 
 	# add a track to set the hframes value of our texture
-	anim.add_track(0)
+	anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(1, ".:hframes")
 	anim.track_insert_key(1, 0.0, anim_info.frames)
 
@@ -109,13 +109,13 @@ func _add_facing(anim_info, anim_name, flip = false):
 	# it out (boolean XOR).
 	var should_flip = (anim_info.flip != flip
 			if anim_info.has("flip") else flip)
-	anim.add_track(0)
+	anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(1, ".:flip_h")
 	anim.track_insert_key(1, 0.0, should_flip)
 
 	# add the animation track, with a keyframe for each frame in the spritesheet
 	# at intervals determined by the `step` parameter we calculated earlier
-	anim.add_track(0)
+	anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(2, ".:frame")
 	anim.track_set_interpolation_loop_wrap(2, false)
 	for frame in range(anim_info.frames):

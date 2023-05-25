@@ -43,7 +43,7 @@ func init():
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
 
-#	validate()
+	validate()
 
 	Log.debug(self, ["data: ", data.keys()])
 	Log.verbose(self, data)
@@ -361,7 +361,7 @@ func merge(base, mod):
 		var replace = false
 		if k[0] == '!':
 			replace = true
-			k = Condition.strip_sigil(key)
+			k = Utils.strip_sigil(key)
 		if base.has(k) and !replace:
 			if typeof(base[k]) == TYPE_ARRAY:
 				if typeof(mod[k]) == TYPE_ARRAY:

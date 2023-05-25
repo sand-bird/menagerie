@@ -415,7 +415,7 @@ func unfocus():
 
 # --------------------------------------------------------------------------- #
 
-func _on_discipline(discipline_type):
+func _on_discipline(_discipline_type):
 	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
 	# update_preferences(discipline_type)
 	# update_mood(discipline_type)
