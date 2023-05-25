@@ -225,7 +225,8 @@ func handle_user_input():
 
 
 func update_user_input():
-	$input.text = "> [color=" + input_color + "]" + user_input + "[/color]|"
+	$input.clear()
+	$input.append_text( "> [color=" + input_color + "]" + user_input + "[/color]|")
 
 # substituting color bbcode for commands is so common that we do it every log,
 # so that text only needs to wrap the command in {c}...{/c}
