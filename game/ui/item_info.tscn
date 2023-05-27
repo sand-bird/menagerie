@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://byxaxx7xsy45d" path="res://assets/ui/icons/aster.png" id="4"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="5"]
 [ext_resource type="Texture2D" uid="uid://df7d3kr5opmer" path="res://assets/ui/elements/item_box_detail.png" id="6"]
-[ext_resource type="StyleBox" path="res://assets/ui/panels/qty_label.tres" id="7"]
+[ext_resource type="StyleBox" uid="uid://dg5c15dcn8f3k" path="res://assets/ui/panels/qty_label.tres" id="7"]
 
 [sub_resource type="GDScript" id="1"]
 resource_name = "item_name"

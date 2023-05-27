@@ -1,5 +1,4 @@
 {
-  "title": "Metadata",
   "type": "object",
   "properties": {
     "id": {
@@ -18,7 +17,9 @@
       "type": "string"
     },
     "date": {
-      "type": "date"
+      "$comment": "This is our only usage of the date format and doesn't appear to be used anywhere, so I'm not sure how it's actually supposed to be encoded.  Consequently we don't currently validate the 'date' format in validator.gd",
+      "type": "string",
+      "format": "date"
     },
     "version": {
       "type": "string",
@@ -36,8 +37,8 @@
     "schemas": {
       "type": "object",
       "additionalProperties": {
-        "$comment": "must be a valid filepath.",
-        "type": "string"
+        "type": "string",
+        "format": "filepath"
       }
     }
   },

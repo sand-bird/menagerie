@@ -1,6 +1,12 @@
 {
   "title": "NPC",
   "type": "object",
+  "required": [
+    "id",
+    "name",
+    "birthday",
+    "locations"
+  ],
   "properties": {
     "id": {
       "$ref": "definitions/id"
@@ -55,12 +61,6 @@
           "dialogue"
         ]
       }
-    },
-    "required": [
-      "id",
-      "name",
-      "birthday",
-      "locations"
-    ]
+    }
   }
 }

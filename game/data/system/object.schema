@@ -1,17 +1,24 @@
 {
-  "title": "Object",
   "type": "object",
   "required": [
     "id",
-    "name",
     "type",
-    "category",
+    "name",
     "description",
-    "icon",
-    "sprite",
     "value",
     "size"
   ],
+  "propertyNames": {
+    "enum": [
+      "id",
+      "type",
+      "name",
+      "description",
+      "value",
+      "size",
+      "traits"
+    ]
+  },
   "properties": {
     "id": {
       "$ref": "definitions/id"
@@ -20,32 +27,45 @@
       "type": "string",
       "const": "object"
     },
-    "name": {
-      "$ref": "definitions/text16"
-    },
-    "description": {
-      "$ref": "definitions/text128"
-    },
-    "sprite": {
-      "$ref": "definitions/file"
-    },
     "size": {
-      "$comment": "in grid squares. number for a square object, array of [x, y] for rectangular.",
-      "anyOf": [
-        {
-          "type": "number",
-          "minValue": 1
+      "$comment": "Size in grid squares, array of [x, y]",
+      "type": "array",
+      "items": {
+        "type": "number",
+        "minValue": 1
+      },
+      "minItems": 2,
+      "maxItems": 2
+    }
+  },
+  "$defs": {
+    "objectOrState": {
+      "$comment": "Properties that can belong to an object or one of its states (the current state overrides the property of the parent object, if both are defined.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "propertyNames": {
+        "enum": [
+          "name",
+          "description",
+          "value"
+        ]
+      },
+      "properties": {
+        "name": {
+          "$comment": "",
+          "$ref": "definitions/text32"
         },
-        {
-          "type": "array",
-          "items": {
-            "type": "number",
-            "minValue": 1
-          },
-          "minItems": 2,
-          "maxItems": 2
+        "description": {
+          "$ref": "definitions/text128"
+        },
+        "value": {
+          "$comment": "Base monetary value",
+          "type": "integer",
+          "minimum": 0
         }
-      ]
+      }
     }
   }
 }

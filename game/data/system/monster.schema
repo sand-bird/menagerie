@@ -1,5 +1,4 @@
 {
-  "title": "Monster",
   "type": "object",
   "required": [
     "id",
@@ -8,15 +7,24 @@
     "description",
     "morphs"
   ],
+  "propertyNames": {
+    "enum": [
+      "id",
+      "type",
+      "name",
+      "description",
+      "gender_balance",
+      "evolves_into",
+      "morphs"
+    ]
+  },
   "properties": {
     "id": {
       "$ref": "definitions/id"
     },
     "type": {
       "type": "string",
-      "enum": [
-        "monster"
-      ]
+      "const": "monster"
     },
     "name": {
       "$ref": "definitions/text16"
@@ -26,6 +34,7 @@
     },
     "gender_balance": {
       "type": "number",
+      "$comment": "Odds of having a Y chromosome. Values closer to 0 are skewed female, closer to 1 are skewed male.",
       "minimum": 0,
       "maximum": 1,
       "default": 0.5
@@ -34,9 +43,25 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
+        "required": [
+          "name",
+          "animations"
+        ],
+        "propertyNames": {
+          "enum": [
+            "name",
+            "description",
+            "cond",
+            "weight",
+            "animations"
+          ]
+        },
         "properties": {
           "name": {
             "$ref": "definitions/text16"
+          },
+          "description": {
+            "$ref": "definitions/text"
           },
           "cond": {
             "$ref": "definitions/condition"
@@ -46,14 +71,13 @@
           },
           "animations": {
             "type": "object",
-            "$comment": "",
             "required": [
               "walk",
               "idle",
               "sleep"
             ],
+            "minProperties": 1,
             "propertyNames": {
-              "type": "string",
               "enum": [
                 "walk",
                 "run",
@@ -66,43 +90,46 @@
               ]
             },
             "additionalProperties": {
-              "type": "array",
-              "maxItems": 2,
-              "minItems": 2,
-              "items": {
+              "type": "object",
+              "required": [
+                "front",
+                "back"
+              ],
+              "propertyNames": {
+                "enum": [
+                  "front",
+                  "back"
+                ]
+              },
+              "$comment": "Animation values look like `{ front: { left, right }, back: { left } }`. One of either `left` or `right` is required for front and back.  If both are provided, we use both, otherwise the provided sprite is flipped horizontally.",
+              "additionalProperties": {
                 "type": "object",
-                "required": [
-                  "sprites",
-                  "frames",
-                  "fps"
-                ],
-                "properties": {
-                  "sprites": {
-                    "ref": "definitions/file"
+                "propertyNames": {
+                  "enum": [
+                    "left",
+                    "right"
+                  ]
+                },
+                "oneOf": [
+                  {
+                    "required": [
+                      "left"
+                    ]
                   },
-                  "frames": {
-                    "type": "integer",
-                    "minimum": 1
-                  },
-                  "fps": {
-                    "type": "number",
-                    "minimum": 0
-                  },
-                  "loop": {
-                    "type": "boolean",
-                    "default": "true"
+                  {
+                    "required": [
+                      "right"
+                    ]
                   }
+                ],
+                "additionalProperties": {
+                  "$ref": "#/$defs/animation"
                 }
               }
             }
           }
-        },
-        "required": [
-          "name",
-          "animations"
-        ]
-      },
-      "minProperties": 1
+        }
+      }
     },
     "evolves_into": {
       "type": "object",

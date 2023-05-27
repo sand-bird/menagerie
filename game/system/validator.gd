@@ -50,7 +50,8 @@ const messages = {
 	missing_required = "is missing required properties: %s.",
 	max_items_exceeded = "has too many items (should have at most %s, but has %s).",
 	min_items_not_met = "has too few items (should have at least %s, but has %s).",
-	not_unique = "has duplicate items (%s)"
+	not_unique = "has duplicate items (%s)",
+	format_mismatch = "is not a valid %s (is %s)."
 }
 
 var schema_root: Dictionary = {}
@@ -145,6 +146,12 @@ func matches_type(data, type):
 		'null': return data == null
 	return true
 
+func matches_format(data: String, format):
+	match format:
+		'regex': return RegEx.create_from_string(data).is_valid()
+		'filepath': return ResourceLoader.exists(data)
+		'date': return true
+
 # --------------------------------------------------------------------------- #
 
 # using hashes for a cheap deep equals. 
@@ -156,13 +163,6 @@ func deep_equals(a, b):
 		return a.hash() == b.hash()
 	return a == b
 
-# --------------------------------------------------------------------------- #
-
-# if the schema contains a ref, resolve it using the schema_root.
-# if the schema is composed of subschemas, 
-# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc
-func resolve_schema():
-	pass
 
 # =========================================================================== #
 #                     V A L I D A T E   F U N C T I O N S                     #
@@ -175,32 +175,60 @@ func resolve_schema():
 func validate(data: Dictionary) -> int:
 	var result = 1
 	for key in data:
-		var k = key
-		var instance = data[k]
+		var instance = data[key]
 		var type = instance.type
 		var schema = schema_root[type]
 		if schema == null:
-			Log.error(log_name, ['(validate) no schema found for type ', type])
+			Log.error(log_name, ["(validate) no schema found for type ", type])
 		else:
-			Log.debug(log_name, ['(validate) key: ', k, ' | type: ', type, ' | schema: ', schema.title])
-			result &= validate_instance(instance, schema, k, {})
+			Log.debug(log_name, ["(validate) key: ", key, " | type: ", type])
+			result &= validate_instance(instance, schema, key, {})
+	if result == 1:
+		Log.info(log_name, ["(validate_data) all data is valid! \\o/"])
+	return result
+
+# validate schemas against the metaschema!
+func validate_schemas() -> int:
+	var metaschema = schema_root.schema
+	var result = 1
+	for key in schema_root:
+		if key == 'schema': continue
+		var instance = schema_root[key]
+		Log.debug(log_name, ["(validate) schema: ", key])
+		# `definitions.schema` is a special case, as it is not a schema itself
+		# but a collection of schemas (analogous to '$defs' in a typical schema)
+		if key == 'definitions':
+			for dkey in instance:
+				# sources is not a subschema, it's metadata
+				if dkey == 'sources': continue
+				result &= validate_instance(
+					instance[dkey], metaschema, str(key, '.', dkey), {}
+				)
+		else: 
+			result &= validate_instance(instance, metaschema, key, {})
+	if result == 1:
+		Log.info(log_name, ["(validate_schemas) all schemas are valid! \\o/"])
 	return result
 
 # --------------------------------------------------------------------------- #
 
 # generic validation function for a single instance, using a subschema which
-# applies to the instance.  since we are processing a subschema, we need to
-# resolve it in case 
-#
-# the three generic validation keywords (type, enum, and const) do not support
-# subschemas, so we don't have to worry about resolving those here.
-func validate_instance(data, schema: Dictionary, breadcrumb: String = "",
+# applies to the instance.  if the schema has its own subschemas (eg `allOf`,
+# we recursively resolve those against the instance as appropriate.  finally,
+# we pass the instance and schema into specific validators depending on the
+# instance's type.  if the instance is an array or object, those functions may
+# then call this one, to recursively validate the instance's children.
+func validate_instance(data, schema, breadcrumb: String = "",
 		sources: Dictionary = {}) -> int:
 	Log.verbose(log_name, ["(validate_instance) start | breadcrumb: ", breadcrumb])
 	var result = 1
+	if schema is bool: return 1 if schema else 0
+	schema = schema as Dictionary
 	var data_type = get_type(data)
 	
-	# first resolve references
+	# if the schema contains a ref, resolve it using the schema_root.
+	# if the schema is composed of subschemas, 
+	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc
 	if '$ref' in schema:
 		var ref_value = schema['$ref']
 		Log.verbose(log_name, ["resolving ref: ", ref_value, " | breadcrumb: ", breadcrumb])
@@ -356,6 +384,12 @@ func validate_string(data: String, schema: Dictionary,
 			'pattern_mismatch', [schema.pattern, data],
 			breadcrumb, sources
 		)
+	if 'format' in schema:
+		result &= report(
+			matches_format(data, schema.format),
+			'format_mismatch', [schema.format, data],
+			breadcrumb, sources
+		)
 	Log.verbose(log_name, ["(validate_string) ", breadcrumb, " | result: ", result])
 	return result
 
@@ -384,7 +418,7 @@ func validate_array(data: Array, schema: Dictionary,
 		sorted.sort()
 		var dupes = []
 		var i = 0
-		while i < sorted.size():
+		while i < sorted.size() - 1:
 			if deep_equals(sorted[i], sorted[i + 1]):
 				dupes.push(sorted[i])
 				i += 1 # skip the next iteration

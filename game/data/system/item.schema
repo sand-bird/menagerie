@@ -1,5 +1,4 @@
 {
-  "title": "Item",
   "type": "object",
   "required": [
     "id",

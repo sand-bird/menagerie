@@ -119,42 +119,68 @@
     "maxValue": 8,
     "minValue": 1
   },
-  "text16": {
+  "text": {
+    "$comment": "Translatable text; object mapping location codes to text in that language",
     "type": "object",
-    "patternProperties": {
-      "^[a-z]{2}$": {
-        "type": "string",
+    "propertyNames": {
+      "$comment": "It would be more correct to provide an enum of valid location codes, but this is fine for now",
+      "pattern": "^[a-z]{2}$"
+    },
+    "additionalProperties": {
+      "type": "string"
+    }
+  },
+  "text16": {
+    "$ref": "#/text",
+    "additionalProperties": {
         "maxLength": 16
       }
-    },
-    "additionalProperties": false
   },
   "text32": {
-    "type": "object",
-    "patternProperties": {
-      "^[a-z]{2}$": {
-        "type": "string",
+    "$ref": "#/text",
+    "additionalProperties": {
         "maxLength": 32
       }
-    },
-    "additionalProperties": false
   },
   "text128": {
-    "type": "object",
-    "patternProperties": {
-      "^[a-z]{2}$": {
-        "type": "string",
+    "$ref": "#/text",
+    "additionalProperties": {
         "maxLength": 128
       }
-    },
-    "additionalProperties": false
   },
   "id": {
     "type": "string",
-    "maxLength": 32
+    "maxLength": 32,
+    "pattern": "\\S+",
+    "$comment": "No spaces"
   },
   "file": {
     "$comment": "we should validate that the file exists, if possible",
     "type": "string"
+  },
+  "animated_sprite": {
+    "type": "object",
+    "required": [
+      "spritesheet",
+      "frames",
+      "fps"
+    ],
+    "properties": {
+      "spritesheet": {
+        "ref": "definitions/file"
+      },
+      "frames": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "fps": {
+        "type": "number",
+        "minimum": 0
+      },
+      "loop": {
+        "type": "boolean",
+        "default": "true"
+      }
+    }
   }
 }

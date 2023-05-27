@@ -43,7 +43,10 @@ func init():
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
 
-	validate()
+	var val = Validator.new(schemas)
+	val.validate_schemas()
+	val.validate(data)
+	return true
 
 	Log.debug(self, ["data: ", data.keys()])
 	Log.verbose(self, data)
@@ -294,41 +297,43 @@ func load_schemafile(path, sourceinfo):
 # =========================================================================== #
 #                        P R O C E S S I N G   D A T A                        #
 # --------------------------------------------------------------------------- #
+# Utils.read_file already parses JSON files, but we need to tweak the results
+# a bit, so we recurse down the loaded files.  we process data and schema files
+# slightly differently: data files may have filepaths, and schema files may
+# have refs.  both of those get resolved here.
+# 
+# for both filetypes, we also want to (a) recurse down arrays and objects and
+# (b) coerce integer values to ints by casting them to an int and then checking
+# for equality.  (this is necessary because json doesn't have integer types,
+# but much of our data actually consists of integer values.)
 
-# okay, new plan. we don't want to resolve sigils on LOAD; that would make
-# validation (which should happen once, post- load) a big headache, and open us
-# up to a bunch of fatal errors from stuff not getting found, which is exactly
-# what all this validation nonsense is supposed to prevent.  plus, we can't
-# resolve @ sigils (instance properties) right now anyway, for obvious reasons.
-#
-# as for fileref sigils, we should resolve the sigil to the full filepath (this
-# is the only time we will know what it is), but don't load the resource yet
-# for the reasons above.
-#
-# here we also coerce integer values to ints by casting them to an int and then
-# checking for equality.  this is necessary because json doesn't have a concept
-# of integer types, but we want to be able to validate them.
 func process_data(d, basedir):
 	var collection = d.size() if typeof(d) == TYPE_ARRAY else d
 	for i in collection:
 		if typeof(d[i]) == TYPE_ARRAY or typeof(d[i]) == TYPE_DICTIONARY:
 			d[i] = process_data(d[i], basedir)
+		
+		# we use `~` as a sigil to mark a path.  kinda weird since `~` connotes the
+		# home directory, which isn't how it's being used here, but eh ¯\_(ツ)_/¯
 		elif d[i] and typeof(d[i]) == TYPE_STRING and d[i][0] == '~':
 			d[i] = basedir.path_join(Utils.strip_sigil(d[i]))
+		
 		elif d[i] and typeof(d[i]) == TYPE_FLOAT and int(d[i]) == d[i]:
 			d[i] = int(d[i])
+		
 	return d
 
 # --------------------------------------------------------------------------- #
 
-# keeping it simple: processing a schema involves resolving local reference
-# paths to absolute paths by replacing the '#' with the basename.  this is
-# enough for now since we only support static references ($ref).
 func process_schema(s, filename):
 	var collection = s.size() if typeof(s) == TYPE_ARRAY else s
 	for i in collection:
 		if typeof(s[i]) == TYPE_ARRAY or typeof(s[i]) == TYPE_DICTIONARY:
 			s[i] = process_schema(s[i], filename)
+		
+		# keeping it simple: processing a schema involves resolving local reference
+		# paths to absolute paths by replacing the '#' with the basename.  this is
+		# enough for now since we only support static references ($ref).
 		elif i is String and i == '$ref':
 			if s[i] is String:
 				s[i] = s[i].replace('#', filename)
@@ -336,6 +341,10 @@ func process_schema(s, filename):
 				"found $ref keyword in schema whose value is not a string | schema: ",
 				filename
 			])
+		
+		elif s[i] and typeof(s[i]) == TYPE_FLOAT and int(s[i]) == s[i]:
+			s[i] = int(s[i])
+	
 	return s
 
 # --------------------------------------------------------------------------- #
@@ -372,14 +381,6 @@ func merge(base, mod):
 				merge(base[k], mod[k])
 		else: base[k] = mod[k]
 	return base
-
-# --------------------------------------------------------------------------- #
-
-# oh boy
-func validate ():
-	var val = Validator.new(schemas)
-	val.validate(data)
-	return true
 
 
 # =========================================================================== #

@@ -15,56 +15,72 @@
         "en": "Sprout"
       },
       "animations": {
-        "idle": [
-          {
-            "sprites": "~idle_back.png",
-            "frames": 4,
-            "fps": 2.0
+        "idle": {
+          "back": {
+            "left": {
+              "spritesheet": "~idle_back.png",
+              "frames": 4,
+              "fps": 2.0
+            }
           },
-          {
-            "sprites": "~idle_front.png",
-            "frames": 4,
-            "fps": 2.0
+          "front": {
+            "left": {
+              "spritesheet": "~idle_front.png",
+              "frames": 4,
+              "fps": 2.0
+            }
           }
-        ],
-        "walk": [
-          {
-            "sprites": "~walk_back.png",
-            "frames": 4,
-            "fps": 6.0
+        },
+        "walk": {
+          "back": {
+            "left": {
+              "spritesheet": "~walk_back.png",
+              "frames": 4,
+              "fps": 6.0
+            }
           },
-          {
-            "sprites": "~walk_front.png",
-            "frames": 4,
-            "fps": 6.0
+          "front": {
+            "left": {
+              "spritesheet": "~walk_front.png",
+              "frames": 4,
+              "fps": 6.0
+            }
           }
-        ],
-        "sleep": [
-          {
-            "sprites": "~sleep_back.png",
-            "frames": 4,
-            "fps": 1.5
+        },
+        "sleep": {
+          "back": {
+            "left": {
+              "spritesheet": "~sleep_back.png",
+              "frames": 4,
+              "fps": 1.5
+            }
           },
-          {
-            "sprites": "~sleep_front.png",
-            "frames": 4,
-            "fps": 1.5
+          "front": {
+            "left": {
+              "spritesheet": "~sleep_front.png",
+              "frames": 4,
+              "fps": 1.5
+            }
           }
-        ],
-        "lie_down": [
-          {
-            "sprites": "~pre_sleep_back.png",
-            "frames": 4,
-            "fps": 4.0,
-            "loop": false
+        },
+        "lie_down": {
+          "back": {
+            "left": {
+              "spritesheet": "~pre_sleep_back.png",
+              "frames": 4,
+              "fps": 4.0,
+              "loop": false
+            }
           },
-          {
-            "sprites": "~pre_sleep_front.png",
-            "frames": 4,
-            "fps": 4.0,
-            "loop": false
+          "front": {
+            "left": {
+              "spritesheet": "~pre_sleep_front.png",
+              "frames": 4,
+              "fps": 4.0,
+              "loop": false
+            }
           }
-        ]
+        }
       }
     }
   }
