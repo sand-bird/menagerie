@@ -1,22 +1,35 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://dpcs8d7mj2qb0"]
 
-[ext_resource path="res://assets/ui/themes/flat_panel.tres" type="Theme" id=1]
-[ext_resource path="res://ui/main_menu/encyclopedia/encyclopedia.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=3]
-[ext_resource path="res://ui/text.gd" type="Script" id=4]
+[ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="1"]
+[ext_resource type="Script" path="res://ui/main_menu/encyclopedia/encyclopedia.gd" id="2"]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="3"]
+[ext_resource type="Texture2D" uid="uid://cltvm0xbpken5" path="res://assets/ui/elements/book.png" id="3_mvdw5"]
+[ext_resource type="Script" path="res://ui/text.gd" id="4"]
 
 [node name="container" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 296.0
 offset_bottom = 142.0
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("1")
+script = ExtResource("2")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = -11.0
+offset_top = -21.0
+offset_right = 305.0
+offset_bottom = 149.0
+texture = ExtResource("3_mvdw5")
 
 [node name="left" type="Panel" parent="."]
+layout_mode = 0
 offset_top = 3.0
 offset_right = 140.0
 offset_bottom = 140.0
 
 [node name="right" type="Panel" parent="."]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -142.0
@@ -24,13 +37,13 @@ offset_top = -18.0
 offset_bottom = 140.0
 
 [node name="Control" type="Control" parent="right"]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 6.0
 offset_top = 4.0
 offset_right = -6.0
 offset_bottom = -4.0
-theme = ExtResource( 3 )
-script = ExtResource( 4 )
+theme = ExtResource("3")
+script = ExtResource("4")
 text = "A pair of em dashes can replace a pair of parentheses. Dashes are considered less formal than parentheses; they are also more intrusive. If you want to draw attention to the parenthetical content, use dashes. If you want to include the parenthetical content more subtly, use parentheses."
-

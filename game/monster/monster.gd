@@ -31,6 +31,15 @@ var past_actions = []
 var current_action: Action
 var next_action # ?
 
+# ids of action ids the monster knows.
+# used for less-obvious actions like shaking trees.  pets should be able to
+# learn actions by watching others do them, or by insight (low chance for the
+# decider _not_ to filter out an unlearned available action, modified by iq).
+#
+# aside from intrisic, basic actions (idle/sleep/emote/move/eat), maybe _all_
+# actions should be unlearned by default, with varying degrees of learnability?
+var learned_actions = []
+
 # drives
 # ------
 var belly  # 0 to 100

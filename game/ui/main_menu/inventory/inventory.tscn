@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dshs7ve7ije66"]
+[gd_scene load_steps=7 format=3 uid="uid://dshs7ve7ije66"]
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/inventory/inventory.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://drv63ikod5fcf" path="res://ui/item_info.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://ui/main_menu/inventory/item_grid.tscn" id="5"]
+[ext_resource type="Texture2D" uid="uid://bq6vxdp5p5b4v" path="res://assets/ui/elements/selector_small.png" id="5_y2esb"]
 [ext_resource type="StyleBox" uid="uid://c27udro7ac0h3" path="res://assets/ui/panels/box_outset.tres" id="6"]
 
 [node name="inventory" type="Control"]
@@ -28,6 +29,21 @@ offset_bottom = 142.0
 theme = ExtResource("1")
 theme_override_styles/disabled = ExtResource("6")
 text = "Place in garden"
+
+[node name="TextureRect" type="NinePatchRect" parent="item_info/place_button"]
+visible = false
+clip_contents = true
+layout_mode = 0
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 134.0
+offset_bottom = 22.0
+texture = ExtResource("5_y2esb")
+patch_margin_left = 14
+patch_margin_top = 12
+patch_margin_right = 13
+patch_margin_bottom = 12
+axis_stretch_horizontal = 2
 
 [node name="item_grid" parent="." instance=ExtResource("5")]
 layout_mode = 0

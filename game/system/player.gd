@@ -1,7 +1,5 @@
 extends Node
 
-#warning-ignore-all:unused_class_variable
-
 # since there's only one player at a time, Player basically functions as a
 # store for game state. pretty much everything here is saved to and loaded from
 # the `player.save` file.
@@ -14,13 +12,19 @@ var level
 
 var garden
 
-# the big boys
-var encyclopedia = {}
+# entity names that should be revealed in the encyclopedia
+# (values should all be `true` unless we want to un-discover something).
+# we use a dictionary so it's trivial to discover an entity when we add
+# it to the inventory.
+var discovered = {}
 
 # keyed by entity id. values can be either an array of objects or an integer.
 # the idea is that inventory items (entities of type "item", like fruits, or
 # "object", like trees) can have arbitrary internal state, so you can't just
 # stack up multiples with the same id.
+#
+# keying inventory items by id allows us to neatly filter out entities that are
+# not present in Data (eg, because a mod was removed).
 var inventory = {}
 
 # this should store the letter fragments the player has seen, and how often
@@ -102,3 +106,25 @@ func get_printable_playtime(time = null):
 	var hour = int(time / 60)
 	var minute = int(time) % 60
 	return str(hour) + ":" + str(minute).pad_zeros(2)
+
+
+# =========================================================================== #
+#                              I N V E N T O R Y                              #
+# --------------------------------------------------------------------------- #
+
+# 1. if we don't have any of this entity yet, add a key to the inventory for it
+#    whose value is an empty array, and add it to `discovered`
+# 2. if we do have one, go through the values until we find one that matches
+#    the input object's state, and increment its qty
+# 3. else, add the input item to the end of the value array
+func inventory_add(serialized):
+	if not serialized.id in inventory:
+		inventory[serialized.id] = []
+		discovered[serialized.id] = true
+	for saved in inventory[serialized.id]:
+		if saved == serialized: saved.qty += 1 # TODO: need to strip qty for this to work
+	inventory[serialized.id].push_back(serialized)
+
+# takes an entity id and index and either decrements qty or removes the element
+func inventory_remove(id, index):
+	pass

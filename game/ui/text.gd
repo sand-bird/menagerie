@@ -317,7 +317,7 @@ func do_draw_char(i: int, pos: Vector2) -> int:
 	)
 
 # TODO
-func draw_image(i: int, pos: Vector2) -> int:
+func draw_image(_i: int, _pos: Vector2) -> int:
 	return 0
 
 #                                h e l p e r s

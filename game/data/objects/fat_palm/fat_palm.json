@@ -2,6 +2,11 @@
   "id": "fat_palm",
   "type": "object",
   "category": "plant",
+  "traits": {
+    "plant": {
+      
+    }
+  },
   "name": {
     "en": "Fat Palm"
   },

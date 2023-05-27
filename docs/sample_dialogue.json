@@ -1,0 +1,123 @@
+
+{ "dialogues": {
+  "greeting1": {
+    "dialogue": {
+      "0": {
+        "sprite": "happy",
+        "text": {
+          "en": "What a lovely day!",
+          "pr": "Bon dia!"
+        }
+      },
+      "1": {
+        "sprite": "normal",
+        "text": {
+          "en": "Are you here to buy some potions?",
+          "pr": "Esta aqui para comprar alguns potions?"
+        },
+        "choice": {
+          "yes": {
+            "label": { "en": "Yes", "pr": "Sim" },
+            "next": {
+              "0": {
+                "sprite": "happy",
+                "text": {
+                  "en": "Ok then!",
+                  "pr": "Tabom!"
+                },
+                "action": "store"
+              }
+            }
+          },
+          "no": { 
+            "label": { "en": "No", "pr": "Nao" },
+            "dialogue": {
+              "0": {
+                "text": {
+                  "en": "Well why did you come here then?",
+                  "pr": "..."
+                },
+                "sprite": "annoyed"
+              }
+            }
+          },
+          "potion": { 
+            "label": { "en": "Potion?", "pr": "Potion?" },
+            "dialogue": {
+              "0": {
+                "text": {
+                  "en": "This is a long explanation, are you sure you have time?"
+                },
+                "sprite": "neutral",
+                "choice": {
+                  "yes": {
+                    "label": { "en": "Yes", "pr": "Sim" },
+                    "dialogue": { /*...*/ }
+                  },
+                  "no": {
+                    "label": { "en": "Never mind", "pr": "Nao" },
+                    "action": { "goto": "greeting1.1" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}}
+
+// adding a french translation would look like this:
+
+{ "dialogues": {
+  "greeting1": {
+    "dialogue": {
+      "0": {
+        "text": { "fr": "Bon dia!" }
+      },
+      "1": {
+        "text": { "fr": "Esta aqui para comprar alguns potions?" },
+        "choice": {
+          "yes": {
+            "label": { "fr": "Oui" },
+            "next": {
+              "0": {
+                "text": { "fr": "Oui oui" }
+              },
+            }
+          },
+          "no": { 
+            "label": {  "fr": "Non" },
+            "dialogue": {
+              "0": {
+                "text": { "fr": "..." },
+              }
+            }
+          },
+          "potion": { 
+            "label": { "fr": "Potion?" },
+            "dialogue": {
+              "0": {
+                "text": {
+                  "fr": "This is a long explanation, are you sure you have time?"
+                },
+                "sprite": "neutral",
+                "choice": {
+                  "yes": {
+                    "label": { "fr": "Oui" },
+                    "dialogue": { /*...*/ }
+                  },
+                  "no": {
+                    "label": { "fn": "Non" },
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}}
+
