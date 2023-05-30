@@ -17,7 +17,10 @@ stretch_shrink = 3
 script = ExtResource("1")
 
 [node name="viewport" type="SubViewport" parent="."]
+disable_3d = true
 handle_input_locally = false
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
 canvas_item_default_texture_filter = 0
 size = Vector2i(426, 240)
 render_target_update_mode = 4

@@ -110,7 +110,7 @@
                     "right"
                   ]
                 },
-                "oneOf": [
+                "anyOf": [
                   {
                     "required": [
                       "left"
@@ -123,7 +123,7 @@
                   }
                 ],
                 "additionalProperties": {
-                  "$ref": "#/$defs/animation"
+                  "$ref": "definitions/animated_sprite"
                 }
               }
             }

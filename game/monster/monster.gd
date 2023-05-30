@@ -174,14 +174,7 @@ func initialize(data):
 	var size = Data.fetch([type, 'size'])
 	$shape.shape.radius = size
 	$shape.position.y -= size
-
-	var anim_data = Data.fetch([type, 'morphs', morph, 'animations'])
-	Log.verbose(self, ['anim data: ', anim_data])
-	if anim_data:
-		for anim_id in anim_data: $sprite/anim.add_anim(anim_id, anim_data[anim_id])
-		Log.debug(self, ['animations: ', $sprite/anim.get_animation_list()])
-		# play_animation(Constants.Anim.LIE_DOWN)
-		play_anim(Constants.Anim.WALK)
+	load_anims()
 
 # --------------------------------------------------------------------------- #
 
@@ -214,7 +207,7 @@ func _update_orientation(new_o):
 	var old_o = orientation
 	orientation = new_o
 	if old_o.ceil() != new_o.ceil():
-		$sprite/anim.facing = new_o.ceil()
+		$anim.facing = new_o.ceil()
 
 # --------------------------------------------------------------------------- #
 
@@ -280,15 +273,24 @@ func get_memory_size():
 #                             A N I M A T I O N S                             #
 # --------------------------------------------------------------------------- #
 
+func load_anims():
+	var anim_data = Data.fetch([type, 'morphs', morph, 'animations'])
+	Log.verbose(self, ['anim data: ', anim_data])
+	# TODO: handle unexpected case where there is no anim_data
+	for anim_id in anim_data:
+		$anim.add_anim(anim_id, anim_data[anim_id])
+	Log.debug(self, ['animations: ', $anim.get_animation_list()])
+	play_anim(Constants.Anim.WALK)
+
 func play_anim(anim_id, speed = 1.0, loops = 0):
-	$sprite/anim.set_speed_scale(speed)
-	$sprite/anim.play_anim(anim_id, loops)
+	$anim.set_speed_scale(speed)
+	$anim.play_anim(anim_id, loops)
 
 func queue_anim(anim_id, loops = 0):
-	$sprite/anim.queue_anim(anim_id, loops)
+	$anim.queue_anim(anim_id, loops)
 
 func set_anim_speed(speed):
-	$sprite/anim.set_speed_scale(speed)
+	$anim.set_speed_scale(speed)
 
 
 # =========================================================================== #

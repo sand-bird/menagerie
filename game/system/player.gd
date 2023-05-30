@@ -8,15 +8,14 @@ var player_name
 var playtime
 var last_update_time # used to update playtime
 var money
-var level
 
 var garden
 
 # entity names that should be revealed in the encyclopedia
 # (values should all be `true` unless we want to un-discover something).
-# we use a dictionary so it's trivial to discover an entity when we add
-# it to the inventory.
-var discovered = {}
+# we use a dictionary so it's trivial to discover an entity when we add it to
+# the inventory, and so that we can sub-discover states/morphs of an entity.
+var discovered = { "bunny": true }
 
 # keyed by entity id. values can be either an array of objects or an integer.
 # the idea is that inventory items (entities of type "item", like fruits, or
@@ -25,27 +24,7 @@ var discovered = {}
 #
 # keying inventory items by id allows us to neatly filter out entities that are
 # not present in Data (eg, because a mod was removed).
-var inventory = {}
-
-# this should store the letter fragments the player has seen, and how often
-# they've occurred (i guess)
-var letters
-
-var requests # "current" is too verbose and should be implied
-var completed_requests
-# expired requests: own category, put them in completed with a FAILED tag or
-# something, or don't remember them at all?
-
-# tracking expired requests implies not allowing them to be generated again,
-# which might be overly punishing. (could also be to prevent the same type of
-# request from being generated too often, which is ok but probably not a big
-# enough deal to be worth it.)
-
-# not really a huge feature, but npcs should warm up to you as you interact
-# with them and complete requests (note: should this be a property of the npc
-# instance? makes sense intuitively, but in practice it's probably better to
-# centralize that info here, especially since it comes from player.save)
-var relationships
+var inventory = { }
 
 # --------------------------------------------------------------------------- #
 
@@ -64,9 +43,8 @@ func _ready():
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 const SAVE_KEYS = [
-	"player_name", "playtime", "level", "money",
-	"encyclopedia", "inventory",
-	"requests", "completed_requests",
+	"player_name", "playtime", "money",
+	"discovered", "inventory"
 ]
 
 # --------------------------------------------------------------------------- #
@@ -128,3 +106,9 @@ func inventory_add(serialized):
 # takes an entity id and index and either decrements qty or removes the element
 func inventory_remove(id, index):
 	pass
+
+
+# =========================================================================== #
+#                           E N C Y C L O P E D I A                           #
+# --------------------------------------------------------------------------- #
+

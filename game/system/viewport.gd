@@ -13,7 +13,7 @@ the edges of the viewport.
 
 # set screen size constraints here. IDEAL_SIZE determines the zoom level used
 # in large resolutions, where multiple levels of zoom are valid.
-const IDEAL_SIZE = Vector2i(400, 320)
+const IDEAL_SIZE = Vector2i(400, 240)
 # TOFIX: screen clipping in fullscreen when min sizes are inconsistent with the
 # aspect ratio constraints
 const MIN_SIZE = Vector2i(320, 208)
@@ -103,11 +103,11 @@ func update_screen(source_counter):
 	parent.set_deferred('size', scaled_size)
 	parent.stretch_shrink = current_scale
 	
-	Log.verbose(self, [c, source_counter,
-		"[update_screen] done! window size:", window.size,
-		"| scaled size:", scaled_size,
-		"| base size:", base_size,
-		"| scale:", current_scale
+	Log.info(self, [c, source_counter,
+		"[update_screen] done! window size: ", window.size,
+		" | scaled size: ", scaled_size,
+		" | base size: ", base_size,
+		" | scale: ", current_scale
 	])
 	updating = false
 	return base_size

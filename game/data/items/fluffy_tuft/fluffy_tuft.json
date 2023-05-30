@@ -1,6 +1,7 @@
 {
   "id": "fluffy_tuft",
   "type": "item",
+  "tags": ["soft", "organic"],
   "category": "resource",
   "name": {
     "en": "Fluffy Tuft"

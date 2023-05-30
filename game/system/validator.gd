@@ -21,9 +21,6 @@ TODO:
    we should save failure info to a results object and log it all out at the
    end.
 
-2. the constructor should iterate through the schemafiles and validate them all
-   against a metaschema.
-
 3. this really needs tests
 """
 
@@ -182,7 +179,10 @@ func validate(data: Dictionary) -> int:
 			Log.error(log_name, ["(validate) no schema found for type ", type])
 		else:
 			Log.debug(log_name, ["(validate) key: ", key, " | type: ", type])
-			result &= validate_instance(instance, schema, key, {})
+			var instance_result = validate_instance(instance, schema, key, {})
+			if instance_result == 1:
+				Log.info(log_name, ["(validate_data) '", key, "' is valid! \\o/"])
+			result &= instance_result
 	if result == 1:
 		Log.info(log_name, ["(validate_data) all data is valid! \\o/"])
 	return result

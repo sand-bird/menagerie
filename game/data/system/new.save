@@ -11,9 +11,7 @@
     "money": 100,
     "level": 1,
     "playtime": 0,
-    "encyclopedia": {
-      "completion": 0
-    },
+    "discovered": { "bunny": { "sprout": true } },
     "monster_count": 0,
     "inventory": [],
     "requests": [],

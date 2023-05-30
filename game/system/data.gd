@@ -419,7 +419,9 @@ func is_current(time, dirname):
 		current = dir.get_next()
 	return true
 
-#                         o t h e r   s t u f f
+
+# =========================================================================== #
+#                                  U T I L S                                  #
 # --------------------------------------------------------------------------- #
 
 func list_dir(dirname):
@@ -433,3 +435,31 @@ func list_dir(dirname):
 		Log.info(self, current)
 		current = dir.get_next()
 	Log.info(self, "--------------------------")
+
+# --------------------------------------------------------------------------- #
+
+# given a `discovered` object (see player.gd), calculates the percentage of
+# available data which has been discovered.
+# each key in `data` is weighted the same, whether or not it has discoverable
+# children (morphs or states).
+func get_completion_percent(discovered: Dictionary):
+	var total: float = data.size()
+	var completed: float = 0
+	var valid_keys = discovered.keys().filter(func (k): return data.has(k))
+	for key in valid_keys:
+		var value = discovered[key]
+		match typeof(value):
+			TYPE_BOOL: if value: completed += 1
+			TYPE_DICTIONARY:
+				completed += get_key_completion(key, value)
+	return round((completed / total) * 100)
+
+const discoverable_children = { monster = 'morphs', object = 'states' }
+func get_key_completion(key: String, value: Dictionary):
+	var source = fetch(key)
+	var child_keys: Array = source[discoverable_children[source.type]].keys()
+	var total: float = child_keys.size()
+	var completed: float = 0
+	for child_key in value.keys().filter(func (k): return child_keys.has(k)):
+		if value[child_key]: completed += 1
+	return completed / total

@@ -1,7 +1,7 @@
-[gd_scene load_steps=25 format=3 uid="uid://bdejgafuf4gj2"]
+[gd_scene load_steps=24 format=3 uid="uid://bdejgafuf4gj2"]
 
 [ext_resource type="Script" path="res://garden/garden.gd" id="1"]
-[ext_resource type="PackedScene" path="res://garden/camera.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://o6bdg8doc18k" path="res://garden/camera.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://clp67bw1gvg3i" path="res://assets/garden/terrains.png" id="4"]
 [ext_resource type="Script" path="res://garden/map.gd" id="4_p8gd4"]
 [ext_resource type="Texture2D" uid="uid://sss7cpnkr2xa" path="res://assets/garden/tile.png" id="4_urdid"]
@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://o54onhiymp3l" path="res://ui/garden/select_hud.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://ui/garden/interact_hud.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="12"]
-[ext_resource type="PackedScene" path="res://object/garden_object.tscn" id="13"]
+[ext_resource type="PackedScene" uid="uid://kxrml72hehc4" path="res://object/garden_object.tscn" id="13"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_2dkaq"]
 
@@ -66,25 +66,6 @@ _data = {
 "tint": SubResource("2")
 }
 
-[sub_resource type="GDScript" id="4"]
-script/source = "extends AnimationPlayer
-
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = \"text\"
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
-"
-
 [sub_resource type="GDScript" id="GDScript_kmer2"]
 resource_name = "nav_debug.gd"
 script/source = "extends Control
@@ -114,8 +95,10 @@ func _process(delta):
 process_mode = 1
 layout_mode = 3
 anchors_preset = 0
-offset_right = 384.0
-offset_bottom = 212.0
+offset_right = 320.0
+offset_bottom = 208.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1")
 
 [node name="camera" parent="." instance=ExtResource("3")]
@@ -144,7 +127,6 @@ script = ExtResource("7")
 libraries = {
 "": SubResource("AnimationLibrary_agdeu")
 }
-script = SubResource("4")
 
 [node name="entities" type="Control" parent="."]
 layout_mode = 1
@@ -170,7 +152,6 @@ width = 1.0
 default_color = Color(1, 0, 1, 1)
 
 [node name="nav_debug" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0

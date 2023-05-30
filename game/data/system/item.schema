@@ -2,12 +2,11 @@
   "type": "object",
   "required": [
     "id",
-    "name",
     "type",
-    "category",
+    "name",
     "description",
     "icon",
-    "sprite",
+    "sprites",
     "value"
   ],
   "properties": {
@@ -17,13 +16,6 @@
     "type": {
       "type": "string",
       "const": "item"
-    },
-    "category": {
-      "type": "string",
-      "enum": [
-        "food",
-        "resource"
-      ]
     },
     "name": {
       "$ref": "definitions/text16"

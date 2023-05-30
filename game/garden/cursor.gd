@@ -139,6 +139,6 @@ func _process(delta):
 		$graphic.position = new_graphic_pos
 
 	var new_hand_y = 0
-	#lerp($graphic/hand_anchor.position.y,
-	#		-hand_height, lerp_val)
+#	lerp($graphic/hand_anchor.position.y,
+#			-hand_height, lerp_val)
 	$graphic/hand_anchor.position = Vector2(HAND_X, new_hand_y).round()

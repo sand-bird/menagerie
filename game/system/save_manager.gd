@@ -42,11 +42,13 @@ func sort_by_date(a, b):
 # - player monsters
 func get_save_info(save_dir):
 	var save_info = {}
-	var data = Utils.read_file(get_filepath(save_dir, PLAYER))
+	var data: Dictionary = Utils.read_file(get_filepath(save_dir, PLAYER))
 	for k in ["player_name", "time", "money", "playtime"]:
-		save_info[k] = data[k]
-	save_info.encyclopedia = data.encyclopedia.completion
-	save_info.monsters = data.monster_count
+		save_info[k] = data.get(k, "")
+	save_info.encyclopedia = Data.get_completion_percent(
+		data.get('discovered', {})
+	)
+	save_info.monsters = data.get('monster_count', 0)
 	save_info.save_dir = save_dir
 	return save_info
 

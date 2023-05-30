@@ -29,6 +29,7 @@ func init(data):
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
+		print("garden _input InputEventMouseButton ", e)
 		test_mon.set_current_action(
 			MoveAction.new(test_mon, get_global_mouse_position(), 1)
 		)

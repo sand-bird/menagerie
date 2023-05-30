@@ -19,7 +19,7 @@ func _ready():
 func play_anim(anim_id = null, loops = null):
 	if anim_id: current = anim_id
 	if loops: loop_counter = loops
-	play(str(current, "_", facing.y, "_", facing.x))
+	play(str(current, "/", facing.y, "_", facing.x))
 
 # --------------------------------------------------------------------------- #
 func queue_anim(anim_id, loops = 0):
@@ -52,7 +52,7 @@ func _update_facing(new_facing):
 	# string interpolation (x and y should be either 0 or 1)
 	facing = new_facing.abs()
 	var anim_pos = current_animation_position
-	current_animation = str(current, "_", facing.y, "_", facing.x)
+	current_animation = str(current, "/", facing.y, "_", facing.x)
 	seek(anim_pos)
 
 
@@ -66,22 +66,29 @@ func _update_facing(new_facing):
 # the resulting animations are identified by a string in "{anim_id}_{y}_{x}"
 # format, where y and x are either 0 or 1, and represent the monster's
 # front-back and left-right orientation, respectively.
-func add_anim(anim_id, anim_data):
-	for y in anim_data.size():
-		var anim = anim_data[y]
-		if typeof(anim) == TYPE_ARRAY:
-			for x in anim:
-				_add_facing(anim[x], str(anim_id, "_", y, "_", x))
-		else:
-			_add_facing(anim, str(anim_id, "_", y, "_0"))
-			_add_facing(anim, str(anim_id, "_", y, "_1"), true)
+func add_anim(anim_id: String, anim_data: Dictionary):
+	var library = AnimationLibrary.new()
+	
+	var y_dirs = ['back', 'front'] # back = 0, front = 1
+	var x_dirs = ['left', 'right'] # left = 0, right = 1
+	for y in range(2):
+		var y_dir = y_dirs[y]
+		var anims: Dictionary = anim_data[y_dir]
+		for x in range(2):
+			var x_dir = x_dirs[x]
+			var anim_name = str(y, "_", x)
+			library.add_animation(anim_name,
+				_init_facing(anims[x_dir]) if x_dir in anims else
+				_init_facing(anims.values()[0], true)
+			)
+	add_animation_library(anim_id, library)
 
 # --------------------------------------------------------------------------- #
 
 # creates an animation for a specific facing direction, using an `anim_info`
 # object from the monster's data definition, and adds it to the AnimationPlayer
 # for our sprite.
-func _add_facing(anim_info, anim_name, flip = false):
+func _init_facing(anim_info, flip = false):
 	# set the step and length parameters of the new animation depending on the
 	# frame count and fps specified in the data definition. the `step` parameter
 	# will determine the delay between frames when we insert them.
@@ -93,13 +100,13 @@ func _add_facing(anim_info, anim_name, flip = false):
 
 	# add a track to set our texture to the spritesheet specified in the datafile
 	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(0, ".:texture")
-	var spritesheet = ResourceLoader.load(anim_info.sprites)
+	anim.track_set_path(0, "sprite:texture")
+	var spritesheet = ResourceLoader.load(anim_info.spritesheet)
 	anim.track_insert_key(0, 0.0, spritesheet)
 
 	# add a track to set the hframes value of our texture
 	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(1, ".:hframes")
+	anim.track_set_path(1, "sprite:hframes")
 	anim.track_insert_key(1, 0.0, anim_info.frames)
 
 	# add a track to set whether our sprite is h-flipped (for right-facing
@@ -110,16 +117,18 @@ func _add_facing(anim_info, anim_name, flip = false):
 	var should_flip = (anim_info.flip != flip
 			if anim_info.has("flip") else flip)
 	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(1, ".:flip_h")
-	anim.track_insert_key(1, 0.0, should_flip)
+	anim.track_set_path(2, "sprite:flip_h")
+	anim.track_insert_key(2, 0.0, should_flip)
 
 	# add the animation track, with a keyframe for each frame in the spritesheet
 	# at intervals determined by the `step` parameter we calculated earlier
 	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(2, ".:frame")
+	anim.track_set_path(3, "sprite:frame")
 	anim.track_set_interpolation_loop_wrap(2, false)
 	for frame in range(anim_info.frames):
 		var time = anim.step * frame
-		anim.track_insert_key(2, time, frame)
-
-	add_animation_library(anim_name, anim)
+		anim.track_insert_key(3, time, frame)
+	
+	print(anim.get_track_count())
+	
+	return anim

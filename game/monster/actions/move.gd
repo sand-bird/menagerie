@@ -47,7 +47,7 @@ func _start():
 	# the "safe" velocity.  this happens at the end of the physics process, so
 	# we can call `move_and_slide` in the handler
 	nav.velocity_computed.connect(move)
-#	m.play_anim(Constants.Anim.WALK, speed)
+	m.play_anim(Constants.Anim.WALK, speed)
 
 # on tick, report the current path for debugging
 func _tick():
