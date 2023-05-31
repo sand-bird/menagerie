@@ -2,7 +2,7 @@ extends Control
 
 @onready var MenuTab = Utils.load_relative(scene_file_path, 'menu_tab')
 
-const DEFAULT_TITLE = "\u2727 \u2726 \u2727"
+const DEFAULT_TITLE = "1 / 1" #"\u2727 \u2726 \u2727"
 
 var current # id of the current chapter
 var current_scene # scene pointer for curent chapter

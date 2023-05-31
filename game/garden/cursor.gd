@@ -9,12 +9,12 @@ extends Control
 #   entity is "selected"?)
 # - (maybe) when the entity is too close to the edge of the garden for the
 #   camera to center on it, we should update the actual mouse position
-@onready var hand = $graphic/hand_anchor
+@onready var hand = $graphic/hand
 
-const HAND_X = 4
+const HAND_X = 3
 const DEFAULT_HAND_HEIGHT = 16
-const VERTICAL_HAND_OFFSET = 8
-var hand_height = DEFAULT_HAND_HEIGHT
+const VERTICAL_HAND_OFFSET = 14
+var hand_height: int = DEFAULT_HAND_HEIGHT
 
 var selecting = false
 # holds a pointer to the entity the cursor is currently stuck to, if one exists
@@ -26,9 +26,7 @@ const MOUSE_FOLLOW_DELAY = 0.1
 
 # for lerping the cursor graphic
 var graphic_dest = Vector2()
-var lerp_val = 0.3
-
-# var is_enabled = true
+const lerp_val = 0.3
 
 # --------------------------------------------------------------------------- #
 
@@ -36,7 +34,6 @@ func _ready():
 	$anim.play("cursor_bob")
 	item_rect_changed.connect(reset_anim)
 	$stick_area.body_entered.connect(stick)
-	$unstick_area.body_entered.connect(stick)
 	$unstick_area.body_exited.connect(unstick)
 	set_process(true)
 
@@ -111,8 +108,7 @@ func _input(e):
 # --------------------------------------------------------------------------- #
 
 func _process(delta):
-	if curr_body:
-		$graphic/debug.text = str(curr_body)
+	if curr_body: $graphic/debug.text = str(curr_body)
 	else: $graphic/debug.text = str(position)
 	measure_mouse_movement(delta)
 	# decide whether to follow a highlighted entity. if player has moved the
@@ -125,20 +121,17 @@ func _process(delta):
 #		$stick_area.position = curr_body.position
 #	else:
 	$stick_area.position = get_local_mouse_position()
-	
 	$unstick_area.position = $stick_area.position
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
 
 	var new_graphic_pos = Utils.vlerp(
-			$graphic.position, graphic_dest, lerp_val).round()
+		$graphic.position, graphic_dest, lerp_val
+	).round()
 
-	if (new_graphic_pos == $graphic.position.round()
-			and new_graphic_pos != graphic_dest):
-		$graphic.position = graphic_dest
-	else:
-		$graphic.position = new_graphic_pos
+	$graphic.position = graphic_dest if (
+		new_graphic_pos == $graphic.position.round()
+		and new_graphic_pos != graphic_dest
+	) else new_graphic_pos
 
-	var new_hand_y = 0
-#	lerp($graphic/hand_anchor.position.y,
-#			-hand_height, lerp_val)
-	$graphic/hand_anchor.position = Vector2(HAND_X, new_hand_y).round()
+	var new_hand_y = lerp(hand.position.y, float(-hand_height), lerp_val)
+	hand.position = Vector2(HAND_X, new_hand_y).round()

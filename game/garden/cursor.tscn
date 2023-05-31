@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://dhbeaaapgdms7" path="res://assets/garden/cursor_shadow.png" id="3"]
 
 [sub_resource type="CircleShape2D" id="1"]
-radius = 8.0
+radius = 7.0
 
 [sub_resource type="CircleShape2D" id="2"]
-radius = 4.0
+radius = 9.0
 
 [sub_resource type="Animation" id="3"]
 length = 0.5
@@ -16,7 +16,7 @@ step = 0.01
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("graphic/hand_anchor/Sprite2D:offset")
+tracks/0/path = NodePath("graphic/hand:offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -28,10 +28,11 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="4"]
 length = 1.4
+loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("graphic/hand_anchor/Sprite2D:offset")
+tracks/0/path = NodePath("graphic/hand:offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -63,14 +64,11 @@ offset_right = 49.0
 offset_bottom = 8.0
 text = "test"
 
-[node name="hand_anchor" type="Control" parent="graphic"]
-anchors_preset = 0
-
-[node name="Sprite2D" type="Sprite2D" parent="graphic/hand_anchor"]
+[node name="hand" type="Sprite2D" parent="graphic"]
 z_index = 999
 z_as_relative = false
 texture = ExtResource("2")
-centered = false
+offset = Vector2(0, 1)
 
 [node name="shadow_anchor" type="Control" parent="graphic"]
 anchors_preset = 0

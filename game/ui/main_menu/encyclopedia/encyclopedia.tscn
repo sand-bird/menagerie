@@ -1,49 +1,314 @@
-[gd_scene load_steps=6 format=3 uid="uid://dpcs8d7mj2qb0"]
+[gd_scene load_steps=13 format=3 uid="uid://dpcs8d7mj2qb0"]
 
-[ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/encyclopedia/encyclopedia.gd" id="2"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="3"]
+[ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="3_cx7r1"]
 [ext_resource type="Texture2D" uid="uid://cltvm0xbpken5" path="res://assets/ui/elements/book.png" id="3_mvdw5"]
-[ext_resource type="Script" path="res://ui/text.gd" id="4"]
+[ext_resource type="StyleBox" uid="uid://pmkvaxixfrv2" path="res://assets/ui/panels/box_outset_light.tres" id="4_usb2l"]
+[ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="4_wcdwi"]
+[ext_resource type="Texture2D" uid="uid://ckbc0gu217au3" path="res://assets/ui/icons/monster.png" id="5_fce4n"]
+[ext_resource type="Texture2D" uid="uid://oeddm7lownuv" path="res://assets/ui/icons/inventory.png" id="6_itd00"]
+[ext_resource type="StyleBox" uid="uid://css127p16ot1n" path="res://assets/ui/panels/box_outset_dark.tres" id="6_xkni6"]
+[ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="7_6o0yc"]
+[ext_resource type="Texture2D" uid="uid://b5mbxao23vu8b" path="res://assets/ui/icons/arrow.png" id="7_53dgq"]
+[ext_resource type="Texture2D" uid="uid://2ao873qh6btb" path="res://assets/other/the_wizard__s_desk_ii_by_the_bogbrush_project-3091174828.jpeg" id="10_udsid"]
 
-[node name="container" type="Control"]
+[node name="encyclopedia" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 296.0
 offset_bottom = 142.0
-theme = ExtResource("1")
+theme = ExtResource("3")
 script = ExtResource("2")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="align" type="TextureRect" parent="."]
+z_index = -1
 layout_mode = 0
-offset_left = -11.0
-offset_top = -21.0
-offset_right = 305.0
-offset_bottom = 149.0
+offset_left = -10.0
+offset_top = -22.0
+offset_right = 306.0
+offset_bottom = 148.0
 texture = ExtResource("3_mvdw5")
 
-[node name="left" type="Panel" parent="."]
+[node name="img_container" type="Panel" parent="."]
+clip_children = 2
 layout_mode = 0
-offset_top = 3.0
-offset_right = 140.0
-offset_bottom = 140.0
+offset_left = 4.0
+offset_top = 9.0
+offset_right = 138.0
+offset_bottom = 132.0
+theme_override_styles/panel = ExtResource("3_cx7r1")
 
-[node name="right" type="Panel" parent="."]
-layout_mode = 0
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -142.0
-offset_top = -18.0
-offset_bottom = 140.0
-
-[node name="Control" type="Control" parent="right"]
-anchors_preset = 0
+[node name="img" type="TextureRect" parent="img_container"]
+modulate = Color(0.958292, 0.943854, 1.54018e-06, 0.588235)
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_udsid")
+expand_mode = 1
+
+[node name="stats" type="Panel" parent="."]
+visible = false
+offset_left = 2.0
+offset_top = 5.0
+offset_right = 141.0
+offset_bottom = 140.0
+theme_override_styles/panel = ExtResource("4_wcdwi")
+
+[node name="rows" type="VBoxContainer" parent="stats"]
+layout_mode = 2
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 131.0
+offset_bottom = 130.0
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="laid" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/laid"]
+layout_mode = 2
+text = "Eggs laid:"
+
+[node name="value" type="Label" parent="stats/rows/laid"]
+layout_mode = 2
+text = "2"
+horizontal_alignment = 2
+
+[node name="hatched" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/hatched"]
+layout_mode = 2
+text = "Eggs hatched:"
+
+[node name="value" type="Label" parent="stats/rows/hatched"]
+layout_mode = 2
+text = "2"
+horizontal_alignment = 2
+
+[node name="evolved" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/evolved"]
+layout_mode = 2
+text = "Times evolved:"
+
+[node name="value" type="Label" parent="stats/rows/evolved"]
+layout_mode = 2
+text = "1"
+horizontal_alignment = 2
+
+[node name="requests" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/requests"]
+layout_mode = 2
+text = "Requests fulfilled:"
+
+[node name="value" type="Label" parent="stats/rows/requests"]
+layout_mode = 2
+text = "2"
+horizontal_alignment = 2
+
+[node name="earned" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/separation = 0
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/earned"]
+layout_mode = 2
+text = "Money earned:"
+
+[node name="value" type="Label" parent="stats/rows/earned"]
+layout_mode = 2
+text = "20,439,123"
+horizontal_alignment = 2
+
+[node name="spent" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/separation = 0
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/spent"]
+layout_mode = 2
+text = "Money spent:"
+
+[node name="value" type="Label" parent="stats/rows/spent"]
+layout_mode = 2
+text = "18,234,009"
+horizontal_alignment = 2
+
+[node name="playtime" type="HSplitContainer" parent="stats/rows"]
+layout_mode = 2
+theme_override_constants/minimum_grab_thickness = 0
+collapsed = true
+dragger_visibility = 2
+
+[node name="label" type="Label" parent="stats/rows/playtime"]
+layout_mode = 2
+text = "Total playtime:"
+
+[node name="value" type="Label" parent="stats/rows/playtime"]
+layout_mode = 2
+text = "12:34:56"
+horizontal_alignment = 2
+
+[node name="categories" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 6.0
+offset_right = 294.0
+offset_bottom = 138.0
+theme_override_constants/separation = 2
+
+[node name="monsters" type="Button" parent="categories"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_styles/normal = ExtResource("4_usb2l")
+theme_override_styles/hover = ExtResource("6_xkni6")
+theme_override_styles/pressed = ExtResource("7_6o0yc")
+alignment = 0
+
+[node name="icon" type="TextureRect" parent="categories/monsters"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
 offset_left = 6.0
-offset_top = 4.0
-offset_right = -6.0
-offset_bottom = -4.0
-theme = ExtResource("3")
-script = ExtResource("4")
-text = "A pair of em dashes can replace a pair of parentheses. Dashes are considered less formal than parentheses; they are also more intrusive. If you want to draw attention to the parenthetical content, use dashes. If you want to include the parenthetical content more subtly, use parentheses."
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 4.0
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_fce4n")
+flip_h = true
+
+[node name="title" type="Label" parent="categories/monsters"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -5.0
+offset_right = 99.0
+offset_bottom = 5.0
+grow_vertical = 2
+text = "Monsters"
+
+[node name="completion" type="Label" parent="categories/monsters"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -69.0
+offset_top = -5.0
+offset_right = -5.0
+offset_bottom = 5.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "1/5 · 20%"
+horizontal_alignment = 2
+
+[node name="objects" type="Button" parent="categories"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_styles/normal = ExtResource("4_usb2l")
+theme_override_styles/hover = ExtResource("6_xkni6")
+theme_override_styles/pressed = ExtResource("7_6o0yc")
+alignment = 0
+
+[node name="icon" type="TextureRect" parent="categories/objects"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 6.0
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 4.0
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_itd00")
+flip_h = true
+
+[node name="title" type="Label" parent="categories/objects"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -5.0
+offset_right = 99.0
+offset_bottom = 5.0
+grow_vertical = 2
+text = "Objects"
+
+[node name="completion" type="Label" parent="categories/objects"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -69.0
+offset_top = -5.0
+offset_right = -5.0
+offset_bottom = 5.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "1/7 · 14%"
+horizontal_alignment = 2
+
+[node name="total" type="Panel" parent="categories"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_cx7r1")
+
+[node name="Label" type="Label" parent="categories/total"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 95.0
+offset_bottom = 13.0
+text = "Total:"
+
+[node name="cursor" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 141.0
+offset_top = 6.0
+offset_right = 159.0
+offset_bottom = 25.0
+texture = ExtResource("7_53dgq")
+stretch_mode = 2

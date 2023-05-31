@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://brsgfrfl5qe3e"]
 
-[ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="1"]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1_da1a2"]
 [ext_resource type="StyleBox" uid="uid://c27udro7ac0h3" path="res://assets/ui/panels/box_outset.tres" id="2"]
 [ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="3"]
 [ext_resource type="StyleBox" uid="uid://css127p16ot1n" path="res://assets/ui/panels/box_outset_dark.tres" id="4"]
@@ -19,7 +19,7 @@
 custom_minimum_size = Vector2(192, 48)
 offset_right = 192.0
 offset_bottom = 48.0
-theme = ExtResource("1")
+theme = ExtResource("1_da1a2")
 theme_override_styles/normal = ExtResource("5")
 theme_override_styles/hover = ExtResource("2")
 theme_override_styles/pressed = ExtResource("3")
