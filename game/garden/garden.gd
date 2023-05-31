@@ -27,6 +27,9 @@ func init(data):
 	if !monsters.is_empty(): test_mon = monsters[monsters.keys().front()]
 	# camera.stick_target = test_mon
 
+#func _process(_delta):
+#	$nav_debug.draw_point(test_mon.position, 1, Color.from_hsv(0.5, 1, 1))
+
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and test_mon:
 		print("garden _input InputEventMouseButton ", e)

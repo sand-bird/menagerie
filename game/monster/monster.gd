@@ -154,20 +154,6 @@ func _ready():
 	set_physics_process(true)
 
 # --------------------------------------------------------------------------- #
-# position by default is the top-left corner of the node, but we generally
-# want to use the center of its collision circle instead
-
-func get_pos():
-	return Vector2(
-		position.x,
-		position.y - $shape.shape.radius
-	)
-
-func set_pos(pos):
-	position.x = pos.x + $shape.shape.radius
-	position.y = pos.y + $shape.shape.radius
-
-# --------------------------------------------------------------------------- #
 
 func initialize(data):
 	deserialize(data)

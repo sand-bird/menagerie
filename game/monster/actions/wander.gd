@@ -55,7 +55,7 @@ func pick_dest():
 		randf_range(-1, 1)
 	)
 	var distance = randf_range(40, 60)
-	return (direction * distance) + m.get_pos()
+	return (direction * distance) + m.position
 
 func cleanup_move():
 	move_action.exited.disconnect(_on_move_exit)

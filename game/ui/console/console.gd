@@ -44,12 +44,16 @@ When called with no arguments, prints the IDs of all currently loaded data defin
 Call it with an ID to print the content of that data definition instead.
 Accepts an arbitrary number of arguments; subsequent arguments can be used to inspect nested properties of a data definition.""",
 	
-	inventory = """Print the contents of the player's inventory.""",
+	inventory = """Print a summary of the player's inventory.
+Each key has two values:
+  1. the total quantity of that item in the inventory
+  2. the number of unique (unstackable) instances of that item.""",
 	
 	get = """Add stuff to the inventory.
-Requires a single argument: the ID of the thing to add (look up valid IDs with the {c}data{/c} command).
-Takes an optional second argument for quantity (defaults to 1).
-(Note: this is disabled for now while we decide on a schema for the inventory)""",
+Takes 3 arguments, the first of which is required:
+  1. the ID of the thing to add (look up valid IDs with the {c}data{/c} command)
+  2. quantity to add (default is 1)
+  3. custom state (must be JSON-parseable, and cannot include any spaces)""",
 	
 	save = """Save the game (assuming a safe file is loaded).""",
 	
@@ -96,20 +100,23 @@ func cmd_data(args = []):
 	var data = Data.data
 	if args.size() >= 1:
 		data = Data.fetch(args)
-	
 	# log out the keys if the element is a dict of dicts
 #	if typeof(data) == TYPE_DICTIONARY and data.values().any(
 #		func (v): return typeof(v) == TYPE_DICTIONARY
 #	):
-	if args.size() < 1:
-		put('{ ' + ', '.join(data.keys()) + ' }')
-	
-	else:
-		put(JSON.stringify(data, "  ", false))
+	if args.size() < 1: put('{ ' + ', '.join(data.keys()) + ' }')
+	else: put(JSON.stringify(data, "  ", false))
 
 
 func cmd_inventory(_args):
-	put(Player.inventory)
+	var summary = {}
+	for key in Player.inventory:
+		var items = Player.inventory[key]
+		summary[key] = [
+			items.reduce(func (acc, i): return acc + i.qty, 0), # total
+			items.size() # unique
+		]
+	put(summary)
 
 
 func cmd_get(args: Array):
@@ -117,10 +124,14 @@ func cmd_get(args: Array):
 		put("Error: {c}get{/c} requires a data ID")
 		return
 	var id = args[0]
-	if (Data.fetch(id) == null):
-		put("Error: '" + id + "' is not a valid id")
-	var qty = args[1] if args.size() > 1 else 1
-#	Player.inventory.append({ id = id, qty = qty })
+	if Data.missing(id):
+		put("Error: '" + id + "' is not a valid ID")
+		return
+	var qty = int(args[1]) if args.size() > 1 else 1
+	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
+	state.merge({ id = id }, true)
+	Player.inventory_add(state, qty)
+
 
 func cmd_save(_args):
 	if SaveManager.current_save_dir == null:
@@ -129,11 +140,14 @@ func cmd_save(_args):
 	Dispatcher.emit('save_game')
 	put("Saved " + SaveManager.current_save_dir)
 
+
 func cmd_exit(_args):
 	Dispatcher.emit("ui_toggle", "console")
 
+
 func cmd_quit(_args):
 	Dispatcher.emit('quit_game')
+
 
 # quick n dirty way to clear _after_ we append the post-command newline
 func cmd_clear(_args):
@@ -152,6 +166,7 @@ func _ready():
 	)
 	cmd_help()
 	$output.newline()
+	z_index = 100
 
 # --------------------------------------------------------------------------- #
 

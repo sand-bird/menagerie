@@ -5,15 +5,15 @@ extends "res://ui/main_menu/menu_chapter.gd"
 @onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
 
 # as in "inventory item", not as in Item (the specific type of game entity).
-# unfortunately ambiguous, but i couldn't come up with any decent alternatives :(
+# an array of 2-element arrays: id and index.  each identifies a "stack" in
+# `Player.inventory`, which can have multiple stacks for each entity id.
 #
-# an array of ints, each an index within Player.inventory. represents the
-# subset of the player's inventory that we can SEE & INTERACT WITH. possible
-# reasons an inventory item doesn't show up in this list:
+# represents the subset of the player's inventory that we can SEE & INTERACT
+# WITH.  possible reasons an inventory item doesn't show up in this list:
 # - it's being filtered out by our current filter settings
 # - the data for its entity id was not found; an uncommon but expected case,
 #   eg. if an entity belongs to a mod that's currently disabled.
-@onready var items = []
+@onready var indices = []
 
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
@@ -23,32 +23,36 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-func initialize(filter = {}):
+func initialize(data_filter = null, state_filter = null):
 	# init self
-	items = filter_items(filter)
+	indices = filter_items(data_filter, state_filter)
 
 	# init item grid
-	$item_grid.initialize(props, {items = items})
-	if items: update_current_item(0)
+	$item_grid.initialize(props, {items = indices})
+	if indices: update_current_item(0)
 
 	super.initialize()
 
 # --------------------------------------------------------------------------- #
 
-func filter_items(filter: Dictionary):
+# there are two ways to filter a stack: based on data (shared by all stacks with
+# the same entity id, and based on state (unique to a stack).
+# the latter is more costly because it requires checking all the stacks for each
+# id in the inventory, so we skip calling it if null is passed.
+func filter_items(
+	data_filter = null, # Dict (data def) -> bool
+	state_filter = null # Dict (serialized state) -> bool
+):
 	var results = []
-	for i in Player.inventory.size():
-		var id = Player.inventory[i].id
+	for id in Player.inventory:
 		var data = Data.fetch(id)
-		if !data: continue  # dw, Data.fetch already logged it
-		var matches = true
-		for key in filter.keys():
-			if !data.has(key) or data[key] != filter[key]:
-				matches = false
-				break
-		if matches:
-			Log.info(self, [id, " passed filter!"])
-			results.append(i)
+		if data == null: continue  # dw, Data.fetch already logged it
+		if data_filter != null and !data_filter.call(data): continue
+		
+		var stacks = Player.inventory[id]
+		for i in stacks.size():
+			if state_filter == null or state_filter.call(stacks[i]):
+				results.push_back([id, i])
 	return results
 
 
@@ -71,4 +75,4 @@ func update_item_details(index):
 
 # fetches actual item data from the Player global
 func get_item(index):
-	return Player.inventory[items[index]]
+	return Player.inventory_get(index)

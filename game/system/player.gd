@@ -11,20 +11,29 @@ var money
 
 var garden
 
-# entity names that should be revealed in the encyclopedia
-# (values should all be `true` unless we want to un-discover something).
-# we use a dictionary so it's trivial to discover an entity when we add it to
-# the inventory, and so that we can sub-discover states/morphs of an entity.
-var discovered = { "bunny": true }
+# entity names that should be revealed in the encyclopedia.
+# we use a dictionary so it's trivial to look up an entity to see whether it has
+# already been discovered, and so that we can sub-discover states/morphs of an
+# entity.
+# there are 2 kinds of discoverable entity:
+# 1. "complex" discoverables have sub-discoverables and are represented as dicts
+#    whose keys are the id of the sub-discoverable and values are booleans.
+#    currently these are monsters (with morphs) and objects (with states).
+# 2. "simple" discoverables do not have sub-discoverables and are represented
+#    with boolean values.
+var discovered = { bunny = { sprout = true }, fluffy_tuft = true }
 
-# keyed by entity id. values can be either an array of objects or an integer.
-# the idea is that inventory items (entities of type "item", like fruits, or
-# "object", like trees) can have arbitrary internal state, so you can't just
-# stack up multiples with the same id.
-#
+# keys are entity ids, values are arrays of serialized instances.
 # keying inventory items by id allows us to neatly filter out entities that are
-# not present in Data (eg, because a mod was removed).
-var inventory = { }
+# not present in Data (eg because a mod was removed), and quickly reference all
+# stored entities of the same type.
+# each element in the value array has some distinct state which prevents it from
+# being stacked with any of its siblings, and a `qty` field which is not part of
+# the entity itself.  when inserting to the inventory, if we find an existing
+# element with which the new one _can_ be stacked (because the serialized data
+# is identical), we increment its qty.  otherwise, we append the new element
+# to the back of the array.
+var inventory = {}
 
 # --------------------------------------------------------------------------- #
 
@@ -90,25 +99,110 @@ func get_printable_playtime(time = null):
 #                              I N V E N T O R Y                              #
 # --------------------------------------------------------------------------- #
 
+# checks if new and saved are identical except for `qty`.
+# this modifies the `qty` property on `new`, but it's ok since we won't use it
+func is_stackable(new: Dictionary, saved: Dictionary):
+	new.merge({ qty = saved.qty }, true)
+	return new.hash() == saved.hash()
+
+# --------------------------------------------------------------------------- #
+
+# takes in a serialized entity, meaning it should have all of its required
+# state params (most notably for now, these are `id`, `morph` on monsters, and
+# `state` on objects).
 # 1. if we don't have any of this entity yet, add a key to the inventory for it
 #    whose value is an empty array, and add it to `discovered`
 # 2. if we do have one, go through the values until we find one that matches
 #    the input object's state, and increment its qty
 # 3. else, add the input item to the end of the value array
-func inventory_add(serialized):
-	if not serialized.id in inventory:
-		inventory[serialized.id] = []
-		discovered[serialized.id] = true
-	for saved in inventory[serialized.id]:
-		if saved == serialized: saved.qty += 1 # TODO: need to strip qty for this to work
-	inventory[serialized.id].push_back(serialized)
+func inventory_add(serialized: Dictionary, qty: int = 1):
+	if qty < 1:
+		Log.error(self, [
+			"(inventory_add) 'qty' must be a positive number, but was ", qty
+		])
+		return
+	var id = serialized.id
+	if Data.missing(id):
+		Log.error(self, ["(inventory_add) can't add '", id,
+			"' to inventory: not found in data"])
+		return
+	maybe_discover(serialized)
+	if not id in inventory: inventory[id] = []
+	for saved in inventory[id]:
+		if is_stackable(serialized, saved):
+			saved.qty += qty
+			return
+	serialized.merge({ qty = qty }, true)
+	inventory[id].push_back(serialized)
+
+# --------------------------------------------------------------------------- #
+
+# get a stack from the inventory.  takes the id and index either as separate
+# args or as an array (since that's how we store them in the inventory menu ui.)
+func inventory_get(id, i = null):
+	if typeof(id) == TYPE_ARRAY: i = id[1]; id = id[0]
+	return inventory[id][i]
+
+# --------------------------------------------------------------------------- #
 
 # takes an entity id and index and either decrements qty or removes the element
-func inventory_remove(id, index):
-	pass
+func inventory_remove(id, i):
+	if id not in inventory:
+		Log.error(self, [
+			"tried to remove an invalid element from inventory: ", id
+		])
+		return
+	var items: Array = inventory[id]
+	if i not in range(0, items.size()):
+		Log.error(self, [
+			"tried to remove an invalid index from inventory element ", id, ": ",
+			i, " (has length ", items.size(), ")"
+		])
+		i = clamp(i, 0, items.size() - 1)
+	var item: Dictionary = items[i]
+	# if we have more than 1, decrement qty and return a copy of the item
+	if item.qty > 1:
+		item.qty -= 1
+		return item.duplicate(true).erase('qty')
+	# if it's the last one, we need to remove it from the array
+	items.remove_at(i)
+	return item.erase('qty') # TODO: make sure this still works after remove
 
 
 # =========================================================================== #
 #                           E N C Y C L O P E D I A                           #
 # --------------------------------------------------------------------------- #
 
+# discover an entity and its morph/state if it has not been discovered yet.
+# takes in a serialized entity, meaning we have access to its id and any state
+# that should be serialized, but not data properties like type or description.
+# TODO: fire dispatcher events when something is actually discovered
+func maybe_discover(entity):
+	var data = Data.fetch(entity.id)
+	if data == null:
+		Log.error(self, [
+			"(maybe_discover) can't discover '", entity.id, "': not found in data"
+		])
+		return
+	if entity.id not in discovered:
+		discovered[entity.id] = {} if (
+			data.type in ['monster', 'object']
+		) else true
+	match data.type:
+		'monster': maybe_discover_child(entity, 'morph')
+		'object': maybe_discover_child(entity, 'state')
+
+# discover a child discoverable of the given entity if it has not already been
+# discovered.  key is either 'morph' (for monsters) or 'state' (for objects),
+# since those are the only kinds of sub-discoverables we have right now.
+func maybe_discover_child(entity, child_key):
+	var record = discovered[entity.id]
+	if child_key not in entity:
+		Log.error(self, [
+			"(maybe_discover_child) found a ", Data.fetch([entity.id, 'type']),
+			" without a ", child_key, ": ", entity
+		])
+		return
+	var child_id = entity[child_key]
+	if child_id not in record:
+		record[child_id] = true

@@ -13,11 +13,7 @@
     "playtime": 0,
     "discovered": { "bunny": { "sprout": true } },
     "monster_count": 0,
-    "inventory": [],
-    "requests": [],
-    "completed_requests": [],
-    "relationships": {},
-    "letters": {},
+    "inventory": {},
     "seq_num": 0
   },
   "garden": {

@@ -19,7 +19,7 @@ var index
 func initialize(i, iref, item_size):
 	index = i
 	set_size(item_size)
-	var item = Player.inventory[iref]
+	var item = Player.inventory_get(iref)
 	set_qty(item.qty)
 	$icon.texture = Data.fetch_res([item.id, "icon"])
 

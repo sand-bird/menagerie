@@ -55,11 +55,10 @@ func init():
 
 # --------------------------------------------------------------------------- #
 
-# get a data definition.  takes a path array.
-#
+# get a data definition or returns null.  takes a path array.
 # we can't call this `get` anymore because godot 4 no longer lets you override
 # native functions :(
-func fetch(a):
+func fetch(a, warn: bool = true):
 	var args = Utils.pack(a)
 	Log.debug(self, ["get ", args])
 
@@ -74,8 +73,10 @@ func fetch(a):
 
 	for arg in args:
 		if !result.has(arg):
-			Log.warn(self, ["could not find data for ", arg,
-					": ", ".".join(PackedStringArray(args))])
+			if warn: Log.warn(self, [
+				"could not find data for ", arg, ": ",
+				".".join(PackedStringArray(args))
+			])
 			return null
 		else: result = result[arg]
 
@@ -83,8 +84,14 @@ func fetch(a):
 
 # --------------------------------------------------------------------------- #
 
+func missing(a):
+	var data = fetch(a, false)
+	return data == null
+
+# --------------------------------------------------------------------------- #
+
 func fetch_res(a):
-	var path = get(a)
+	var path = fetch(a)
 	return ResourceLoader.load(path) if (path) else null
 
 # --------------------------------------------------------------------------- #

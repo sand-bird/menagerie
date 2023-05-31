@@ -4,6 +4,38 @@ extends Control
 
 const DEFAULT_TITLE = "1 / 1" #"\u2727 \u2726 \u2727"
 
+const CHAPTERS = {
+	monsters = {
+		icon = "monster",
+		scene = "monsters/monsters"
+	},
+	items = {
+		icon = "items",
+		scene = "inventory/items"
+	},
+	objects = {
+		icon = "inventory",
+		scene = "inventory/objects"
+	},
+	town_map = {
+		icon = "town",
+		scene = "town_map/town_map"
+	},
+	calendar = {
+		icon = "calendar",
+		scene = "calendar/calendar"
+	},
+	encyclopedia = {
+		icon = "encyclopedia",
+		scene = "encyclopedia/encyclopedia"
+	},
+	options = {
+		icon = "options",
+		scene = "options/options"
+	}
+}
+
+
 var current # id of the current chapter
 var current_scene # scene pointer for curent chapter
 
@@ -23,11 +55,11 @@ func _ready():
 # --------------------------------------------------------------------------- #
 
 func make_tabs():
-	var chapters = Constants.MENU_CHAPTERS
-	for id in chapters:
-		if (!chapters[id].has('condition') or
-				Condition.resolve(chapters[id].condition)):
-			new_tab(id, chapters[id])
+	for id in CHAPTERS:
+		var chapter = CHAPTERS[id]
+		if (!chapter.has('condition') or
+				Condition.resolve(chapter.condition)):
+			new_tab(id, chapter)
 
 # --------------------------------------------------------------------------- #
 
@@ -97,10 +129,9 @@ func load_scene(scene_path):
 # --------------------------------------------------------------------------- #
 
 func get_chapter_info(chapter):
-	var chapters = Constants.MENU_CHAPTERS
-	if chapters.has(chapter):
-		return chapters[chapter]
-
+	if CHAPTERS.has(chapter):
+		return CHAPTERS[chapter]
+  
 
 # =========================================================================== #
 #                                H E A D E R S                                #
