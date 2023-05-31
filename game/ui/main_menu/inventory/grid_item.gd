@@ -18,15 +18,11 @@ var index
 # the element, depending on the parent ItemGrid's grid_size.
 func initialize(i, iref, item_size):
 	index = i
-	set_size(item_size)
+	custom_minimum_size = item_size
+	size = item_size
 	var item = Player.inventory_get(iref)
 	set_qty(item.qty)
 	$icon.texture = Data.fetch_res([item.id, "icon"])
-
-# g4 complains about overriding native set_size - not sure if we need this
-#	func set_size(size, _keep_margins = false):
-#		custom_minimum_size = size
-#		size = size
 
 func set_qty(item_qty):
 	qty = item_qty

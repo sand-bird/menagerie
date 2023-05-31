@@ -1,9 +1,20 @@
 extends NinePatchRect
 
-enum GridSize { SMALL, LARGE }
+const GRID_PROPERTIES = {
+	Constants.GridSize.SMALL: {
+		grid_bg = "item_grid_small_9patch",
+		selector = "selector_small",
+		item_size = Vector2(20, 20)
+	},
+	Constants.GridSize.LARGE: {
+		grid_bg = "item_grid_large_9patch",
+		selector = "selector_big",
+		item_size = Vector2(24, 24)
+	}
+}
 
 # grid properties
-@export var grid_size: GridSize = GridSize.SMALL
+@export var grid_size = Constants.GridSize.SMALL
 @export var cols: int = 6
 @export var rows: int = 6
 var props
@@ -38,7 +49,7 @@ func initialize(grid_config = null, state = null):
 	for i in ['cols', 'rows', 'grid_size']:
 		if grid_config and grid_config.has(i):
 			set(i, grid_config[i])
-	props = Constants.GRID_PROPERTIES[grid_size]
+	props = GRID_PROPERTIES[grid_size]
 	$items.columns = cols
 	texture = Utils.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
 	size = calc_size(props.item_size)

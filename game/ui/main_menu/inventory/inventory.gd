@@ -1,8 +1,19 @@
 extends "res://ui/main_menu/menu_chapter.gd"
 
-# var Wrap = Constants.Wrap
+const PROPERTIES = {
+	Constants.InventorySize.SMALL: {
+		cols = 6,
+		rows = 6,
+		grid_size = Constants.GridSize.SMALL,
+	},
+	Constants.InventorySize.LARGE: {
+		cols = 5,
+		rows = 5,
+		grid_size = Constants.GridSize.LARGE,
+	}
+}
 
-@onready var props = Constants.INVENTORY_PROPERTIES[Options.inventory_size]
+var props = PROPERTIES[Options.inventory_size]
 
 # as in "inventory item", not as in Item (the specific type of game entity).
 # an array of 2-element arrays: id and index.  each identifies a "stack" in
@@ -28,7 +39,7 @@ func initialize(data_filter = null, state_filter = null):
 	indices = filter_items(data_filter, state_filter)
 
 	# init item grid
-	$item_grid.initialize(props, {items = indices})
+	$item_grid.initialize(props, { items = indices })
 	if indices: update_current_item(0)
 
 	super.initialize()
@@ -59,20 +70,22 @@ func filter_items(
 # =========================================================================== #
 #                         U P D A T I N G   S T A T E                         #
 # --------------------------------------------------------------------------- #
+# these functions operate on indices to the `indices` array
 
-func update_current_item(new_index):
-	$item_grid.update_current_item(new_index)
-	update_item_details(new_index)
-	current_item = new_index
+func update_current_item(i: int):
+	$item_grid.update_current_item(i)
+	update_item_details(i)
+	current_item = i
 
 # --------------------------------------------------------------------------- #
 
-func update_item_details(index):
-	var item = get_item(index)
-	$item_info.update_item(item.id, item.qty)
+func update_item_details(i: int):
+	var item = get_item(i)
+	$item_info.update_item(item)
 
 # --------------------------------------------------------------------------- #
 
 # fetches actual item data from the Player global
-func get_item(index):
+func get_item(i: int):
+	var index = indices[i]
 	return Player.inventory_get(index)

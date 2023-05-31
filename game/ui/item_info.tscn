@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://drv63ikod5fcf"]
+[gd_scene load_steps=10 format=3 uid="uid://drv63ikod5fcf"]
 
 [ext_resource type="Script" path="res://ui/item_info.gd" id="1"]
 [ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="5"]
 [ext_resource type="Texture2D" uid="uid://df7d3kr5opmer" path="res://assets/ui/elements/item_box_detail.png" id="6"]
 [ext_resource type="StyleBox" uid="uid://dg5c15dcn8f3k" path="res://assets/ui/panels/qty_label.tres" id="7"]
+[ext_resource type="Texture2D" uid="uid://knkvn5yhvm8r" path="res://assets/garden/cursor.png" id="7_5rjka"]
 
 [sub_resource type="GDScript" id="1"]
 resource_name = "item_name"
@@ -82,28 +83,35 @@ texture = ExtResource("6")
 
 [node name="icon" type="TextureRect" parent="item_icon"]
 custom_minimum_size = Vector2(16, 16)
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -9.0
-offset_top = -9.0
-expand_mode = 1
-stretch_mode = 6
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_5rjka")
+stretch_mode = 3
 
 [node name="quantity" type="Label" parent="item_icon"]
-visible = false
 clip_contents = true
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -27.0
-offset_top = -17.0
+offset_left = -16.0
+offset_top = -16.0
 offset_right = -7.0
-offset_bottom = -6.0
+offset_bottom = -5.0
+grow_horizontal = 0
+grow_vertical = 0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 theme_override_styles/normal = ExtResource("7")
 
@@ -120,6 +128,9 @@ theme_override_styles/panel = ExtResource("3")
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
+text = "test"
+horizontal_alignment = 1
+vertical_alignment = 1
 script = SubResource("1")
 
 [node name="item_description" type="Panel" parent="."]

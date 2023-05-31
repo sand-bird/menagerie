@@ -1,22 +1,25 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://d0v2thx3t5be6"]
 
-[ext_resource path="res://assets/ui/theme.tres" type="Theme" id=1]
-[ext_resource path="res://ui/main_menu/inventory/grid_item.gd" type="Script" id=2]
-[ext_resource path="res://data/items/fluffy_tuft/fluffy_tuft.png" type="Texture2D" id=3]
-[ext_resource path="res://assets/ui/panels/qty_label_flat.tres" type="StyleBox" id=4]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
+[ext_resource type="Script" path="res://ui/main_menu/inventory/grid_item.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://bryu8qmdog6lx" path="res://data/items/fluffy_tuft/fluffy_tuft.png" id="3"]
+[ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="4"]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="item" type="Button"]
+custom_minimum_size = Vector2(20, 20)
 offset_right = 20.0
 offset_bottom = 20.0
-custom_minimum_size = Vector2( 20, 20 )
-theme = ExtResource( 1 )
-theme_override_styles/focus = SubResource( 1 )
+theme = ExtResource("1")
+theme_override_styles/focus = SubResource("1")
 flat = true
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="icon" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -25,20 +28,24 @@ offset_left = -8.0
 offset_top = -8.0
 offset_right = 8.0
 offset_bottom = 8.0
-custom_minimum_size = Vector2( 16, 16 )
-texture = ExtResource( 3 )
-expand = true
-stretch_mode = 6
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3")
+stretch_mode = 3
 
 [node name="quantity" type="Label" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -8.0
 offset_top = -9.0
 offset_bottom = 2.0
-clip_contents = true
-theme_override_colors/font_shadow_color = Color( 0, 0, 0, 0 )
-theme_override_styles/normal = ExtResource( 4 )
-text = "211"
-align = 2
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_styles/normal = ExtResource("4")
+text = "2"

@@ -151,10 +151,10 @@ script = SubResource("GDScript_kmer2")
 [node name="ui" type="CanvasLayer" parent="."]
 
 [node name="clock_hud" parent="ui" instance=ExtResource("9")]
-offset_left = 6.0
-offset_top = -3.0
-offset_right = 6.0
-offset_bottom = -3.0
+offset_left = 3.0
+offset_top = -1.0
+offset_right = 3.0
+offset_bottom = -1.0
 grow_horizontal = 0
 
 [node name="time_label" type="Label" parent="ui/clock_hud"]
@@ -170,6 +170,7 @@ text = "12:00a.m."
 script = SubResource("3")
 
 [node name="select_hud" parent="ui" instance=ExtResource("10")]
+visible = false
 offset_left = -22.0
 offset_top = -3.0
 offset_right = -22.0

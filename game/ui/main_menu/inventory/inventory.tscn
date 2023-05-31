@@ -46,10 +46,12 @@ patch_margin_bottom = 12
 axis_stretch_horizontal = 2
 
 [node name="item_grid" parent="." instance=ExtResource("5")]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -138.0
+offset_left = -139.0
 offset_top = 3.0
-offset_right = -3.0
+offset_right = -4.0
 offset_bottom = 138.0
+grow_horizontal = 0

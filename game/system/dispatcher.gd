@@ -63,16 +63,21 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
+const input_map = {
+	ui_menu = ['menu_open'],
+	ui_menu_monsters = ['menu_open', 'monsters'],
+	ui_menu_items = ['menu_open', 'items'],
+	ui_menu_objects = ['menu_open', 'objects'],
+	ui_cancel = ['ui_close'],
+	ui_console = ['ui_toggle', 'console']
+}
+
 # ui input handling. there's probably a better place for this to live
 func _unhandled_input(e):
-	if e.is_action_pressed("ui_menu"):
-		emit_signal("menu_open")
-	elif e.is_action_pressed("ui_menu_monsters"):
-		emit_signal("menu_open", "monsters")
-	elif e.is_action_pressed("ui_cancel"):
-		emit_signal("ui_close")
-	elif e.is_action_pressed("ui_console"):
-		emit_signal("ui_toggle", "console")
+	for action in input_map:
+		var target = input_map[action]
+		if e.is_action_pressed(action):
+			emit(target[0], target.substr(1) if target.size() > 1 else null)
 
 # --------------------------------------------------------------------------- #
 

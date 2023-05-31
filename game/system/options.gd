@@ -10,7 +10,6 @@ extends Node
 var ControlMode = Constants.ControlMode
 var ScrollMode = Constants.ScrollMode
 var InventorySize = Constants.InventorySize
-var Language = Constants.Language
 
 # =========================================================================== #
 #                                O P T I O N S                                #
@@ -33,7 +32,7 @@ var text_speed = TextSpeed[3] # characters per second
 #                              i n v e n t o r y                              #
 # --------------------------------------------------------------------------- #
 
-var inventory_size = InventorySize.LARGE
+var inventory_size = InventorySize.SMALL
 
 #                                  i n p u t                                  #
 # --------------------------------------------------------------------------- #

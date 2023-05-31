@@ -97,52 +97,5 @@ enum InventorySize {
 	LARGE, # 5x5 (meant for touch)
 	SMALL # 6x6
 }
-
-enum Language {
-	ENGLISH,
-	PORTUGUESE
-}
-
-enum Wrap {
-	NONE,
-	HORIZONTAL,
-	VERTICAL
-}
-
-# -------- #
-#  CONFIG  #
-# -------- #
-
 enum GridSize { SMALL, LARGE }
 
-const GRID_PROPERTIES = {
-	GridSize.SMALL: {
-		grid_bg = "item_grid_small_9patch",
-		selector = "selector_small",
-		item_size = Vector2(20, 20)
-	},
-	GridSize.LARGE: {
-		grid_bg = "item_grid_large_9patch",
-		selector = "selector_big",
-		item_size = Vector2(24, 24)
-	}
-}
-
-const INVENTORY_PROPERTIES = {
-	InventorySize.SMALL: {
-		cols = 6,
-		rows = 6,
-		grid_size = GridSize.SMALL,
-		grid_bg = "item_grid_small",
-		selector = "selector_small",
-		selector_size = Vector2(0, 0),
-	},
-	InventorySize.LARGE: {
-		cols = 5,
-		rows = 5,
-		grid_size = GridSize.LARGE,
-		grid_bg = "item_grid_large",
-		selector = "selector_big",
-		selector_size = Vector2(0, 0),
-	}
-}
