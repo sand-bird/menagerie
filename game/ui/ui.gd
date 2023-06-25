@@ -113,7 +113,8 @@ func close(arg = null):
 # removes the item if it already exists in the stack, otherwise opens it.
 # unlike `open`, only takes a single arg for the item ref. we're not even using
 # those overlay/restore args anywhere (yet??)
-func toggle(item_ref):
+func toggle(arg):
+	var item_ref = Utils.unpack(arg)
 	var item_idx = find_item(item_ref)
 	if item_idx != null: close(item_idx)
 	else: open(item_ref)

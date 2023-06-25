@@ -84,9 +84,7 @@ func fetch(a, warn: bool = true):
 
 # --------------------------------------------------------------------------- #
 
-func missing(a):
-	var data = fetch(a, false)
-	return data == null
+func missing(a): return fetch(a, false) == null
 
 # --------------------------------------------------------------------------- #
 

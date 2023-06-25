@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://bdejgafuf4gj2"]
+[gd_scene load_steps=25 format=3 uid="uid://bdejgafuf4gj2"]
 
 [ext_resource type="Script" path="res://garden/garden.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://o6bdg8doc18k" path="res://garden/camera.tscn" id="3"]
@@ -12,24 +12,21 @@
 [ext_resource type="PackedScene" path="res://ui/garden/interact_hud.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="12"]
 
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_2dkaq"]
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_f7a07"]
 
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_p70y7"]
-vertices = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)])
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_1wtw8"]
 
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_o284t"]
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_3kp4d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wcm2i"]
 resource_name = "terrain"
 texture = ExtResource("4")
 0:0/0 = 0
-0:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_2dkaq")
+0:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_f7a07")
 0:1/0 = 0
-0:1/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_p70y7")
+0:1/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_1wtw8")
 0:2/0 = 0
-0:2/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_o284t")
+0:2/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_3kp4d")
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_7fp0i"]
 vertices = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -45,6 +42,198 @@ texture = ExtResource("4_urdid")
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_wcm2i")
 sources/2 = SubResource("TileSetAtlasSource_ppeih")
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_xvn7y"]
+
+[sub_resource type="GDScript" id="GDScript_l15gu"]
+script/source = "extends NavigationRegion2D
+\"\"\"
+generate a navigation polygon for the garden.  as long as this is the only
+NavigationRegion in our world, gd4's NavigationServer automatically adds it to
+the navigation map that agents will use.
+
+we generate the navpolygon with `add_outline`.  the first outline surrounds the
+tilemap and creates our nagivable area.  then we add outlines for obstacles
+(objects in the garden); since these are contained within the base outline, they
+become \"holes\" in the final navpoly.
+
+however, NavigationPolygon does not support merging outlines and will crash if
+we give it two outlines that overlap.  thus we first need to identify and merge
+all of our overlapping obstacles.
+
+the final consideration is agent size padding: we want to add half the agent
+size to all obstacles (with `Geometry2D.offset_polygon`) before merging them,
+and probably also subtract it from the base navpoly around the tilemap.
+eventually, we'll want to generate a few different navpolys with different agent
+sizes, and configure the NavigationAgents in our monsters to use the correct one
+for the monster's size.
+
+merging algorithm:
+- naive approach means checking each obstacle against each other one, O(n^2)
+- we can reduce the size of the search space by sorting obstacles first, so each
+  obstacle only needs to check the ones before it in the list
+
+recursive merges:
+- no matter how we sort obstacles, there may be cases where a successful merge
+  enables more merges.  eg, sorting by (x,y):
+   ,__,       ,__,
+,__|1_| -> ,__|__|
+|2_|3_|    |_____|
+
+we cannot merge until we get to 3, which can be merged with 2.
+\"\"\"
+
+var navpoly: NavigationPolygon = get_navigation_polygon()
+
+func make_box(_size, _offset):
+	var to_vec = func (x):
+		return x if typeof(x) in [TYPE_VECTOR2, TYPE_VECTOR2I] else Vector2(x, x)
+	var size = to_vec.call(_size)
+	var offset = to_vec.call(_offset)
+	return PackedVector2Array([
+		Vector2(offset.x,          offset.y),
+		Vector2(offset.x + size.x, offset.y),
+		Vector2(offset.x + size.x, offset.y + size.y),
+		Vector2(offset.x,          offset.y + size.y)
+	])
+
+func add_box(size, offset):
+	navpoly.add_outline(make_box(size, offset))
+
+# --------------------------------------------------------------------------- #
+
+var obstacles: Array[PackedVector2Array] = []
+
+# returns true if any of the points in a are inside or on b.
+# this includes polygons whose corners touch
+func overlaps_poly(a: PackedVector2Array, b: PackedVector2Array):
+	for point in a:
+		if Geometry2D.is_point_in_polygon(point, b):
+			prints('(overlaps_poly) found overlap | a:', a, '| b:', b, '| point:', point)
+			return true
+	return false
+
+# 
+func add_obstacle(size, offset, padding):
+	var box: PackedVector2Array = make_box(size, offset)
+	if obstacles.is_empty():
+		obstacles.push_back(box)
+		return
+	for o in obstacles:
+		if overlaps_poly(box, o):
+			pass
+
+# --------------------------------------------------------------------------- #
+
+func merge_obstacles(obstacles: Array[PackedVector2Array]):
+	pass
+
+# --------------------------------------------------------------------------- #
+
+func _ready():
+	var map = (get_parent().get_node('map') as TileMap)
+	var tileset = map.tile_set
+	# for some reason get_used_rect is short by one in the x-direction
+	var map_size = map.get_used_rect().size + Vector2i(1, 0)
+	# get_used_rect.size is the number of tiles; we have to multiply it by the
+	# grid size (stored on the tileset) to get the pixel size of the tilemap
+	var bounds = map_size * tileset.tile_size
+	var base = make_box(bounds, map.get_used_rect().position)
+	navpoly.add_outline(base)
+	
+#	random_test(bounds)
+#	convex_test()
+	
+		# testing merging
+	var poly2a = make_box(10, 100)
+	var poly2b = make_box(10, Vector2(110, 110))
+	var poly2c = make_box(10, Vector2(120, 100))
+#	navpoly.add_outline(poly2a)
+#	navpoly.add_outline(poly2b)
+	var merged = Geometry2D.merge_polygons(poly2a, poly2b)
+#	var intersection = Geometry2D.intersect_polygons(poly2a, poly2b)
+#	print('-INTERSECTION------------ ', intersection)
+	print('--MERGED-----------------')
+	for i in merged:
+		print(i, ' | ', Geometry2D.is_polygon_clockwise(i))
+#		navpoly.add_outline(i)
+	print('-------------------------')
+	
+#	parse_2d_collisionshapes(self)
+	navpoly.make_polygons_from_outlines()
+	set_navigation_polygon(navpoly)
+
+# --------------------------------------------------------------------------- #
+
+func random_test(bounds):
+	# testing: add some holes
+	for i in 5:
+		var size = randi_range(5, 50)
+		var pos = Vector2(
+			randi_range(0, bounds.x - size),
+			randi_range(0, bounds.y - size),
+		)
+		add_box(Vector2(size, size), pos)
+#	add_box(Vector2(5, 5), Vector2(100, 100))
+#	add_box(Vector2(5, 5), Vector2(80, 120))
+#	add_box(Vector2(5, 5), Vector2(80, 80))
+
+# testing whether it works with concave polygons
+\"\"\" 
+  10 20 30 40
+10 1__2  5__6
+20 |  3__4  |
+30 8________7
+\"\"\"
+func convex_test():
+	var poly = [
+		Vector2(10, 10), # 1
+		Vector2(20, 10), # 2
+		Vector2(20, 20), # 3
+		Vector2(30, 20), # 4
+		Vector2(30, 10), # 5
+		Vector2(40, 10), # 6
+		Vector2(40, 30), # 7
+		Vector2(10, 30), # 8
+	]
+	var convex = Geometry2D.convex_hull(poly)
+	navpoly.add_outline(convex)
+
+# --------------------------------------------------------------------------- #
+
+# copied from the godot docs:
+# https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html#d-navmesh-from-collisionpolygons
+# need to adapt this to look at objects, not just children of this node, and to
+# handle overlaps (may need to create holes via shapes rather than outlines)
+func parse_2d_collisionshapes(root_node: Node2D):
+	for node in root_node.get_children():
+		if node.get_child_count() > 0:
+			parse_2d_collisionshapes(node)
+		if node is CollisionPolygon2D:
+			var colpoly_transform: Transform2D = node.get_global_transform()
+			var colpoly: PackedVector2Array = node.polygon
+			var col_outline: PackedVector2Array = colpoly_transform * colpoly
+			navpoly.add_outline(col_outline)
+
+# --------------------------------------------------------------------------- #
+
+# test.  we can add multiple polygons to a NavigationPolygon, but they stack on
+# top of each other, rather than cutting holes like outlines do.
+\"\"\"
+func add_poly(size: Vector2, offset: Vector2 = Vector2(0, 0)):
+	var vertices = navpoly.vertices
+	var start = vertices.size()
+	vertices.append_array([
+		Vector2(offset.x,          offset.y),
+		Vector2(offset.x + size.x, offset.y),
+		Vector2(offset.x + size.x, offset.y + size.y),
+		Vector2(offset.x,          offset.y + size.y)
+	])
+	navpoly.set_vertices(vertices)
+	prints('vertices', navpoly.vertices)
+	navpoly.add_polygon([start, start + 1, start + 2, start + 3])
+\"\"\"
+"
 
 [sub_resource type="Animation" id="2"]
 tracks/0/type = "value"
@@ -115,8 +304,12 @@ layer_1/modulate = Color(1, 1, 1, 1)
 layer_1/y_sort_enabled = false
 layer_1/y_sort_origin = 0
 layer_1/z_index = 0
-layer_1/tile_data = PackedInt32Array(524297, 2, 0, 458762, 2, 0, 458763, 2, 0, 458764, 2, 0, 524300, 2, 0, 524301, 2, 0, 589837, 2, 0, 589836, 2, 0, 589835, 2, 0, 524299, 2, 0, 524298, 2, 0, 458765, 2, 0, 393228, 2, 0, 393227, 2, 0, 393226, 2, 0, 393225, 2, 0, 458761, 2, 0, 589833, 2, 0, 589834, 2, 0, 655369, 2, 0, 655368, 2, 0, 589832, 2, 0, 524296, 2, 0, 458760, 2, 0, 393224, 2, 0, 393223, 2, 0, 458759, 2, 0, 524295, 2, 0, 589831, 2, 0, 655367, 2, 0, 655366, 2, 0, 589830, 2, 0, 524294, 2, 0, 458758, 2, 0, 393222, 2, 0, 393221, 2, 0, 458757, 2, 0, 524293, 2, 0, 589829, 2, 0, 655365, 2, 0, 655364, 2, 0, 589828, 2, 0, 524292, 2, 0, 458756, 2, 0, 393220, 2, 0, 393219, 2, 0, 458755, 2, 0, 524291, 2, 0, 589827, 2, 0, 655363, 2, 0, 720899, 2, 0, 720900, 2, 0, 720901, 2, 0, 720902, 2, 0, 720903, 2, 0, 720904, 2, 0, 720905, 2, 0, 720906, 2, 0, 655370, 2, 0, 655371, 2, 0, 655372, 2, 0, 655373, 2, 0, 655374, 2, 0, 589838, 2, 0, 524302, 2, 0, 458766, 2, 0, 393230, 2, 0, 393229, 2, 0, 327693, 2, 0, 327692, 2, 0, 327691, 2, 0, 327690, 2, 0, 327689, 2, 0, 327688, 2, 0, 327687, 2, 0, 327686, 2, 0, 327685, 2, 0, 327684, 2, 0, 327683, 2, 0, 393218, 2, 0, 327682, 2, 0, 458754, 2, 0, 524290, 2, 0, 589826, 2, 0, 655362, 2, 0, 720898, 2, 0, 786434, 2, 0, 786435, 2, 0, 786436, 2, 0, 786437, 2, 0, 786438, 2, 0, 786439, 2, 0, 786440, 2, 0, 786441, 2, 0, 786442, 2, 0, 786443, 2, 0, 786444, 2, 0, 786445, 2, 0, 786446, 2, 0, 720910, 2, 0, 720909, 2, 0, 720908, 2, 0, 720907, 2, 0, 327694, 2, 0)
+layer_1/tile_data = PackedInt32Array()
 script = ExtResource("4_p8gd4")
+
+[node name="nav" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_xvn7y")
+script = SubResource("GDScript_l15gu")
 
 [node name="tint" type="CanvasModulate" parent="."]
 color = Color(0.400681, 0.34639, 0.550781, 1)
@@ -170,11 +363,10 @@ text = "12:00a.m."
 script = SubResource("3")
 
 [node name="select_hud" parent="ui" instance=ExtResource("10")]
-visible = false
-offset_left = -22.0
-offset_top = -3.0
-offset_right = -22.0
-offset_bottom = -3.0
+offset_left = -18.0
+offset_top = -2.0
+offset_right = -18.0
+offset_bottom = -2.0
 
 [node name="interact_hud" parent="ui" instance=ExtResource("11")]
 show_behind_parent = true

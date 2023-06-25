@@ -75,9 +75,9 @@ const input_map = {
 # ui input handling. there's probably a better place for this to live
 func _unhandled_input(e):
 	for action in input_map:
-		var target = input_map[action]
+		var target: Array = input_map[action]
 		if e.is_action_pressed(action):
-			emit(target[0], target.substr(1) if target.size() > 1 else null)
+			emit(target[0], target.slice(1) if target.size() > 1 else null)
 
 # --------------------------------------------------------------------------- #
 

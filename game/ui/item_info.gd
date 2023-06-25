@@ -20,4 +20,4 @@ func update_item(state):
 		$item_icon/quantity.show()
 		$item_icon/quantity.text = str(state.qty)
 		var min_size = $item_icon/quantity.get_minimum_size().x
-		$item_icon/quantity.offset_left = -7 - min_size
+		#$item_icon/quantity.offset_left = -11 - min_size
