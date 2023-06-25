@@ -111,14 +111,19 @@ func save_monsters():
 		data[uid] = monsters[uid].serialize()
 	return data
 
+# data is an map of ids to serialized monsters
 func load_monsters(data):
-	var Monster = load('res://monster/monster.tscn')
-	for uid in data:
-		var monster = Monster.instantiate()
-		monster.initialize(data[uid])
-		monsters[uid] = monster
-		monster.garden = self
-		$entities.add_child(monster)
+	for id in data:
+		var monster_data = data[id]
+		monster_data.id = id
+		load_monster(monster_data)
+
+# data is a serialized monster - see Monster.deserialize
+func load_monster(data):
+	var monster = Monster.new(data)
+	monsters[data.id] = monster
+	monster.garden = self
+	$entities.add_child(monster)
 
 # --------------------------------------------------------------------------- #
 

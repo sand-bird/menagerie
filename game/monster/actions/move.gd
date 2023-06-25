@@ -12,7 +12,7 @@ position = position + velocity
 # success when dest is reached
 # fail on timeout
 
-const SPEED_MULTIPLIER = 0.1
+const SPEED_MULTIPLIER = 1.0
 
 var dest: Vector2
 var speed: float
@@ -41,13 +41,13 @@ func estimate_result():
 # --------------------------------------------------------------------------- #
 
 func _start():
-	nav = m.get_node('nav')
+	nav = m.nav
 	nav.set_target_position(dest)
 	# nav agent with object avoidance fires a signal when it's done calculating
 	# the "safe" velocity.  this happens at the end of the physics process, so
 	# we can call `move_and_slide` in the handler
 	nav.velocity_computed.connect(move)
-	m.play_anim(Constants.Anim.WALK, speed)
+	m.play_anim(Constants.Anim.WALK, speed * 1.5)
 
 # on tick, report the current path for debugging
 func _tick():
@@ -79,6 +79,6 @@ func move(desired_velocity):
 	
 #	m.velocity = desired_velocity
 	var steering = desired_velocity - m.velocity
-	var acceleration = steering / m.mass
+	var acceleration = steering / 60.0
 	m.velocity = m.velocity + acceleration
 	m.move_and_collide(m.velocity)

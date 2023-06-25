@@ -109,7 +109,7 @@ func _input(e):
 
 func _process(delta):
 	if curr_body: $graphic/debug.text = str(curr_body)
-	else: $graphic/debug.text = str(position)
+	else: $graphic/debug.text = str(Vector2i($graphic.position))
 	measure_mouse_movement(delta)
 	# decide whether to follow a highlighted entity. if player has moved the
 	# mouse recently, then stop following so we don't get stuck.

@@ -1,8 +1,6 @@
 extends CharacterBody2D
 class_name Monster
 
-#warning-ignore-all:unused_class_variable
-
 var entity_type = Constants.EntityType.MONSTER
 var garden
 
@@ -13,23 +11,35 @@ const MAX_ENERGY = 100.0
 const MAX_SOCIAL = 100.0
 const MAX_MOOD = 200.0
 
+enum Sex { FEMALE, MALE }
+
+var anim: AnimationPlayer
+var nav: NavigationAgent2D
+var sprite: Sprite2D
+var shape: CollisionShape2D
+# var perception: Area2D
+# var vel_text: Label
+
 # =========================================================================== #
 #                             P R O P E R T I E S                             #
 # --------------------------------------------------------------------------- #
 
-var id
-var monster_name
-var type
+# core properties
+# ---------------
+var id # unique id of the monster
+var type # id of the monster's data definition
+var monster_name # unfortunately "name" is a reserved property of Node
+# id of the morph in the `morphs` object of monster's data definition.
+# should be non-null
 var morph
-var birthday
-var mother
-var father
+var birthday # serialized time object ({ tick, hour, day, month, year })
+var sex = Sex.FEMALE
 
 # memory
 # ------
 var past_actions = []
 var current_action: Action
-var next_action # ?
+var next_action: Action # ?
 
 # ids of action ids the monster knows.
 # used for less-obvious actions like shaking trees.  pets should be able to
@@ -42,10 +52,18 @@ var learned_actions = []
 
 # drives
 # ------
-var belly  # 0 to 100
-var mood
-var energy # 0 to 100
-var social # 0 to 8?
+var belly: float = MAX_BELLY / 2.0:
+	get: return belly
+	set(value): belly = clamp(value, 0, MAX_BELLY)
+var mood: float = MAX_MOOD / 2.0:
+	get: return mood
+	set(value): mood = clamp(value, 0, MAX_MOOD)
+var energy: float = MAX_ENERGY / 2.0:
+	get: return energy
+	set(value): energy = clamp(value, 0, MAX_ENERGY)
+var social: float = MAX_SOCIAL / 2.0:
+	get: return social
+	set(value): social = clamp(value, 0, MAX_SOCIAL)
 
 # personality
 # -----------
@@ -127,41 +145,83 @@ var preferences = {}
 
 # movement
 # --------
-var mass = 20 # from entity definition
-# position (Vector2): built-in property
-var orientation = Vector2(0, 1): set = _update_orientation
-# action properties:
-# max_force (scalar), max_speed (scalar)
+var orientation = Vector2(0, 1):
+	get: return orientation
+	# update the AnimationPlayer's `facing` vector when our `orientation` vector
+	# has changed enough to signify a new facing direction. running orientation
+	# through ceil() will result in either (1, 1), (0, 1), (1, 0), or (0, 0).
+	set(new_o):
+		var old_o = orientation
+		orientation = new_o
+		if old_o.ceil() != new_o.ceil():
+			anim.facing = new_o.ceil()
 
-var collider # whatever we're about to hit next
-var collision # whatever we've just hit
+var desired_velocity = Vector2(0, 0) # for debugging
 
-var max_speed = 40
-var desired_velocity = Vector2(0, 0)
-
-var points = []
-var next_point = 0
-
-var dest
 
 # =========================================================================== #
-#                                M E T H O D S                                #
+#                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	motion_mode = MOTION_MODE_FLOATING
 	Dispatcher.tick_changed.connect(_on_tick_changed)
-	update_z()
-	set_physics_process(true)
+
+
+# monsters must be initialized in code because they depend on data definitions
+# that are loaded at runtime.  this makes storing the node's children in a
+# PackedScene (monster.tscn) counter-productive, because the scene would be
+# incomplete/invalid without initialization at runtime.
+#
+# instead, we should create the entire scene programmatically.  this allows us
+# to initialize monsters in a single step with `new`, rather than having to
+# instantiate an incomplete scene and then initialize it in a separate step.
+#
+# note: it's nicer to use vars for children because of typing, but we name them
+# so other nodes can get them with `get_node`.  this is also necessary for $anim
+# since it takes a NodePath to $sprite (the target of all animations).
+func _init(data):
+	deserialize(data)
+	
+	var script: Resource = get_script()
+	var path: String = script.resource_path.get_base_dir()
+	
+	anim = load(path.path_join('anim.gd')).new()
+	add_named_child(anim, 'anim')
+	load_anims()
+	
+	sprite = load(path.path_join('sprite.gd')).new()
+	sprite.texture = load('res://data/monsters/bunny/idle_front.png')
+	sprite.hframes = 4
+	add_named_child(sprite, 'sprite')
+	
+	var shape = CollisionShape2D.new()
+	shape.shape = CircleShape2D.new()
+	var size = Data.fetch([type, 'size'])
+	shape.shape.radius = size
+	shape.position.y -= size
+	add_named_child(shape, 'shape')
+	
+	nav = NavigationAgent2D.new()
+	nav.avoidance_enabled = true
+	nav.path_desired_distance = 1.0
+	nav.target_desired_distance = 1.0
+	nav.path_max_distance = 1.0
+	add_named_child(nav, 'nav')
+	
+	# debug
+	for n in ['orientation', 'velocity', 'desired_velocity']:
+		add_named_child(RayCast2D.new(), n)
 
 # --------------------------------------------------------------------------- #
 
-func initialize(data):
-	deserialize(data)
-	var size = Data.fetch([type, 'size'])
-	$shape.shape.radius = size
-	$shape.position.y -= size
-	load_anims()
+func add_named_child(node: Node, n: String):
+	node.name = n
+	add_child(node)
 
+
+# =========================================================================== #
+#                           M I S C   M E T H O D S                           #
 # --------------------------------------------------------------------------- #
 
 func _physics_process(delta):
@@ -173,8 +233,13 @@ func _physics_process(delta):
 	# debug
 	$orientation.target_position = orientation * 20
 	$velocity.target_position = velocity * 20
-	$vel_text.set_text(String.num(velocity.length(), 2))
+#	$vel_text.set_text(String.num(velocity.length(), 2))
 	$desired_velocity.target_position = desired_velocity * 20
+	
+	$orientation.visible = false
+	$velocity.visible = true
+	$velocity.enabled = true
+	$desired_velocity.visible = true
 
 # --------------------------------------------------------------------------- #
 
@@ -186,21 +251,10 @@ func _on_tick_changed():
 
 # --------------------------------------------------------------------------- #
 
-# update the AnimationPlayer's `facing` vector when our `orientation` vector has
-# changed enough to signify a new facing direction. running orientation through
-# ceil() will result in either (1, 1), (0, 1), (1, 0), or (0, 0).
-func _update_orientation(new_o):
-	var old_o = orientation
-	orientation = new_o
-	if old_o.ceil() != new_o.ceil():
-		$anim.facing = new_o.ceil()
-
-# --------------------------------------------------------------------------- #
-
 # update the z-index of our sprite so that monsters appear in front of or
 # behind other entities according to their y-position in the garden
 func update_z():
-	z_index = position.y + $sprite.texture.get_height() / 2
+	z_index = position.y + sprite.texture.get_height() / 2
 
 # --------------------------------------------------------------------------- #
 
@@ -264,19 +318,22 @@ func load_anims():
 	Log.verbose(self, ['anim data: ', anim_data])
 	# TODO: handle unexpected case where there is no anim_data
 	for anim_id in anim_data:
-		$anim.add_anim(anim_id, anim_data[anim_id])
-	Log.debug(self, ['animations: ', $anim.get_animation_list()])
-	play_anim(Constants.Anim.WALK)
+		anim.add_anim(anim_id, anim_data[anim_id])
+	Log.debug(self, ['animations: ', anim.get_animation_list()])
+	play_anim(Constants.Anim.IDLE)
+
 
 func play_anim(anim_id, speed = 1.0, loops = 0):
-	$anim.set_speed_scale(speed)
-	$anim.play_anim(anim_id, loops)
+	anim.set_speed_scale(speed)
+	anim.play_anim(anim_id, loops)
+
 
 func queue_anim(anim_id, loops = 0):
-	$anim.queue_anim(anim_id, loops)
+	anim.queue_anim(anim_id, loops)
+
 
 func set_anim_speed(speed):
-	$anim.set_speed_scale(speed)
+	anim.set_speed_scale(speed)
 
 
 # =========================================================================== #
@@ -356,68 +413,6 @@ func get_target_energy():
 
 func get_target_social():
 	return MAX_SOCIAL * (1.0 - traits.extraversion)
-
-
-# =========================================================================== #
-#                            I N T E R A C T I O N                            #
-# --------------------------------------------------------------------------- #
-
-func highlight():
-	# possibly a third (or rather first) interaction state:
-	# the highlight, for when the cursor is in "snapping"
-	# range of the monster but the focus delay hasn't elapsed
-	# yet (or for players using a "careful" (or whatever)
-	# targeting scheme, where they must press action to focus
-	# and then again to select)
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func focus():
-	# touch input: first tap
-	# mouse and gamepad: hover (make sure to add a short delay)
-	# cursor will snap to pet - this effect should be greater for
-	# gamepad than for mouse (and the delay greater to compensate)
-
-	# alternately, focus immediately (should be good to see the
-	# focus highlight & hud on no delay), but some delay before
-	# centering camera
-
-	# hud: show basic pet info (name, status)
-	# camera: keep pet centered
-	# self: give pet selection highlight
-
-
-	# game.focused_pet = self
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func select():
-	# touch: second tap
-	# gamepad: push select button; mouse: click
-
-	# hud: show interaction buttons
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func unfocus():
-	# touch: tap outside of pet
-	# mouse and keyboard: hover off after delay
-
-	# -----
-	# game.focused_pet = null
-	pass
-
-# --------------------------------------------------------------------------- #
-
-func _on_discipline(_discipline_type):
-	# triggered by the ui button (PRASE, SCOLD, PET, HIT)
-	# update_preferences(discipline_type)
-	# update_mood(discipline_type)
-	# decide whether to stop current action
-	pass
 
 
 # =========================================================================== #

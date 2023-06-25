@@ -1,0 +1,72 @@
+{
+  "id": "milotic",
+  "type": "monster",
+  "name": {
+    "en": "Milotic"
+  },
+  "description": {
+    "en": "Original character, do not steal"
+  },
+  "size": 6,
+  "morphs": {
+    "standard": {
+      "name": {
+        "en": "Standard"
+      },
+      "animations": {
+        "idle": {
+          "back": {
+            "left": {
+              "spritesheet": "~idle_back_left.png",
+              "frames": 4,
+              "fps": 2.0
+            },
+            "right": {
+              "spritesheet": "~idle_back_right.png",
+              "frames": 4,
+              "fps": 2.0
+            }
+          },
+          "front": {
+            "left": {
+              "spritesheet": "~idle_front_left.png",
+              "frames": 4,
+              "fps": 2.0
+            },
+            "right": {
+              "spritesheet": "~idle_front_right.png",
+              "frames": 4,
+              "fps": 2.0
+            }
+          }
+        },
+        "walk": {
+          "back": {
+            "left": {
+              "spritesheet": "~walk_back_left.png",
+              "frames": 4,
+              "fps": 6.0
+            },
+            "right": {
+              "spritesheet": "~walk_back_right.png",
+              "frames": 4,
+              "fps": 6.0
+            }
+          },
+          "front": {
+            "left": {
+              "spritesheet": "~walk_front_left.png",
+              "frames": 4,
+              "fps": 6.0
+            },
+            "right": {
+              "spritesheet": "~walk_front_right.png",
+              "frames": 4,
+              "fps": 6.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

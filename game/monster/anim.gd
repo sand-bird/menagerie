@@ -129,6 +129,4 @@ func _init_facing(anim_info, flip = false):
 		var time = anim.step * frame
 		anim.track_insert_key(3, time, frame)
 	
-	print(anim.get_track_count())
-	
 	return anim
