@@ -1,5 +1,7 @@
 # Menagerie
 
+![nintendo pls don't sue, it's just a test asset i swear](docs/img/2023-06-27_monster-spawning.png)
+
 A game-in-progress about gardening virtual agents.
 
 I've been plucking away at this on and off for a long time, and will probably be at it for just as long again before it's actually something playable.  That's okay, though - this codebase is my own garden.  In that spirit, my current vision for the game takes some inspiration from the development process itself: sort of a sandbox where creating your own content (monsters, items, etc) is part of the experience.  To that end, a modular content system is a big part of Menagerie's design.
@@ -17,7 +19,7 @@ Influences and references:
 - Tamagotchi
 - Neopets
 
-# Documentation
+# Documentation 
 
 ## File structure
 
