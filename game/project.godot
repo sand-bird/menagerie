@@ -30,6 +30,7 @@ Data="*res://system/data.gd"
 Options="*res://system/options.gd"
 Player="*res://system/player.gd"
 Clock="*res://system/clock.gd"
+Uuid="*res://system/uuid/uuid.gd"
 
 [debug]
 

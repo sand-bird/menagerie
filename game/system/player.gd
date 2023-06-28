@@ -9,7 +9,7 @@ var playtime
 var last_update_time # used to update playtime
 var money
 
-var garden
+var garden: Garden
 
 # entity names that should be revealed in the encyclopedia.
 # we use a dictionary so it's trivial to look up an entity to see whether it has

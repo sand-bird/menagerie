@@ -1,5 +1,5 @@
 extends Control
-
+class_name Garden
 
 #warning-ignore-all:unused_class_variable
 
@@ -10,9 +10,9 @@ extends Control
 # can check what's in the garden (though it also makes serialization easier).
 # these should match 1 to 1 with the actual entities in the garden, just like
 # the ui singleton's stack should match with the instanced ui node's children.
-var monsters = {}
-var items = {}
-var objects = {}
+var monsters: Dictionary = {}
+var items: Dictionary = {}
+var objects: Dictionary = {}
 
 func _ready():
 	pass
@@ -55,6 +55,12 @@ func get_screen_relative_mouse_pos():
 func get_screen_relative_position(pos):
 	return pos - $camera.get_target_position()
 
+func get_map_size():
+	# for some reason get_used_rect is short by one in the x-direction
+	var map_size = $map.get_used_rect().size + Vector2i(1, 0)
+	# get_used_rect.size is the number of tiles; we have to multiply it by the
+	# grid size (stored on the tileset) to get the pixel size of the tilemap
+	return map_size * $map.tile_set.tile_size
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #
@@ -73,7 +79,7 @@ func deserialize(data):
 	$map.load_terrain(data.terrain)
 	load_objects(data.objects)
 	load_monsters(data.monsters)
-	load_items(data.items)
+#	load_items(data.items)
 #	if data.has("camera"):
 #		$camera.deserialize(data.camera)
 
@@ -107,22 +113,21 @@ func load_objects(data):
 
 func save_monsters():
 	var data = {}
-	for uid in monsters:
-		data[uid] = monsters[uid].serialize()
+	for uuid in monsters:
+		data[uuid] = monsters[uuid].serialize()
 	return data
 
 # data is an map of ids to serialized monsters
-func load_monsters(data):
-	for id in data:
-		var monster_data = data[id]
-		monster_data.id = id
+func load_monsters(data = {}):
+	for uuid in data:
+		var monster_data = data[uuid]
+		monster_data.uuid = uuid
 		load_monster(monster_data)
 
 # data is a serialized monster - see Monster.deserialize
-func load_monster(data):
-	var monster = Monster.new(data)
-	monsters[data.id] = monster
-	monster.garden = self
+func load_monster(data = {}):
+	var monster = Monster.new(data, self)
+	monsters[monster.uuid] = monster
 	$entities.add_child(monster)
 
 # --------------------------------------------------------------------------- #

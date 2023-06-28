@@ -81,12 +81,33 @@ func cmd_help(args = []):
 		put(help[args[0]])
 
 
+func cmd_monsters(_args):
+	if Player.garden == null:
+		put("Error: no garden is loaded")
+		return
+	var mons = Player.garden.monsters.values().map(
+		func (x: Monster): return x.serialize()
+	)
+	put(JSON.stringify(mons, "  ", false, false))
+
+
+func cmd_spawn_monster(args):
+	if Player.garden == null:
+		put("Error: no garden is loaded")
+		return
+	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
+	Player.garden.load_monster(data)
+
+
 func cmd_time(args):
 	Clock.tick = int(args[0] if args.size() > 0 else Clock.tick)
 	Clock.hour = int(args[1] if args.size() > 1 else Clock.hour)
 	Clock.date = int(args[2] if args.size() > 2 else Clock.date)
 	Clock.month = int(args[3] if args.size() > 3 else Clock.month)
 	Clock.year = int(args[4] if args.size() > 4 else Clock.year)
+	
+	# QOL: immediately update the garden tint
+	if Player.garden: Player.garden.get_node('tint').sync_anim()
 	
 	put([Clock.tick, Clock.hour, Clock.date, Clock.month, Clock.year])
 	put(Clock.get_printable_time())

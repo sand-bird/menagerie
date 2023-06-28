@@ -46,7 +46,7 @@ static func self_actions(m):
 	return [
 		WanderAction.new(m), 
 #		SleepAction.new(m),
-#		IdleAction.new(m)
+		IdleAction.new(m)
 	]
 
 # --------------------------------------------------------------------------- #

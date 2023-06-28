@@ -14,8 +14,9 @@
       "name",
       "description",
       "gender_balance",
+      "morphs",
       "evolves_into",
-      "morphs"
+      "traits"
     ]
   },
   "properties": {
@@ -143,6 +144,44 @@
           "weight": {
             "$ref": "definitions/weight"
           }
+        }
+      }
+    },
+    "traits": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "iq",
+          "learning",
+          "nutrition",
+          "vigor",
+          "composure",
+          "patience",
+          "confidence",
+          "beauty",
+          "poise",
+          "kindness",
+          "empathy",
+          "aggressiveness",
+          "happiness",
+          "actualization",
+          "openness",
+          "pep"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "mean",
+            "deviation",
+            "heritability"
+          ]
+        },
+        "additionalProperties": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     }

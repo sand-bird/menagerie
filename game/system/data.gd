@@ -24,6 +24,8 @@ const SCHEMA_EXT = "schema"
 var schemas = {}
 var data = {}
 
+var by_type = {}
+
 func init():
 	# loads schemas and datafiles from data/
 	var sourceinfo = {
@@ -39,18 +41,25 @@ func init():
 	# checks & updates modconfig against mod folder
 	update_modconfig(modconfig)
 	save_modconfig(modconfig)
-
+	
 #	load_mod_schemas(modconfig)
 #	load_mod_data(modconfig)
-
+	
+	# index by type
+	for key in data:
+		var type = data[key].type
+		if type not in by_type:
+			by_type[type] = []
+		by_type[type].push_back(key)
+	
 	var val = Validator.new(schemas)
 	val.validate_schemas()
 	val.validate(data)
 	return true
 
-	Log.debug(self, ["data: ", data.keys()])
-	Log.verbose(self, data)
-	Log.debug(self, ["schemas: ", schemas.keys()])
+#	Log.debug(self, ["data: ", data.keys()])
+#	Log.verbose(self, data)
+#	Log.debug(self, ["schemas: ", schemas.keys()])
 #	Log.verbose(self, schemas) # apparently this is a circular structure
 
 # --------------------------------------------------------------------------- #
@@ -58,9 +67,9 @@ func init():
 # get a data definition or returns null.  takes a path array.
 # we can't call this `get` anymore because godot 4 no longer lets you override
 # native functions :(
-func fetch(a, warn: bool = true):
+func fetch(a, default = null, warn = true):
 	var args = Utils.pack(a)
-	Log.debug(self, ["get ", args])
+	Log.debug(self, ["(fetch) ", args])
 
 	var result
 	# note: i think this was to make it compatible with native `get`.
@@ -73,8 +82,10 @@ func fetch(a, warn: bool = true):
 
 	for arg in args:
 		if !result.has(arg):
+			# don't warn if there's a default, just return
+			if default != null: return default
 			if warn: Log.warn(self, [
-				"could not find data for ", arg, ": ",
+				"(fetch) could not find data for ", arg, ": ",
 				".".join(PackedStringArray(args))
 			])
 			return null
@@ -84,7 +95,7 @@ func fetch(a, warn: bool = true):
 
 # --------------------------------------------------------------------------- #
 
-func missing(a): return fetch(a, false) == null
+func missing(a): return fetch(a, null, false) == null
 
 # --------------------------------------------------------------------------- #
 
@@ -237,13 +248,12 @@ func load_mod_data(modconfig):
 			"version": modconfig.mods[id].version,
 		}
 		load_data(modconfig.mods[id].path, sourceinfo)
-	pass
 
 # --------------------------------------------------------------------------- #
 
 func load_data(dirname, sourceinfo):
 	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
-	var loaded = {}
+	var loaded = { data = {}, schemas = {} }
 	var dir = DirAccess.open(dirname) 
 	if !dir:
 		Log.error(self, ["could not open `", dirname, "`!"])
@@ -258,11 +268,9 @@ func load_data(dirname, sourceinfo):
 			if child: loaded = merge(loaded, child)
 		elif current.get_extension() == DATA_EXT:
 			var d = load_datafile(current_path, sourceinfo)
-			if !loaded.has("data"): loaded.data = {}
 			loaded.data = merge(loaded.data, d)
 		elif current.get_extension() == SCHEMA_EXT:
 			var s = load_schemafile(current_path, sourceinfo)
-			if !loaded.has("schemas"): loaded.schemas = {}
 			loaded.schemas = merge(loaded.schemas, s)
 		current = dir.get_next()
 	return loaded

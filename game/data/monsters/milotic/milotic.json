@@ -7,7 +7,7 @@
   "description": {
     "en": "Original character, do not steal"
   },
-  "size": 6,
+  "size": 12,
   "morphs": {
     "standard": {
       "name": {
@@ -18,24 +18,24 @@
           "back": {
             "left": {
               "spritesheet": "~idle_back_left.png",
-              "frames": 4,
+              "frames": 2,
               "fps": 2.0
             },
             "right": {
               "spritesheet": "~idle_back_right.png",
-              "frames": 4,
+              "frames": 2,
               "fps": 2.0
             }
           },
           "front": {
             "left": {
               "spritesheet": "~idle_front_left.png",
-              "frames": 4,
+              "frames": 2,
               "fps": 2.0
             },
             "right": {
               "spritesheet": "~idle_front_right.png",
-              "frames": 4,
+              "frames": 2,
               "fps": 2.0
             }
           }

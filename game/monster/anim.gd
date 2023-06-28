@@ -98,16 +98,18 @@ func _init_facing(anim_info, flip = false):
 #	anim.loop = anim_info.loop if anim_info.has("loop") else true
 	anim.loop_mode = Animation.LOOP_NONE
 
+	# add a track to set the hframes value of our sprite.
+	# must do this before setting the texture, because the sprite updates its
+	# offset based on the current hframes value when its texture is updated
+	anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(0, "sprite:hframes")
+	anim.track_insert_key(0, 0.0, anim_info.frames)
+
 	# add a track to set our texture to the spritesheet specified in the datafile
 	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(0, "sprite:texture")
+	anim.track_set_path(1, "sprite:texture")
 	var spritesheet = ResourceLoader.load(anim_info.spritesheet)
-	anim.track_insert_key(0, 0.0, spritesheet)
-
-	# add a track to set the hframes value of our texture
-	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(1, "sprite:hframes")
-	anim.track_insert_key(1, 0.0, anim_info.frames)
+	anim.track_insert_key(1, 0.0, spritesheet)
 
 	# add a track to set whether our sprite is h-flipped (for right-facing
 	# animations without unique spritesheets).

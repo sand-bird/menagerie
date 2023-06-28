@@ -16,46 +16,65 @@
         "en": "Pink"
       },
       "animations": {
-        "idle": [
-          {
-            "sprites": "~pink_idle_back.png",
-            "frames": 1,
-            "fps": 1.0
+        "idle": {
+          "back": {
+            "left": {
+              "spritesheet": "~pink_idle_back.png",
+              "frames": 1,
+              "fps": 1.0
+            }
           },
-          {
-            "sprites": "~pink_idle_front.png",
-            "frames": 1,
-            "fps": 1.0
+          "front": {
+            "left": {
+              "spritesheet": "~pink_idle_front.png",
+              "frames": 1,
+              "fps": 1.0
+            }
           }
-        ],
-        "walk": [
-          {
-            "sprites": "~pink_idle_back.png",
-            "frames": 1,
-            "fps": 1.0
+        },
+        "walk": {
+          "back": {
+            "left": {
+              "spritesheet": "~pink_walk_front.png",
+              "frames": 6,
+              "fps": 8.0
+            }
           },
-          {
-            "sprites": "~pink_walk_front.png",
-            "frames": 6,
-            "fps": 8.0
+          "front": {
+            "left": {
+              "spritesheet": "~pink_walk_front.png",
+              "frames": 6,
+              "fps": 8.0
+            }
           }
-        ]
+        }
       }
     }
   },
   "evolves_into": {
     "pufine": {
-      "if": { ">": ["@patience", "@aggressiveness"] }
+      "if": {
+        ">": [
+          "@patience",
+          "@aggressiveness"
+        ]
+      }
     },
     "pufrit": {
-      "if": { ">": ["@aggressiveness", "@patience"] }
+      "if": {
+        ">": [
+          "@aggressiveness",
+          "@patience"
+        ]
+      }
     }
   },
   "traits": {
-    "appetite": 2,
-    "iq": 1,
-    "aggressiveness": -1,
-    "openness": 1,
-    "sociability": 1
+    "appetite": {
+      "mean": 0.7
+    },
+    "aggressiveness": {
+      "mean": 0.4
+    }
   }
 }

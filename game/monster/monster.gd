@@ -2,7 +2,7 @@ extends CharacterBody2D
 class_name Monster
 
 var entity_type = Constants.EntityType.MONSTER
-var garden
+var garden: Garden
 
 signal drives_changed
 
@@ -26,18 +26,23 @@ var shape: CollisionShape2D
 
 # core properties
 # ---------------
-var id # unique id of the monster
-var type # id of the monster's data definition
-var monster_name # unfortunately "name" is a reserved property of Node
+var uuid: StringName # unique id of the monster
+var type: StringName # id of the monster's data definition
+var monster_name: String # unfortunately "name" is a reserved property of Node
 # id of the morph in the `morphs` object of monster's data definition.
 # should be non-null
-var morph
-var birthday # serialized time object ({ tick, hour, day, month, year })
+var morph: StringName
+var birthday: Dictionary # serialized time object ({ tick, hour, day, month, year })
 var sex = Sex.FEMALE
 
 # memory
 # ------
-var past_actions = []
+# TODO: memory should impact preference changes when we discipline monsters.
+# stuff in memory should fade at a rate determined by iq; its freshness should
+# multiply changes in the pet's preference for it when we discipline the pet.
+# right now memory only stores past actions, and just keeps a certain max number
+# rather than expiring.
+var past_actions: Array[Action] = []
 var current_action: Action
 var next_action: Action # ?
 
@@ -48,21 +53,17 @@ var next_action: Action # ?
 #
 # aside from intrisic, basic actions (idle/sleep/emote/move/eat), maybe _all_
 # actions should be unlearned by default, with varying degrees of learnability?
-var learned_actions = []
+var learned_actions: Array[StringName] = []
 
 # drives
 # ------
 var belly: float = MAX_BELLY / 2.0:
-	get: return belly
 	set(value): belly = clamp(value, 0, MAX_BELLY)
 var mood: float = MAX_MOOD / 2.0:
-	get: return mood
 	set(value): mood = clamp(value, 0, MAX_MOOD)
 var energy: float = MAX_ENERGY / 2.0:
-	get: return energy
 	set(value): energy = clamp(value, 0, MAX_ENERGY)
 var social: float = MAX_SOCIAL / 2.0:
-	get: return social
 	set(value): social = clamp(value, 0, MAX_SOCIAL)
 
 # personality
@@ -75,69 +76,7 @@ var attributes = {
 	amiability = 0,
 	spirit = 0
 }
-var traits = {
-	# INT
-	# ---
-	# heritable, sticky trait governing how quickly a pet learns skills and how
-	# likely it is to undertake complex actions.
-	iq = 0.5,
-	# accumulative trait reflecting how much a pet has learned over its lifetime.
-	# exists to boost the INT attribute.
-	learning = 0.0,
-	
-	# VIT
-	# ---
-	# 
-	size = 0.5,
-	strength = 0.5,
-	vigor = 0.5,
-	
-	# CON
-	# ---
-	# governs the success of composure rolls (overcoming a mood hit).
-	# increased by encouraging a pet during a composure rol or praising it after
-	# a successful roll.
-	composure = 0.3,
-	# governs how long it takes for a pet to start suffering mood hits as a
-	# result of unmet needs (drives out of equilibrium).
-	# increased by correcting drives after patience procs but before a mood hit.
-	patience = 0.4,
-	
-	# CHA
-	# ---
-	# governs how likely a pet is to undertake social actions (via utility mods).
-	# increased by performing social actions with positive results.
-	confidence = 0.4,
-	# boosts CHA attribute. maybe also affects other pets' preferences.
-	# heritable and can be modified (maybe temporarily) by items.
-	beauty = 0.5,
-	# accumulative trait. affects mood losses from social events, and mood-based
-	# utility modifiers on social actions. ("A high POISE monster will be less
-	# likely to take out its bad mood on others, and won't let negative inter-
-	# actions affect its MOOD as much.")
-	poise = 0.1,
-	
-	# AMI
-	# ---
-	# range from -1 to 1. sticky. affects preference for actions that raise or
-	# lower other pets' moods.
-	kindness = 0.0,
-	# multiplies mood gains for actions that affect other pets' mood.
-	empathy = 0.5,
-	humility = 0.5,
-	aggressiveness = 0.5,
-	
-	# SPI
-	happiness = 0.5,
-	loyalty = 0.5,
-	actualization = 0.5,
-	
-	# N/A
-	openness = 0.5,
-	appetite = 0.5,
-	pep = 0.5,
-	extraversion = 0.5
-}
+var traits: Traits
 
 # preferences
 # -----------
@@ -146,7 +85,6 @@ var preferences = {}
 # movement
 # --------
 var orientation = Vector2(0, 1):
-	get: return orientation
 	# update the AnimationPlayer's `facing` vector when our `orientation` vector
 	# has changed enough to signify a new facing direction. running orientation
 	# through ceil() will result in either (1, 1), (0, 1), (1, 0), or (0, 0).
@@ -167,6 +105,7 @@ func _ready():
 	motion_mode = MOTION_MODE_FLOATING
 	Dispatcher.tick_changed.connect(_on_tick_changed)
 
+# --------------------------------------------------------------------------- #
 
 # monsters must be initialized in code because they depend on data definitions
 # that are loaded at runtime.  this makes storing the node's children in a
@@ -176,11 +115,8 @@ func _ready():
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-#
-# note: it's nicer to use vars for children because of typing, but we name them
-# so other nodes can get them with `get_node`.  this is also necessary for $anim
-# since it takes a NodePath to $sprite (the target of all animations).
-func _init(data):
+func _init(data, _garden):
+	garden = _garden
 	deserialize(data)
 	
 	var script: Resource = get_script()
@@ -215,6 +151,9 @@ func _init(data):
 
 # --------------------------------------------------------------------------- #
 
+# it's nicer to use vars for children because of typing, but we name them so
+# other nodes can get them with `get_node`.  this is also necessary for $anim
+# since it takes a NodePath to $sprite (the target of all animations).
 func add_named_child(node: Node, n: String):
 	node.name = n
 	add_child(node)
@@ -419,12 +358,15 @@ func get_target_social():
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 
-const SAVE_KEYS = [
-	'monster_name', 'type', 'morph',
-	'birthday', 'mother', 'father',
-	'traits', 'preferences',
+# list of property names to persist and load.
+# order matters for deserialization; some properties depend on others earlier
+# in the list to already be loaded or generated (especially `type`).
+const SAVE_KEYS: Array[StringName] = [
+	'uuid', 'type', 'monster_name', 'morph', 'birthday', 'sex',
 	'belly', 'mood', 'energy', 'social',
-	# 'past_actions', 'current_action', 'next_action'
+	'position', 'orientation',
+	'traits', # TODO: 'attributes', 'preferences',
+	# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
 ]
 
 # --------------------------------------------------------------------------- #
@@ -432,18 +374,66 @@ const SAVE_KEYS = [
 func serialize():
 	var data = {}
 	for key in SAVE_KEYS:
-		data[key] = get(key)
-	data.position = {x = position.x, y = position.y}
-	# if we decide to use objects for traits (and attributes),
-	# we will need to give them serialize methods.
-#	for i in traits:
-#		data.traits[i.name] = i.serialize()
+		data[key] = serialize_value(get(key))
 	return data
+
+func serialize_value(value: Variant, key: String = ''):
+	if value == null:
+		Log.warn(self, ["serializing null value for key `", key, "`"])
+	elif value is Array:
+		return value.map(serialize_value)
+	elif value is Vector2 or value is Vector2i:
+		return var_to_str(value)
+	elif value is Object:
+		if value.has_method('serialize'): return value.serialize()
+		else: Log.error(self, [
+			"tried to serialize object without `serialize` method: ", value])
+	else: return value
 
 # --------------------------------------------------------------------------- #
 
-func deserialize(data):
+func deserialize(data = {}):
 	for key in SAVE_KEYS:
-		set(key, data[key])
-	position.x = data.position.x
-	position.y = data.position.y
+		deserialize_value(data.get(key), key)
+
+func deserialize_value(value: Variant, key: String):
+	var loader = str('load_', key)
+	# if the key has a loader, just call it and trust it to initialize
+	if has_method(loader): call(loader, value)
+	elif value == null:
+		var generator = str('generate_', key)
+		if has_method(generator): set(key, call(generator))
+	else: set(key, value)
+
+#                                l o a d e r s                                #
+# --------------------------------------------------------------------------- #
+
+func load_position(data):
+#	var pos = str_to_var(data)
+#	print(pos)
+#	if not (pos is Vector2 or pos is Vector2i):
+	var garden_size = garden.get_map_size()
+	position = Vector2(
+		randi_range(0, garden_size.x),
+		randi_range(0, garden_size.y)
+	)
+#	return pos
+
+func load_orientation(data):
+	return Vector2(1,0)
+
+func load_traits(data):
+	if not data is Dictionary: data = {}
+	var trait_overrides = Data.fetch([type, &'traits'], {})
+	traits = Traits.new(data, trait_overrides)
+
+#                             g e n e r a t o r s                             #
+# --------------------------------------------------------------------------- #
+
+func generate_uuid(): return Uuid.v4()
+func generate_type(): return Data.by_type.monster.pick_random()
+func generate_morph(): return Data.fetch([type, &'morphs']).keys().pick_random()
+func generate_birthday(): return Clock.get_dict()
+func generate_monster_name(): return [
+		"Bumblebottom", "Bumbletop", "Bumbleside", "Bumblefront", "Bumbleback"
+	].pick_random()
