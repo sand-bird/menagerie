@@ -1,3 +1,0 @@
-[submodule "game/system/uuid"]
-	path = game/system/uuid
-	url = https://github.com/binogure-studio/godot-uuid.git
