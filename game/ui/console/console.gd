@@ -163,12 +163,20 @@ func cmd_save(_args):
 
 
 func cmd_exit(_args):
-	Dispatcher.emit("ui_toggle", "console")
 
+	visible = false
 
 func cmd_quit(_args):
 	Dispatcher.emit('quit_game')
 
+# TODO: this doesn't reset Player, so if we load another file it may inherit
+# some of the current player's state
+func cmd_reset(_args):
+	Dispatcher.emit("ui_open", "title_screen", 0)
+	Clock.stop()
+	if Player.garden != null:
+		Player.garden.queue_free()
+		Player.garden = null
 
 # quick n dirty way to clear _after_ we append the post-command newline
 func cmd_clear(_args):
@@ -187,21 +195,20 @@ func _ready():
 	)
 	cmd_help()
 	$output.newline()
-	z_index = 100
 
 # --------------------------------------------------------------------------- #
 
 func _input(event):
+	if event.is_action_pressed('ui_console'):
+		visible = !visible
 	if visible and event.is_pressed() and event is InputEventKey:
 		# Typing
 		if event.unicode:
 			var event_str = char(event.unicode)
 			if event_str in ["~", "`"]: return
 			user_input += event_str
-			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_BACKSPACE:
 			user_input = user_input.substr(0, len(user_input)-1)
-			get_viewport().set_input_as_handled()
 		# Entering the command
 		elif event.keycode == KEY_ENTER:
 			handle_user_input()
@@ -209,6 +216,7 @@ func _input(event):
 			user_input = load_previous_command(user_input)
 		elif event.keycode == KEY_DOWN:
 			user_input = load_next_command(user_input)
+		get_viewport().set_input_as_handled()
 		update_user_input()
 
 func load_previous_command(current_command):

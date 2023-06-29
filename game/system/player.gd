@@ -4,10 +4,10 @@ extends Node
 # store for game state. pretty much everything here is saved to and loaded from
 # the `player.save` file.
 
-var player_name
-var playtime
-var last_update_time # used to update playtime
-var money
+var player_name: String = ""
+var playtime: float = 0
+var last_update_time: int # used to update playtime
+var money: int = 0
 
 var garden: Garden
 
@@ -40,7 +40,7 @@ var inventory = {}
 # ui elements are loaded and unloaded as needed, so they can't hold state (and
 # shouldn't anyway). but we do want to remember some state info, like what page
 # we were on and what we had selected, so we should save that here.
-var current_inventory_item = 0
+var current_inventory_item: int = 0
 var current_inventory_filter = {}
 
 # --------------------------------------------------------------------------- #
@@ -67,13 +67,18 @@ func serialize():
 # --------------------------------------------------------------------------- #
 
 func deserialize(data):
-	for k in SAVE_KEYS: set(k, data[k])
+	for k in SAVE_KEYS:
+		var value = data.get(k)
+		# dirty check to prevent errors if the save format is old
+		if value != null and typeof(value) == typeof(get(k)):
+			set(k, data[k])
 	last_update_time = Time.get_unix_time_from_system()
 
 
 # =========================================================================== #
 #                               P L A Y T I M E                               #
 # --------------------------------------------------------------------------- #
+
 func update_playtime():
 	var current_time = Time.get_unix_time_from_system()
 	var playtime_difference = current_time - last_update_time

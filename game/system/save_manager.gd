@@ -6,8 +6,6 @@ const GARDEN = "garden.save"
 const NEW_SAVE = "res://data/system/new.save"
 
 var current_save_dir
-# probably not the best idea, but seems to work fine for now
-# var dir = Directory.new()
 
 
 # =========================================================================== #
@@ -25,13 +23,8 @@ func get_save_list():
 			Log.debug(self, ["Found save: ", current])
 			saves.append(current)
 		current = dir.get_next()
-	saves.sort_custom(Callable(self, "sort_by_date"))
+	saves.sort_custom(sort_by_date)
 	return saves
-
-# --------------------------------------------------------------------------- #
-
-func sort_by_date(a, b):
-	return get_save_time(a) > get_save_time(b)
 
 # --------------------------------------------------------------------------- #
 
@@ -120,10 +113,8 @@ func get_filepath(save_dir, file_name):
 
 # order save info by timestamp, so the most recent save will show first on the
 # save list.
-func sort_save_info(a, b):
-	if get_save_time(a.save_dir) > get_save_time(b.save_dir):
-		return true
-	return false
+func sort_by_date(a, b):
+	return get_save_time(a) > get_save_time(b)
 
 # --------------------------------------------------------------------------- #
 

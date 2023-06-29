@@ -1,4 +1,5 @@
 extends Control
+class_name MainMenu
 
 @onready var MenuTab = Utils.load_relative(scene_file_path, 'menu_tab')
 

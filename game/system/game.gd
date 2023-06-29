@@ -49,7 +49,7 @@ func load_garden(data):
 	$viewport.add_child(garden)
 	garden.init(data)
 	Player.garden = garden
-	Dispatcher.emit_signal("ui_close", 0)
+	Dispatcher.emit("ui_close", 0)
 
 
 # =========================================================================== #

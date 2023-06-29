@@ -63,24 +63,6 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-const input_map = {
-	ui_menu = ['menu_open'],
-	ui_menu_monsters = ['menu_open', 'monsters'],
-	ui_menu_items = ['menu_open', 'items'],
-	ui_menu_objects = ['menu_open', 'objects'],
-	ui_cancel = ['ui_close'],
-	ui_console = ['ui_toggle', 'console']
-}
-
-# ui input handling. there's probably a better place for this to live
-func _unhandled_input(e):
-	for action in input_map:
-		var target: Array = input_map[action]
-		if e.is_action_pressed(action):
-			emit(target[0], target.slice(1) if target.size() > 1 else null)
-
-# --------------------------------------------------------------------------- #
-
 # we have to explicitly emit an argumentless signal if args is null (meaning we
 # want no arguments), because:
 # - exporting a variable (args) defaults it to null

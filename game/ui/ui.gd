@@ -32,11 +32,28 @@ var ui_node = self
 var stack = []
 
 func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS
 	Dispatcher.ui_open.connect(open)
 	Dispatcher.ui_close.connect(close)
 	Dispatcher.ui_toggle.connect(toggle)
 	Dispatcher.menu_open.connect(open_menu)
+
+# --------------------------------------------------------------------------- #
+
+var input_map = {
+	ui_menu = [open_menu],
+	ui_menu_monsters = [open_menu, 'monsters'],
+	ui_menu_items = [open_menu, 'items'],
+	ui_menu_objects = [open_menu, 'objects'],
+	ui_cancel = [close]
+}
+
+# ui input handling. there's probably a better place for this to live
+func _input(e):
+	print('ui input')
+	for action in input_map:
+		var target: Array = input_map[action]
+		if e.is_action_pressed(action):
+			target[0].call(target.slice(1) if target.size() > 1 else [])
 
 
 # =========================================================================== #
@@ -128,22 +145,27 @@ func toggle(arg):
 func open_menu(arg = null):
 	# figure out which menu page we're opening
 	var page = Utils.unpack(arg)
-	var noarg = page == null
-	if page == null: page = last_menu_page
-	if page == null: page = DEFAULT_MENU_PAGE
-	last_menu_page = page
-
+	
+	var menu: MainMenu
 	var menu_path = process_ref('main_menu')
-	Log.debug(self, ["opening menu. stack: ", stack])
-
 	var menu_index = find_item(menu_path, false)
 	if menu_index != null:
 		Log.debug(self, "menu already present in stack!")
-		if noarg: close(menu_index)
-		return
-
-	var menu = open(menu_path)
-	menu.open(page)
+		menu = stack[menu_index].node
+		# toggle the menu closed unless we're switching pages
+		if page == null or page == last_menu_page:
+			close(menu_index)
+			return
+	else:
+		Log.debug(self, ["opening menu. stack: ", stack])
+		menu = open(menu_path)
+	
+	menu.open(
+		page if page != null
+		else last_menu_page if last_menu_page != null
+		else DEFAULT_MENU_PAGE
+	)
+	last_menu_page = page
 
 # --------------------------------------------------------------------------- #
 
@@ -156,7 +178,8 @@ func open_select(arg):
 # =========================================================================== #
 #                       S T A C K   O P E R A T I O N S                       #
 # --------------------------------------------------------------------------- #
-func push(item):
+
+func push(item) -> Node:
 	var pop_from
 	# look through the stack for items that match or exceed the layer value of
 	# our current item. these would have layered above our new item, so they
@@ -234,8 +257,8 @@ func process_ref(ref: String): # -> String | undefined
 # --------------------------------------------------------------------------- #
 
 func load_node(path: String) -> Node:
-	var script = load(path)
-	var instance = script.instantiate()
+	var scene = load(path)
+	var instance = scene.instantiate()
 	return instance
 
 # --------------------------------------------------------------------------- #
