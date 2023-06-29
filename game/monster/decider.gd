@@ -1,6 +1,6 @@
 extends Node
 class_name Decider
-const log_name = 'Decider'
+const LNAME = 'Decider'
 """
 logic to choose which action to perform next. here's how it should work:
 
@@ -73,14 +73,14 @@ static func calc_utility(m, action):
 	var effect = action.estimate_result()
 	var desired_energy = m.get_target_energy() - m.energy
 	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
-	Log.info(log_name, ['(calc_utility) action: ', action, ' for ', action.t, ' ticks | monster: ', m, ' | utility: ', utility])
+	Log.info(LNAME, ['(calc_utility) action: ', action, ' for ', action.t, ' ticks | monster: ', m, ' | utility: ', utility])
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #
 
 static func choose_action(m):
 	var actions = poll_sources(m)
-	print('actions: ', actions)
+	Log.info(LNAME, ['(choose_action) actions: ', actions])
 	
 	var best_utility = 0
 	var best_action = actions[0]

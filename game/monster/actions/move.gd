@@ -58,7 +58,7 @@ func _tick():
 # on proc (physics process), do all the movement stuff
 func _proc(_delta):
 	if nav.is_navigation_finished():
-		print('nav finished')
+		Log.debug(self, 'nav finished')
 		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
 		return
