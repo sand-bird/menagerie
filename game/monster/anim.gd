@@ -97,20 +97,14 @@ func _init_facing(anim_info, flip = false):
 	anim.length = anim.step * anim_info.frames
 #	anim.loop = anim_info.loop if anim_info.has("loop") else true
 	anim.loop_mode = Animation.LOOP_NONE
-
+	
+	var i: int # current track index
+	
 	# add a track to set the hframes value of our sprite.
-	# must do this before setting the texture, because the sprite updates its
-	# offset based on the current hframes value when its texture is updated
-	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(0, "sprite:hframes")
-	anim.track_insert_key(0, 0.0, anim_info.frames)
-
-	# add a track to set our texture to the spritesheet specified in the datafile
-	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(1, "sprite:texture")
-	var spritesheet = ResourceLoader.load(anim_info.spritesheet)
-	anim.track_insert_key(1, 0.0, spritesheet)
-
+	i = anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(i, "sprite:hframes")
+	anim.track_insert_key(i, 0.0, anim_info.frames)
+	
 	# add a track to set whether our sprite is h-flipped (for right-facing
 	# animations without unique spritesheets).
 	# the data definition can optionally also specify whether the sprite should
@@ -118,17 +112,35 @@ func _init_facing(anim_info, flip = false):
 	# it out (boolean XOR).
 	var should_flip = (anim_info.flip != flip
 			if anim_info.has("flip") else flip)
-	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(2, "sprite:flip_h")
-	anim.track_insert_key(2, 0.0, should_flip)
-
+	i = anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(i, "sprite:flip_h")
+	anim.track_insert_key(i, 0.0, should_flip)
+	
+	# add a track to set the offset of the new texture.  by default the texture
+	# is horizontally centered and vertically bottom-aligned (the monster's
+	# position should line up with its feet).  this allows us to offset the
+	# sprite in case its "feet" are not at the bottom-center of the image.
+	var offset = Utils.parse_vec(anim_info.get('offset'), Vector2(0, 0))
+	if should_flip: offset.x = -offset.x
+	i = anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(i, "sprite:anim_offset")
+	anim.track_insert_key(i, 0.0, offset)
+	
+	# add a track to set our texture to the spritesheet specified in the data.
+	# must do this after all the properties that affect the sprite's offset,
+	# because sprite.gd updates its offset when its texture is updated.
+	i = anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(i, "sprite:texture")
+	var spritesheet = ResourceLoader.load(anim_info.spritesheet)
+	anim.track_insert_key(i, 0.0, spritesheet)
+	
 	# add the animation track, with a keyframe for each frame in the spritesheet
 	# at intervals determined by the `step` parameter we calculated earlier
-	anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(3, "sprite:frame")
-	anim.track_set_interpolation_loop_wrap(2, false)
+	i = anim.add_track(Animation.TYPE_VALUE)
+	anim.track_set_path(i, "sprite:frame")
+	anim.track_set_interpolation_loop_wrap(i, false)
 	for frame in range(anim_info.frames):
 		var time = anim.step * frame
-		anim.track_insert_key(3, time, frame)
+		anim.track_insert_key(i, time, frame)
 	
 	return anim

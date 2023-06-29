@@ -158,6 +158,19 @@
     "$comment": "we should validate that the file exists, if possible",
     "type": "string"
   },
+  "vector": {
+    "type": "object",
+    "required": ["x", "y"],
+    "additionalProperties": {
+      "type": "number"
+    }
+  },
+  "vectori": {
+    "$ref": "#/vector",
+    "additionalProperties": {
+      "type": "integer"
+    }
+  },
   "animated_sprite": {
     "type": "object",
     "required": [
@@ -180,6 +193,9 @@
       "loop": {
         "type": "boolean",
         "default": "true"
+      },
+      "offset": {
+        "$ref": "#/vectori"
       }
     }
   }

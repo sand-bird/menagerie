@@ -142,6 +142,14 @@ static func comma(num):
 #                                V E C T O R S                                #
 # --------------------------------------------------------------------------- #
 
+# parse a vector from an { x, y } dict. throws an error if either of the props
+# is missing and default is not supplied.
+# data: Dictionary | null, default: Vector2 | null
+static func parse_vec(data, default = null):
+	var x = data.x if data != null and 'x' in data else default.x
+	var y = data.y if data != null and 'y' in data else default.y
+	return Vector2(x, y)
+
 static func is_horizontal(v):
 	return v.x and !v.y
 

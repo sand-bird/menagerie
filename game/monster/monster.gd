@@ -383,7 +383,7 @@ func serialize_value(value: Variant, key: String = ''):
 	elif value is Array:
 		return value.map(serialize_value)
 	elif value is Vector2 or value is Vector2i:
-		return var_to_str(value)
+		return { x = value.x, y = value.y }
 	elif value is Object:
 		if value.has_method('serialize'): return value.serialize()
 		else: Log.error(self, [
@@ -426,6 +426,16 @@ func load_traits(data):
 	if not data is Dictionary: data = {}
 	var trait_overrides = Data.fetch([type, &'traits'], {})
 	traits = Traits.new(data, trait_overrides)
+
+# ideally we would fail to load a monster with an invalid type or morph.
+# i'm not sure how to fail out of the constructor though, so for now just roll
+# a new valid one
+func load_type(data):
+	if Data.missing(data): data = generate_type()
+	type = data
+func load_morph(data):
+	if Data.missing([type, &'morphs', data]): data = generate_morph()
+	morph = data
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

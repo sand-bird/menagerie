@@ -150,6 +150,7 @@
     "traits": {
       "type": "object",
       "propertyNames": {
+        "$comment": "make sure to keep this in sync with monster/traits.gd!!!",
         "enum": [
           "iq",
           "learning",

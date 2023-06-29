@@ -7,7 +7,7 @@
   "description": {
     "en": "Original character, do not steal"
   },
-  "size": 12,
+  "size": 13,
   "morphs": {
     "standard": {
       "name": {
@@ -19,24 +19,28 @@
             "left": {
               "spritesheet": "~idle_back_left.png",
               "frames": 2,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": 1, "y": 10 }
             },
             "right": {
               "spritesheet": "~idle_back_right.png",
               "frames": 2,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": -10, "y": 0 }
             }
           },
           "front": {
             "left": {
               "spritesheet": "~idle_front_left.png",
               "frames": 2,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": 7, "y": 0 }
             },
             "right": {
               "spritesheet": "~idle_front_right.png",
               "frames": 2,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": -1, "y": 0 }
             }
           }
         },
@@ -45,24 +49,28 @@
             "left": {
               "spritesheet": "~walk_back_left.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": 1, "y": 10 }
             },
             "right": {
               "spritesheet": "~walk_back_right.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": -10, "y": 0 }
             }
           },
           "front": {
             "left": {
               "spritesheet": "~walk_front_left.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": 7, "y": 0 }
             },
             "right": {
               "spritesheet": "~walk_front_right.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": -1, "y": 0 }
             }
           }
         }
