@@ -9,10 +9,19 @@ velocity = truncate (velocity + acceleration, max_speed)
 position = position + velocity
 """
 
+# a magic number used to calculate desired velocity.
+# input speed should be a 
+const SPEED_MULTIPLIER: float = 2.5
+# modifies the speed of the walk animation.
+# walk animation FPS should be tuned around the "standard" input speed of 1.
+# we then use the input speed to modify the speed of the animation, so if the
+# speed is 2, the animation would play about twice as fast.
+# that looks bad, so we use a <1 exponent to dampen the scaling - instead of
+# twice as fast, the animation will play 1.5 times as fast with a speed of 2.
+const FPS_COEFFICIENT = 0.6
+
 # success when dest is reached
 # fail on timeout
-
-const SPEED_MULTIPLIER = 1.0
 
 var dest: Vector2
 var speed: float
@@ -46,8 +55,9 @@ func _start():
 	# nav agent with object avoidance fires a signal when it's done calculating
 	# the "safe" velocity.  this happens at the end of the physics process, so
 	# we can call `move_and_slide` in the handler
-	nav.velocity_computed.connect(move)
-	m.play_anim(Constants.Anim.WALK, speed * 1.5)
+	# nav.velocity_computed.connect(move)
+	# TODO: include the vigor modifier here
+	m.play_anim(Constants.Anim.WALK, speed ** FPS_COEFFICIENT)
 
 # on tick, report the current path for debugging
 func _tick():
@@ -68,8 +78,13 @@ func _proc(_delta):
 	# it needs to alter our movement to avoid obstacles.  the actual desired
 	# velocity is fired in the `velocity_computed` signal from the agent and
 	# received by the `move` function below
-	var desired_velocity = (target - m.position).normalized() * speed * SPEED_MULTIPLIER
-	nav.set_velocity(desired_velocity)
+	var desired_velocity = (
+		(target - m.position).normalized()
+		* speed * SPEED_MULTIPLIER
+		* m.data.size * lerp(0.8, 1.5, m.traits.vigor)
+	)
+	# nav.set_velocity(desired_velocity)
+	move(desired_velocity)
 
 # --------------------------------------------------------------------------- #
 
@@ -79,6 +94,11 @@ func move(desired_velocity):
 	
 #	m.velocity = desired_velocity
 	var steering = desired_velocity - m.velocity
-	var acceleration = steering / 60.0
+	var mass = m.data.size ** 1.5
+	var acceleration = steering / mass
+	m.desired_velocity = desired_velocity
 	m.velocity = m.velocity + acceleration
-	m.move_and_collide(m.velocity)
+	# move_and_slide uses the monster's velocity value.  move_and_collide works
+	# the same except it takes a velocity arg and multiplies it automatically.
+	# we use move_and_slide mostly so we can specify our own multipliers.
+	m.move_and_slide()

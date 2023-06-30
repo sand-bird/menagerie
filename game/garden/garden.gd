@@ -31,9 +31,9 @@ func _input(e):
 		for uuid in monsters:
 			var m = monsters[uuid]
 			m.set_current_action(
-				MoveAction.new(m, get_global_mouse_position(), 1)
+				MoveAction.new(m, get_global_mouse_position(), 1, 20)
 			)
-		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
+#		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
 
 # --------------------------------------------------------------------------- #
 
@@ -125,6 +125,7 @@ func load_monsters(data = {}):
 func load_monster(data = {}):
 	var monster = Monster.new(data, self)
 	monsters[monster.uuid] = monster
+	monster.name = monster.uuid
 	$entities.add_child(monster)
 
 # --------------------------------------------------------------------------- #

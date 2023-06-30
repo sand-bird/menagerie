@@ -28,6 +28,10 @@ var shape: CollisionShape2D
 # ---------------
 var uuid: StringName # unique id of the monster
 var type: StringName # id of the monster's data definition
+
+var data:
+	get: return Data.fetch(type)
+
 var monster_name: String # unfortunately "name" is a reserved property of Node
 # id of the morph in the `morphs` object of monster's data definition.
 # should be non-null
@@ -139,15 +143,24 @@ func _init(data, _garden):
 	add_named_child(shape, 'shape')
 	
 	nav = NavigationAgent2D.new()
-	nav.avoidance_enabled = true
-	nav.path_desired_distance = 1.0
-	nav.target_desired_distance = 1.0
-	nav.path_max_distance = 1.0
+#	nav.debug_enabled = true
+	nav.radius = size
+	nav.neighbor_distance = 500
+	nav.avoidance_enabled = false
+	nav.path_desired_distance = sqrt(size)
+	nav.target_desired_distance = sqrt(size)
+	nav.path_max_distance = size
 	add_named_child(nav, 'nav')
 	
 	# debug
 	for n in ['orientation', 'velocity', 'desired_velocity']:
-		add_named_child(RayCast2D.new(), n)
+		var ray = RayCast2D.new()
+		ray.visible = true
+		ray.enabled = false
+		add_named_child(ray, n)
+	$desired_velocity.modulate = Color(0, 0, 1)
+	$velocity.modulate = Color(1, 0, 0)
+	$orientation.modulate = Color(0, 0, 0)
 
 # --------------------------------------------------------------------------- #
 
@@ -167,18 +180,11 @@ func _physics_process(delta):
 	if current_action:
 		current_action.proc(delta)
 	
-	update_z()
-
 	# debug
-	$orientation.target_position = orientation * 20
-	$velocity.target_position = velocity * 20
-#	$vel_text.set_text(String.num(velocity.length(), 2))
-	$desired_velocity.target_position = desired_velocity * 20
-	
-	$orientation.visible = false
-	$velocity.visible = true
-	$velocity.enabled = true
-	$desired_velocity.visible = true
+	$orientation.target_position = orientation * 8
+	$velocity.target_position = velocity
+	$desired_velocity.target_position = desired_velocity
+
 
 # --------------------------------------------------------------------------- #
 
@@ -187,13 +193,6 @@ func _on_tick_changed():
 		var action_result = current_action.tick()
 		update_drives(action_result)
 	else: choose_action()
-
-# --------------------------------------------------------------------------- #
-
-# update the z-index of our sprite so that monsters appear in front of or
-# behind other entities according to their y-position in the garden
-func update_z():
-	z_index = position.y + sprite.texture.get_height() / 2
 
 # --------------------------------------------------------------------------- #
 
