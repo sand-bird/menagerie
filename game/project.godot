@@ -58,7 +58,7 @@ use_2d_pixel_snap=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/event_button/plugin.cfg")
+enabled=PackedStringArray("res://addons/event_button/plugin.cfg", "res://addons/gut/plugin.cfg")
 
 [gui]
 
