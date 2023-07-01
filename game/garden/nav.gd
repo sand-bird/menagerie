@@ -66,7 +66,7 @@ func overlaps_poly(a: PackedVector2Array, b: PackedVector2Array):
 	return false
 
 # 
-func add_obstacle(size, offset, padding):
+func add_obstacle(size, offset, _padding):
 	var box: PackedVector2Array = make_box(size, offset)
 	if obstacles.is_empty():
 		obstacles.push_back(box)
@@ -77,7 +77,7 @@ func add_obstacle(size, offset, padding):
 
 # --------------------------------------------------------------------------- #
 
-func merge_obstacles(obstacles: Array[PackedVector2Array]):
+func merge_obstacles(_obstacles: Array[PackedVector2Array]):
 	pass
 
 # --------------------------------------------------------------------------- #
@@ -99,7 +99,7 @@ func _ready():
 		# testing merging
 	var poly2a = make_box(10, 100)
 	var poly2b = make_box(10, Vector2(110, 110))
-	var poly2c = make_box(10, Vector2(120, 100))
+	var _poly2c = make_box(10, Vector2(120, 100))
 #	navpoly.add_outline(poly2a)
 #	navpoly.add_outline(poly2b)
 	var merged = Geometry2D.merge_polygons(poly2a, poly2b)

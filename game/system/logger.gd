@@ -205,6 +205,7 @@ func put(level, node, message):
 	if output_strategy == STRATEGY_MUTE or output_level > level:
 		return # Out of scope
 
+	@warning_ignore("static_called_on_instance")
 	var output = Log.format(output_format, level, node, format_message(message))
 
 	if output_strategy & STRATEGY_PRINT:

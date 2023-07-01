@@ -70,7 +70,7 @@ func serialize():
 # monster | 0.0 | .10 | .20 | .30 | .40 | .50 | .60 | .70 | .80 | .90 | 1.0
 # human   |  15 |  30 |  45 |  60 |  85 | 100 | 115 | 130 | 145 | 160 | 175
 # dim / perspicacious
-var iq = Trait.new({ heritability = 0.9 }) 
+var iq = Trait.new({ heritability = 0.9 })
 # accumulative trait reflecting how much a pet has learned over its life.
 # exists to boost the INT attribute. always starts at 0.
 # callow / worldly

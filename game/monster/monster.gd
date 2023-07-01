@@ -31,6 +31,7 @@ var type: StringName # id of the monster's data definition
 
 var data:
 	get: return Data.fetch(type)
+	set(_x): return
 
 var monster_name: String # unfortunately "name" is a reserved property of Node
 # id of the morph in the `morphs` object of monster's data definition.
@@ -95,7 +96,9 @@ var orientation = Vector2(0, 1):
 	set(new_o):
 		var old_o = orientation
 		orientation = new_o
-		if old_o.ceil() != new_o.ceil():
+		# anim is null the first time we set orientation, since we need to
+		# deserialize before initializing children
+		if old_o.ceil() != new_o.ceil() and anim != null:
 			anim.facing = new_o.ceil()
 
 var desired_velocity = Vector2(0, 0) # for debugging
@@ -119,9 +122,9 @@ func _ready():
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-func _init(data, _garden):
+func _init(_data, _garden):
 	garden = _garden
-	deserialize(data)
+	deserialize(_data)
 	
 	var script: Resource = get_script()
 	var path: String = script.resource_path.get_base_dir()
@@ -135,7 +138,7 @@ func _init(data, _garden):
 	sprite.hframes = 4
 	add_named_child(sprite, 'sprite')
 	
-	var shape = CollisionShape2D.new()
+	shape = CollisionShape2D.new()
 	shape.shape = CircleShape2D.new()
 	var size = Data.fetch([type, 'size'])
 	shape.shape.radius = size
@@ -371,10 +374,10 @@ const SAVE_KEYS: Array[StringName] = [
 # --------------------------------------------------------------------------- #
 
 func serialize():
-	var data = {}
+	var serialized = {}
 	for key in SAVE_KEYS:
-		data[key] = serialize_value(get(key))
-	return data
+		serialized[key] = serialize_value(get(key))
+	return serialized
 
 func serialize_value(value: Variant, key: String = ''):
 	if value == null:
@@ -391,9 +394,9 @@ func serialize_value(value: Variant, key: String = ''):
 
 # --------------------------------------------------------------------------- #
 
-func deserialize(data = {}):
+func deserialize(serialized = {}):
 	for key in SAVE_KEYS:
-		deserialize_value(data.get(key), key)
+		deserialize_value(serialized.get(key), key)
 
 func deserialize_value(value: Variant, key: String):
 	var loader = str('load_', key)
@@ -407,34 +410,27 @@ func deserialize_value(value: Variant, key: String):
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-func load_position(data):
-#	var pos = str_to_var(data)
-#	print(pos)
-#	if not (pos is Vector2 or pos is Vector2i):
-	var garden_size = garden.get_map_size()
-	position = Vector2(
-		randi_range(0, garden_size.x),
-		randi_range(0, garden_size.y)
-	)
-#	return pos
+func load_position(_position):
+	position = Utils.parse_vec(_position, generate_position())
 
-func load_orientation(data):
-	return Vector2(1,0)
+func load_orientation(_orientation):
+	orientation = Utils.parse_vec(_orientation, Vector2(1, 0))
 
-func load_traits(data):
-	if not data is Dictionary: data = {}
+func load_traits(_traits):
+	if not _traits is Dictionary: _traits = {}
 	var trait_overrides = Data.fetch([type, &'traits'], {})
-	traits = Traits.new(data, trait_overrides)
+	traits = Traits.new(_traits, trait_overrides)
 
 # ideally we would fail to load a monster with an invalid type or morph.
 # i'm not sure how to fail out of the constructor though, so for now just roll
 # a new valid one
-func load_type(data):
-	if data == null or Data.missing(data): data = generate_type()
-	type = data
-func load_morph(data):
-	if Data.missing([type, &'morphs', data]): data = generate_morph()
-	morph = data
+func load_type(_type):
+	if _type == null or Data.missing(_type): _type = generate_type()
+	type = _type
+
+func load_morph(_morph):
+	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
+	morph = _morph
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #
@@ -443,6 +439,16 @@ func generate_uuid(): return Uuid.v4()
 func generate_type(): return Data.by_type.monster.pick_random()
 func generate_morph(): return Data.fetch([type, &'morphs']).keys().pick_random()
 func generate_birthday(): return Clock.get_dict()
+
 func generate_monster_name(): return [
 		"Bumblebottom", "Bumbletop", "Bumbleside", "Bumblefront", "Bumbleback"
 	].pick_random()
+
+func generate_position():
+	for x in Vector2(0, 0):
+		print(x)
+	var garden_size = garden.get_map_size()
+	return Vector2(
+		randi_range(0, garden_size.x),
+		randi_range(0, garden_size.y)
+	)

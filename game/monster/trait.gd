@@ -21,16 +21,19 @@ var mean: float
 var deviation: float
 var heritability: float
 
-var params: Dictionary = {}
-
-var value: float = 0.5:
+var value: float:
 	set(x): value = clamp(x, MIN_VALUE, MAX_VALUE)
 
-func _init(params: Dictionary = {}, inheritance = {}):
+func _init(
+	params: Dictionary = {},
+	_value: float = params.get('mean', DEFAULT_PARAMS.mean)
+):
 	params.merge(DEFAULT_PARAMS) # fill in any unset params
 	for key in DEFAULT_PARAMS:
 		set(key, params[key])
+	value = _value
 
+@warning_ignore("shadowed_global_identifier") # this doesn't actually work lol
 func lerp(from: float, to: float) -> float:
 	return lerpf(from, to, value)
 
@@ -52,14 +55,13 @@ func roll(overrides: Dictionary = {}, inheritance = null):
 	# if we have an inherited value (presumed the average of our parents' values
 	# for the trait), use it to modify the mean.  `heritability` determines the
 	# lerp weight (higher values are weighted toward `inheritance`)
-	var mean = params.mean
 	if inheritance != null:
-		if is_valid_value(inheritance):
-			mean = lerpf(params.mean, inheritance, params.heritability)
+		if Trait.is_valid_value(inheritance):
+			params.mean = lerpf(params.mean, inheritance, params.heritability)
 		else: Log.warn(self, [
 			"(roll) invalid inheritance, ignoring: ", inheritance])
 	
-	value = generate(params.mean, params.deviation)
+	value = Trait.generate(params.mean, params.deviation)
 
 # --------------------------------------------------------------------------- #
 
@@ -67,10 +69,11 @@ func roll(overrides: Dictionary = {}, inheritance = null):
 # we can't clamp because it would skew the distribution, so if we get a value
 # outside the bounds (always technically possible with normal distributions),
 # we throw it out and try again.
-static func generate(mean: float, deviation: float) -> float:
+@warning_ignore("shadowed_variable")
+static func generate(mean_: float, deviation_: float) -> float:
 	var x = MIN_VALUE - 1 # start with an invalid value so the loop will run
 	while x < MIN_VALUE or x > MAX_VALUE:
-		x = randfn(mean, deviation)
+		x = randfn(mean_, deviation_)
 	return x
 
 # --------------------------------------------------------------------------- #

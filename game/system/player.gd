@@ -72,7 +72,7 @@ func deserialize(data):
 		# dirty check to prevent errors if the save format is old
 		if value != null and typeof(value) == typeof(get(k)):
 			set(k, data[k])
-	last_update_time = Time.get_unix_time_from_system()
+	last_update_time = int(Time.get_unix_time_from_system())
 
 
 # =========================================================================== #
@@ -80,7 +80,7 @@ func deserialize(data):
 # --------------------------------------------------------------------------- #
 
 func update_playtime():
-	var current_time = Time.get_unix_time_from_system()
+	var current_time = int(Time.get_unix_time_from_system())
 	var playtime_difference = current_time - last_update_time
 	playtime += playtime_difference
 	Log.info(self, ["Updated playtime: ", playtime,
@@ -190,6 +190,7 @@ func maybe_discover(entity):
 		])
 		return
 	if entity.id not in discovered:
+		@warning_ignore("incompatible_ternary")
 		discovered[entity.id] = {} if (
 			data.type in ['monster', 'object']
 		) else true
