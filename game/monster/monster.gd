@@ -244,7 +244,7 @@ func _on_action_exit(status):
 
 # number of past actions to remember: 2-8 depending on pet iq.
 func get_memory_size():
-	return 2 + int(6.0 * traits.iq)
+	return traits.iq.ilerp(2, 8)
 
 
 # =========================================================================== #
@@ -319,7 +319,7 @@ func apply_drive_mods(diff):
 # inverse effect on energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func _mod_energy_delta(base_delta: float):
-	var vig_mod = traits.vigor * 2.0
+	var vig_mod = traits.vigor.value * 2.0
 	if base_delta > 0: return base_delta * vig_mod
 	else: return base_delta * (2.0 - vig_mod)
 
@@ -331,7 +331,7 @@ func _mod_energy_delta(base_delta: float):
 # causing belly to drain slower; if it's negative, the modifier is > 1, which
 # will drain it faster. D_ENERGY_FACTOR controls the strength of the effect.
 func _mod_belly_delta(base_delta: float, delta_energy: float = 0.0):
-	var app_mod = traits.appetite * 2.0
+	var app_mod = traits.appetite.value * 2.0
 	# if energy is increasing, decrease belly decay rate.
 	var d_energy_mod = 1.0 - (delta_energy * D_ENERGY_FACTOR)
 	var delta_belly = base_delta * app_mod * d_energy_mod
@@ -347,10 +347,10 @@ func _mod_social_delta():
 # determined by the inverse of its pep trait (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
 func get_target_energy():
-	return MAX_ENERGY * (1.0 - traits.pep)
+	return MAX_ENERGY * traits.pep.lerp(1, 0)
 
 func get_target_social():
-	return MAX_SOCIAL * (1.0 - traits.extraversion)
+	return MAX_SOCIAL * traits.extraversion.lerp(1, 0)
 
 
 # =========================================================================== #
@@ -430,7 +430,7 @@ func load_traits(data):
 # i'm not sure how to fail out of the constructor though, so for now just roll
 # a new valid one
 func load_type(data):
-	if Data.missing(data): data = generate_type()
+	if data == null or Data.missing(data): data = generate_type()
 	type = data
 func load_morph(data):
 	if Data.missing([type, &'morphs', data]): data = generate_morph()
