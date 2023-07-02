@@ -81,7 +81,7 @@ func _proc(_delta):
 	var desired_velocity = (
 		(target - m.position).normalized()
 		* speed * SPEED_MULTIPLIER
-		* m.data.size * m.traits.vigor.lerp(0.8, 1.5)
+		* m.data.size * m.attributes.vigor.lerp(0.8, 1.5)
 	)
 	# nav.set_velocity(desired_velocity)
 	move(desired_velocity)

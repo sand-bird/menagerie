@@ -73,15 +73,7 @@ var social: float = MAX_SOCIAL / 2.0:
 
 # personality
 # -----------
-var attributes = {
-	intelligence = 0,
-	vitality = 0,
-	constitution = 0,
-	charm = 0,
-	amiability = 0,
-	spirit = 0
-}
-var traits: Traits
+var attributes: Attributes
 
 # preferences
 # -----------
@@ -247,7 +239,7 @@ func _on_action_exit(status):
 
 # number of past actions to remember: 2-8 depending on pet iq.
 func get_memory_size():
-	return traits.iq.ilerp(2, 8)
+	return attributes.iq.ilerp(2, 8)
 
 
 # =========================================================================== #
@@ -285,12 +277,12 @@ func set_anim_speed(speed):
 const BASE_BELLY_DECAY = -0.28 # full to starving in ~30h
 const D_ENERGY_FACTOR = 0.5
 
-# updates the pet's drive meters (mood, belly, energy, and social).
+# updates the monster's drive meters (mood, belly, energy, and social).
 # called once per "tick" unit of game time (~0.5 seconds).
 #
 # `diff` is a hash of drive names to float amounts by which to modify the drive.
-# these are "base deltas", which are passed through the appropriate
-# `calc_x_delta` function to compute a final delta modified by the pet's traits.
+# these are "base deltas", which are passed through the appropriate `calc_x_delta`
+# function to compute a final delta modified by the monster's attributes.
 #
 # there are several possible sources of drive updates:
 # - action results: Action's `tick` method returns a summary of drive updates
@@ -322,19 +314,19 @@ func apply_drive_mods(diff):
 # inverse effect on energy drain, so we must invert the multiplier if the delta
 # energy will be negative.
 func _mod_energy_delta(base_delta: float):
-	var vig_mod = traits.vigor.value * 2.0
+	var vig_mod = attributes.vigor.value * 2.0
 	if base_delta > 0: return base_delta * vig_mod
 	else: return base_delta * (2.0 - vig_mod)
 
 
-# delta belly is modified by our appetite trait (converted to a multiplier, as
-# with vigor) - higher appetite causes belly to drain faster and fill slower.
+# delta belly is modified by our appetite attribute (converted to a multiplier,
+# as with vigor) - higher appetite causes belly to drain faster and fill slower.
 #
 # if delta energy is positive (recovery), our d_energy_mod multiplier is < 1,
 # causing belly to drain slower; if it's negative, the modifier is > 1, which
 # will drain it faster. D_ENERGY_FACTOR controls the strength of the effect.
 func _mod_belly_delta(base_delta: float, delta_energy: float = 0.0):
-	var app_mod = traits.appetite.value * 2.0
+	var app_mod = attributes.appetite.value * 2.0
 	# if energy is increasing, decrease belly decay rate.
 	var d_energy_mod = 1.0 - (delta_energy * D_ENERGY_FACTOR)
 	var delta_belly = base_delta * app_mod * d_energy_mod
@@ -347,13 +339,13 @@ func _mod_social_delta():
 # --------------------------------------------------------------------------- #
 
 # target energy reflects the pet's preference for activity or rest, and is
-# determined by the inverse of its pep trait (which ranges from 0 to 1).
+# determined by the inverse of its pep attribute (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
 func get_target_energy():
-	return MAX_ENERGY * traits.pep.lerp(1, 0)
+	return MAX_ENERGY * attributes.pep.lerp(1, 0)
 
 func get_target_social():
-	return MAX_SOCIAL * traits.extraversion.lerp(1, 0)
+	return MAX_SOCIAL * attributes.extraversion.lerp(1, 0)
 
 
 # =========================================================================== #
@@ -367,7 +359,7 @@ const SAVE_KEYS: Array[StringName] = [
 	'uuid', 'type', 'monster_name', 'morph', 'birthday', 'sex',
 	'belly', 'mood', 'energy', 'social',
 	'position', 'orientation',
-	'traits', # TODO: 'attributes', 'preferences',
+	'attributes', # TODO: 'attributes', 'preferences',
 	# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
 ]
 
@@ -416,10 +408,10 @@ func load_position(_position):
 func load_orientation(_orientation):
 	orientation = Utils.parse_vec(_orientation, Vector2(1, 0))
 
-func load_traits(_traits):
-	if not _traits is Dictionary: _traits = {}
-	var trait_overrides = Data.fetch([type, &'traits'], {})
-	traits = Traits.new(_traits, trait_overrides)
+func load_attributes(_attributes):
+	if not _attributes is Dictionary: _attributes = {}
+	var attribute_overrides = Data.fetch([type, &'attributes'], {})
+	attributes = Attributes.new(_attributes, attribute_overrides)
 
 # ideally we would fail to load a monster with an invalid type or morph.
 # i'm not sure how to fail out of the constructor though, so for now just roll

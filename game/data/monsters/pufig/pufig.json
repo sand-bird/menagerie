@@ -69,7 +69,7 @@
       }
     }
   },
-  "traits": {
+  "attributes": {
     "appetite": {
       "mean": 0.7
     },

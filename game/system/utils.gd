@@ -203,7 +203,7 @@ static func vsign(vec):
 #                                   M A T H                                   #
 # --------------------------------------------------------------------------- #
 
-static func avg(args):
+static func mean(args):
 	var total_value = 0
 	for item in args:
 		total_value += item
@@ -211,26 +211,14 @@ static func avg(args):
 
 # --------------------------------------------------------------------------- #
 
-static func weighted_avg(args):
-	var total_value = 0
-	var total_weight = 0
+static func weighted_mean(args: Array[Variant]) -> Variant:
+	var total_value: float = 0
+	var total_weight: float = 0
 	for item in args:
 		total_weight += item[1]
 		total_value += (item[0] * item[1])
-#	print("total weight: ", total_weight, " | total value: ", total_value,
-#		" | arg1: ", args[0][0], " | arg1 value: ", (args[0][0] * args[0][1]),
-#		" | result: ", round(float(total_value) / float(total_weight)))
-	var result = float(total_value) / float(total_weight)
-	if (randf() > 0.50): return round(result)
-	else: return floor(result)
-
-# --------------------------------------------------------------------------- #
-
-static func weighted_avg2(args):
-	var total = 0
-	for item in args:
-		total += item[0] * item[1]
-	return round(total)
+	if total_weight == 0: return 0
+	return total_value / total_weight
 
 # --------------------------------------------------------------------------- #
 

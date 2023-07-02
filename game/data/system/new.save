@@ -60,7 +60,7 @@
         "preferences": {},
         "social": 1.0,
         "type": "bunny",
-        "traits": {
+        "attributes": {
           "iq": 0.5,
           "learning": 0.5,
           "size": 0.5,

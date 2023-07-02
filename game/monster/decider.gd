@@ -17,20 +17,20 @@ logic to choose which action to perform next. here's how it should work:
    - eg, if the action involves moving to the target, estimate the energy cost.
    - take into account monster preferences for or against the action or target.
 	 this should affect the advertised mood gain/loss.
-   - trait example: the mood gain from bullying another monster (eg, stealing an
-	 item) depends on the monster's kindness trait, their preference toward the
+   - attribute example: the mood gain from bullying another monster (eg, stealing an
+	 item) depends on the monster's kindness attribute, their preference toward the
 	 target, and their preference toward stealing.
 
 3. now we have a list of drive updates associated with potential actions.
    a general function chooses one of those based on the monster's current drives
-   and traits.
+   and attributes.
    - eg, a monster is kind but starving.  there is one other monster and it has
 	 the only food.  this function should weigh the mood hit from stealing
 	 against the belly gain from eating the food.
    - the utility calculation should not be perfect.  eg, monsters may only
 	 compare a subset of possible actions.
    - the utility of different drive updates should be modified by the monster's
-	 traits.  eg, a high pep monster should put greater weight on actions that
+	 attributes.  eg, a high pep monster should put greater weight on actions that
 	 reduce energy.
 
 4. when a monster is engaged in an action, it stops polling for sources, but it
@@ -109,7 +109,7 @@ func old_calc(m):
 		m.current_action = Action.Sleep.new(m,
 			clamp(sleep_time, Clock.TICKS_IN_HOUR, Clock.TICKS_IN_HOUR * 8))
 	
-	elif randf() > m.traits.pep:
+	elif randf() > m.attributes.pep:
 		m.current_action = Action.Idle.new(m, Utils.randi_range(2, 8))
 	else:
 		m.current_action = Action.Walk.new(m, # so ugly :(

@@ -36,7 +36,7 @@ Monster definitions should have:
   - A set of **`animations`**
 - Parameters affecting the monster's intrinsic properties:
   - Gender ratio
-  - Base traits: these depend on both heredity (parents' traits) and species, modified by a probability distribution inherent to the trait.  I'm not sure what this should look like - will need to carefully consider to what extent species should affect a monster's traits.
+  - Attribute param overrides: mean, deviation, and heritability overrides for each attribute
 - Dietary restrictions (what sorts of foods the monster can/cannot eat)
   - it would be really cool to have monsters that can eat stuff that's not normally edible - maybe an undocumented "inedible" value here that allows it to consume items without the `edible` trait on them?
 - Parameters affecting the monster's preferences: these would probably look like weights associated with aesthetic tags

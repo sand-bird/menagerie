@@ -1,22 +1,22 @@
 extends GutTest
 
 func test_initial_value_equals_mean():
-	assert_eq(Trait.new().value, 0.5)
-	assert_eq(Trait.new({ mean = 0.1 }).value, 0.1)
+	assert_eq(Attribute.new().value, 0.5)
+	assert_eq(Attribute.new({ mean = 0.1 }).value, 0.1)
 
 func test_init_clamps_value():
-	assert_eq(Trait.new({}, 10).value, 1.0)
-	assert_eq(Trait.new({}, -10).value, 0.0)
-	assert_eq(Trait.new({}, 0.1).value, 0.1)
+	assert_eq(Attribute.new({}, 10).value, 1.0)
+	assert_eq(Attribute.new({}, -10).value, 0.0)
+	assert_eq(Attribute.new({}, 0.1).value, 0.1)
 
 func test_set_clamps_value():
-	var t = Trait.new()
-	t.value = 10
-	assert_eq(t.value, 1.0)
-	t.value = -10
-	assert_eq(t.value, 0.0)
-	t.value = 0.1
-	assert_eq(t.value, 0.1)
+	var a = Attribute.new()
+	a.value = 10
+	assert_eq(a.value, 1.0)
+	a.value = -10
+	assert_eq(a.value, 0.0)
+	a.value = 0.1
+	assert_eq(a.value, 0.1)
 
 
 func test_ilerp():
@@ -31,7 +31,7 @@ func test_ilerp():
 func ilerp_case(from: int, to: int):
 	print("-----------------------------------")
 	prints("testing ilerp from", from, "to", to)
-	var t = Trait.new()
+	var a = Attribute.new()
 	var num_partitions = to - from + 1
 	var partition_size = 1.0 / float(num_partitions)
 	prints("partitions:", num_partitions, " size:", partition_size)
@@ -42,8 +42,8 @@ func ilerp_case(from: int, to: int):
 		var min_test: float = max
 		var max_test: float = min
 		for j in 10:
-			t.value = randf_range(min, max)
-			if t.value < min_test: min_test = t.value
-			if t.value > max_test: max_test = t.value
-			assert_eq(t.ilerp(from, to), from + i)
+			a.value = randf_range(min, max)
+			if a.value < min_test: min_test = a.value
+			if a.value > max_test: max_test = a.value
+			assert_eq(a.ilerp(from, to), from + i)
 		prints("min_test:", min_test, " max_test:", max_test)

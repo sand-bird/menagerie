@@ -16,7 +16,7 @@
       "gender_balance",
       "morphs",
       "evolves_into",
-      "traits"
+      "attributes"
     ]
   },
   "properties": {
@@ -147,10 +147,10 @@
         }
       }
     },
-    "traits": {
+    "attributes": {
       "type": "object",
       "propertyNames": {
-        "$comment": "make sure to keep this in sync with monster/traits.gd!!!",
+        "$comment": "make sure to keep this in sync with monster/attributes.gd!!!",
         "enum": [
           "iq",
           "learning",
@@ -158,16 +158,20 @@
           "vigor",
           "composure",
           "patience",
+          "fortitude",
           "confidence",
           "beauty",
           "poise",
+          "humility",
           "kindness",
           "empathy",
-          "aggressiveness",
           "happiness",
+          "loalty",
           "actualization",
+          "appetite",
+          "pep",
           "openness",
-          "pep"
+          "extraversion"
         ]
       },
       "additionalProperties": {
