@@ -4,15 +4,15 @@ extends Control
 func update_item(state):
 	var data = Data.fetch(state.id)
 	
-	$item_name/label.text = Utils.trans(data.name)
-	$item_description/label.text = Utils.trans(data.description)
+	$item_name/label.text = U.trans(data.name)
+	$item_description/label.text = U.trans(data.description)
 	$item_icon/icon.texture = Data.fetch_res([state.id, 'icon'])
 	
 	# TODO: replace this with tags/properties (entities will not have a single category)
 	$item_properties/category.text = data.category
 	
 	var value = state.get('value', data.value)
-	$item_properties/value.text = Utils.comma(value)
+	$item_properties/value.text = U.comma(value)
 	$item_properties/value/aster.show()
 
 	if state.qty == 1: $item_icon/quantity.hide()

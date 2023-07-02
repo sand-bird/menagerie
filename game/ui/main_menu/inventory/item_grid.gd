@@ -24,7 +24,7 @@ var items = []
 var current_item = 0
 var current_page = 0
 
-@onready var Item = Utils.load_relative(scene_file_path, "grid_item")
+@onready var Item = U.load_relative(scene_file_path, "grid_item")
 var item_count = 0
 
 func init_bg(grid_width, cells):
@@ -51,7 +51,7 @@ func initialize(grid_config = null, state = null):
 			set(i, grid_config[i])
 	props = GRID_PROPERTIES[grid_size]
 	$items.columns = cols
-	texture = Utils.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
+	texture = U.load_resource(Constants.UI_ELEMENT_PATH, props.grid_bg)
 	size = calc_size(props.item_size)
 	patch_margin_left = props.item_size.x + 2
 	patch_margin_right = props.item_size.y + 1
@@ -109,7 +109,7 @@ func update_current_item(new_index):
 
 func init_selector():
 	if !item_count: return
-	$selector.texture = Utils.load_resource(
+	$selector.texture = U.load_resource(
 			Constants.UI_ELEMENT_PATH, props.selector)
 	var selector_pos = get_selector_dest(0)
 	$selector.position = selector_pos
@@ -232,7 +232,7 @@ func coords_to_index(col, row):
 func get_page_items():
 	var page_size = cols * rows
 	var start = current_page * page_size
-	return Utils.slice(items, start, page_size)
+	return items.slice(start, page_size)
 
 # --------------------------------------------------------------------------- #
 

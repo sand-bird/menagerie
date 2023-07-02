@@ -124,9 +124,7 @@ func _process(delta):
 	$unstick_area.position = $stick_area.position
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
 
-	var new_graphic_pos = Utils.vlerp(
-		$graphic.position, graphic_dest, lerp_val
-	).round()
+	var new_graphic_pos = $graphic.position.lerp(graphic_dest, lerp_val).round()
 
 	$graphic.position = graphic_dest if (
 		new_graphic_pos == $graphic.position.round()

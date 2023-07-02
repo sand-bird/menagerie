@@ -68,7 +68,7 @@ func init():
 # we can't call this `get` anymore because godot 4 no longer lets you override
 # native functions :(
 func fetch(a, default = null, warn = true):
-	var args = Utils.pack(a)
+	var args = U.pack(a)
 	Log.debug(self, ["(fetch) ", args])
 
 	var result
@@ -118,7 +118,7 @@ func fetch_res(a):
 # fetches modconfig from the place where we keep it. if there is no modconfig,
 # we make one (duh).
 func load_modconfig():
-	var modconfig = Utils.read_file(MOD_DIR.path_join(".modconfig"))
+	var modconfig = U.read_file(MOD_DIR.path_join(".modconfig"))
 	if modconfig == null: modconfig = {
 		"load_order": [],
 		"mods": {}
@@ -128,7 +128,7 @@ func load_modconfig():
 # --------------------------------------------------------------------------- #
 
 func save_modconfig(modconfig):
-	Utils.write_file(MOD_DIR.path_join(".modconfig"), modconfig)
+	U.write_file(MOD_DIR.path_join(".modconfig"), modconfig)
 
 # --------------------------------------------------------------------------- #
 
@@ -147,7 +147,7 @@ func update_modconfig(modconfig):
 		if !dir.current_is_dir():
 			current = dir.get_next()
 			continue
-		var modinfo = Utils.read_file(path.path_join("meta.data"))
+		var modinfo = U.read_file(path.path_join("meta.data"))
 		if modinfo:
 			if modconfig.mods.has(modinfo.id):
 				check_modinfo(modconfig, modinfo, path)
@@ -282,7 +282,7 @@ func load_data(dirname, sourceinfo):
 # containing the full path.
 func load_datafile(path, sourceinfo):
 	Log.debug(self, ["loading data from file: `", path, "`"])
-	var filedata = Utils.read_file(path)
+	var filedata = U.read_file(path)
 	if filedata == null:
 		Log.error(self, ["error loading data from `", path, "`!"])
 		return
@@ -297,7 +297,7 @@ func load_datafile(path, sourceinfo):
 
 func load_schemafile(path, sourceinfo):
 	Log.debug(self, ["loading schema from file: `", path, "`"])
-	var schema = Utils.read_file(path)
+	var schema = U.read_file(path)
 	if schema == null:
 		Log.error(self, ["error loading schema from `", path, "`!"])
 		return
@@ -310,7 +310,7 @@ func load_schemafile(path, sourceinfo):
 # =========================================================================== #
 #                        P R O C E S S I N G   D A T A                        #
 # --------------------------------------------------------------------------- #
-# Utils.read_file already parses JSON files, but we need to tweak the results
+# U.read_file already parses JSON files, but we need to tweak the results
 # a bit, so we recurse down the loaded files.  we process data and schema files
 # slightly differently: data files may have filepaths, and schema files may
 # have refs.  both of those get resolved here.
@@ -329,7 +329,7 @@ func process_data(d, basedir):
 		# we use `~` as a sigil to mark a path.  kinda weird since `~` connotes the
 		# home directory, which isn't how it's being used here, but eh ¯\_(ツ)_/¯
 		elif d[i] and typeof(d[i]) == TYPE_STRING and d[i][0] == '~':
-			d[i] = basedir.path_join(Utils.strip_sigil(d[i]))
+			d[i] = basedir.path_join(U.strip_sigil(d[i]))
 		
 		elif d[i] and typeof(d[i]) == TYPE_FLOAT and int(d[i]) == d[i]:
 			d[i] = int(d[i])
@@ -383,7 +383,7 @@ func merge(base, mod):
 		var replace = false
 		if k[0] == '!':
 			replace = true
-			k = Utils.strip_sigil(key)
+			k = U.strip_sigil(key)
 		if base.has(k) and !replace:
 			if typeof(base[k]) == TYPE_ARRAY:
 				if typeof(mod[k]) == TYPE_ARRAY:

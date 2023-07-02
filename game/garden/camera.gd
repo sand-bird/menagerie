@@ -89,12 +89,12 @@ func get_bounds():
 	# calculate pos values for our bounds
 	var parent_min = base_pos
 	var parent_max = base_pos + parent_size
-	var bound_padding = Utils.vmax(
+	var bound_padding = U.vmax(
 		Vector2(200, 200),
-		Utils.vmin(parent_size * 0.2, screen_size * 0.25)
+		U.vmin(parent_size * 0.2, screen_size * 0.25)
 	)
-	min_pos = Utils.vmin((parent_min - bound_padding).round(), center_pos)
-	max_pos = Utils.vmax((parent_max + bound_padding - screen_size).round(), center_pos)
+	min_pos = U.vmin((parent_min - bound_padding).round(), center_pos)
+	max_pos = U.vmax((parent_max + bound_padding - screen_size).round(), center_pos)
 
 # --------------------------------------------------------------------------- #
 
@@ -131,7 +131,7 @@ func do_drag_scroll():
 func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
-	var direction = Utils.vsign(heading)
+	var direction = heading.sign()
 	var abs_heading = heading.abs()
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 		var move_delta = abs_heading
@@ -170,14 +170,14 @@ func _process(_delta):
 		target_pos = stick_target.position - screen_radius
 
 	# clamp target to camera bounds
-	target_pos = Utils.vclamp(target_pos, min_pos, max_pos).round()
+	target_pos = target_pos.clamp(min_pos, max_pos).round()
 
 	# lerp camera to target position
 	if position != target_pos:
 #		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
 #		var new_y = round(lerp(position.y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
 #		position = Vector2(new_x, new_y)
-		position = Utils.vlerp(position, target_pos, FLICK_SPEED / FLICK_DISTANCE)
+		position = position.lerp(target_pos, FLICK_SPEED / FLICK_DISTANCE)
 		align()
 
 	# update saved cursor position (for drag scroll)

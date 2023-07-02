@@ -1,6 +1,5 @@
 extends Node
-
-class_name Utils
+class_name U
 
 const log_name = "Utils"
 
@@ -76,15 +75,6 @@ static func pack(arg):
 	if typeof(arg) == TYPE_ARRAY: return arg
 	else: return [arg]
 
-# --------------------------------------------------------------------------- #
-
-# honestly can't believe i have to implement this
-static func slice(array, first, size):
-	var subarray = []
-	var actual_size = min(array.size() - first, size)
-	for i in actual_size: subarray.push_back(array[first + i])
-	return subarray
-
 
 # =========================================================================== #
 #                                S T R I N G S                                #
@@ -102,7 +92,8 @@ static func trans(t):
 		for i in ['locale/test', 'locale/fallback']:
 			var locale = ProjectSettings.get(i)
 			if locale in t: return t[locale]
-	return ""
+	# the schema requires translatable text to always have an 'en' key
+	return t.get('en', "")
 
 # --------------------------------------------------------------------------- #
 
@@ -113,7 +104,7 @@ static func strip_sigil(s):
 
 # --------------------------------------------------------------------------- #
 
-static func ordinalize(num):
+static func ordinalize(num: int):
 	var ordinal
 	num = int(num)
 	if num % 100 in range(11, 14):
@@ -129,7 +120,7 @@ static func ordinalize(num):
 # --------------------------------------------------------------------------- #
 
 # stringifies a number with commas inserted where appropriate
-static func comma(num):
+static func comma(num: int):
 	var strnum = str(num)
 	var i = strnum.length() - 3
 	while i > 0:
@@ -150,20 +141,10 @@ static func parse_vec(data, default = null):
 	var y = data.y if data != null and 'y' in data else default.y
 	return Vector2(x, y)
 
-static func is_horizontal(v):
-	return v.x and !v.y
+# --------------------------------------------------------------------------- #
 
-static func is_vertical(v):
-	return v.y and !v.x
-
-static func is_diagonal(v):
-	return v.x and v.y
-
-
-static func veq(a, b):
-	var xeq = round(a.x) == round(b.x)
-	var yeq = round(a.y) == round(b.y)
-	return (xeq && yeq)
+static func format_vec(vec: Vector2):
+	return { x = vec.x, y = vec.y }
 
 # --------------------------------------------------------------------------- #
 
@@ -174,29 +155,6 @@ static func vmin(a, b):
 
 static func vmax(a, b):
 	return Vector2(max(a.x, b.x), max(a.y, b.y))
-
-# --------------------------------------------------------------------------- #
-
-static func vrandi(vec):
-	return Vector2(randi_to(int(vec.x)), randi_to(int(vec.y)))
-
-# --------------------------------------------------------------------------- #
-
-# Vector2.clamped() clamps the vector's length, but we want to clamp the vector
-# between a min vector and a max one
-static func vclamp(a, b, c):
-	return Vector2(clamp(a.x, b.x, c.x), clamp(a.y, b.y, c.y))
-
-# --------------------------------------------------------------------------- #
-
-# sugar for Vector2.linear_interpolate(Vector2, float)
-static func vlerp(a, b, w):
-	return a.lerp(b, w)
-
-# --------------------------------------------------------------------------- #
-
-static func vsign(vec):
-	return Vector2(sign(vec.x), sign(vec.y))
 
 
 # =========================================================================== #
@@ -219,29 +177,6 @@ static func weighted_mean(args: Array[Variant]) -> Variant:
 		total_value += (item[0] * item[1])
 	if total_weight == 0: return 0
 	return total_value / total_weight
-
-# --------------------------------------------------------------------------- #
-
-# returns a random value within {threshold} of {anchor}
-static func randi_thresh_raw(anchor, threshold):
-	return randi_range(anchor - threshold, anchor + threshold)
-
-# --------------------------------------------------------------------------- #
-
-# threshold should be a between 0 and 1 exclusive
-static func randi_thresh(anchor, threshold):
-	var raw_thresh = round(anchor * threshold)
-	return randi_range(anchor - raw_thresh, anchor + raw_thresh)
-
-# --------------------------------------------------------------------------- #
-
-#static func randi_range(a, b):
-#	return a + randi() % (int(b) - int(a) + 1)
-
-# --------------------------------------------------------------------------- #
-
-static func randi_to(x):
-	return randi() % (int(x) + 1)
 
 # --------------------------------------------------------------------------- #
 

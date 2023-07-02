@@ -77,7 +77,7 @@ func serialize():
 # ---
 var INT: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[iq.value, 1],
 		[learning.value, 1]
 	])
@@ -103,7 +103,7 @@ var learning = Attribute.new({ mean = 0, deviation = 0, heritability = 0 })
 # ---
 var VIT: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[nutrition.value, 1],
 		[vigor.value, 1]
 	])
@@ -119,7 +119,7 @@ var vigor = Attribute.new({ mean = 0.4 })
 # ---
 var CON: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[composure.value, 1],
 		[patience.value, 1],
 		[fortitude.value, 1],
@@ -142,7 +142,7 @@ var fortitude = Attribute.new()
 # ---
 var CHA: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[confidence.value, 1],
 		[beauty.value, 1],
 		[poise.value, 1],
@@ -168,7 +168,7 @@ var poise = Attribute.new({ mean = 0.1, heritability = 0.2 })
 # ---
 var AMI: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[humility.value, 1],
 		[kindness.value, 1],
 		[empathy.value, 1],
@@ -193,7 +193,7 @@ var empathy = Attribute.new({ deviation = 0.2 }) # autistic / empathic
 # ---
 var SPR: float:
 	set(_x): return
-	get: return Utils.weighted_mean([
+	get: return U.weighted_mean([
 		[happiness.value, 1],
 		[loyalty.value, 1],
 		[actualization.value, 1],

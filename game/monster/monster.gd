@@ -403,10 +403,10 @@ func deserialize_value(value: Variant, key: String):
 # --------------------------------------------------------------------------- #
 
 func load_position(_position):
-	position = Utils.parse_vec(_position, generate_position())
+	position = U.parse_vec(_position, generate_position())
 
 func load_orientation(_orientation):
-	orientation = Utils.parse_vec(_orientation, Vector2(1, 0))
+	orientation = U.parse_vec(_orientation, Vector2(1, 0))
 
 func load_attributes(_attributes):
 	if not _attributes is Dictionary: _attributes = {}

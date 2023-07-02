@@ -1,7 +1,7 @@
 extends Control
 class_name MainMenu
 
-@onready var MenuTab = Utils.load_relative(scene_file_path, 'menu_tab')
+@onready var MenuTab = U.load_relative(scene_file_path, 'menu_tab')
 
 const DEFAULT_TITLE = "1 / 1" #"\u2727 \u2726 \u2727"
 
@@ -76,7 +76,7 @@ func new_tab(id, data):
 
 # triggered on a `menu_open` dispatch.
 func open(input = null):
-	var chapter = Utils.unpack(input)
+	var chapter = U.unpack(input)
 	if chapter == null: chapter = current
 	Log.debug(self, ["(open) menu chapter: '", chapter, "' | current: ",
 			str("'", current, "'") if current else "(none)"])
@@ -112,7 +112,7 @@ func load_scene(scene_path):
 	# last scene, we reset it to default
 	reset_headers()
 
-	var new_scene = Utils.load_relative(scene_file_path, scene_path).instantiate()
+	var new_scene = U.load_relative(scene_file_path, scene_path).instantiate()
 	new_scene.page_info_changed.connect(_on_page_info_changed)
 	new_scene.title_changed.connect(_on_title_changed)
 

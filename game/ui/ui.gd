@@ -131,7 +131,7 @@ func close(arg = null):
 # unlike `open`, only takes a single arg for the item ref. we're not even using
 # those overlay/restore args anywhere (yet??)
 func toggle(arg):
-	var item_ref = Utils.unpack(arg)
+	var item_ref = U.unpack(arg)
 	var item_idx = find_item(item_ref)
 	if item_idx != null: close(item_idx)
 	else: open(item_ref)
@@ -144,7 +144,7 @@ func toggle(arg):
 # manually. we also take this opportunity to update last_menu_page.
 func open_menu(arg = null):
 	# figure out which menu page we're opening
-	var page = Utils.unpack(arg)
+	var page = U.unpack(arg)
 	
 	var menu: MainMenu
 	var menu_path = process_ref('main_menu')
@@ -170,7 +170,7 @@ func open_menu(arg = null):
 # --------------------------------------------------------------------------- #
 
 func open_select(arg):
-	var selected = Utils.unpack(arg)
+	var selected = U.unpack(arg)
 	var select_ui = open(process_ref("garden/select_hud"))
 	select_ui.initialize(selected)
 

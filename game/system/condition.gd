@@ -253,9 +253,9 @@ static func eval_arg(arg, caller = null, parent = null):
 # accepts an ATOMIC (no seperators) string that may or may not have a sigil.
 static func eval_sigil(arg, caller, parent):
 	match arg[0]:
-		'$': return resolve_global(Utils.strip_sigil(arg))
-		'#': return Constants.new().get(Utils.strip_sigil(arg).capitalize().replace(' ', ''))
-		'@': return caller[Utils.strip_sigil(arg)]
+		'$': return resolve_global(U.strip_sigil(arg))
+		'#': return Constants.new().get(U.strip_sigil(arg).capitalize().replace(' ', ''))
+		'@': return caller[U.strip_sigil(arg)]
 		'*': return parent
 	return arg
 

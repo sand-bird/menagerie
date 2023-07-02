@@ -1,6 +1,6 @@
 extends Panel
 
-@onready var SaveItem = Utils.load_relative(scene_file_path, "save_item")
+@onready var SaveItem = U.load_relative(scene_file_path, "save_item")
 
 var saves = []
 var current_page = 0: set = load_page

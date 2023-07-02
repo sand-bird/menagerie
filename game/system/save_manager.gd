@@ -35,7 +35,7 @@ func get_save_list():
 # - player monsters
 func get_save_info(save_dir):
 	var save_info = {}
-	var data: Dictionary = Utils.read_file(get_filepath(save_dir, PLAYER))
+	var data: Dictionary = U.read_file(get_filepath(save_dir, PLAYER))
 	for k in ["player_name", "time", "money", "playtime"]:
 		save_info[k] = data.get(k, "")
 	save_info.encyclopedia = Data.get_completion_percent(
@@ -66,7 +66,7 @@ func get_save_info_list():
 
 func new_save(pname):
 	# load fresh save data
-	var save = Utils.read_file(NEW_SAVE)
+	var save = U.read_file(NEW_SAVE)
 	save.player.player_name = pname
 
 	# create new save
@@ -82,16 +82,16 @@ func new_save(pname):
 # --------------------------------------------------------------------------- #
 
 func save_game(data, save_dir = current_save_dir):
-	Utils.write_file(get_filepath(save_dir, PLAYER), data.player)
-	Utils.write_file(get_filepath(save_dir, GARDEN), data.garden)
+	U.write_file(get_filepath(save_dir, PLAYER), data.player)
+	U.write_file(get_filepath(save_dir, GARDEN), data.garden)
 
 # --------------------------------------------------------------------------- #
 
 func load_game(save_dir):
 	current_save_dir = save_dir
 	return {
-		"player": Utils.read_file(get_filepath(save_dir, PLAYER)),
-		"garden": Utils.read_file(get_filepath(save_dir, GARDEN)),
+		"player": U.read_file(get_filepath(save_dir, PLAYER)),
+		"garden": U.read_file(get_filepath(save_dir, GARDEN)),
 	}
 
 

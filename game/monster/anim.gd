@@ -120,7 +120,7 @@ func _init_facing(anim_info, flip = false):
 	# is horizontally centered and vertically bottom-aligned (the monster's
 	# position should line up with its feet).  this allows us to offset the
 	# sprite in case its "feet" are not at the bottom-center of the image.
-	var offset = Utils.parse_vec(anim_info.get('offset'), Vector2(0, 0))
+	var offset = U.parse_vec(anim_info.get('offset'), Vector2(0, 0))
 	if should_flip: offset.x = -offset.x
 	i = anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(i, "sprite:anim_offset")

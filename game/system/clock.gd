@@ -215,7 +215,7 @@ func get_printable_hour(input = null):
 
 func get_printable_date(input = null):
 	var d = to_dict(input, "date")
-	return Utils.ordinalize(d + 1)
+	return U.ordinalize(d + 1)
 
 func get_printable_day(input = null):
 	var d_of_w = calculate_day(input)

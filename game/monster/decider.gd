@@ -101,7 +101,7 @@ func old_calc(m):
 
 	if m.energy < target_energy and randf() > m.energy / 100.0:
 		var energy_per_tick = float(Action.energy_values.sleep) / float(Clock.TICKS_IN_HOUR)
-		var energy_to_recover = Utils.randi_range(target_energy, 100) - m.energy
+		var energy_to_recover = randi_range(target_energy, 100) - m.energy
 		var sleep_time = energy_to_recover / energy_per_tick
 		
 		Log.debug(m, ['going to sleep! energy to recover: ', energy_to_recover,
@@ -110,7 +110,7 @@ func old_calc(m):
 			clamp(sleep_time, Clock.TICKS_IN_HOUR, Clock.TICKS_IN_HOUR * 8))
 	
 	elif randf() > m.attributes.pep:
-		m.current_action = Action.Idle.new(m, Utils.randi_range(2, 8))
+		m.current_action = Action.Idle.new(m, randi_range(2, 8))
 	else:
 		m.current_action = Action.Walk.new(m, # so ugly :(
 			m.position + Vector2(randf_range(-80, 80), randf_range(-80, 80)))
