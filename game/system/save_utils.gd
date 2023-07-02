@@ -1,29 +1,33 @@
 extends Node
+class_name SaveUtils
+const LNAME = 'SaveUtils'
 
 const SAVE_ROOT = "user://saves/"
 const PLAYER = "player.save"
 const GARDEN = "garden.save"
 const NEW_SAVE = "res://data/system/new.save"
 
-var current_save_dir
-
-
 # =========================================================================== #
 #                      G E T T I N G   S A V E   I N F O                      #
 # --------------------------------------------------------------------------- #
+
 # scans the SAVE_ROOT dir for valid save directories.
-func get_save_list():
+static func get_save_list() -> Array[String]:
 	var dir = DirAccess.open(SAVE_ROOT)
-	var saves = []
-	if !dir: return
+	var saves: Array[String] = []
+	if !dir: return []
 	dir.list_dir_begin()
 	var current = dir.get_next()
 	while (current != ""):
 		if is_save(current):
-			Log.debug(self, ["Found save: ", current])
+			Log.debug(LNAME, ["(get_save_list) found save: ", current])
 			saves.append(current)
 		current = dir.get_next()
-	saves.sort_custom(sort_by_date)
+	# order save info by timestamp, so the most recent save will show first on
+	# the save list.
+	saves.sort_custom(
+		func (a, b): return get_save_time(a) > get_save_time(b)
+	)
 	return saves
 
 # --------------------------------------------------------------------------- #
@@ -33,10 +37,10 @@ func get_save_list():
 # - date
 # - player money
 # - player monsters
-func get_save_info(save_dir):
+static func get_save_info(save_dir: String) -> Dictionary:
 	var save_info = {}
 	var data: Dictionary = U.read_file(get_filepath(save_dir, PLAYER))
-	for k in ["player_name", "time", "money", "playtime"]:
+	for k in ['player_name', 'time', 'money', 'playtime']:
 		save_info[k] = data.get(k, "")
 	save_info.encyclopedia = Data.get_completion_percent(
 		data.get('discovered', {})
@@ -47,24 +51,15 @@ func get_save_info(save_dir):
 
 # --------------------------------------------------------------------------- #
 
-func get_save_time(save_dir):
-	return FileAccess.get_modified_time(get_filepath(save_dir, PLAYER))
-
-# --------------------------------------------------------------------------- #
-
-func get_save_info_list():
-	var saves = []
-	for save in get_save_list():
-		saves.append(get_save_info(save))
-	Log.debug(self, saves)
-	return saves
+static func get_save_info_list():
+	return get_save_list().map(func (s): return get_save_info(s))
 
 
 # =========================================================================== #
 #                  S A V I N G   &   L O A D I N G   D A T A                  #
 # --------------------------------------------------------------------------- #
 
-func new_save(pname):
+static func new_save(pname: String):
 	# load fresh save data
 	var save = U.read_file(NEW_SAVE)
 	save.player.player_name = pname
@@ -73,22 +68,19 @@ func new_save(pname):
 	if !DirAccess.dir_exists_absolute(SAVE_ROOT):
 		DirAccess.make_dir_absolute(SAVE_ROOT)
 
-	current_save_dir = create_dirname(pname)
-	DirAccess.make_dir_absolute(SAVE_ROOT.path_join(current_save_dir))
-	save_game(save)
-
-	return current_save_dir
+	var save_dir = create_dirname(pname)
+	DirAccess.make_dir_absolute(SAVE_ROOT.path_join(save_dir))
+	write(save, save_dir)
 
 # --------------------------------------------------------------------------- #
 
-func save_game(data, save_dir = current_save_dir):
+static func write(data: Dictionary, save_dir: String):
 	U.write_file(get_filepath(save_dir, PLAYER), data.player)
 	U.write_file(get_filepath(save_dir, GARDEN), data.garden)
 
 # --------------------------------------------------------------------------- #
 
-func load_game(save_dir):
-	current_save_dir = save_dir
+static func read(save_dir: String):
 	return {
 		"player": U.read_file(get_filepath(save_dir, PLAYER)),
 		"garden": U.read_file(get_filepath(save_dir, GARDEN)),
@@ -98,7 +90,8 @@ func load_game(save_dir):
 # =========================================================================== #
 #                      U T I L I T Y   F U N C T I O N S                      #
 # --------------------------------------------------------------------------- #
-func is_save(dir_name):
+
+static func is_save(dir_name: String) -> bool:
 	var save_path = SAVE_ROOT.path_join(dir_name)
 	return (DirAccess.dir_exists_absolute(save_path) and
 			FileAccess.file_exists(save_path.path_join(PLAYER)) and
@@ -106,15 +99,13 @@ func is_save(dir_name):
 
 # --------------------------------------------------------------------------- #
 
-func get_filepath(save_dir, file_name):
+static func get_filepath(save_dir: String, file_name: String) -> String:
 	return SAVE_ROOT.path_join(save_dir).path_join(file_name)
 
 # --------------------------------------------------------------------------- #
 
-# order save info by timestamp, so the most recent save will show first on the
-# save list.
-func sort_by_date(a, b):
-	return get_save_time(a) > get_save_time(b)
+static func get_save_time(save_dir):
+	return FileAccess.get_modified_time(get_filepath(save_dir, PLAYER))
 
 # --------------------------------------------------------------------------- #
 
@@ -124,7 +115,7 @@ func sort_by_date(a, b):
 # ascii counterpart eg. 'e' when possible, rather than just stripping them out)
 #
 # only used once, when creating a new save directory.
-func create_dirname(dirname):
+static func create_dirname(dirname: String) -> String:
 	var newstr = ""
 	for i in dirname:
 		if (i >= 'a' and i <= 'z') or (i >= 'A' and i <= 'Z'):

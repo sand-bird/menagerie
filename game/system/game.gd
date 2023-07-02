@@ -1,13 +1,14 @@
 extends Node
 
-var garden
+var garden: Garden
+var current_save_dir: String
 
 func _ready():
-	Dispatcher.new_game.connect(new_game)
-	Dispatcher.load_game.connect(load_game)
-	Dispatcher.save_game.connect(save_game)
-	Dispatcher.quit_game.connect(quit_game)
-
+	# connect all the signals for manipulating game state (see Dispatcher.gd)
+	for i in ['new', 'load', 'save', 'quit', 'reset']:
+		var sig = str(i, '_game')
+		(Dispatcher[sig] as Signal).connect(Callable(self, sig))
+	
 	Data.init()
 	Dispatcher.emit_signal("ui_open", "title_screen")
 
@@ -21,13 +22,14 @@ func _ready():
 # data, anyway, so might as well do it all in one place.
 func new_game(player_name):
 	Log.info(self, ["Starting new game: ", player_name])
-	var new_save = SaveManager.new_save(player_name)
-	load_game(new_save)
+	var new_save_dir = SaveUtils.new_save(player_name)
+	load_game(new_save_dir)
 
 # --------------------------------------------------------------------------- #
 
 func load_game(save_dir):
-	var data = SaveManager.load_game(save_dir)
+	current_save_dir = save_dir
+	var data = SaveUtils.read(current_save_dir)
 	load_player(data.player)
 	load_garden(data.garden)
 	Dispatcher.date_changed.connect(save_game)
@@ -55,11 +57,15 @@ func load_garden(data):
 # =========================================================================== #
 #                                 S A V I N G                                 #
 # --------------------------------------------------------------------------- #
+
 func save_game():
-	SaveManager.save_game({
+	if current_save_dir == null:
+		Log.error(self, "no save directory")
+		return
+	SaveUtils.write({
 		"player": save_player(),
 		"garden": save_garden()
-	})
+	}, current_save_dir)
 
 # --------------------------------------------------------------------------- #
 
@@ -74,6 +80,9 @@ func save_player():
 func save_garden():
 	if garden: return garden.serialize()
 
+
+# =========================================================================== #
+#                    Q U I T T I N G  /  R E L O A D I N G                    #
 # --------------------------------------------------------------------------- #
 
 func quit_game():
@@ -81,3 +90,10 @@ func quit_game():
 #	print(process_id)
 	get_tree().quit()
 #	OS.kill(process_id)
+
+# --------------------------------------------------------------------------- #
+
+func reset_game():
+	Clock.reset()
+	Player.reset()
+	get_tree().reload_current_scene()

@@ -22,6 +22,7 @@ signal new_game
 signal load_game
 signal save_game
 signal quit_game
+signal reset_game
 
 #                                   t i m e                                   #
 # --------------------------------------------------------------------------- #

@@ -24,7 +24,6 @@ icon="res://assets/ui/icons/thumbnail.png"
 [autoload]
 
 Log="*res://system/logger.gd"
-SaveManager="*res://system/save_manager.gd"
 Dispatcher="*res://system/dispatcher.gd"
 Data="*res://system/data.gd"
 Options="*res://system/options.gd"

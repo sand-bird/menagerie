@@ -7,7 +7,7 @@ var current_page = 0: set = load_page
 const SAVES_PER_PAGE = 3
 
 func _ready():
-	saves = SaveManager.get_save_info_list()
+	saves = SaveUtils.get_save_info_list()
 	$pages/arrows.change_page.connect(change_page)
 	load_page(0)
 

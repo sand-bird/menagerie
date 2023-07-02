@@ -108,9 +108,8 @@ func dispatch_updates():
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 # methods to format and return class data for saving to file, and to parse and
-# load saved data into the class. called by SaveManager's save_file and
-# load_file, or if applicable, by a parent class's serialize and deserialize
-# methods.
+# load saved data into the class.  called from the save and load entrypoints
+# in game.gd.
 
 func serialize():
 	return get_dict()
@@ -120,6 +119,16 @@ func deserialize(time):
 		time = parse_total_time(time)
 	load_dict(time)
 	log_time()
+
+func reset():
+	stop()
+	year = 0
+	month = 0
+	day = 0
+	date = 0
+	hour = 0
+	tick = 0
+
 
 # =========================================================================== #
 #                        T I M E   F O R M A T T I N G                        #

@@ -6,7 +6,7 @@ extends Node
 
 var player_name: String = ""
 var playtime: float = 0
-var last_update_time: int # used to update playtime
+var last_update_time: int = 0 # used to update playtime
 var money: int = 0
 
 var garden: Garden
@@ -74,6 +74,19 @@ func deserialize(data):
 			set(k, data[k])
 	last_update_time = int(Time.get_unix_time_from_system())
 
+# --------------------------------------------------------------------------- #
+
+# manually deinitialize Player state when we reload the game.
+# called from `reset_game` in `game.gd`, which listens to the `reset_game` 
+# signal from the dispatcher.
+func reset():
+	player_name = ""
+	playtime = 0
+	last_update_time = 0
+	money = 0
+	discovered = {}
+	inventory = {}
+	garden = null
 
 # =========================================================================== #
 #                               P L A Y T I M E                               #

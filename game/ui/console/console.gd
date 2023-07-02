@@ -153,17 +153,13 @@ func cmd_get(args: Array):
 	state.merge({ id = id }, true)
 	Player.inventory_add(state, qty)
 
-
 func cmd_save(_args):
-	if SaveManager.current_save_dir == null:
+	if get_tree().current_scene.current_save_dir == null:
 		put("No save file loaded!")
 		return
 	Dispatcher.emit('save_game')
-	put("Saved " + SaveManager.current_save_dir)
-
 
 func cmd_exit(_args):
-
 	visible = false
 
 func cmd_quit(_args):
@@ -172,11 +168,7 @@ func cmd_quit(_args):
 # TODO: this doesn't reset Player, so if we load another file it may inherit
 # some of the current player's state
 func cmd_reset(_args):
-	Dispatcher.emit("ui_open", "title_screen", 0)
-	Clock.stop()
-	if Player.garden != null:
-		Player.garden.queue_free()
-		Player.garden = null
+	Dispatcher.emit('reset_game')
 
 # quick n dirty way to clear _after_ we append the post-command newline
 func cmd_clear(_args):
