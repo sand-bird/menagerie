@@ -11,7 +11,7 @@ position = position + velocity
 
 # a magic number used to calculate desired velocity.
 # input speed should be a 
-const SPEED_MULTIPLIER: float = 2.5
+const SPEED_MULTIPLIER: float = 3
 # modifies the speed of the walk animation.
 # walk animation FPS should be tuned around the "standard" input speed of 1.
 # we then use the input speed to modify the speed of the animation, so if the
@@ -81,7 +81,7 @@ func _proc(_delta):
 	var desired_velocity = (
 		(target - m.position).normalized()
 		* speed * SPEED_MULTIPLIER
-		* m.data.size * m.attributes.vigor.lerp(0.8, 1.5)
+		* m.data.mass * m.data.size * m.attributes.vigor.lerp(0.8, 1.5)
 	)
 	# nav.set_velocity(desired_velocity)
 	move(desired_velocity)
@@ -92,13 +92,14 @@ func move(desired_velocity):
 	# monster orientation is used to choose a sprite/animation set
 	m.orientation = desired_velocity.normalized()
 	
-#	m.velocity = desired_velocity
-	var steering = desired_velocity - m.velocity
-	var mass = m.data.size ** 1.5
-	var acceleration = steering / mass
-	m.desired_velocity = desired_velocity
-	m.velocity = m.velocity + acceleration
+	m.velocity = desired_velocity
+#	var steering = desired_velocity - m.velocity
+#	var mass = m.data.size ** 1.5
+#	var acceleration = steering / mass
+#	m.desired_velocity = desired_velocity
+#	m.velocity = m.velocity + acceleration
 	# move_and_slide uses the monster's velocity value.  move_and_collide works
 	# the same except it takes a velocity arg and multiplies it automatically.
 	# we use move_and_slide mostly so we can specify our own multipliers.
-	m.move_and_slide()
+#	m.move_and_collide(m.velocity)
+	m.apply_central_force(m.velocity)

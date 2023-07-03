@@ -215,6 +215,12 @@ ui_console={
 test="en"
 translations=PackedStringArray("res://translation.pt.translation", "res://translation.en.translation")
 
+[physics]
+
+2d/default_gravity=0.0
+2d/default_gravity_vector=Vector2(0, 0)
+2d/default_linear_damp=2.0
+
 [physics_2d]
 
 motion_fix_enabled=true

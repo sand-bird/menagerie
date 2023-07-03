@@ -5,6 +5,8 @@
     "type",
     "name",
     "description",
+    "size",
+    "mass",
     "morphs"
   ],
   "propertyNames": {
@@ -13,6 +15,8 @@
       "type",
       "name",
       "description",
+      "size",
+      "mass",
       "gender_balance",
       "morphs",
       "evolves_into",
@@ -32,6 +36,16 @@
     },
     "description": {
       "$ref": "definitions/text128"
+    },
+    "size": {
+      "type": "integer",
+      "$comment": "Radius of the monster's collision circle in pixels",
+      "minimum": 1
+    },
+    "mass": {
+      "type": "number",
+      "$comment": "Base mass in kilograms",
+      "minimum": 1.0
     },
     "gender_balance": {
       "type": "number",

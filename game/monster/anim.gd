@@ -2,7 +2,7 @@ extends AnimationPlayer
 
 var current = null
 var queue = []
-var facing = Vector2(0, 1): set = _update_facing
+var facing = Vector2i(0, 1): set = _update_facing
 var loop_counter = 0
 
 func _ready():
@@ -22,6 +22,7 @@ func play_anim(anim_id = null, loops = null):
 	play(str(current, "/", facing.y, "_", facing.x))
 
 # --------------------------------------------------------------------------- #
+
 func queue_anim(anim_id, loops = 0):
 	queue.push_back({"id": anim_id, "loops": loops})
 	if current == null: _play_next()

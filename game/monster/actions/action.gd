@@ -23,8 +23,8 @@ static func get_status(status_code):
 	return ['new', 'running', 'success', 'failed'][status_code]
 
 # reference to the monster running the action
-var m
-var status = Status.NEW
+var m: Monster
+var status := Status.NEW
 # time remaining, decremented every tick. when this hits 0 we call _timeout().
 var t: int = Clock.TICKS_IN_HOUR * 3
 # real milliseconds (not ticks) during which the action is paused, set with

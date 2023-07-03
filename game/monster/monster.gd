@@ -1,7 +1,7 @@
-extends CharacterBody2D
+extends RigidBody2D
 class_name Monster
 
-var entity_type = Constants.EntityType.MONSTER
+const entity_type = Constants.EntityType.MONSTER
 var garden: Garden
 
 signal drives_changed
@@ -13,6 +13,8 @@ const MAX_MOOD = 200.0
 
 enum Sex { FEMALE, MALE }
 
+# child nodes
+# -----------
 var anim: AnimationPlayer
 var nav: NavigationAgent2D
 var sprite: Sprite2D
@@ -94,6 +96,7 @@ var orientation = Vector2(0, 1):
 			anim.facing = new_o.ceil()
 
 var desired_velocity = Vector2(0, 0) # for debugging
+var velocity = Vector2(0, 0)
 
 
 # =========================================================================== #
@@ -101,7 +104,7 @@ var desired_velocity = Vector2(0, 0) # for debugging
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	motion_mode = MOTION_MODE_FLOATING
+	lock_rotation = true
 	Dispatcher.tick_changed.connect(_on_tick_changed)
 
 # --------------------------------------------------------------------------- #
@@ -114,9 +117,11 @@ func _ready():
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-func _init(_data, _garden):
+func _init(_data: Dictionary, _garden: Garden):
 	garden = _garden
 	deserialize(_data)
+	
+	mass = data.mass
 	
 	var script: Resource = get_script()
 	var path: String = script.resource_path.get_base_dir()
@@ -126,13 +131,11 @@ func _init(_data, _garden):
 	load_anims()
 	
 	sprite = load(path.path_join('sprite.gd')).new()
-	sprite.texture = load('res://data/monsters/bunny/idle_front.png')
-	sprite.hframes = 4
 	add_named_child(sprite, 'sprite')
 	
 	shape = CollisionShape2D.new()
 	shape.shape = CircleShape2D.new()
-	var size = Data.fetch([type, 'size'])
+	var size = data.size
 	shape.shape.radius = size
 	shape.position.y -= size
 	add_named_child(shape, 'shape')
@@ -429,7 +432,7 @@ func load_morph(_morph):
 
 func generate_uuid(): return Uuid.v4()
 func generate_type(): return Data.by_type.monster.pick_random()
-func generate_morph(): return Data.fetch([type, &'morphs']).keys().pick_random()
+func generate_morph(): return data.morphs.keys().pick_random()
 func generate_birthday(): return Clock.get_dict()
 
 func generate_monster_name(): return [
