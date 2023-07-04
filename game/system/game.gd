@@ -27,7 +27,7 @@ func new_game(player_name):
 
 # --------------------------------------------------------------------------- #
 
-func load_game(save_dir):
+func load_game(save_dir: String):
 	current_save_dir = save_dir
 	var data = SaveUtils.read(current_save_dir)
 	load_player(data.player)

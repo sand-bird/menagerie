@@ -59,7 +59,7 @@ static func get_save_info_list():
 #                  S A V I N G   &   L O A D I N G   D A T A                  #
 # --------------------------------------------------------------------------- #
 
-static func new_save(pname: String):
+static func new_save(pname: String) -> String:
 	# load fresh save data
 	var save = U.read_file(NEW_SAVE)
 	save.player.player_name = pname
@@ -71,6 +71,7 @@ static func new_save(pname: String):
 	var save_dir = create_dirname(pname)
 	DirAccess.make_dir_absolute(SAVE_ROOT.path_join(save_dir))
 	write(save, save_dir)
+	return save_dir
 
 # --------------------------------------------------------------------------- #
 
