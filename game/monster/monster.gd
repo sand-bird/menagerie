@@ -160,7 +160,7 @@ func _init(_data: Dictionary, _garden: Garden):
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
-		&'monster_name', &'morph', &'birthday', &'sex',
+		&'sex', &'monster_name', &'morph', &'birthday',
 		&'belly', &'mood', &'energy', &'social',
 		&'orientation',
 		&'attributes', # TODO: 'preferences',
@@ -189,12 +189,17 @@ func load_morph(_morph):
 # --------------------------------------------------------------------------- #
 
 func generate_type(): return Data.by_type.monster.pick_random()
+# todo: this should be weighted by `data.gender_ratio` if provided
+func generate_sex(): return Sex.values().pick_random()
 func generate_morph(): return data.morphs.keys().pick_random()
 func generate_birthday(): return Clock.get_dict()
 
-func generate_monster_name(): return [
-		"Bumblebottom", "Bumbletop", "Bumbleside", "Bumblefront", "Bumbleback"
-	].pick_random()
+func generate_monster_name():
+	var names = preload("res://addons/randomnamesgenerator/names_in_arrays.gd")
+	return (
+		names.v_RWFemaleFirstNames if sex == Sex.FEMALE
+		else names.v_RWMaleFirstNames
+	).pick_random()
 
 
 # =========================================================================== #

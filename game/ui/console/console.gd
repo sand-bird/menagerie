@@ -69,6 +69,11 @@ Does not ask for confirmation. Don't do this by accident!""",
 #                               C O M M A N D S                               #
 # --------------------------------------------------------------------------- #
 
+func cmd_test(_args):
+	put('test test test')
+
+# --------------------------------------------------------------------------- #
+
 func cmd_help(args = []):
 	if args.size() == 0:
 		put("The following commands are available:")
@@ -81,6 +86,9 @@ func cmd_help(args = []):
 		put(help[args[0]])
 
 
+#                               m o n s t e r s                               #
+# --------------------------------------------------------------------------- #
+
 func cmd_monsters(_args):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
@@ -90,14 +98,33 @@ func cmd_monsters(_args):
 	)
 	put(JSON.stringify(mons, "  ", false, false))
 
+# --------------------------------------------------------------------------- #
 
-func cmd_spawn_monster(args):
+func cmd_spawn_monster(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
 	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
-	Player.garden.load_monster(data)
+	var times = int(args[1]) if args.size() > 1 else 1
+	for i in times: Player.garden.load_monster(data)
 
+# --------------------------------------------------------------------------- #
+
+func cmd_rename_monsters(args):
+	if Player.garden == null:
+		put("Error: no garden is loaded")
+		return
+	var names = []
+	for uuid in Player.garden.monsters:
+		var m: Monster = Player.garden.monsters[uuid]
+		m.sex = m.generate_sex()
+		m.monster_name = m.generate_monster_name()
+		names.push_back(m.monster_name)
+	put("Renamed monsters:")
+	put(names)
+
+#                           g l o b a l   s t a t e                           #
+# --------------------------------------------------------------------------- #
 
 func cmd_time(args):
 	Clock.tick = int(args[0] if args.size() > 0 else Clock.tick)
@@ -112,10 +139,7 @@ func cmd_time(args):
 	put([Clock.tick, Clock.hour, Clock.date, Clock.month, Clock.year])
 	put(Clock.get_printable_time())
 
-
-func cmd_test(_args):
-	put('test test test')
-
+# --------------------------------------------------------------------------- #
 
 func cmd_data(args = []):
 	var data = Data.data
@@ -129,6 +153,9 @@ func cmd_data(args = []):
 	else: put(JSON.stringify(data, "  ", false))
 
 
+#                              i n v e n t o r y                              #
+# --------------------------------------------------------------------------- #
+
 func cmd_inventory(_args):
 	var summary = {}
 	for key in Player.inventory:
@@ -139,6 +166,7 @@ func cmd_inventory(_args):
 		]
 	put(summary)
 
+# --------------------------------------------------------------------------- #
 
 func cmd_get(args: Array):
 	if args.size() <= 0:
@@ -153,27 +181,34 @@ func cmd_get(args: Array):
 	state.merge({ id = id }, true)
 	Player.inventory_add(state, qty)
 
+
+#                          g a m e   c o n t r o l s                          #
+# --------------------------------------------------------------------------- #
+
 func cmd_save(_args):
 	if get_tree().current_scene.current_save_dir == null:
 		put("No save file loaded!")
 		return
 	Dispatcher.emit('save_game')
 
-func cmd_exit(_args):
-	visible = false
-
 func cmd_quit(_args):
 	Dispatcher.emit('quit_game')
 
-# TODO: this doesn't reset Player, so if we load another file it may inherit
-# some of the current player's state
 func cmd_reset(_args):
 	Dispatcher.emit('reset_game')
+
+# --------------------------------------------------------------------------- #
 
 # quick n dirty way to clear _after_ we append the post-command newline
 func cmd_clear(_args):
 	get_tree().create_timer(0.01).timeout.connect($output.clear)
 
+func cmd_exit(_args):
+	visible = false
+
+
+# =========================================================================== #
+#                          O T H E R   M E T H O D S                          #
 # --------------------------------------------------------------------------- #
 
 func _ready():
@@ -211,6 +246,8 @@ func _input(event):
 		get_viewport().set_input_as_handled()
 		update_user_input()
 
+# --------------------------------------------------------------------------- #
+
 func load_previous_command(current_command):
 	if prev_commands.is_empty() or prev_index == 0:
 		return current_command
@@ -228,6 +265,8 @@ func load_next_command(current_command):
 		return stored_command
 	prev_index += 1
 	return prev_commands[prev_index]
+
+# --------------------------------------------------------------------------- #
 
 # User chose to enter their current input. Try to execute a command.
 func handle_user_input():
@@ -259,10 +298,13 @@ func handle_user_input():
 		put('Unknown command {c}' + command_name + '{/c}')
 	$output.newline()
 
+# --------------------------------------------------------------------------- #
 
 func update_user_input():
 	$input.clear()
 	$input.append_text( "> [color=" + input_color + "]" + user_input + "[/color]|")
+
+# --------------------------------------------------------------------------- #
 
 # substituting color bbcode for commands is so common that we do it every log,
 # so that text only needs to wrap the command in {c}...{/c}
@@ -273,3 +315,8 @@ func put(x):
 			'/c': '[/color]'
 		}))
 		$output.newline()
+
+# --------------------------------------------------------------------------- #
+
+func arget(i: int, args: Array[String], default = null):
+	return args[i] if args != null and args.size() > i else default
