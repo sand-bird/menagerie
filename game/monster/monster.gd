@@ -207,8 +207,9 @@ func _physics_process(delta):
 	
 	# debug
 	$orientation.target_position = orientation * 8
-	$velocity.target_position = velocity
-	$desired_velocity.target_position = desired_velocity
+	var vec_mult = 20.0 / MoveAction.calc_magnitude(self)
+	$velocity.target_position = velocity * vec_mult
+	$desired_velocity.target_position = desired_velocity * vec_mult
 
 
 # --------------------------------------------------------------------------- #

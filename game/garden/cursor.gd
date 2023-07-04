@@ -13,12 +13,12 @@ extends Control
 
 const HAND_X = 3
 const DEFAULT_HAND_HEIGHT = 16
-const VERTICAL_HAND_OFFSET = 14
+const VERTICAL_HAND_OFFSET = 12 # TODO: use the actual hand sprite height
 var hand_height: int = DEFAULT_HAND_HEIGHT
 
 var selecting = false
 # holds a pointer to the entity the cursor is currently stuck to, if one exists
-var curr_body = null
+var curr_body: Node2D = null
 # time in seconds to wait since the mouse was last moved before we warp the
 # mouse cursor on top of the entity it's stuck to (if one exists). we do this
 # to keep the cursor stuck to a moving monster until the player moves it away.
@@ -33,7 +33,7 @@ const lerp_val = 0.3
 func _ready():
 	$anim.play("cursor_bob")
 	item_rect_changed.connect(reset_anim)
-	$stick_area.body_entered.connect(stick)
+	$stick_area.body_entered.connect(maybe_stick)
 	$unstick_area.body_exited.connect(unstick)
 	set_process(true)
 
@@ -46,7 +46,7 @@ func reset_anim():
 
 # hide the actual cursor when the garden is paused, because we replace it with
 # a hand graphic. unhide it for menus until we implement a custom menu cursor.
-func _notification(n):
+func _notification(n: int):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	if n == NOTIFICATION_PAUSED:
@@ -54,17 +54,23 @@ func _notification(n):
 
 # --------------------------------------------------------------------------- #
 
-func stick(body):
+func maybe_stick(body: Node2D):
 	if selecting: return
 	if curr_body:
 		if body == curr_body: return
 		else: unstick(curr_body)
+	if body is Entity:
+		stick(body)
+
+# --------------------------------------------------------------------------- # 
+
+func stick(body: Entity):
 	curr_body = body
-	var shape_node = body.get_node('shape')
+	var shape_node = body.shape.shape
 	if shape_node:
 		var sprite_size = 8
 		if shape_node is CircleShape2D:
-			sprite_size = shape_node.shape.radius * 2
+			sprite_size = shape_node.radius * 2
 		elif shape_node is RectangleShape2D:
 			sprite_size = shape_node.size.y * 2
 		hand_height = sprite_size + VERTICAL_HAND_OFFSET
@@ -72,11 +78,11 @@ func stick(body):
 
 # --------------------------------------------------------------------------- #
 
-func unstick(body):
-	if body == curr_body:
-		hand_height = DEFAULT_HAND_HEIGHT
-		curr_body = null
-		Dispatcher.emit('entity_unhighlighted', body)
+func unstick(body: Node2D):
+	if body != curr_body: return
+	hand_height = DEFAULT_HAND_HEIGHT
+	curr_body = null
+	Dispatcher.emit('entity_unhighlighted', body)
 
 # --------------------------------------------------------------------------- #
 

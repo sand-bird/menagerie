@@ -10,7 +10,8 @@ position = position + velocity
 """
 
 # a magic number used to calculate desired velocity.
-# input speed should be a 
+# input speed should be a float where 1 is a "normal" walking speed.
+# this multipler allows us to tune the speed calculation to achieve this result.
 const SPEED_MULTIPLIER: float = 3
 # modifies the speed of the walk animation.
 # walk animation FPS should be tuned around the "standard" input speed of 1.
@@ -33,7 +34,7 @@ func _init(_m, _dest: Vector2, _speed: float, _t = null):
 	super(_m, _t)
 	name = 'move'
 	dest = _dest
-	speed = _speed
+	speed = _speed * m.attributes.vigor.lerp(0.5, 2.0)
 
 # moving costs a variable amount of energy per tick depending on speed;
 # it costs more energy to move faster over the same amount of ground.
@@ -59,10 +60,7 @@ func _start():
 	# TODO: include the vigor modifier here
 	m.play_anim(Constants.Anim.WALK, speed ** FPS_COEFFICIENT)
 
-# on tick, report the current path for debugging
 func _tick():
-	path = nav.get_current_navigation_path()
-	m.garden.get_node('path').points = path
 	return { energy = -1.0 * speed }
 
 # on proc (physics process), do all the movement stuff
@@ -74,32 +72,27 @@ func _proc(_delta):
 		return
 	
 	var target = nav.get_next_path_position()
-	# this initial desired velocity may be modified by the navigation agent if
-	# it needs to alter our movement to avoid obstacles.  the actual desired
-	# velocity is fired in the `velocity_computed` signal from the agent and
-	# received by the `move` function below
-	var desired_velocity = (
+
+	m.desired_velocity = (
 		(target - m.position).normalized()
-		* speed * SPEED_MULTIPLIER
-		* m.data.mass * m.data.size * m.attributes.vigor.lerp(0.8, 1.5)
+		* speed * calc_magnitude(m)
 	)
-	# nav.set_velocity(desired_velocity)
-	move(desired_velocity)
+	# monster orientation is used to choose a sprite/animation set
+	m.orientation = m.desired_velocity.normalized()
+	
+	#m.velocity = m.desired_velocity
+	var steering = m.desired_velocity - m.velocity
+	var acceleration: Vector2 = steering / m.mass
+	m.velocity = m.velocity + acceleration
+
+	m.apply_central_force(m.velocity)
 
 # --------------------------------------------------------------------------- #
 
-func move(desired_velocity):
-	# monster orientation is used to choose a sprite/animation set
-	m.orientation = desired_velocity.normalized()
-	
-	m.velocity = desired_velocity
-#	var steering = desired_velocity - m.velocity
-#	var mass = m.data.size ** 1.5
-#	var acceleration = steering / mass
-#	m.desired_velocity = desired_velocity
-#	m.velocity = m.velocity + acceleration
-	# move_and_slide uses the monster's velocity value.  move_and_collide works
-	# the same except it takes a velocity arg and multiplies it automatically.
-	# we use move_and_slide mostly so we can specify our own multipliers.
-#	m.move_and_collide(m.velocity)
-	m.apply_central_force(m.velocity)
+# used for drawing debug raycasts in the monster script
+static func calc_magnitude(m: Monster) -> float:
+	return (
+		SPEED_MULTIPLIER
+		* ProjectSettings.get_setting('physics/2d/default_linear_damp')
+		* m.data.mass * m.data.size
+	)

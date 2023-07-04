@@ -219,7 +219,7 @@ translations=PackedStringArray("res://translation.pt.translation", "res://transl
 
 2d/default_gravity=0.0
 2d/default_gravity_vector=Vector2(0, 0)
-2d/default_linear_damp=2.0
+2d/default_linear_damp=10.0
 
 [physics_2d]
 
