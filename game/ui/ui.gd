@@ -49,7 +49,6 @@ var input_map = {
 
 # ui input handling. there's probably a better place for this to live
 func _unhandled_input(e):
-	print('ui input')
 	for action in input_map:
 		var target: Array = input_map[action]
 		if e.is_action_pressed(action):

@@ -126,6 +126,7 @@ func _init_facing(anim_info, flip = false):
 	i = anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(i, "sprite:anim_offset")
 	anim.track_insert_key(i, 0.0, offset)
+	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
 	
 	# add a track to set our texture to the spritesheet specified in the data.
 	# must do this after all the properties that affect the sprite's offset,

@@ -9,7 +9,7 @@
     "en": "A fluffy pig-like monster with a superb sense of smell. Intelligent and social, Pufig make great pets for children and families."
   },
   "gender_ratio": 0.5,
-  "size": 10,
+  "size": 7,
   "mass": 13,
   "morphs": {
     "pink": {
@@ -29,7 +29,8 @@
             "left": {
               "spritesheet": "~pink_idle_front.png",
               "frames": 1,
-              "fps": 1.0
+              "fps": 1.0,
+              "offset": { "x": 2 }
             }
           }
         },
@@ -38,14 +39,16 @@
             "left": {
               "spritesheet": "~pink_walk_front.png",
               "frames": 6,
-              "fps": 8.0
+              "fps": 8.0,
+              "offset": { "x": 2 }
             }
           },
           "front": {
             "left": {
               "spritesheet": "~pink_walk_front.png",
               "frames": 6,
-              "fps": 8.0
+              "fps": 8.0,
+              "offset": { "x": 2 }
             }
           }
         }
