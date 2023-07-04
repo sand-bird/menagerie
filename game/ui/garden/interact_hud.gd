@@ -12,10 +12,10 @@ var options = {
 	'bottom': ['Command', 'hit_monster']
 }
 
-func attach(selected_entity):
+func attach(selected_entity: Entity):
 	show()
 	entity = selected_entity
-	if entity.entity_type == Constants.EntityType.MONSTER:
+	if entity is Monster:
 		for dir in options:
 			var option = options[dir]
 			var button = get_node(dir)

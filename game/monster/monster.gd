@@ -1,8 +1,10 @@
-extends RigidBody2D
+extends Entity
 class_name Monster
 
+# TODO: remove. this is currently used for the garden's "select hud".
+# we should rewrite that component to add different child nodes based on the
+# target's class instead.
 const entity_type = Constants.EntityType.MONSTER
-var garden: Garden
 
 signal drives_changed
 
@@ -17,8 +19,6 @@ enum Sex { FEMALE, MALE }
 # -----------
 var anim: AnimationPlayer
 var nav: NavigationAgent2D
-var sprite: Sprite2D
-var shape: CollisionShape2D
 # var perception: Area2D
 # var vel_text: Label
 
@@ -28,13 +28,6 @@ var shape: CollisionShape2D
 
 # core properties
 # ---------------
-var uuid: StringName # unique id of the monster
-var type: StringName # id of the monster's data definition
-
-var data:
-	get: return Data.fetch(type)
-	set(_x): return
-
 var monster_name: String # unfortunately "name" is a reserved property of Node
 # id of the morph in the `morphs` object of monster's data definition.
 # should be non-null
@@ -118,8 +111,7 @@ func _ready():
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
 func _init(_data: Dictionary, _garden: Garden):
-	garden = _garden
-	deserialize(_data)
+	super(_data, _garden)
 	
 	mass = data.mass
 	
@@ -129,19 +121,10 @@ func _init(_data: Dictionary, _garden: Garden):
 	anim = load(path.path_join('anim.gd')).new()
 	add_named_child(anim, 'anim')
 	load_anims()
-	
-	sprite = load(path.path_join('sprite.gd')).new()
-	add_named_child(sprite, 'sprite')
-	
-	shape = CollisionShape2D.new()
-	shape.shape = CircleShape2D.new()
-	var size = data.size
-	shape.shape.radius = size
-	shape.position.y -= size
-	add_named_child(shape, 'shape')
-	
+
 	nav = NavigationAgent2D.new()
 #	nav.debug_enabled = true
+	var size = data.size
 	nav.radius = size
 	nav.neighbor_distance = 500
 	nav.avoidance_enabled = false
@@ -160,14 +143,58 @@ func _init(_data: Dictionary, _garden: Garden):
 	$velocity.modulate = Color(1, 0, 0)
 	$orientation.modulate = Color(0, 0, 0)
 
+
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
+# depends on the `serialize` & `deserialize` functions inherited from the parent
+# class Entity.  `deserialize` is called from the Entity constructor, and
+# `serialize` is called from the garden's `serialize` method.
+
+# list of property names to persist and load.
+# overrides `Entity.save_keys`, which returns the generic keys shared by all
+# entities (uuid, type, and - for now - position).
+# order matters for deserialization; some properties depend on others earlier
+# in the list to already be loaded or generated (especially `type`).  this is
+# why we start with the keys from `super` (Entity) and append our own keys.
+func save_keys() -> Array[StringName]:
+	var keys = super.save_keys()
+	keys.append_array([
+		&'monster_name', &'morph', &'birthday', &'sex',
+		&'belly', &'mood', &'energy', &'social',
+		&'orientation',
+		&'attributes', # TODO: 'preferences',
+		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
+	])
+	return keys
+
+#                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-# it's nicer to use vars for children because of typing, but we name them so
-# other nodes can get them with `get_node`.  this is also necessary for $anim
-# since it takes a NodePath to $sprite (the target of all animations).
-func add_named_child(node: Node, n: String):
-	node.name = n
-	add_child(node)
+func load_orientation(_orientation):
+	orientation = U.parse_vec(_orientation, Vector2(1, 0))
+
+func load_attributes(_attributes):
+	if not _attributes is Dictionary: _attributes = {}
+	var attribute_overrides = Data.fetch([type, &'attributes'], {})
+	attributes = Attributes.new(_attributes, attribute_overrides)
+
+# ideally we would fail to load a monster with an invalid morph.  i'm not sure
+# how to fail out of the constructor though, so for now just pick a valid one
+func load_morph(_morph):
+	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
+	morph = _morph
+
+#                             g e n e r a t o r s                             #
+# --------------------------------------------------------------------------- #
+
+func generate_type(): return Data.by_type.monster.pick_random()
+func generate_morph(): return data.morphs.keys().pick_random()
+func generate_birthday(): return Clock.get_dict()
+
+func generate_monster_name(): return [
+		"Bumblebottom", "Bumbletop", "Bumbleside", "Bumblefront", "Bumbleback"
+	].pick_random()
 
 
 # =========================================================================== #
@@ -206,7 +233,6 @@ func announce(msg):
 # --------------------------------------------------------------------------- #
 
 func set_current_action(action, queue_current = false):
-	prints('setting current action',action,queue_current)
 	if current_action:
 		if queue_current and !next_action:
 			next_action = current_action
@@ -349,101 +375,3 @@ func get_target_energy():
 
 func get_target_social():
 	return MAX_SOCIAL * attributes.extraversion.lerp(1, 0)
-
-
-# =========================================================================== #
-#                          S E R I A L I Z A T I O N                          #
-# --------------------------------------------------------------------------- #
-
-# list of property names to persist and load.
-# order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially `type`).
-const SAVE_KEYS: Array[StringName] = [
-	'uuid', 'type', 'monster_name', 'morph', 'birthday', 'sex',
-	'belly', 'mood', 'energy', 'social',
-	'position', 'orientation',
-	'attributes', # TODO: 'attributes', 'preferences',
-	# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
-]
-
-# --------------------------------------------------------------------------- #
-
-func serialize():
-	var serialized = {}
-	for key in SAVE_KEYS:
-		serialized[key] = serialize_value(get(key))
-	return serialized
-
-func serialize_value(value: Variant, key: String = ''):
-	if value == null:
-		Log.warn(self, ["serializing null value for key `", key, "`"])
-	elif value is Array:
-		return value.map(serialize_value)
-	elif value is Vector2 or value is Vector2i:
-		return { x = value.x, y = value.y }
-	elif value is Object:
-		if value.has_method('serialize'): return value.serialize()
-		else: Log.error(self, [
-			"tried to serialize object without `serialize` method: ", value])
-	else: return value
-
-# --------------------------------------------------------------------------- #
-
-func deserialize(serialized = {}):
-	for key in SAVE_KEYS:
-		deserialize_value(serialized.get(key), key)
-
-func deserialize_value(value: Variant, key: String):
-	var loader = str('load_', key)
-	# if the key has a loader, just call it and trust it to initialize
-	if has_method(loader): call(loader, value)
-	elif value == null:
-		var generator = str('generate_', key)
-		if has_method(generator): set(key, call(generator))
-	else: set(key, value)
-
-#                                l o a d e r s                                #
-# --------------------------------------------------------------------------- #
-
-func load_position(_position):
-	position = U.parse_vec(_position, generate_position())
-
-func load_orientation(_orientation):
-	orientation = U.parse_vec(_orientation, Vector2(1, 0))
-
-func load_attributes(_attributes):
-	if not _attributes is Dictionary: _attributes = {}
-	var attribute_overrides = Data.fetch([type, &'attributes'], {})
-	attributes = Attributes.new(_attributes, attribute_overrides)
-
-# ideally we would fail to load a monster with an invalid type or morph.
-# i'm not sure how to fail out of the constructor though, so for now just roll
-# a new valid one
-func load_type(_type):
-	if _type == null or Data.missing(_type): _type = generate_type()
-	type = _type
-
-func load_morph(_morph):
-	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
-	morph = _morph
-
-#                             g e n e r a t o r s                             #
-# --------------------------------------------------------------------------- #
-
-func generate_uuid(): return Uuid.v4()
-func generate_type(): return Data.by_type.monster.pick_random()
-func generate_morph(): return data.morphs.keys().pick_random()
-func generate_birthday(): return Clock.get_dict()
-
-func generate_monster_name(): return [
-		"Bumblebottom", "Bumbletop", "Bumbleside", "Bumblefront", "Bumbleback"
-	].pick_random()
-
-func generate_position():
-	for x in Vector2(0, 0):
-		print(x)
-	var garden_size = garden.get_map_size()
-	return Vector2(
-		randi_range(0, garden_size.x),
-		randi_range(0, garden_size.y)
-	)
