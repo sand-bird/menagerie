@@ -19,6 +19,7 @@ enum Sex { FEMALE, MALE }
 # -----------
 var anim: AnimationPlayer
 var nav: NavigationAgent2D
+var joint: PinJoint2D
 # var perception: Area2D
 # var vel_text: Label
 
@@ -97,8 +98,10 @@ var velocity = Vector2(0, 0)
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	joint.node_a = get_path()
 	lock_rotation = true
 	Dispatcher.tick_changed.connect(_on_tick_changed)
+	body_entered.connect(_on_collide)
 
 # --------------------------------------------------------------------------- #
 
@@ -114,6 +117,10 @@ func _init(_data: Dictionary, _garden: Garden):
 	super(_data, _garden)
 	
 	mass = data.mass
+	
+	# check when we hit something so we can grab it
+	max_contacts_reported = 1
+	contact_monitor = true
 	
 	var script: Resource = get_script()
 	var path: String = script.resource_path.get_base_dir()
@@ -132,6 +139,11 @@ func _init(_data: Dictionary, _garden: Garden):
 	nav.target_desired_distance = sqrt(size)
 	nav.path_max_distance = size
 	add_named_child(nav, 'nav')
+	
+	joint = PinJoint2D.new()
+	# for now, put the joint at the center of the collision shape
+	joint.position = Vector2i(0, -size)
+	add_named_child(joint, 'joint')
 	
 	# debug
 	for n in ['orientation', 'velocity', 'desired_velocity']:
@@ -211,11 +223,17 @@ func _physics_process(delta):
 		current_action.proc(delta)
 	
 	# debug
-	$orientation.target_position = orientation * 8
+	$orientation.target_position = orientation * 16
 	var vec_mult = 20.0 / MoveAction.calc_magnitude(self)
 	$velocity.target_position = velocity * vec_mult
 	$desired_velocity.target_position = desired_velocity * vec_mult
 
+# --------------------------------------------------------------------------- #
+
+var can_grab: bool = true
+
+func _on_collide(node: Node2D):
+	if node is Entity and !is_grabbing() and can_grab: grab(node)
 
 # --------------------------------------------------------------------------- #
 
@@ -232,6 +250,47 @@ func announce(msg):
 	var l = garden.get_node('ui/log')
 	l.add_text('[' + monster_name + '] ' + msg + '\n')
 	l.scroll_to_line(l.get_line_count() - 1)
+
+
+# =========================================================================== #
+#                               G R A B B I N G                               #
+# --------------------------------------------------------------------------- #
+
+func disable_grab(cooldown: float):
+	announce(str("cannot grab for ", cooldown, " seconds"))
+	can_grab = false
+	get_tree().create_timer(10).timeout.connect(enable_grab)
+
+func enable_grab():
+	can_grab = true
+	announce("can now grab")
+
+# --------------------------------------------------------------------------- #
+
+func grab(node: Entity):
+	joint.node_b = node.get_path()
+	var grab_duration = randi_range(10, 120)
+	announce(str(
+		"is grabbing ", get_grabbed_name(), " for ", grab_duration, " seconds"
+	))
+	get_tree().create_timer(grab_duration).timeout.connect(release)
+
+func release():
+	announce("released " + get_grabbed_name())
+	joint.node_b = ""
+	disable_grab(randi_range(10, 60))
+
+# --------------------------------------------------------------------------- #
+
+func get_grabbed_name():
+	var target = (get_node(joint.node_b) as Entity)
+	return (
+		str("[", target.monster_name, "]") if target is Monster
+		else target.type
+	)
+
+func is_grabbing():
+	return joint.node_b != NodePath("")
 
 
 # =========================================================================== #

@@ -23,7 +23,7 @@ func estimate_result():
 	return { energy = -0.2 * t }
 
 func _start():
-	m.announce('is wandering around.')
+#	m.announce('is wandering around.')
 	new_move()
 
 func _tick():
