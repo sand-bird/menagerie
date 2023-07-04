@@ -75,7 +75,7 @@ func _proc(_delta):
 
 	m.desired_velocity = (
 		(target - m.position).normalized()
-		* speed * calc_magnitude(m)
+		* speed * MoveAction.calc_magnitude(m)
 	)
 	# monster orientation is used to choose a sprite/animation set
 	m.orientation = m.desired_velocity.normalized()
@@ -90,9 +90,9 @@ func _proc(_delta):
 # --------------------------------------------------------------------------- #
 
 # used for drawing debug raycasts in the monster script
-static func calc_magnitude(m: Monster) -> float:
+static func calc_magnitude(monster: Monster) -> float:
 	return (
 		SPEED_MULTIPLIER
 		* ProjectSettings.get_setting('physics/2d/default_linear_damp')
-		* m.data.mass * m.data.size
+		* monster.data.mass * monster.data.size
 	)
