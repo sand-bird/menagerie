@@ -72,11 +72,11 @@ func serialize():
 		items = save_items()
 	}
 
-func deserialize(data):
+func deserialize(data: Dictionary):
 	$map.load_terrain(data.terrain)
 	load_objects(data.objects)
 	load_monsters(data.monsters)
-#	load_items(data.items)
+	load_items(data.items)
 #	if data.has("camera"):
 #		$camera.deserialize(data.camera)
 
@@ -136,10 +136,16 @@ func save_items():
 		data[uid] = items[uid].serialize()
 	return data
 
-func load_items(data):
-	print(data)
-#	for id in data:
-#		var item = GardenItem.instance()
-#		item.initialize(data[uid])
-#		items[uid] = item
-#		$entities.add_child(item)
+# data is an map of ids to serialized items
+func load_items(data = {}):
+	for uuid in data:
+		var item_data = data[uuid]
+		item_data.uuid = uuid
+		load_item(item_data)
+
+# data is a serialized item
+func load_item(data = {}):
+	var item = Item.new(data, self)
+	items[item.uuid] = item
+	item.name = item.uuid
+	$entities.add_child(item)

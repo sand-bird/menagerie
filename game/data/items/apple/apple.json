@@ -1,0 +1,15 @@
+{
+  "id": "apple",
+  "type": "item",
+  "tags": ["fruit"],
+  "name": {
+    "en": "Nice Apple"
+  },
+  "size": 4,
+  "description": {
+    "en": "Red and delicious!"
+  },
+  "icon": "~/apple.png",
+  "sprite": "~/apple.png",
+  "value": 10
+}

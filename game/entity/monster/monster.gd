@@ -147,9 +147,9 @@ func _init(_data: Dictionary, _garden: Garden):
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
-# depends on the `serialize` & `deserialize` functions inherited from the parent
-# class Entity.  `deserialize` is called from the Entity constructor, and
-# `serialize` is called from the garden's `serialize` method.
+# see the `serialize` & `deserialize` functions on the parent class, Entity.
+# `deserialize` is called from the Entity constructor, and `serialize` is
+# called from the garden's `serialize` method.
 
 # list of property names to persist and load.
 # overrides `Entity.save_keys`, which returns the generic keys shared by all

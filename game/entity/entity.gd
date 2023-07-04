@@ -97,7 +97,6 @@ func add_named_child(node: Node, n: String):
 func save_keys() -> Array[StringName]:
 	return [&'uuid', &'type', &'position'] as Array[StringName]
 
-
 # --------------------------------------------------------------------------- #
 
 func serialize():

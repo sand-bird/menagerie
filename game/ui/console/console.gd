@@ -85,6 +85,18 @@ func cmd_help(args = []):
 	elif help.has(args[0]):
 		put(help[args[0]])
 
+# --------------------------------------------------------------------------- #
+
+func cmd_spawn_item(args = []):
+	if Player.garden == null:
+		put("Error: no garden is loaded")
+		return
+	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
+	var times = int(args[1]) if args.size() > 1 else 1
+	var pos = Player.garden.get_local_mouse_position()
+	data.merge({ position = { x = pos.x, y = pos.y } })
+	for i in times: Player.garden.load_item(data)
+
 
 #                               m o n s t e r s                               #
 # --------------------------------------------------------------------------- #
@@ -110,7 +122,7 @@ func cmd_spawn_monster(args = []):
 
 # --------------------------------------------------------------------------- #
 
-func cmd_rename_monsters(args):
+func cmd_rename_monsters(_args):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
