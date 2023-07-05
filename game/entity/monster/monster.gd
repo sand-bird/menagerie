@@ -77,7 +77,6 @@ var preferences = {}
 
 # movement
 # --------
-var desired_orientation = Vector2(0, 1) # for debugging
 var orientation = Vector2(0, 1):
 	# update the AnimationPlayer's `facing` vector when our `orientation` vector
 	# has changed enough to signify a new facing direction. running orientation
@@ -93,17 +92,11 @@ var orientation = Vector2(0, 1):
 var desired_velocity = Vector2(0, 0) # for debugging
 var velocity = Vector2(0, 0)
 
-var drag = Vector2(0, 0)
-
 func debug_vectors():
 	var vecs = {
-		drag = [Color(0, 0, 1), func (): return drag * 30],
-		desired_orientation = [Color(0, 0, 0), func (): return desired_orientation * 20],
 		vec_to_grabbed = [Color(0, 1, 0), func (): return vec_to_grabbed() * 5]
 #		desired_velocity = [Color(0, 0, 1), func (): return desired_velocity],
 #		velocity = [Color(1, 1, 0), func (): return velocity],
-#		orientation = [Color(0, 0, 0), func (): return orientation],
-
 	}
 	vecs.merge(super.debug_vectors())
 	return vecs
@@ -156,6 +149,7 @@ func _init(_data: Dictionary, _garden: Garden):
 	add_named_child(nav, 'nav')
 	
 	joint = PinJoint2D.new()
+	joint.softness = 0
 #	joint.length = 1
 #	joint.damping = 1
 #	joint.bias = 0.9
@@ -229,6 +223,8 @@ func _physics_process(delta):
 	super._physics_process(delta)
 	if current_action:
 		current_action.proc(delta)
+	if is_grabbing() and vec_to_grabbed().length_squared() > (100 ** 2):
+		release("was forced to let go of ")
 
 # --------------------------------------------------------------------------- #
 
@@ -277,8 +273,8 @@ func grab(node: Entity):
 	))
 	get_tree().create_timer(grab_duration).timeout.connect(release)
 
-func release():
-	announce("released " + get_grabbed_name())
+func release(msg: String = "released "):
+	announce(msg + get_grabbed_name())
 	joint.node_b = ""
 	disable_grab(randi_range(5, 10))
 
@@ -289,18 +285,17 @@ var grabbed: Entity:
 	set(_x): return
 
 func get_grabbed_name():
-	var target = (get_node(joint.node_b) as Entity)
 	return (
-		str("[", target.monster_name, "]") if target is Monster
-		else target.type
+		"[NONE]" if grabbed == null else
+		str("[", grabbed.monster_name, "]") if grabbed is Monster
+		else grabbed.type
 	)
 
 func is_grabbing():
-	return joint.node_b != NodePath("")
+	return joint.node_b != NodePath("") and has_node(joint.node_b)
 
 func vec_to_grabbed() -> Vector2:
-	if !is_grabbing(): return Vector2(0, 0)
-	return get_node(joint.node_b).position - position
+	return grabbed.position - position if grabbed != null else Vector2(0, 0)
 
 
 # =========================================================================== #

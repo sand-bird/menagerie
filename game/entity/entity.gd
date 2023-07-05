@@ -36,6 +36,7 @@ var data:
 
 # var traits: Array[Trait] = []
 
+
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
@@ -88,23 +89,6 @@ func _init(_data: Dictionary, _garden: Garden):
 
 # --------------------------------------------------------------------------- #
 
-func _physics_process(delta):
-	for child in get_children():
-		if 'rotation' in child: child.rotation = -rotation
-	var d_vecs = debug_vectors()
-	for key in d_vecs:
-		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
-
-# --------------------------------------------------------------------------- #
-
-func debug_vectors():
-	return {
-		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
-		rotation = [Color(1, 0, 1), func (): return Vector2.from_angle(rotation + (PI / 2)) * 25]
-	}
-
-# --------------------------------------------------------------------------- #
-
 # it's nicer to use vars for children because of typing, but we name them so
 # other nodes can get them with `get_node`.  this is also necessary for $anim
 # since it takes a NodePath to $sprite (the target of all animations).
@@ -137,6 +121,9 @@ func serialize_value(value: Variant, key: String = ''):
 	elif value is Array:
 		return value.map(serialize_value)
 	elif value is Vector2 or value is Vector2i:
+		# don't serialize nan values or it will break json parsing
+		if (JSON.stringify(value.x) == 'nan' or
+			JSON.stringify(value.y) == 'nan'): return {}
 		return { x = value.x, y = value.y }
 	elif value is Object:
 		if value.has_method('serialize'): return value.serialize()
@@ -186,3 +173,31 @@ func generate_position():
 		randi_range(0, garden_size.x),
 		randi_range(0, garden_size.y)
 	)
+
+
+# =========================================================================== #
+#                           M I S C   M E T H O D S                           #
+# --------------------------------------------------------------------------- #
+
+func _integrate_forces(state: PhysicsDirectBodyState2D):
+	state.linear_velocity = state.linear_velocity.limit_length(100)		
+
+# --------------------------------------------------------------------------- #
+
+func _physics_process(delta):
+	for child in get_children():
+		if 'rotation' in child: child.rotation = -rotation
+	var d_vecs = debug_vectors()
+	for key in d_vecs:
+		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
+
+# --------------------------------------------------------------------------- #
+
+# configuration for raycasts to show for debug purposes.
+# need to reload when adding/uncommenting one since we set these up in _init.
+# can add more in subclasses by overriding the `debug_vectors` fn.
+func debug_vectors():
+	return {
+		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
+		rotation = [Color(1, 0, 1), func (): return Vector2.from_angle(rotation + (PI / 2)) * 25]
+	}
