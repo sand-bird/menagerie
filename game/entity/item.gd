@@ -31,7 +31,6 @@ func _init(_data: Dictionary, _garden: Garden):
 	
 	sprite.texture = ResourceLoader.load(data.sprite)
 	sprite._offset_texture()
-	lock_rotation = true
 
 
 # =========================================================================== #

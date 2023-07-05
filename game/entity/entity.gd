@@ -40,11 +40,6 @@ var data:
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 
-func _ready(): pass
-#	Dispatcher.tick_changed.connect(_on_tick_changed)
-
-# --------------------------------------------------------------------------- #
-
 # entities must be initialized in code because they depend on data definitions
 # that are loaded at runtime.  this makes storing the node's children in a
 # PackedScene (entity.tscn) counter-productive, because the scene would be
@@ -66,16 +61,47 @@ func _init(_data: Dictionary, _garden: Garden):
 			base_script if base_script else script
 		).resource_path.get_base_dir()
 	
+	var size = data.size
+	mass = data.mass
+	# rotation looks bad at low res so we turn it off.
+	# it can be reenabled for specific entities via traits 
+#	lock_rotation = true
+	
 	sprite = load(path.path_join('sprite.gd')).new()
 	add_named_child(sprite, 'sprite')
+	sprite.position = Vector2(0, size)
 	
 	shape = CollisionShape2D.new()
 	shape.shape = CircleShape2D.new()
-	var size = data.size
 	shape.shape.radius = size
-	shape.position.y -= size
+#	shape.position.y -= size
 	add_named_child(shape, 'shape')
+	
+	# debugging
+	var d_vecs = debug_vectors()
+	for n in d_vecs:
+		var ray = RayCast2D.new()
+		ray.visible = true
+		ray.enabled = false
+		ray.modulate = d_vecs[n][0]
+		add_named_child(ray, n)
 
+# --------------------------------------------------------------------------- #
+
+func _physics_process(delta):
+	for child in get_children():
+		if 'rotation' in child: child.rotation = -rotation
+	var d_vecs = debug_vectors()
+	for key in d_vecs:
+		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
+
+# --------------------------------------------------------------------------- #
+
+func debug_vectors():
+	return {
+		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
+		rotation = [Color(1, 0, 1), func (): return Vector2.from_angle(rotation + (PI / 2)) * 25]
+	}
 
 # --------------------------------------------------------------------------- #
 

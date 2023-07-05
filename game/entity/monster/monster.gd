@@ -77,6 +77,7 @@ var preferences = {}
 
 # movement
 # --------
+var desired_orientation = Vector2(0, 1) # for debugging
 var orientation = Vector2(0, 1):
 	# update the AnimationPlayer's `facing` vector when our `orientation` vector
 	# has changed enough to signify a new facing direction. running orientation
@@ -92,6 +93,21 @@ var orientation = Vector2(0, 1):
 var desired_velocity = Vector2(0, 0) # for debugging
 var velocity = Vector2(0, 0)
 
+var drag = Vector2(0, 0)
+
+func debug_vectors():
+	var vecs = {
+		drag = [Color(0, 0, 1), func (): return drag * 30],
+		desired_orientation = [Color(0, 0, 0), func (): return desired_orientation * 20],
+		vec_to_grabbed = [Color(0, 1, 0), func (): return vec_to_grabbed() * 5]
+#		desired_velocity = [Color(0, 0, 1), func (): return desired_velocity],
+#		velocity = [Color(1, 1, 0), func (): return velocity],
+#		orientation = [Color(0, 0, 0), func (): return orientation],
+
+	}
+	vecs.merge(super.debug_vectors())
+	return vecs
+
 
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
@@ -99,7 +115,6 @@ var velocity = Vector2(0, 0)
 
 func _ready():
 	joint.node_a = get_path()
-	lock_rotation = true
 	Dispatcher.tick_changed.connect(_on_tick_changed)
 	body_entered.connect(_on_collide)
 
@@ -116,7 +131,7 @@ func _ready():
 func _init(_data: Dictionary, _garden: Garden):
 	super(_data, _garden)
 	
-	mass = data.mass
+	inertia = 10
 	
 	# check when we hit something so we can grab it
 	max_contacts_reported = 1
@@ -141,19 +156,11 @@ func _init(_data: Dictionary, _garden: Garden):
 	add_named_child(nav, 'nav')
 	
 	joint = PinJoint2D.new()
+#	joint.length = 1
+#	joint.damping = 1
+#	joint.bias = 0.9
 	# for now, put the joint at the center of the collision shape
-	joint.position = Vector2i(0, -size)
 	add_named_child(joint, 'joint')
-	
-	# debug
-	for n in ['orientation', 'velocity', 'desired_velocity']:
-		var ray = RayCast2D.new()
-		ray.visible = true
-		ray.enabled = false
-		add_named_child(ray, n)
-	$desired_velocity.modulate = Color(0, 0, 1)
-	$velocity.modulate = Color(1, 0, 0)
-	$orientation.modulate = Color(0, 0, 0)
 
 
 # =========================================================================== #
@@ -219,14 +226,9 @@ func generate_monster_name():
 # --------------------------------------------------------------------------- #
 
 func _physics_process(delta):
+	super._physics_process(delta)
 	if current_action:
 		current_action.proc(delta)
-	
-	# debug
-	$orientation.target_position = orientation * 16
-	var vec_mult = 20.0 / MoveAction.calc_magnitude(self)
-	$velocity.target_position = velocity * vec_mult
-	$desired_velocity.target_position = desired_velocity * vec_mult
 
 # --------------------------------------------------------------------------- #
 
@@ -278,9 +280,13 @@ func grab(node: Entity):
 func release():
 	announce("released " + get_grabbed_name())
 	joint.node_b = ""
-	disable_grab(randi_range(10, 60))
+	disable_grab(randi_range(5, 10))
 
 # --------------------------------------------------------------------------- #
+
+var grabbed: Entity:
+	get: return get_node(joint.node_b) if is_grabbing() else null
+	set(_x): return
 
 func get_grabbed_name():
 	var target = (get_node(joint.node_b) as Entity)
@@ -291,6 +297,10 @@ func get_grabbed_name():
 
 func is_grabbing():
 	return joint.node_b != NodePath("")
+
+func vec_to_grabbed() -> Vector2:
+	if !is_grabbing(): return Vector2(0, 0)
+	return get_node(joint.node_b).position - position
 
 
 # =========================================================================== #

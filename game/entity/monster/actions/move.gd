@@ -77,15 +77,27 @@ func _proc(_delta):
 		(target - m.position).normalized()
 		* speed * MoveAction.calc_magnitude(m)
 	)
-	# monster orientation is used to choose a sprite/animation set
-	m.orientation = m.desired_velocity.normalized()
-	
 	#m.velocity = m.desired_velocity
 	var steering = m.desired_velocity - m.velocity
 	var acceleration: Vector2 = steering / m.mass
 	m.velocity = m.velocity + acceleration
+	
+#	m.apply_central_force(m.velocity)
+	m.desired_orientation = m.linear_velocity.normalized()
+#	m.joint.position = m.desired_orientation * (m.data.size)
+#	m.joint.rotation = m.desired_orientation.angle() - (PI/2) # orientation.angle()
+#	m.rotation = m.desired_orientation.angle() - (PI/2)
+	
+	if m.is_grabbing():
+		m.grabbed.apply_central_force(m.velocity)
+#		var curr_orientation = m.vec_to_grabbed().normalized()
+#		m.drag = (m.desired_orientation - curr_orientation) / m.mass
+#		m.grabbed.apply_force(m.drag)
 
-	m.apply_central_force(m.velocity)
+		m.orientation = m.vec_to_grabbed().normalized()
+	else:
+		m.apply_central_force(m.velocity)
+		m.orientation = m.desired_orientation
 
 # --------------------------------------------------------------------------- #
 
