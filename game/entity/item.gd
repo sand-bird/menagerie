@@ -13,6 +13,7 @@ var traits: Array[Trait] = []
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	sprite.offset_texture()
 	Dispatcher.tick_changed.connect(_on_tick_changed)
 
 # --------------------------------------------------------------------------- #
@@ -30,7 +31,6 @@ func _init(_data: Dictionary, _garden: Garden):
 	mass = data.get('mass', 1)
 	
 	sprite.texture = ResourceLoader.load(data.sprite)
-	sprite._offset_texture()
 
 
 # =========================================================================== #

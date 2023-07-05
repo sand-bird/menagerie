@@ -69,7 +69,7 @@ func _init(_data: Dictionary, _garden: Garden):
 	
 	sprite = load(path.path_join('sprite.gd')).new()
 	add_named_child(sprite, 'sprite')
-	sprite.position = Vector2(0, size)
+#	sprite.position = Vector2(0, size)
 	
 	shape = CollisionShape2D.new()
 	shape.shape = CircleShape2D.new()
