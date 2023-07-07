@@ -255,13 +255,13 @@ func announce(msg):
 # --------------------------------------------------------------------------- #
 
 func disable_grab(cooldown: float):
-	announce(str("cannot grab for ", cooldown, " seconds"))
+#	announce(str("cannot grab for ", cooldown, " seconds"))
 	can_grab = false
 	get_tree().create_timer(10).timeout.connect(enable_grab)
 
 func enable_grab():
 	can_grab = true
-	announce("can now grab")
+#	announce("can now grab")
 
 # --------------------------------------------------------------------------- #
 

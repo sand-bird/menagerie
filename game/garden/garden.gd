@@ -27,7 +27,7 @@ func init(data):
 #	$nav_debug.draw_point(test_mon.position, 1, Color.from_hsv(0.5, 1, 1))
 
 func _input(e):
-	if e is InputEventMouseButton and e.is_pressed() and !monsters.is_empty():
+	if e is InputEventMouseButton and e.is_pressed() and !monsters.is_empty() and false:
 		for uuid in monsters:
 			var m = monsters[uuid]
 			m.set_current_action(
