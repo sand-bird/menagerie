@@ -13,7 +13,11 @@ extends Control
 
 const HAND_X = 3
 const DEFAULT_HAND_HEIGHT = 16
-const VERTICAL_HAND_OFFSET = 12 # TODO: use the actual hand sprite height
+# used for positioning the cursor hand graphic when it's stuck to an entity.
+# the entity's sprite should be taller than its shape (the shape represents the
+# part that touches the ground).  for quick & dirty positioning, we multiply
+# the shape's height by this magic number.
+const SHAPE_HEIGHT_MULTIPLIER = 1.2
 var hand_height: int = DEFAULT_HAND_HEIGHT
 
 var selecting = false
@@ -68,12 +72,12 @@ func stick(body: Entity):
 	curr_body = body
 	var shape_node = body.shape.shape
 	if shape_node:
-		var sprite_size = 8
+		var shape_height = 8
 		if shape_node is CircleShape2D:
-			sprite_size = shape_node.radius * 2
+			shape_height = shape_node.radius * 2
 		elif shape_node is RectangleShape2D:
-			sprite_size = shape_node.size.y * 2
-		hand_height = sprite_size + VERTICAL_HAND_OFFSET
+			shape_height = shape_node.size.y
+		hand_height = shape_height * SHAPE_HEIGHT_MULTIPLIER
 		Dispatcher.emit('entity_highlighted', body)
 
 # --------------------------------------------------------------------------- #

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://bdejgafuf4gj2"]
+[gd_scene load_steps=24 format=3 uid="uid://bdejgafuf4gj2"]
 
 [ext_resource type="Script" path="res://garden/garden.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://o6bdg8doc18k" path="res://garden/camera.tscn" id="3"]
@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://c341es5fjd78x" path="res://garden/cursor.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://dqd3uy65kfqe1" path="res://ui/garden/clock_hud.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://o54onhiymp3l" path="res://ui/garden/select_hud.tscn" id="10"]
-[ext_resource type="PackedScene" path="res://ui/garden/interact_hud.tscn" id="11"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="12"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_f7a07"]
@@ -132,6 +131,8 @@ libraries = {
 "": SubResource("AnimationLibrary_agdeu")
 }
 
+[node name="cursor" parent="." instance=ExtResource("8")]
+
 [node name="entities" type="Control" parent="."]
 y_sort_enabled = true
 layout_mode = 1
@@ -140,8 +141,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="cursor" parent="." instance=ExtResource("8")]
 
 [node name="path" type="Line2D" parent="."]
 width = 1.0
@@ -157,10 +156,10 @@ script = SubResource("GDScript_kmer2")
 [node name="ui" type="CanvasLayer" parent="."]
 
 [node name="clock_hud" parent="ui" instance=ExtResource("9")]
-offset_left = 3.0
-offset_top = -1.0
-offset_right = 3.0
-offset_bottom = -1.0
+offset_left = -1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = 1.0
 grow_horizontal = 0
 
 [node name="time_label" type="Label" parent="ui/clock_hud"]
@@ -176,13 +175,9 @@ text = "12:00a.m."
 script = SubResource("3")
 
 [node name="select_hud" parent="ui" instance=ExtResource("10")]
-offset_left = -18.0
-offset_top = -2.0
-offset_right = -18.0
-offset_bottom = -2.0
-
-[node name="interact_hud" parent="ui" instance=ExtResource("11")]
-show_behind_parent = true
+offset_left = -2.0
+offset_right = -2.0
+offset_bottom = 4.0
 
 [node name="log" type="RichTextLabel" parent="ui"]
 anchors_preset = 2
@@ -194,3 +189,6 @@ offset_right = 311.0
 offset_bottom = -8.0
 grow_vertical = 0
 theme = ExtResource("12")
+theme_override_colors/default_color = Color(1, 1, 0.827451, 1)
+theme_override_colors/font_outline_color = Color(0.211765, 0.0980392, 0, 1)
+theme_override_constants/outline_size = 2

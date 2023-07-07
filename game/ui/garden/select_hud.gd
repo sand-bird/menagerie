@@ -22,7 +22,9 @@ var target_types = {
 	Constants.EntityType.OBJECT: 'object'
 }
 
-var target: Node2D
+@onready var sprite = $portrait/back/sprite
+
+var target: Entity
 var EntityType = Constants.EntityType
 var time_to_clear = null
 
@@ -102,6 +104,15 @@ func update_monster():
 	$horizontal/energy.value = target.energy
 	$horizontal/social.value = target.social
 	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
+	
+	if target.sprite != null:
+		$portrait/back/sprite.texture = target.sprite.texture
+		$portrait/back/sprite.hframes = target.sprite.hframes
+		$portrait/back/sprite.frame = 1
+		$portrait/back/sprite.centered = false
+		$portrait/back/sprite.offset = target.sprite.offset
+		$portrait/back/sprite.flip_h = target.sprite.flip_h
+		$portrait/back/sprite.offset.y = -target.data.size - 2
 
 # --------------------------------------------------------------------------- #
 
