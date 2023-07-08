@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bftkvvri3r6nm"]
+[gd_scene load_steps=11 format=3 uid="uid://cr6tjhd27y0ks"]
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1_avdxj"]
 [ext_resource type="Script" path="res://ui/main_menu/monsters/info_item.gd" id="2_xph6d"]
@@ -6,20 +6,8 @@
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="4_c2dbe"]
 [ext_resource type="PackedScene" uid="uid://cklt5uafhsvb3" path="res://ui/main_menu/monsters/attribute.tscn" id="5_72h3x"]
 [ext_resource type="PackedScene" uid="uid://reb50dspc0y0" path="res://ui/main_menu/monsters/info_item.tscn" id="6_7pawc"]
-[ext_resource type="StyleBox" path="res://ui/main_menu/scroll_white.tres" id="7_jwqsc"]
-[ext_resource type="Texture2D" uid="uid://df7d3kr5opmer" path="res://assets/ui/elements/item_box_detail.png" id="14_wrf1w"]
-[ext_resource type="Texture2D" uid="uid://bekreiaqh7xlj" path="res://data/monsters/milotic/idle_front_right.png" id="15_5x7yi"]
-[ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="16_gy4ux"]
-[ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="17_03ir3"]
-[ext_resource type="Texture2D" uid="uid://c1pe7i5iwff4q" path="res://assets/ui/icons/female_large.png" id="19_lmgd7"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5w03k"]
-bg_color = Color(0.901961, 0.709804, 0.631373, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-anti_aliasing = false
+[ext_resource type="PackedScene" uid="uid://dovwnv58etq4r" path="res://ui/main_menu/monsters/name_card.tscn" id="7_5u5ud"]
+[ext_resource type="StyleBox" uid="uid://cm7df5uomjeve" path="res://assets/ui/panels/scrollbars/scroll_white.tres" id="8_8v3d0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k7pl2"]
 content_margin_left = 0.0
@@ -42,7 +30,7 @@ anti_aliasing = false
 VScrollBar/styles/grabber = SubResource("StyleBoxFlat_k7pl2")
 VScrollBar/styles/grabber_highlight = null
 VScrollBar/styles/grabber_pressed = null
-VScrollBar/styles/scroll = ExtResource("7_jwqsc")
+VScrollBar/styles/scroll = ExtResource("8_8v3d0")
 
 [node name="chapter" type="Control"]
 custom_minimum_size = Vector2(296, 142)
@@ -186,77 +174,10 @@ size_flags_stretch_ratio = 0.9
 title = "age"
 value = "1 year, 3 months"
 
-[node name="name_card" type="Control" parent="left"]
+[node name="name_card" parent="left" instance=ExtResource("7_5u5ud")]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
+offset_right = -1.0
 offset_bottom = 40.0
-grow_horizontal = 2
-
-[node name="name" type="Label" parent="left/name_card"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 34.0
-offset_top = 5.0
-offset_bottom = 30.0
-grow_horizontal = 2
-theme_override_constants/line_spacing = 1
-theme_override_styles/normal = ExtResource("4_c2dbe")
-text = "Grimblegrumble the fourth"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-text_overrun_behavior = 3
-max_lines_visible = 2
-
-[node name="portrait" type="TextureRect" parent="left/name_card"]
-clip_children = 2
-layout_mode = 1
-offset_left = -2.0
-offset_right = 38.0
-offset_bottom = 40.0
-theme = ExtResource("1_avdxj")
-texture = ExtResource("14_wrf1w")
-
-[node name="sprite" type="Sprite2D" parent="left/name_card/portrait"]
-position = Vector2(8, 8)
-texture = ExtResource("15_5x7yi")
-centered = false
-region_enabled = true
-region_rect = Rect2(10, 1, 24, 24)
-
-[node name="loyalty" type="PanelContainer" parent="left/name_card"]
-layout_mode = 0
-offset_left = 52.0
-offset_top = 30.0
-offset_right = 135.0
-offset_bottom = 40.0
-theme_override_styles/panel = ExtResource("3_iq0xa")
-
-[node name="hearts" parent="left/name_card/loyalty" instance=ExtResource("16_gy4ux")]
-layout_mode = 2
-full_texture = ExtResource("17_03ir3")
-half_texture = null
-empty_texture = null
-value = 5.0
-max_value = 10
-
-[node name="sex" type="PanelContainer" parent="left/name_card"]
-layout_mode = 0
-offset_left = 39.0
-offset_top = 28.0
-offset_right = 51.0
-offset_bottom = 39.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_5w03k")
-
-[node name="icon" type="TextureRect" parent="left/name_card/sex"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("19_lmgd7")
-stretch_mode = 2
-metadata/_edit_lock_ = true
 
 [node name="right" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -330,7 +251,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
-text = "12:45 a.m., Tempest 20th, Year 1"
+text = "12:45 a.m., Tempest 20th, Year 1
+line 3"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2

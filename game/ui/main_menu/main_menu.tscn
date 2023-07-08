@@ -64,7 +64,7 @@ offset_bottom = -3.0
 texture = ExtResource("3")
 
 [node name="title" type="Label" parent="content/book"]
-custom_minimum_size = Vector2(96, 13)
+custom_minimum_size = Vector2(96, 0)
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.25
@@ -72,14 +72,15 @@ anchor_right = 0.25
 offset_left = -48.0
 offset_top = 7.0
 offset_right = 48.0
-offset_bottom = 20.0
+offset_bottom = 19.0
 theme_override_styles/normal = ExtResource("4")
+text = "Monster info"
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
 [node name="pages" type="Label" parent="content/book"]
-custom_minimum_size = Vector2(56, 13)
+custom_minimum_size = Vector2(56, 0)
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.75
@@ -87,7 +88,7 @@ anchor_right = 0.75
 offset_left = -28.0
 offset_top = 7.0
 offset_right = 28.0
-offset_bottom = 20.0
+offset_bottom = 19.0
 theme_override_styles/normal = ExtResource("4")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -117,9 +118,9 @@ anchors_preset = -1
 anchor_left = 0.75
 anchor_right = 0.75
 offset_left = -34.0
-offset_top = 24.0
+offset_top = 31.0
 offset_right = 34.0
-offset_bottom = 38.0
+offset_bottom = 31.0
 
 [node name="TextureRect" type="TextureRect" parent="content"]
 layout_mode = 0

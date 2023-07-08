@@ -22,7 +22,7 @@ func add_point(texture: Texture2D):
 	add_child(point)
 
 func render_textures():
-	for child in get_children(): child.queue_free()
+	for child in get_children(true): child.queue_free()
 	
 	var has_half_point = half_texture != null
 	var full_points: int = floor(value) if has_half_point else round(value)
@@ -41,6 +41,7 @@ func render_textures():
 
 
 func _ready():
+	render_textures()
 	pass # Replace with function body.
 
 func _process(delta):

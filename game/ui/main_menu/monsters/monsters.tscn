@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://c3d5o7tvt1jf5"]
 
 [ext_resource type="Script" path="res://ui/main_menu/monsters/monsters.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://bftkvvri3r6nm" path="res://ui/main_menu/monsters/monster_details.tscn" id="2_tpat0"]
+[ext_resource type="PackedScene" uid="uid://cr6tjhd27y0ks" path="res://ui/main_menu/monsters/monster_details.tscn" id="2_tpat0"]
 
 [node name="container" type="Control"]
 layout_mode = 3
