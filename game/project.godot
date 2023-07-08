@@ -61,7 +61,7 @@ enabled=PackedStringArray("res://addons/event_button/plugin.cfg", "res://addons/
 
 [gui]
 
-theme/custom_font="res://assets/font/menagerieall3_kerned.ttf"
+theme/custom_font="res://assets/font/menagerieall5.ttf"
 theme/default_font_antialiasing=0
 theme/default_font_hinting=0
 theme/default_font_subpixel_positioning=0
