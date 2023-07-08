@@ -5,18 +5,20 @@
 [ext_resource type="Script" path="res://ui/main_menu/monsters/info_item.gd" id="2_b456b"]
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="2_hol66"]
 
-[node name="species" type="VBoxContainer"]
+[node name="info_item" type="VBoxContainer"]
 offset_right = 89.0
 offset_bottom = 32.0
 size_flags_horizontal = 3
 theme = ExtResource("1_2pcc8")
 theme_override_constants/separation = -2
 script = ExtResource("2_b456b")
+title = "<title>"
+value = "<value>"
 
 [node name="title" type="Label" parent="."]
 layout_mode = 2
 theme_override_styles/normal = ExtResource("1_1fxpl")
-text = " "
+text = " <TITLE>"
 vertical_alignment = 1
 
 [node name="value" type="Label" parent="."]
@@ -24,6 +26,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
 theme_override_styles/normal = ExtResource("2_hol66")
+text = "<value>"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2

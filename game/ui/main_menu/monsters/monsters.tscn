@@ -1,19 +1,11 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://c3d5o7tvt1jf5"]
 
-[ext_resource path="res://ui/main_menu/monsters/monsters.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://ui/main_menu/monsters/monsters.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://bftkvvri3r6nm" path="res://ui/main_menu/monsters/monster_details.tscn" id="2_tpat0"]
 
 [node name="container" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1")
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-pivot_offset = Vector2( 0, 0 )
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
-
-
+[node name="chapter" parent="." instance=ExtResource("2_tpat0")]
