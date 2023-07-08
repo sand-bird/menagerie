@@ -47,7 +47,7 @@ var prev
 func _ready():
 	Dispatcher.menu_open.connect(open)
 	$content/arrows.change_page.connect(_on_arrow)
-	open("items")
+	open("monsters")
 	make_tabs()
 
 

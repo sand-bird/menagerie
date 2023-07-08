@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://reb50dspc0y0"]
+
+[ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="1_1fxpl"]
+[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1_2pcc8"]
+[ext_resource type="Script" path="res://ui/main_menu/monsters/info_item.gd" id="2_b456b"]
+[ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="2_hol66"]
+
+[node name="species" type="VBoxContainer"]
+offset_right = 89.0
+offset_bottom = 32.0
+size_flags_horizontal = 3
+theme = ExtResource("1_2pcc8")
+theme_override_constants/separation = -2
+script = ExtResource("2_b456b")
+
+[node name="title" type="Label" parent="."]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("1_1fxpl")
+text = " "
+vertical_alignment = 1
+
+[node name="value" type="Label" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 1
+theme_override_styles/normal = ExtResource("2_hol66")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

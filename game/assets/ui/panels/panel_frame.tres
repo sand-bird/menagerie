@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://fhlcyh5227u2" path="res://assets/ui/panels/panel_frame.png" id="1"]
 
 [resource]
-content_margin_left = 4.0
+content_margin_left = 5.0
 content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0

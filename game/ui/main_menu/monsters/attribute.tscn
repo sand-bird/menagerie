@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://cklt5uafhsvb3"]
+
+[ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="1_cyqnw"]
+
+[sub_resource type="GDScript" id="GDScript_c5v8g"]
+script/source = "@tool
+extends HBoxContainer
+
+@export var use_short_label: bool = false:
+	set(x):
+		use_short_label = x
+		_set_label()
+
+@export var short_label: String:
+	set(x):
+		short_label = x
+		_set_label()
+
+@export var label: String:
+	set(x):
+		label = x
+		_set_label()
+
+@export var value: String:
+	set(x):
+		value = x
+		$points.value = x
+
+func _set_label():
+	$label.text = short_label if use_short_label else label
+"
+
+[node name="attribute" type="HBoxContainer"]
+size_flags_horizontal = 5
+alignment = 2
+script = SubResource("GDScript_c5v8g")
+
+[node name="label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "<attribute>"
+vertical_alignment = 3
+
+[node name="points" parent="." instance=ExtResource("1_cyqnw")]
+layout_mode = 2
+value = 2.0

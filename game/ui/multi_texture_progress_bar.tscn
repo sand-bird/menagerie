@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://c5q6hyceb71sn"]
+
+[ext_resource type="Script" path="res://ui/multi_texture_progress_bar.gd" id="1_4abvk"]
+[ext_resource type="Texture2D" uid="uid://ckas36xn8kqs3" path="res://assets/ui/icons/attribute_point_b.png" id="2_vrbti"]
+[ext_resource type="Texture2D" uid="uid://cn2cmahf2w44a" path="res://assets/ui/icons/attribute_point_small.png" id="3_e1cvl"]
+[ext_resource type="Texture2D" uid="uid://msf0r8cfkxsh" path="res://assets/ui/icons/attribute_point_dot.png" id="4_jgxhh"]
+
+[node name="multi_texture_progress_bar" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1257.0
+offset_bottom = -715.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 1
+script = ExtResource("1_4abvk")
+full_texture = ExtResource("2_vrbti")
+half_texture = ExtResource("3_e1cvl")
+empty_texture = ExtResource("4_jgxhh")
+value = 2.6
+max_value = 5
