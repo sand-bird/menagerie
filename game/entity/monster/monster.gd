@@ -288,7 +288,7 @@ func get_grabbed_name():
 	return (
 		"[NONE]" if grabbed == null else
 		str("[", grabbed.monster_name, "]") if grabbed is Monster
-		else grabbed.type
+		else str(grabbed.type)
 	)
 
 func is_grabbing():
