@@ -1,5 +1,6 @@
 extends RefCounted
 class_name Attribute
+const LNAME = &"Attribute"
 
 const MIN_VALUE: float = 0.0
 const MAX_VALUE: float = 1.0
@@ -17,21 +18,8 @@ const DEFAULT_PARAMS = {
 	heritability = 0.5
 }
 
-var mean: float
-var deviation: float
-var heritability: float
-
 var value: float:
 	set(x): value = clamp(x, MIN_VALUE, MAX_VALUE)
-
-func _init(
-	params: Dictionary = {},
-	_value: float = params.get('mean', DEFAULT_PARAMS.mean)
-):
-	params.merge(DEFAULT_PARAMS) # fill in any unset params
-	for key in DEFAULT_PARAMS:
-		set(key, params[key])
-	value = _value
 
 @warning_ignore("shadowed_global_identifier") # this doesn't actually work lol
 func lerp(from: float, to: float) -> float:
@@ -40,40 +28,40 @@ func lerp(from: float, to: float) -> float:
 func ilerp(from: int, to: int) -> int:
 	return int(lerp(from, to + 1, value))
 
+var variance:
+	set(_x): push_error("cannot set attribute variance")
+	get: return (value - DEFAULT_PARAMS.mean) / DEFAULT_PARAMS.deviation
+
+# --------------------------------------------------------------------------- #
+
+# first arg is either a float (if directly setting) or a params dict
+func _init(arg = {}, inheritance = null):
+	if arg is float or arg is int: value = arg
+	elif arg is Dictionary:
+		value = Attribute.generate(arg, inheritance)
+	else: # note: using `self` here will throw an error in Logger
+		Log.error(LNAME, ["invalid input: ", arg])
+
 
 # =========================================================================== #
 #                             G E N E R A T I O N                             #
 # --------------------------------------------------------------------------- #
 
-# generates a new value for the attribute and sets it.
-func roll(overrides: Dictionary = {}, inheritance = null):
-	var params = {}
-	for p in [&'mean', &'deviation', &'heritability']:
-		params[p] = overrides.get(p, get(p))
-	
+static func generate(custom_params: Dictionary = {}, inheritance = null):
+	var params = DEFAULT_PARAMS.duplicate()
+	# ensure all required params are present
+	params.merge(custom_params, true)
 	# if we have an inherited value (presumed the average of our parents' values
 	# for the attribute), use it to modify the mean.  `heritability` determines
 	# the lerp weight (higher values are weighted toward `inheritance`)
+	var mean = params.mean
 	if inheritance != null:
-		if Attribute.is_valid_value(inheritance):
-			params.mean = lerpf(params.mean, inheritance, params.heritability)
-		else: Log.warn(self, [
+		if is_valid_value(inheritance):
+			mean = lerpf(mean, inheritance, params.heritability)
+		else: Log.warn(LNAME, [
 			"(roll) invalid inheritance, ignoring: ", inheritance])
 	
-	value = Attribute.generate(params.mean, params.deviation)
-
-# --------------------------------------------------------------------------- #
-
-# generates a value for an attribute using a normal distribution via `randfn`.
-# we can't clamp because it would skew the distribution, so if we get a value
-# outside the bounds (always technically possible with normal distributions),
-# we throw it out and try again.
-@warning_ignore("shadowed_variable")
-static func generate(mean_: float, deviation_: float) -> float:
-	var x = MIN_VALUE - 1 # start with an invalid value so the loop will run
-	while x < MIN_VALUE or x > MAX_VALUE:
-		x = randfn(mean_, deviation_)
-	return x
+	return U.randfn_range(mean, params.deviation, MIN_VALUE, MAX_VALUE)
 
 # --------------------------------------------------------------------------- #
 

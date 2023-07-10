@@ -1,13 +1,32 @@
 extends GutTest
+"""tests for Attribute and Attributes"""
 
-func test_initial_value_equals_mean():
-	assert_eq(Attribute.new().value, 0.5)
-	assert_eq(Attribute.new({ mean = 0.1 }).value, 0.1)
+func test_heritability():
+	for j in 10:
+		var h = randf()
+		# with deviation 0, the result of randfn will always equal the mean.
+		# for this test we use a base mean of 0 and inheritance of 1, meaning
+		# the effective mean (and hence the result) should equal heritability.
+		var a = Attribute.new({ heritability = h, deviation = 0, mean = 0 }, 1)
+		assert_eq(a.value, h)
+
+# --------------------------------------------------------------------------- #
+
+func test_param_merging():
+	# learning should be forced to 0 based on attribute config (mean 0, dev 0)
+	var a1 = Attributes.new({})
+	assert_eq(a1.learning.value, 0)
+	# passed-in overrides should override the attribute config.
+	# since deviation is still 0, we should get the new mean as a value
+	var a2 = Attributes.new({}, { learning = { mean = 0.9 } })
+	assert_eq(a2.learning.value, 0.9)
+
+# --------------------------------------------------------------------------- #
 
 func test_init_clamps_value():
-	assert_eq(Attribute.new({}, 10).value, 1.0)
-	assert_eq(Attribute.new({}, -10).value, 0.0)
-	assert_eq(Attribute.new({}, 0.1).value, 0.1)
+	assert_eq(Attribute.new(10).value, 1.0)
+	assert_eq(Attribute.new(-10).value, 0.0)
+	assert_eq(Attribute.new(0.1).value, 0.1)
 
 func test_set_clamps_value():
 	var a = Attribute.new()
@@ -18,6 +37,7 @@ func test_set_clamps_value():
 	a.value = 0.1
 	assert_eq(a.value, 0.1)
 
+# --------------------------------------------------------------------------- #
 
 func test_ilerp():
 	ilerp_case(0, 1)

@@ -161,7 +161,21 @@ static func vmax(a, b):
 #                                   M A T H                                   #
 # --------------------------------------------------------------------------- #
 
-static func mean(args):
+# generates a random float using a normal distribution via `randfn`.
+# we can't clamp because it would skew the distribution, so if we get a value
+# outside the bounds (always technically possible with normal distributions),
+# we throw it out and try again.
+static func randfn_range(
+	mean: float, deviation: float, min: float = 0, max: float = 1
+) -> float:
+	var x = min - 1 # start with an invalid value so the loop will run
+	while x < min or x > max:
+		x = randfn(mean, deviation)
+	return x
+
+# --------------------------------------------------------------------------- #
+
+static func avg(args: Array[float]):
 	var total_value = 0
 	for item in args:
 		total_value += item
@@ -169,7 +183,8 @@ static func mean(args):
 
 # --------------------------------------------------------------------------- #
 
-static func weighted_mean(args: Array[Variant]) -> Variant:
+# takes an array of [value, weight] tuples
+static func weighted_mean(args: Array) -> float:
 	var total_value: float = 0
 	var total_weight: float = 0
 	for item in args:
