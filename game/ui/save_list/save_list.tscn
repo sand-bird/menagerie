@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" path="res://ui/background_panel.tscn" id="4"]
 [ext_resource type="StyleBox" uid="uid://bloajccdvxu2m" path="res://assets/ui/panels/menu_header.tres" id="5"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="6"]
-[ext_resource type="PackedScene" path="res://ui/arrows.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://cd7dhnfb88hwa" path="res://ui/arrows.tscn" id="7"]
 
 [node name="save_list" type="Panel"]
 custom_minimum_size = Vector2(208, 180)
@@ -78,7 +78,8 @@ vertical_alignment = 1
 uppercase = true
 
 [node name="arrows" parent="pages" instance=ExtResource("7")]
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -6.0

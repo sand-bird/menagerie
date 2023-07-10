@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=10 format=3 uid="uid://bd8yvip5xenwp"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://bd8yvip5xenwp"]
 
 [ext_resource type="FontFile" uid="uid://bhfh33pee8jkq" path="res://assets/font/menagerieall3_kerned.ttf" id="1_4jku5"]
 [ext_resource type="StyleBox" uid="uid://dljlrme4cg8ve" path="res://assets/ui/panels/box_border_outset_light.tres" id="2"]
@@ -7,8 +7,6 @@
 [ext_resource type="StyleBox" uid="uid://dnxa3mtyis2n2" path="res://assets/ui/panels/item_box.tres" id="6"]
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="7"]
 [ext_resource type="StyleBox" uid="uid://brscslj4wkjes" path="res://assets/ui/panels/box_border_outset.tres" id="8"]
-
-[sub_resource type="StyleBoxEmpty" id="2"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 content_margin_left = 0.0
@@ -26,7 +24,7 @@ Button/colors/font_color_hover = Color(0.443137, 0.254902, 0.231373, 1)
 Button/colors/font_color_pressed = Color(0.443137, 0.254902, 0.231373, 1)
 Button/constants/hseparation = 0
 Button/styles/disabled = ExtResource("2")
-Button/styles/focus = SubResource("2")
+Button/styles/focus = ExtResource("8")
 Button/styles/hover = ExtResource("8")
 Button/styles/normal = ExtResource("2")
 Button/styles/pressed = ExtResource("3")

@@ -67,14 +67,17 @@ color = Color(0.423529, 0.368627, 0.415686, 1)
 
 [node name="title" type="TextureRect" parent="."]
 modulate = Color(0.890196, 0.811765, 0.67451, 1)
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -125.0
 offset_top = 32.0
 offset_right = 125.0
-offset_bottom = 94.0
+offset_bottom = 93.0
+grow_horizontal = 2
 texture = ExtResource("1")
+stretch_mode = 2
 
 [node name="anim" type="AnimationPlayer" parent="."]
 libraries = {

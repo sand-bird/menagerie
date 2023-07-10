@@ -21,7 +21,9 @@ func add_save_item(index, save_info):
 
 # --------------------------------------------------------------------------- #
 
-func change_page(offset): load_page(current_page + offset)
+func change_page(offset):
+	load_page(current_page + offset)
+	$container.get_children()[0].grab_focus()
 
 func load_page(pagenum):
 	Log.debug(self, ["loading page: ", pagenum, " | current page: ", current_page])
