@@ -1,10 +1,9 @@
 extends Node
 
-# TODO: put these somewhere they can be localized
-const days = [ "monday", "tuesday", "wednesday",
-	"thursday", "friday", "saturday", "sunday" ]
-const months = [ "verne", "tempest", "zenith",
-	"sol", "hearth", "hallow", "aurora", "rime" ]
+const days = [ T.MONDAY, T.TUESDAY, T.WEDNESDAY,
+	T.THURSDAY, T.FRIDAY, T.SATURDAY, T.SUNDAY ]
+const months = [ T.VERNE, T.TEMPEST, T.ZENITH,
+	T.SOL, T.HEARTH, T.HALLOW, T.AURORA, T.RIME ]
 
 const ACTUAL_SECONDS_IN_TICK := 0.5
 const TICKS_IN_HOUR := 12
@@ -228,19 +227,19 @@ func get_printable_date(input = null):
 
 func get_printable_day(input = null):
 	var d_of_w = calculate_day(input)
-	return days[d_of_w].capitalize()
+	return tr(days[d_of_w]).capitalize()
 
 func get_printable_day_abbr(input = null):
 	var d_of_w = calculate_day(input)
-	return days[d_of_w].substr(0, 3).to_upper()
+	return tr(days[d_of_w]).substr(0, 3).to_upper()
 
 func get_printable_month(input = null):
 	var m = to_dict(input, "month")
-	return months[m].capitalize()
+	return tr(months[m]).capitalize()
 
 func get_printable_year(input = null):
 	var y = to_dict(input, "year")
-	return "Year " + str(y + 1)
+	return str(tr(T.YEAR).capitalize(), " ", y + 1)
 
 # --------------------------------------------------------------------------- #
 

@@ -10,7 +10,9 @@ func _ready():
 
 func _set_title(x = null):
 	if x != null: title = x
-	if $title != null: $title.text = str(" ", title.to_upper())
+	# if the title is a trans_text key, use the value
+	var title_text =  T[title] if title in T else title
+	if $title != null: $title.text = str(" ", title_text.to_upper())
 
 func _set_value(x = null):
 	if x != null: value = x

@@ -7,6 +7,7 @@ var current_page = 0: set = load_page
 const SAVES_PER_PAGE = 3
 
 func _ready():
+	$title.text = tr(T.RECORDS)
 	saves = SaveUtils.get_save_info_list()
 	$pages/arrows.change_page.connect(change_page)
 	load_page(0)

@@ -7,6 +7,7 @@
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
+	text = tr(T.LOAD_GAME).capitalize()
 	signal_name = \"ui_open\"
 	args = \"save_list\"
 "
@@ -15,6 +16,7 @@ func _ready():
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready():
+	text = tr(T.NEW_GAME).capitalize()
 	signal_name = \"ui_open\"
 	args = [\"name_input\", 1, true]
 "
@@ -22,7 +24,8 @@ func _ready():
 [sub_resource type="GDScript" id="3"]
 script/source = "extends \"res://ui/event_button.gd\"
 
-func _ready(): 
+func _ready():
+	text = tr(T.QUIT_GAME).capitalize()
 	signal_name = \"quit_game\"
 "
 
@@ -41,19 +44,18 @@ alignment = 1
 script = ExtResource("2")
 
 [node name="load_game" type="Button" parent="."]
-visible = false
 layout_mode = 2
-text = "Load Game"
+text = "<load game>"
 clip_text = true
 script = SubResource("1")
 
 [node name="new_game" type="Button" parent="."]
 layout_mode = 2
-text = "New Game"
+text = "<new game>"
 script = SubResource("2")
 
 [node name="quit_game" type="Button" parent="."]
 layout_mode = 2
-text = "Exit"
+text = "<quit game>"
 clip_text = true
 script = SubResource("3")
