@@ -1,5 +1,42 @@
 extends Control
 class_name MainMenu
+"""
+the book-shaped menu for most things in the game.
+
+there are three levels to the main menu:
+
+1. chapters
+- monsters, items, objects, locations, etc.
+- each of these has a corresponding tab at the top of the menu.
+- navigate between chapters by clicking/pressing the tabs or with the
+  `prev_chapter`/`next_chapter` inputs (bound to L2/R2 buttons).
+
+2. sections
+- multi-page units like monster descriptions or encyclopedia entries.
+- each chapter can contain multiple sections.
+- the current section determines the title displayed on the main menu
+- navigate between sections by clicking/pressing the arrows on the left and
+  right edges of the main menu, or with the `prev_section`/`next_section` inputs
+  (bound to the L1/R1 buttons).
+- on sections of a chapter after the first, the bookmark/tab for that chapter
+  should no longer appear over the top of the page.  clicking it or pressing
+  `prev_chapter` should navigate back to the first section of the chapter.
+
+3. pages
+- each section can contain multiple pages.
+- the page counter on the main menu should show the current and total number of
+  pages in the section.
+- navigate between pages with the arrows left and right of the page counter, or
+  the left/right buttons while focus is at the edge of the page
+
+direct navigation:
+- in addition to next and previous chapters/sections/pages, you must be able to
+  navigate directly to a specific section/page (even in a different chapter).
+- jump navigation should store the source page and allow the user to jump back
+  to it using a `ui_cancel` input or a "back" button at the top-left of the menu
+  (only shown when there is a source page to go back to).
+"""
+
 
 @onready var MenuTab = U.load_relative(scene_file_path, 'menu_tab')
 
