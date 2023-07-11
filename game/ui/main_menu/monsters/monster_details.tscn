@@ -1,11 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://cr6tjhd27y0ks"]
+[gd_scene load_steps=10 format=3 uid="uid://cr6tjhd27y0ks"]
 
+[ext_resource type="Script" path="res://ui/main_menu/monsters/monster_details.gd" id="1_1ilqg"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1_avdxj"]
-[ext_resource type="Script" path="res://ui/main_menu/monsters/info_item.gd" id="2_xph6d"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="3_iq0xa"]
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="4_c2dbe"]
 [ext_resource type="PackedScene" uid="uid://cklt5uafhsvb3" path="res://ui/main_menu/monsters/attribute.tscn" id="5_72h3x"]
-[ext_resource type="PackedScene" uid="uid://reb50dspc0y0" path="res://ui/main_menu/monsters/info_item.tscn" id="6_7pawc"]
 [ext_resource type="PackedScene" uid="uid://dovwnv58etq4r" path="res://ui/main_menu/monsters/name_card.tscn" id="7_5u5ud"]
 [ext_resource type="StyleBox" uid="uid://cm7df5uomjeve" path="res://assets/ui/panels/scrollbars/scroll_white.tres" id="8_8v3d0"]
 
@@ -32,12 +31,13 @@ VScrollBar/styles/grabber_highlight = null
 VScrollBar/styles/grabber_pressed = null
 VScrollBar/styles/scroll = ExtResource("8_8v3d0")
 
-[node name="chapter" type="Control"]
+[node name="monster_details" type="Control"]
 custom_minimum_size = Vector2(296, 142)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 296.0
 offset_bottom = 142.0
+script = ExtResource("1_1ilqg")
 
 [node name="left" type="Control" parent="."]
 layout_mode = 1
@@ -49,7 +49,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_avdxj")
 
-[node name="left" type="VBoxContainer" parent="left"]
+[node name="info" type="VBoxContainer" parent="left"]
 clip_contents = true
 layout_mode = 1
 anchors_preset = 2
@@ -64,23 +64,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="species" type="VBoxContainer" parent="left/left"]
+[node name="species" type="VBoxContainer" parent="left/info"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("1_avdxj")
 theme_override_constants/separation = -2
-script = ExtResource("2_xph6d")
-title = "SPECIES"
-value = "Burmese Python (double het albino)"
 
-[node name="title" type="Label" parent="left/left/species"]
+[node name="title" type="Label" parent="left/info/species"]
 layout_mode = 2
 theme_override_styles/normal = ExtResource("3_iq0xa")
-text = " SPECIES"
+text = " <species>"
 vertical_alignment = 1
 
-[node name="value" type="Label" parent="left/left/species"]
+[node name="value" type="Label" parent="left/info/species"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
@@ -91,7 +88,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 max_lines_visible = 2
 
-[node name="attributes" type="VBoxContainer" parent="left/left"]
+[node name="attributes" type="VBoxContainer" parent="left/info"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -99,19 +96,19 @@ size_flags_stretch_ratio = 1.7
 theme = ExtResource("1_avdxj")
 theme_override_constants/separation = -2
 
-[node name="title" type="Label" parent="left/left/attributes"]
+[node name="title" type="Label" parent="left/info/attributes"]
 layout_mode = 2
 theme_override_styles/normal = ExtResource("3_iq0xa")
-text = " ATTRIBUTES"
+text = " <attributes>"
 vertical_alignment = 1
 
-[node name="panel" type="PanelContainer" parent="left/left/attributes"]
+[node name="panel" type="PanelContainer" parent="left/info/attributes"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("4_c2dbe")
 
-[node name="grid" type="GridContainer" parent="left/left/attributes/panel"]
+[node name="grid" type="GridContainer" parent="left/info/attributes/panel"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -119,7 +116,7 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 0
 columns = 2
 
-[node name="int" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="int" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -127,7 +124,7 @@ short_label = "INT"
 label = "Intelligence"
 value = "3.9"
 
-[node name="cha" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="cha" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -135,7 +132,7 @@ short_label = "CHA"
 label = "Charm"
 value = "4.1"
 
-[node name="vit" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="vit" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -143,7 +140,7 @@ short_label = "VIT"
 label = "Vitality"
 value = "1.1"
 
-[node name="ami" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="ami" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -151,7 +148,7 @@ short_label = "AMI"
 label = "Amiability"
 value = "1.8"
 
-[node name="con" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="con" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -159,7 +156,7 @@ short_label = "CON"
 label = "Constitution"
 value = "4.6"
 
-[node name="spr" parent="left/left/attributes/panel/grid" instance=ExtResource("5_72h3x")]
+[node name="spr" parent="left/info/attributes/panel/grid" instance=ExtResource("5_72h3x")]
 layout_mode = 2
 alignment = 1
 use_short_label = true
@@ -167,12 +164,29 @@ short_label = "SPR"
 label = "Spirit"
 value = "2.6"
 
-[node name="age" parent="left/left" instance=ExtResource("6_7pawc")]
+[node name="age" type="VBoxContainer" parent="left/info"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.9
-title = "age"
-value = "1 year, 3 months"
+theme = ExtResource("1_avdxj")
+theme_override_constants/separation = -2
+
+[node name="title" type="Label" parent="left/info/age"]
+layout_mode = 2
+theme_override_styles/normal = ExtResource("3_iq0xa")
+text = "  <age>"
+vertical_alignment = 1
+
+[node name="value" type="Label" parent="left/info/age"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 1
+theme_override_styles/normal = ExtResource("4_c2dbe")
+text = "1 year, 3 months"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="name_card" parent="left" instance=ExtResource("7_5u5ud")]
 layout_mode = 1
@@ -205,7 +219,7 @@ theme_override_constants/separation = -2
 [node name="title" type="Label" parent="right/traits"]
 layout_mode = 2
 theme_override_styles/normal = ExtResource("3_iq0xa")
-text = "  TRAITS"
+text = " <traits>"
 vertical_alignment = 1
 
 [node name="panel" type="PanelContainer" parent="right/traits"]
@@ -223,11 +237,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
-text = "perspicacious, worldly, malnourished, sickly, neurotic, antsy, gregarious, unsightly, histrionic, haughty, saintly, autistic, depressed, gluttonous, indolent"
+text = "wicked, perspicacious, lustrous"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="obtained" type="VBoxContainer" parent="right"]
+[node name="birthday" type="VBoxContainer" parent="right"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -235,18 +249,18 @@ size_flags_stretch_ratio = 0.5
 theme = ExtResource("1_avdxj")
 theme_override_constants/separation = -2
 
-[node name="title" type="Label" parent="right/obtained"]
+[node name="title" type="Label" parent="right/birthday"]
 layout_mode = 2
 theme_override_styles/normal = ExtResource("3_iq0xa")
-text = "   BIRTHDAY"
+text = " <birthday>"
 vertical_alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="right/obtained"]
+[node name="panel" type="PanelContainer" parent="right/birthday"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("4_c2dbe")
 
-[node name="value2" type="Label" parent="right/obtained/PanelContainer"]
+[node name="value" type="Label" parent="right/birthday/panel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

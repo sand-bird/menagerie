@@ -71,7 +71,7 @@ size_flags_horizontal = 1
 full_texture = ExtResource("7_6cg88")
 half_texture = null
 empty_texture = null
-value = 10.0
+value = 5.0
 max_value = 10
 metadata/_edit_lock_ = true
 

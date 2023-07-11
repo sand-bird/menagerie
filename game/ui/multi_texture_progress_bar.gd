@@ -12,7 +12,6 @@ extends HBoxContainer
 		_update_value(value)
 
 func _update_value(x: float):
-#	print('_update_value ', x, ' max: ', max_value)
 	value = clamp(x, 0, max_value)
 	render_textures()
 
@@ -33,16 +32,9 @@ func render_textures():
 		max_value - filled_points
 	)
 	
-	prints('full', full_points, 'half', use_half_point, 'empty', empty_points)
-	
 	for i in full_points: add_point(full_texture)
 	if use_half_point: add_point(half_texture)
 	for i in empty_points: add_point(empty_texture)
 
 
-func _ready():
-	render_textures()
-	pass # Replace with function body.
-
-func _process(delta):
-	pass
+func _ready(): render_textures()

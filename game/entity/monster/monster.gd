@@ -34,6 +34,7 @@ var monster_name: String # unfortunately "name" is a reserved property of Node
 # should be non-null
 var morph: StringName
 var birthday: Dictionary # serialized time object ({ tick, hour, day, month, year })
+var age: int # in ticks. tracked separately from birthday in case of time travel
 var sex = Sex.FEMALE
 
 # memory
@@ -173,7 +174,7 @@ func _init(_data: Dictionary, _garden: Garden):
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
-		&'sex', &'monster_name', &'morph', &'birthday',
+		&'sex', &'monster_name', &'morph', &'birthday', &'age',
 		&'belly', &'mood', &'energy', &'social',
 		&'orientation',
 		&'attributes', # TODO: 'preferences',
@@ -206,6 +207,7 @@ func generate_type(): return Data.by_type.monster.pick_random()
 func generate_sex(): return Sex.values().pick_random()
 func generate_morph(): return data.morphs.keys().pick_random()
 func generate_birthday(): return Clock.get_dict()
+func generate_age(): return 0
 
 func generate_monster_name():
 	var names = preload("res://addons/randomnamesgenerator/names_in_arrays.gd")
@@ -236,6 +238,7 @@ func _on_collide(node: Node2D):
 # --------------------------------------------------------------------------- #
 
 func _on_tick_changed():
+	age += 1
 	if current_action:
 		var action_result = current_action.tick()
 		update_drives(action_result)
@@ -254,7 +257,7 @@ func announce(msg):
 #                               G R A B B I N G                               #
 # --------------------------------------------------------------------------- #
 
-func disable_grab(cooldown: float):
+func disable_grab(_cooldown: float):
 #	announce(str("cannot grab for ", cooldown, " seconds"))
 	can_grab = false
 	get_tree().create_timer(10).timeout.connect(enable_grab)

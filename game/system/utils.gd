@@ -75,6 +75,18 @@ static func pack(arg):
 	if typeof(arg) == TYPE_ARRAY: return arg
 	else: return [arg]
 
+# --------------------------------------------------------------------------- #
+
+# takes a function that accepts a single element and returns a sort function
+# that can be used with `Array.sort_custom` to sort elements ascending.
+# also see `sort_by`.
+static func sorter(fn: Callable):
+	return func(a, b): return fn.call(a) < fn.call(b)
+
+# --------------------------------------------------------------------------- #
+
+static func sort_by(arr: Array, fn: Callable):
+	arr.sort_custom(U.sorter(fn))
 
 # =========================================================================== #
 #                                S T R I N G S                                #
@@ -104,6 +116,7 @@ static func strip_sigil(s):
 
 # --------------------------------------------------------------------------- #
 
+# TODO: make these translatable
 static func ordinalize(num: int):
 	var ordinal
 	num = int(num)

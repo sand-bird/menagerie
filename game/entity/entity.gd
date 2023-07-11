@@ -166,8 +166,6 @@ func generate_uuid(): return Uuid.v4()
 func generate_type(): return Data.data.keys().pick_random()
 
 func generate_position():
-	for x in Vector2(0, 0):
-		print(x)
 	var garden_size = garden.get_map_size()
 	return Vector2(
 		randi_range(0, garden_size.x),
@@ -184,7 +182,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 
 # --------------------------------------------------------------------------- #
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	for child in get_children():
 		if 'rotation' in child: child.rotation = -rotation
 	var d_vecs = debug_vectors()
