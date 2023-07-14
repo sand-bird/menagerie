@@ -1,4 +1,4 @@
-extends "res://ui/main_menu/menu_chapter.gd"
+extends MenuChapter
 
 func _ready():
 	title = "Town Map"

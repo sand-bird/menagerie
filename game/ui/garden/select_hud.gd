@@ -108,7 +108,7 @@ func update_monster():
 	if target.sprite != null:
 		$portrait/back/sprite.texture = target.sprite.texture
 		$portrait/back/sprite.hframes = target.sprite.hframes
-		$portrait/back/sprite.frame = 1
+		$portrait/back/sprite.frame = 0
 		$portrait/back/sprite.centered = false
 		$portrait/back/sprite.offset = target.sprite.offset
 		$portrait/back/sprite.flip_h = target.sprite.flip_h

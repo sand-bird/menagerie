@@ -1,18 +1,17 @@
 extends Control
 
-const SEX_ICONS = {
-	Monster.Sex.MALE: preload('res://assets/ui/icons/male_large.png'),
-	Monster.Sex.FEMALE: preload('res://assets/ui/icons/female_large.png'),
-}
-
 # temp, for testing
-func _ready():
-	var m: Monster = Monster.new({}, preload("res://garden/garden.tscn").instantiate())
+func _ready(): pass
+#	var m: Monster = Monster.new({}, preload("res://garden/garden.tscn").instantiate())
+#	update(m)
+
+func initialize(key):
+	var m: Monster = Player.garden.monsters.get(key)
 	update(m)
 
 # --------------------------------------------------------------------------- #
 
-func set_title(node: Label, title: StringName):
+func set_section_title(node: Label, title: StringName):
 	node.text = str(" ", tr(title).to_upper())
 
 # --------------------------------------------------------------------------- #
@@ -20,18 +19,18 @@ func set_title(node: Label, title: StringName):
 func update(m: Monster):
 	# name card
 	$left/name_card/name.text = m.monster_name
-	$left/name_card/sex/icon.texture = SEX_ICONS[m.sex]
+	$left/name_card/sex.update(m)
 	$left/name_card/loyalty/hearts.value = m.attributes.loyalty.lerp(0, 10)
 	
 	# species (morph)
-	set_title($left/info/species/title, T.SPECIES)
+	set_section_title($left/info/species/title, T.SPECIES)
 	$left/info/species/value.text = str(
 		U.trans(m.data.name),
 		" (", U.trans(m.data.morphs[m.morph].name), ")"
 	)
 	
 	# attributes summary
-	set_title($left/info/attributes/title, T.ATTRIBUTES)
+	set_section_title($left/info/attributes/title, T.ATTRIBUTES)
 	var attrs = $left/info/attributes/panel/grid.get_children()
 	for attr in attrs:
 		# composite attributes are named in all caps, eg VIT
@@ -39,7 +38,7 @@ func update(m: Monster):
 		var points = lerp(0, 5, value)
 		attr.get_node('points').value = points
 	
-	set_title($left/info/age/title, T.AGE)
+	set_section_title($left/info/age/title, T.AGE)
 	$left/info/age/value.text = str(m.age) # TODO: make this printable
 	
 	# "traits" section, debug edition: show all attributes' values and their
@@ -52,7 +51,7 @@ func update(m: Monster):
 	U.sort_by(attr_keys, func(a): return -abs(m.attributes[a].variance))
 #	U.sort_by(attr_keys, func(a): return -m.attributes[a].value)
 	
-	set_title($right/traits/title, T.TRAITS)
+	set_section_title($right/traits/title, T.TRAITS)
 	$right/traits/panel/scroll/value.horizontal_alignment = HORIZONTAL_ALIGNMENT_FILL
 	$right/traits/panel/scroll/value.text = "\n".join(
 		attr_keys.map(func(key):
@@ -65,5 +64,5 @@ func update(m: Monster):
 			)
 		) + "\n " # needed to justify the last line
 	
-	set_title($right/birthday/title, T.BIRTHDAY)
+	set_section_title($right/birthday/title, T.BIRTHDAY)
 	$right/birthday/panel/value.text = Clock.get_printable_time(m.birthday)

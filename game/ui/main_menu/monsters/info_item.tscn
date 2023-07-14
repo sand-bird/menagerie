@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://reb50dspc0y0"]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="1_1fxpl"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1_2pcc8"]

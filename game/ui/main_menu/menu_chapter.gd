@@ -5,41 +5,39 @@ base class for menu chapters; implements nagivation logic general to all menu
 chapters.  individual chapters should extend this class and implement their own
 logic for initializing their sections based on game state.
 """
+# deprecated
+var title: String
+func initialize(_arg = null): pass
 
-var sections: MenuSection
+# dict of section keys to MenuSection PackedScenes.
+# although sections are supposed to be ordered, we use a dict because we need to
+# be able to nagivate directly to a specific section, identified by its key.
+# fortunately godot appears to preserve ordering of dict properties, so ordering
+# of sections _should_ still work.
+# the key is also the param we pass into `initialize` on the MenuSection
+# instance, eg a monster uuid for monster details.
+var sections: Dictionary = {}
 
-# stubbing this for the monsters chapter since that's our first use case
-func load_sections():
-	# create a section for the monster list
-	
-	for monster in Player.garden.monsters:
-		# create a section for that monster's description
-		pass
+func _ready():
+	build_index()
 
-signal title_changed(text)
-signal page_info_changed(text)
+# open the chapter to the section associated with the key param, or to the first
+# section if the key is null.
+func open(key = null): # key: String
+	if sections.is_empty(): build_index()
+	if sections.is_empty(): return
+	if key == null: key = sections.keys()[0]
+	if not key in sections:
+		Log.error(self, ["tried to open invalid section: ", key])
+		return
+	var scene = load(sections[key]).instantiate()
+	scene.initialize(key)
+	add_child(scene)
 
-var title : set = set_title
+#                               a b s t r a c t                               #
+# --------------------------------------------------------------------------- #
 
-# var prev_item = 0
-var current_item = 0
-var current_page = 0: set = set_current_page
-var page_count = 0: set = set_page_count
-
-func initialize(_args = null):
-	emit_signal('title_changed', title)
-
-func set_title(val):
-	title = val
-	emit_signal('title_changed', title)
-
-func set_current_page(new_page):
-	current_page = new_page
-	emit_signal('page_info_changed', [current_page, page_count])
-
-func set_page_count(val):
-	page_count = val
-	emit_signal('page_info_changed', [current_page, page_count])
-
-func is_valid():
-	return true
+# populate the `sections` dict. the first key/value pair added will be the
+# default, or "index" page.
+func build_index():
+	sections = {}

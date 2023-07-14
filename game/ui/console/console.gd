@@ -193,6 +193,12 @@ func cmd_get(args: Array):
 	state.merge({ id = id }, true)
 	Player.inventory_add(state, qty)
 
+# --------------------------------------------------------------------------- #
+
+func cmd_inv_debug(args: Array):
+	for i in int(args[0]) if args.size() > 0 else 200:
+		Player.inventory_add({ id = 'fluffy_tuft', state = i }, i)
+
 
 #                          g a m e   c o n t r o l s                          #
 # --------------------------------------------------------------------------- #

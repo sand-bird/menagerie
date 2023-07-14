@@ -232,7 +232,7 @@ func coords_to_index(col, row):
 func get_page_items():
 	var page_size = cols * rows
 	var start = current_page * page_size
-	return items.slice(start, page_size)
+	return items.slice(start, start + page_size)
 
 # --------------------------------------------------------------------------- #
 

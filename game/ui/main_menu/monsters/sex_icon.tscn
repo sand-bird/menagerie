@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://caitnkowiwxu4"]
+
+[ext_resource type="Texture2D" uid="uid://c1pe7i5iwff4q" path="res://assets/ui/icons/female_large.png" id="1_2ow13"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5w03k"]
+resource_local_to_scene = true
+bg_color = Color(0.901961, 0.709804, 0.631373, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = false
+
+[sub_resource type="GDScript" id="GDScript_2cy0f"]
+script/source = "extends PanelContainer
+
+const ROOT_PATH = \"res://assets/ui/icons/\"
+const Sex = Monster.Sex
+
+func get_icon(sex: Monster.Sex) -> Texture2D:
+	match sex:
+		Sex.MALE: return preload(ROOT_PATH + \"male_large.png\")
+		_: return preload(ROOT_PATH + \"female_large.png\")
+
+func update(m: Monster):
+	$icon.texture = get_icon(m.sex)
+"
+
+[node name="sex" type="PanelContainer"]
+offset_left = 41.0
+offset_top = 28.0
+offset_right = 53.0
+offset_bottom = 39.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5w03k")
+script = SubResource("GDScript_2cy0f")
+
+[node name="icon" type="TextureRect" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("1_2ow13")
+stretch_mode = 2
+metadata/_edit_lock_ = true

@@ -83,8 +83,21 @@ var prev
 
 func _ready():
 	Dispatcher.menu_open.connect(open)
+	Dispatcher.menu_set_title.connect(set_title)
+	Dispatcher.menu_set_pages.connect(set_pages)
+	
+	$content/arrows2/left.pressed.connect(
+		func():
+			print('left pressed')
+			Dispatcher.menu_prev_page.emit()
+	)
+	$content/arrows2/right.pressed.connect(
+		func():
+			print('right pressed')
+			Dispatcher.menu_next_page.emit()
+	)
+	
 	$content/arrows.change_page.connect(_on_arrow)
-	open("monsters")
 	make_tabs()
 
 
@@ -122,7 +135,7 @@ func open(input = null):
 	if chapter_info == null:
 		Log.error(self, ["(open) menu chapter '", chapter, "' not found!"])
 		return
-	load_scene(chapter_info.scene)
+	load_chapter(chapter_info.scene)
 	set_current(chapter)
 
 # --------------------------------------------------------------------------- #
@@ -144,32 +157,25 @@ func set_current(chapter):
 
 # --------------------------------------------------------------------------- #
 
-func load_scene(scene_path):
+func load_chapter(scene_path):
 	# in case our new scene doesn't override all the header info set by our
 	# last scene, we reset it to default
 	reset_headers()
-
-	var new_scene = U.load_relative(scene_file_path, scene_path).instantiate()
-	new_scene.page_info_changed.connect(_on_page_info_changed)
-	new_scene.title_changed.connect(_on_title_changed)
-
-	# update current scene (and destroy old scene)
-	if (current_scene):
-		$content/book/chapter.remove_child(current_scene)
-		current_scene.queue_free()
-	current_scene = new_scene
-	#  note that the new chapter sends some signals to tell us to update stuff
-	#  when it is initialized through _ready. it's working now, which i guess
-	#  means _ready is called when a node is added to the scene tree. if
-	# chapter info ever mysteriously breaks after a godot update, look here.
-	$content/book/chapter.add_child(current_scene)
+	# destroy the old chapter (todo: only do this if it's different)
+	for child in $content/book/chapter.get_children():
+		child.queue_free()
+	
+	var chapter = U.load_relative(scene_file_path, scene_path).instantiate()
+	chapter.open()
+	
+	$content/book/chapter.add_child(chapter)
 
 # --------------------------------------------------------------------------- #
 
 func get_chapter_info(chapter):
 	if CHAPTERS.has(chapter):
 		return CHAPTERS[chapter]
-  
+
 
 # =========================================================================== #
 #                                H E A D E R S                                #
@@ -183,16 +189,15 @@ func get_chapter_info(chapter):
 func set_title(text):
 	$content/book/title.text = text
 
-func set_page_text(text):
-	$content/book/pages.text = text
-
-func set_arrow_visibility(c, t):
-	$content/arrows.update_visibility(c, t)
+func set_pages(current: int, total: int):
+	$content/book/pages.text = (
+		str(current + 1, " / ", total) if total > 0 else "~ * ~"
+	)
+	$content/arrows.update_visibility(current, total)
 
 func reset_headers():
 	set_title(DEFAULT_TITLE)
-	set_page_text(DEFAULT_TITLE)
-	set_arrow_visibility(0, 0)
+	set_pages(0, 0)
 
 #                               t r i g g e r s
 # --------------------------------------------------------------------------- #
@@ -201,18 +206,10 @@ func _on_arrow(offset):
 	if current_scene and current_scene.has_method('change_page'):
 		current_scene.change_page(offset)
 
-func _on_title_changed(text):
-	set_title(text)
-
-# args is: [current_page, total_pages]
-func _on_page_info_changed(args):
-	set_page_text(str(args[0] + 1, " / ", args[1]))
-	set_arrow_visibility(args[0], args[1])
-
 # --------------------------------------------------------------------------- #
 
-func _input(e):
-	if e.is_action_pressed('ui_focus_prev'): open(prev)
-	elif e.is_action_pressed('ui_focus_next'): open(next)
-	else: return
-	accept_event()
+#func _input(e):
+#	if e.is_action_pressed('ui_focus_prev'): open(prev)
+#	elif e.is_action_pressed('ui_focus_next'): open(next)
+#	else: return
+#	accept_event()

@@ -3,13 +3,14 @@
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="1_cgx65"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="2_sgfrp"]
 [ext_resource type="Texture2D" uid="uid://df7d3kr5opmer" path="res://assets/ui/elements/item_box_detail.png" id="3_03d0u"]
+[ext_resource type="PackedScene" uid="uid://caitnkowiwxu4" path="res://ui/main_menu/monsters/sex_icon.tscn" id="3_ldlbi"]
 [ext_resource type="Texture2D" uid="uid://bekreiaqh7xlj" path="res://data/monsters/milotic/idle_front_right.png" id="4_kpmpr"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="5_i14ns"]
 [ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="6_wr1l1"]
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_6cg88"]
-[ext_resource type="Texture2D" uid="uid://c1pe7i5iwff4q" path="res://assets/ui/icons/female_large.png" id="9_vedof"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5w03k"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2kudm"]
+resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
@@ -18,6 +19,7 @@ corner_radius_bottom_left = 4
 anti_aliasing = false
 
 [node name="name_card" type="Control"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0
@@ -34,28 +36,22 @@ offset_bottom = 30.0
 grow_horizontal = 2
 theme_override_constants/line_spacing = 1
 theme_override_styles/normal = ExtResource("1_cgx65")
-text = "Grimblegrumble the fourth"
+text = "Grimblegrumble IV"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 text_overrun_behavior = 3
 max_lines_visible = 2
 
-[node name="sex" type="PanelContainer" parent="."]
-layout_mode = 0
-offset_left = 41.0
-offset_top = 28.0
-offset_right = 53.0
-offset_bottom = 39.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_5w03k")
-
-[node name="icon" type="TextureRect" parent="sex"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("9_vedof")
-stretch_mode = 2
-metadata/_edit_lock_ = true
+[node name="sex" parent="." instance=ExtResource("3_ldlbi")]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -12.0
+offset_bottom = -1.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2kudm")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0

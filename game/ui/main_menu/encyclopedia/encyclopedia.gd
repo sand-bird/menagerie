@@ -1,4 +1,4 @@
-extends "res://ui/main_menu/menu_chapter.gd"
+extends MenuChapter
 """
 the encyclopedia contains information about all the different entities, grouped
 by type (monsters, objects, items, etc).

@@ -1,4 +1,4 @@
-extends "res://ui/main_menu/menu_chapter.gd"
+extends MenuChapter
 
 const PROPERTIES = {
 	Constants.InventorySize.SMALL: {
@@ -13,6 +13,7 @@ const PROPERTIES = {
 	}
 }
 
+var current_item: int
 var props = PROPERTIES[Options.inventory_size]
 
 # as in "inventory item", not as in Item (the specific type of game entity).
