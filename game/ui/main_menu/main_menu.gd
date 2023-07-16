@@ -37,11 +37,6 @@ direct navigation:
   (only shown when there is a source page to go back to).
 """
 
-
-@onready var MenuTab = U.load_relative(scene_file_path, 'menu_tab')
-
-const DEFAULT_TITLE = "1 / 1" #"\u2727 \u2726 \u2727"
-
 const CHAPTERS = {
 	monsters = {
 		icon = "monster",
@@ -73,51 +68,10 @@ const CHAPTERS = {
 	}
 }
 
-
-var current # id of the current chapter
-var current_scene # scene pointer for curent chapter
-
-# tab stuff
-var next
-var prev
-
 func _ready():
 	Dispatcher.menu_open.connect(open)
 	Dispatcher.menu_set_title.connect(set_title)
 	Dispatcher.menu_set_pages.connect(set_pages)
-	
-	$content/arrows2/left.pressed.connect(
-		func():
-			print('left pressed')
-			Dispatcher.menu_prev_page.emit()
-	)
-	$content/arrows2/right.pressed.connect(
-		func():
-			print('right pressed')
-			Dispatcher.menu_next_page.emit()
-	)
-	
-	$content/arrows.change_page.connect(_on_arrow)
-	make_tabs()
-
-
-# =========================================================================== #
-#                                   T A B S                                   #
-# --------------------------------------------------------------------------- #
-
-func make_tabs():
-	for id in CHAPTERS:
-		var chapter = CHAPTERS[id]
-		if (!chapter.has('condition') or
-				Condition.resolve(chapter.condition)):
-			new_tab(id, chapter)
-
-# --------------------------------------------------------------------------- #
-
-func new_tab(id, data):
-	var tab = MenuTab.instantiate()
-	tab.load_info(id, data)
-	$content/tabs.add_child(tab)
 
 
 # =========================================================================== #
@@ -127,33 +81,18 @@ func new_tab(id, data):
 # triggered on a `menu_open` dispatch.
 func open(input = null):
 	var chapter = U.unpack(input)
-	if chapter == null: chapter = current
-	Log.debug(self, ["(open) menu chapter: '", chapter, "' | current: ",
-			str("'", current, "'") if current else "(none)"])
+	if chapter == null:
+		Log.warn(self, "unexpected: someone dispatched called menu_open while menu was already open without a chapter argument. did we want to close insted?")
+		return
+	
+	Log.debug(self, ["(open) menu chapter: '", chapter])
 
 	var chapter_info = get_chapter_info(chapter)
 	if chapter_info == null:
 		Log.error(self, ["(open) menu chapter '", chapter, "' not found!"])
 		return
 	load_chapter(chapter_info.scene)
-	set_current(chapter)
-
-# --------------------------------------------------------------------------- #
-
-# updates our state and the tab array's state to reflect the newly opened menu
-# chapter.
-func set_current(chapter):
-	current = chapter
-	Log.debug(self, ["(set_current) chapter: '", current, "'"])
-
-	# update tabs
-	var tabs = $content/tabs.get_children()
-	for i in tabs.size():
-		if tabs[i].id == current:
-			tabs[i].is_current = true
-			next = tabs[i + 1].id if i < tabs.size() - 1 else tabs[0].id
-			prev = tabs[i - 1].id if i > 0 else tabs[tabs.size() - 1].id
-		else: tabs[i].is_current = false
+	$tabs.open(chapter)
 
 # --------------------------------------------------------------------------- #
 
@@ -162,13 +101,13 @@ func load_chapter(scene_path):
 	# last scene, we reset it to default
 	reset_headers()
 	# destroy the old chapter (todo: only do this if it's different)
-	for child in $content/book/chapter.get_children():
+	for child in $book/chapter.get_children():
 		child.queue_free()
 	
 	var chapter = U.load_relative(scene_file_path, scene_path).instantiate()
 	chapter.open()
 	
-	$content/book/chapter.add_child(chapter)
+	$book/chapter.add_child(chapter)
 
 # --------------------------------------------------------------------------- #
 
@@ -183,33 +122,15 @@ func get_chapter_info(chapter):
 # the title and page number nodes are children of main_menu, so we control their
 # displays here from signals sent by property setters in our menu chapters.
 
-#                                s e t t e r s
-# --------------------------------------------------------------------------- #
-
 func set_title(text):
-	$content/book/title.text = text
+	$book/title.text = text
 
 func set_pages(current: int, total: int):
-	$content/book/pages.text = (
+	$book/pages.text = (
 		str(current + 1, " / ", total) if total > 0 else "~ * ~"
 	)
-	$content/arrows.update_visibility(current, total)
+	$arrows.update_visibility(current, total)
 
 func reset_headers():
-	set_title(DEFAULT_TITLE)
+	set_title("~ * ~")
 	set_pages(0, 0)
-
-#                               t r i g g e r s
-# --------------------------------------------------------------------------- #
-
-func _on_arrow(offset):
-	if current_scene and current_scene.has_method('change_page'):
-		current_scene.change_page(offset)
-
-# --------------------------------------------------------------------------- #
-
-#func _input(e):
-#	if e.is_action_pressed('ui_focus_prev'): open(prev)
-#	elif e.is_action_pressed('ui_focus_next'): open(next)
-#	else: return
-#	accept_event()

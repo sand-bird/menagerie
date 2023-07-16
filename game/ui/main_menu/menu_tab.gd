@@ -17,11 +17,6 @@ func load_info(key, data):
 
 func set_is_current(val):
 	is_current = val
-	update_z(val)
-
-func update_z(val):
-	if (val): $sprite.z_index = 1
-	else: $sprite.z_index = 0
 
 func _pressed():
 	if is_current: return

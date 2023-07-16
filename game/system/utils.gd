@@ -88,6 +88,15 @@ static func sorter(fn: Callable):
 static func sort_by(arr: Array, fn: Callable):
 	arr.sort_custom(U.sorter(fn))
 
+# --------------------------------------------------------------------------- #
+
+# fn: (value: T, i: int) -> boolean
+static func find_by(arr: Array, fn: Callable) -> int:
+	for i in arr.size():
+		if fn.call(arr[i], i): return i
+	return -1
+
+
 # =========================================================================== #
 #                                S T R I N G S                                #
 # --------------------------------------------------------------------------- #

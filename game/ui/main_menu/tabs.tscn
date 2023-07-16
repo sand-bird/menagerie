@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqg4hrfom0imj"]
+
+[ext_resource type="Script" path="res://ui/main_menu/tabs.gd" id="1_j7lks"]
+
+[node name="tabs" type="Control"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 30.0
+grow_horizontal = 2
+script = ExtResource("1_j7lks")
+
+[node name="prev" type="HBoxContainer" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_right = -16.0
+grow_horizontal = 2
+theme_override_constants/separation = -4
+alignment = 2
+
+[node name="current" type="HBoxContainer" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -12.0
+offset_right = 12.0
+offset_bottom = 30.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="next" type="HBoxContainer" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+offset_left = 16.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_constants/separation = -4
+
+[node name="bench" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

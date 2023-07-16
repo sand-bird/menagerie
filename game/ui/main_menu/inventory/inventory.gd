@@ -1,4 +1,4 @@
-extends MenuChapter
+extends MenuSection
 
 const PROPERTIES = {
 	Constants.InventorySize.SMALL: {
