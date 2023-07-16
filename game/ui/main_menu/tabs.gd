@@ -40,9 +40,12 @@ func open(chapter = null):
 		tab.is_current = false
 		tab.reparent($bench)
 	
+	var current = tabs[i]
 	var prevs = tabs.slice(0, i)
 	var nexts = tabs.slice(i + 1)
-	var current = tabs[i]
+	# $next is set to RTL so tabs will be layered left-above-right,
+	# which means we need to add tabs to it in reverse order
+	nexts.reverse()
 	
 	for tab in prevs: tab.reparent($prev)
 	for tab in nexts: tab.reparent($next)

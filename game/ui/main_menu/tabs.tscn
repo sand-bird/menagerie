@@ -16,9 +16,9 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_right = -16.0
+offset_right = -14.0
 grow_horizontal = 2
-theme_override_constants/separation = -4
+theme_override_constants/separation = -3
 alignment = 2
 
 [node name="current" type="HBoxContainer" parent="."]
@@ -35,14 +35,15 @@ alignment = 1
 
 [node name="next" type="HBoxContainer" parent="."]
 show_behind_parent = true
+layout_direction = 3
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 1.0
-offset_left = 16.0
+anchor_right = 0.5
+offset_right = -14.0
 offset_bottom = 23.0
 grow_horizontal = 2
-theme_override_constants/separation = -4
+theme_override_constants/separation = -3
+alignment = 2
 
 [node name="bench" type="Control" parent="."]
 visible = false
