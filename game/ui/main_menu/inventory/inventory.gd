@@ -42,8 +42,8 @@ func initialize(data_filter = null, state_filter = null):
 	# init item grid
 	$item_grid.initialize(props, { items = indices })
 	if indices: update_current_item(0)
-
-	super.initialize()
+	
+	pages = $item_grid.get_page_count()
 
 # --------------------------------------------------------------------------- #
 

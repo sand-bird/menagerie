@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://cwgfxnvs2vcgq"]
+[gd_scene load_steps=54 format=3 uid="uid://cwgfxnvs2vcgq"]
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="2"]
@@ -24,6 +24,52 @@
 [ext_resource type="Texture2D" uid="uid://cm8fgg156jcx" path="res://data/monsters/bunny/idle_front.png" id="20_4e0p2"]
 [ext_resource type="Texture2D" uid="uid://bhnkwgjoci43c" path="res://data/monsters/bunny/idle_front_test.png" id="21_t8fi2"]
 [ext_resource type="Texture2D" uid="uid://bgk1bcdd3yb4d" path="res://data/monsters/pufig/pink_idle_front.png" id="22_he0o3"]
+[ext_resource type="Texture2D" uid="uid://cy0hf5t6hfmqm" path="res://assets/ui/elements/page_turn_1.png" id="24_04plg"]
+[ext_resource type="Texture2D" uid="uid://b24eb3mcd00gg" path="res://assets/ui/elements/page_turn_2.png" id="25_7547p"]
+[ext_resource type="Texture2D" uid="uid://jnl81t48ri7q" path="res://assets/ui/elements/page_turn_3.png" id="26_m5ujy"]
+[ext_resource type="Texture2D" uid="uid://cjc0pmsxvcyjl" path="res://assets/ui/elements/page_turn_4.png" id="27_etdv4"]
+[ext_resource type="Texture2D" uid="uid://d0tj5crqr3bsh" path="res://assets/ui/elements/page_turn_page_1.png" id="28_eahq3"]
+[ext_resource type="Texture2D" uid="uid://bmrwtq0wf8jsb" path="res://assets/ui/elements/page_turn_page_2.png" id="29_jl4o5"]
+[ext_resource type="Texture2D" uid="uid://biaqopy1bapqw" path="res://assets/ui/elements/page_turn_page_3.png" id="30_ce276"]
+[ext_resource type="Texture2D" uid="uid://dd1k5us0trg51" path="res://assets/ui/elements/page_turn_page_4.png" id="31_5t8ln"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1whi3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_04plg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_7547p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_m5ujy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_etdv4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}],
+"loop": false,
+"name": &"page_turn",
+"speed": 12.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_qsow4"]
+script/source = "extends AnimatedSprite2D
+
+func turn(speed: float = 1):
+	for child in get_children():
+		child.visible = false
+	play(\"page_turn\", speed)
+	await animation_finished
+	for child in get_children():
+		child.visible = true
+"
 
 [sub_resource type="GDScript" id="GDScript_0qu84"]
 script/source = "extends \"res://ui/event_button.gd\"
@@ -39,7 +85,7 @@ func update_visibility(control_mode):
 	else: hide()
 "
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eohqq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xlnwt"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -73,7 +119,7 @@ VScrollBar/styles/scroll = ExtResource("10_1hjg1")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aio75"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k3m1r"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pwpc1"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -96,7 +142,7 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 3
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2yhxh"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sgmu7"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -105,7 +151,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4w5lm"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_34flm"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -114,7 +160,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_behc3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d46d"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -123,7 +169,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dorre"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u3m6r"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -132,7 +178,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m16q3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ccvix"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -141,7 +187,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0y1r4"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b18bx"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -150,7 +196,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lpt30"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kesrl"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -159,7 +205,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b056p"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hypmv"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -168,7 +214,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ren2t"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rmbpq"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -177,7 +223,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l71ao"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5ucme"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -186,7 +232,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6a08"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wi1fq"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -194,6 +240,29 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 anti_aliasing = false
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ypvhq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("28_eahq3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_jl4o5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_ce276")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_5t8ln")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"default",
+"speed": 10.0
+}]
 
 [node name="main_menu" type="Control"]
 custom_minimum_size = Vector2(316, 190)
@@ -215,7 +284,8 @@ script = ExtResource("2")
 layout_mode = 1
 offset_bottom = 0.0
 
-[node name="book" type="TextureRect" parent="."]
+[node name="book0" type="TextureRect" parent="."]
+visible = false
 custom_minimum_size = Vector2(316, 170)
 layout_mode = 1
 anchors_preset = 13
@@ -230,15 +300,20 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3")
 
+[node name="book" type="AnimatedSprite2D" parent="."]
+position = Vector2(158, 102)
+sprite_frames = SubResource("SpriteFrames_1whi3")
+animation = &"page_turn"
+script = SubResource("GDScript_qsow4")
+
 [node name="title" type="Label" parent="book"]
 custom_minimum_size = Vector2(96, 0)
-layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.5
-offset_left = 30.0
-offset_top = 7.0
-offset_right = -23.0
-offset_bottom = 19.0
+offset_left = -128.0
+offset_top = -78.0
+offset_right = -181.0
+offset_bottom = -66.0
 theme_override_styles/normal = ExtResource("4")
 text = "Monster info"
 horizontal_alignment = 1
@@ -248,26 +323,26 @@ uppercase = true
 
 [node name="pages" type="Label" parent="book"]
 custom_minimum_size = Vector2(56, 0)
-layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.75
 anchor_right = 0.75
-offset_left = -28.0
-offset_top = 7.0
-offset_right = 28.0
-offset_bottom = 19.0
+offset_left = -186.0
+offset_top = -78.0
+offset_right = -130.0
+offset_bottom = -66.0
 theme_override_styles/normal = ExtResource("4")
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
 [node name="close_button" type="Button" parent="book"]
-layout_mode = 0
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -20.0
-offset_top = -6.0
-offset_bottom = 10.0
+offset_left = -178.0
+offset_top = -91.0
+offset_right = -147.0
+offset_bottom = -73.0
 text = " X "
 script = SubResource("GDScript_0qu84")
 
@@ -275,12 +350,13 @@ script = SubResource("GDScript_0qu84")
 custom_minimum_size = Vector2(296, 142)
 layout_mode = 3
 anchors_preset = 0
-offset_left = 10.0
-offset_top = 22.0
-offset_right = 306.0
-offset_bottom = 164.0
+offset_left = -148.0
+offset_top = -63.0
+offset_right = 148.0
+offset_bottom = 79.0
 
 [node name="monster_details" type="Control" parent="book/chapter"]
+visible = false
 custom_minimum_size = Vector2(296, 142)
 layout_mode = 3
 anchors_preset = 0
@@ -472,7 +548,7 @@ anchor_bottom = 1.0
 offset_top = -12.0
 offset_bottom = -1.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_eohqq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_xlnwt")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/monster_details/left/name_card"]
 layout_mode = 0
@@ -645,7 +721,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_k3m1r")
+theme_override_styles/panel = SubResource("StyleBoxFlat_pwpc1")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left/monster_list_item3"]
 layout_mode = 0
@@ -713,7 +789,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_2yhxh")
+theme_override_styles/panel = SubResource("StyleBoxFlat_sgmu7")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left/monster_list_item4"]
 layout_mode = 0
@@ -781,7 +857,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_4w5lm")
+theme_override_styles/panel = SubResource("StyleBoxFlat_34flm")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left/monster_list_item5"]
 layout_mode = 0
@@ -849,7 +925,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_behc3")
+theme_override_styles/panel = SubResource("StyleBoxFlat_5d46d")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left/monster_list_item6"]
 layout_mode = 0
@@ -917,7 +993,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_dorre")
+theme_override_styles/panel = SubResource("StyleBoxFlat_u3m6r")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left2/monster_list_item6"]
 layout_mode = 0
@@ -973,7 +1049,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_m16q3")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ccvix")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left2/monster_list_item7"]
 layout_mode = 0
@@ -1041,7 +1117,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_0y1r4")
+theme_override_styles/panel = SubResource("StyleBoxFlat_b18bx")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left2/monster_list_item5"]
 layout_mode = 0
@@ -1097,7 +1173,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_lpt30")
+theme_override_styles/panel = SubResource("StyleBoxFlat_kesrl")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/left2/monster_list_item8"]
 layout_mode = 0
@@ -1165,7 +1241,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_b056p")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hypmv")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/right2/monster_list_item6"]
 layout_mode = 0
@@ -1234,7 +1310,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_ren2t")
+theme_override_styles/panel = SubResource("StyleBoxFlat_rmbpq")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/right2/monster_list_item5"]
 layout_mode = 0
@@ -1290,7 +1366,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_l71ao")
+theme_override_styles/panel = SubResource("StyleBoxFlat_5ucme")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/right2/monster_list_item7"]
 layout_mode = 0
@@ -1346,7 +1422,7 @@ offset_top = 15.0
 offset_right = 40.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_u6a08")
+theme_override_styles/panel = SubResource("StyleBoxFlat_wi1fq")
 
 [node name="loyalty" type="PanelContainer" parent="book/chapter/right2/monster_list_item8"]
 layout_mode = 0
@@ -1407,6 +1483,7 @@ patch_margin_bottom = 16
 axis_stretch_horizontal = 1
 
 [node name="grid_bg" parent="book/chapter" instance=ExtResource("19_1gm2p")]
+visible = false
 clip_children = 2
 layout_mode = 0
 offset_left = 158.0
@@ -1454,6 +1531,7 @@ position = Vector2(13, 40)
 texture = ExtResource("22_he0o3")
 
 [node name="TextureRect" type="TextureRect" parent="book/chapter"]
+visible = false
 layout_mode = 0
 offset_left = 181.0
 offset_top = 2.0
@@ -1461,6 +1539,12 @@ offset_right = 213.0
 offset_bottom = 34.0
 texture = ExtResource("6_hhacp")
 stretch_mode = 2
+
+[node name="page_turn" type="AnimatedSprite2D" parent="book"]
+z_index = 2
+sprite_frames = SubResource("SpriteFrames_ypvhq")
+frame = 4
+frame_progress = 1.0
 
 [node name="arrows" parent="." instance=ExtResource("6")]
 layout_mode = 1
@@ -1471,3 +1555,6 @@ offset_left = -34.0
 offset_top = 31.0
 offset_right = 34.0
 offset_bottom = 31.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("")

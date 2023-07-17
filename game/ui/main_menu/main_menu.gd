@@ -87,12 +87,16 @@ func open(input = null):
 	
 	Log.debug(self, ["(open) menu chapter: '", chapter])
 
-	var chapter_info = get_chapter_info(chapter)
+	var chapter_info = CHAPTERS.get(chapter)
 	if chapter_info == null:
 		Log.error(self, ["(open) menu chapter '", chapter, "' not found!"])
 		return
+	$tabs/current.z_index = 0
+	$book/page_turn.play("default")
 	load_chapter(chapter_info.scene)
+	await $book/page_turn.animation_finished
 	$tabs.open(chapter)
+	$tabs/current.z_index = 1
 
 # --------------------------------------------------------------------------- #
 
@@ -108,12 +112,6 @@ func load_chapter(scene_path):
 	chapter.open()
 	
 	$book/chapter.add_child(chapter)
-
-# --------------------------------------------------------------------------- #
-
-func get_chapter_info(chapter):
-	if CHAPTERS.has(chapter):
-		return CHAPTERS[chapter]
 
 
 # =========================================================================== #
