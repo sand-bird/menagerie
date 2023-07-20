@@ -183,6 +183,15 @@ static func vmax(a, b):
 #                                   M A T H                                   #
 # --------------------------------------------------------------------------- #
 
+# convenience functions to do floating-point division on integers...
+static func div(a, b) -> float: return float(a) / float(b)
+# ...and ceil the result (this saves a paren over ceil(U.div()))
+static func ceil_div(a, b) -> int: return ceil(float(a) / float(b))
+# ...and round the result
+static func round_div(a, b) -> int: return round(float(a) / float(b))
+
+# --------------------------------------------------------------------------- #
+
 # generates a random float using a normal distribution via `randfn`.
 # we can't clamp because it would skew the distribution, so if we get a value
 # outside the bounds (always technically possible with normal distributions),

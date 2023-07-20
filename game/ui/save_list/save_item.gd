@@ -1,9 +1,5 @@
 extends Button
 
-func _ready():
-	mouse_entered.connect(grab_focus)
-	mouse_exited.connect(release_focus)
-
 var save_dir
 
 func load_info(index, save_info):

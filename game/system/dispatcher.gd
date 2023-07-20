@@ -45,8 +45,8 @@ signal menu_open(args)
 signal menu_set_title(title) # sets the title of the main menu
 signal menu_set_pages(curent, total) # sets the number of pages of the main menu
 
-signal menu_next_page()
-signal menu_prev_page()
+signal menu_next_page(wrap)
+signal menu_prev_page(wrap)
 
 signal menu_next_section()
 signal menu_prev_section()

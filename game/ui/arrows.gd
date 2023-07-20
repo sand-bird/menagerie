@@ -6,8 +6,8 @@ signal change_page
 const ANIM = "bob"
 
 func _ready():
-	$left.pressed.connect(func(): Dispatcher.menu_prev_page.emit())
-	$right.pressed.connect(func(): Dispatcher.menu_next_page.emit())
+	$left.pressed.connect(func(): Dispatcher.menu_prev_page.emit(false))
+	$right.pressed.connect(func(): Dispatcher.menu_next_page.emit(false))
 
 func restart_animations():
 	$left/sprite/anim.stop()

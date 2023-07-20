@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bt1j0ft1fphft"]
+[gd_scene load_steps=9 format=3 uid="uid://bt1j0ft1fphft"]
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="StyleBox" uid="uid://bttg6qum87qgv" path="res://assets/ui/panels/panel_frame.tres" id="2"]
@@ -7,6 +7,64 @@
 [ext_resource type="StyleBox" uid="uid://bloajccdvxu2m" path="res://assets/ui/panels/menu_header.tres" id="5"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="6"]
 [ext_resource type="PackedScene" uid="uid://cd7dhnfb88hwa" path="res://ui/arrows.tscn" id="7"]
+
+[sub_resource type="GDScript" id="GDScript_mr5p7"]
+script/source = "extends PagedList
+
+@onready var SaveItem = preload(\"res://ui/save_list/save_item.tscn\")
+
+# should initialize `data`.
+func initialize():
+	data = SaveUtils.get_save_info_list()
+
+# should take in a slice of data the same length as page_size, and return an
+# array of Control nodes which we will then add as children.
+func load_items(data_slice: Array) -> Array[Control]:
+	var new_items: Array[Control] = []
+	for i in data_slice.size():
+		var save_info = data_slice[i]
+		var save_item = SaveItem.instantiate()
+		save_item.load_info(i, save_info)
+		new_items.push_back(save_item)
+	return new_items
+
+# do whatever should be done when a child is selected.
+func on_select(item: Control):
+	item.grab_focus()
+
+func on_deselect(item: Control):
+	item.release_focus()
+
+
+# --------------------------------------------------------------------------- #
+
+# --------------------------------------------------------------------------- #
+\"\"\"
+func change_page(offset):
+	load_page(current_page + offset)
+	$container.get_children()[0].grab_focus()
+
+func load_page(pagenum):
+	Log.debug(self, [\"loading page: \", pagenum, \" | current page: \", current_page])
+	if pagenum < 0 or pagenum >= saves.size():
+		Log.error(self, [\"could not load page \",
+				pagenum, \": out of bounds\"])
+		return
+	current_page = pagenum
+
+	for child in $container.get_children():
+		child.queue_free()
+
+	var start = SAVES_PER_PAGE * pagenum
+	for i in SAVES_PER_PAGE:
+		if start + i < saves.size():
+			add_save_item(i + 1, saves[i + start])
+
+	update_page_display()
+
+# --------------------------------------------------------------------------- #
+\"\"\"
+"
 
 [node name="save_list" type="Panel"]
 custom_minimum_size = Vector2(208, 180)
@@ -19,6 +77,7 @@ offset_left = -104.0
 offset_top = -98.0
 offset_right = 104.0
 offset_bottom = 98.0
+focus_mode = 2
 theme = ExtResource("1")
 theme_override_styles/panel = ExtResource("2")
 script = ExtResource("3")
@@ -52,14 +111,18 @@ vertical_alignment = 1
 clip_text = true
 uppercase = true
 
-[node name="container" type="VBoxContainer" parent="."]
+[node name="saves" type="GridContainer" parent="."]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 24.0
 offset_right = 11.0
 offset_bottom = 23.0
+focus_mode = 2
 mouse_filter = 0
-theme_override_constants/separation = 2
+theme_override_constants/v_separation = 2
+script = SubResource("GDScript_mr5p7")
+mouse_mode = 1
+rows = 3
 
 [node name="pages" type="Label" parent="."]
 layout_mode = 0

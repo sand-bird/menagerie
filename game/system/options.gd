@@ -32,7 +32,7 @@ var text_speed = TextSpeed[3] # characters per second
 #                              i n v e n t o r y                              #
 # --------------------------------------------------------------------------- #
 
-var inventory_size = InventorySize.SMALL
+var inventory_size = InventorySize.LARGE
 
 #                                  i n p u t                                  #
 # --------------------------------------------------------------------------- #
