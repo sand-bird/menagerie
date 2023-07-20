@@ -51,12 +51,12 @@ var selected: int = -1: set = select
 
 func select(new: int):
 	# deselect the last item, if any
-	if !unselected and selected < items.size(): on_deselect(items[selected])
+	if has_selected and selected < items.size(): on_deselect(items[selected])
 	# set the new value, clamped to `items`.
 	# a value of -1 means nothing is selected
 	var min = -1 if allow_unselected or items.is_empty() else 0 
 	selected = clampi(new, min, items.size() - 1)
-	if !unselected: on_select(items[selected])
+	if has_selected: on_select(items[selected])
 	selected_changed.emit(selected)
 
 #                    c o m p u t e d   p r o p e r t i e s                    #
@@ -68,8 +68,8 @@ var page_size: int:
 var page_count: int:
 	get: return 1 if data.is_empty() else U.ceil_div(data.size(), page_size)
 
-var unselected: bool:
-	get: return selected == -1
+var has_selected: bool:
+	get: return selected > -1
 
 # column (x) and row (y) of the current selected item
 var column: int:
@@ -107,6 +107,7 @@ func _ready():
 	Dispatcher.menu_prev_page.connect(prev)
 	initialize()
 	load_page(0)
+	if !allow_unselected: select(0)
 
 # --------------------------------------------------------------------------- #
 
@@ -119,6 +120,9 @@ func load_page(index: int):
 		var item = items[i]
 		connect_item(item, i)
 		add_child(item)
+	# since we just instantiated these items, we have to trigger `on_selected`
+	# again.  setting `selected` also re-clamps it in case the page size shrunk.
+	select(selected)
 
 func connect_item(item: Control, i: int):
 	match mouse_mode:
@@ -149,26 +153,26 @@ func _input(e: InputEvent):
 		if e.is_action_pressed(key):
 			call("_" + key)
 			accept_event()
-	if e.is_action_pressed(&'ui_cancel') and allow_unselected:
+	if e.is_action_pressed(&'ui_cancel') and has_selected and allow_unselected:
 		selected = -1
 		accept_event()
 
 # --------------------------------------------------------------------------- #
 
 func _ui_left():
-	if unselected: select(columns - 1) # top right
+	if !has_selected: select(columns - 1) # top right
 	elif column > 0: selected -= 1
 	else: Dispatcher.menu_prev_page.emit(true)
 
 func _ui_right():
-	if unselected: select(0) # top left
+	if !has_selected: select(0) # top left
 	elif column < columns - 1: selected += 1
 	else: Dispatcher.menu_next_page.emit(true)
 
 func _ui_up():
-	if unselected: select(items.size() - 1) # bottom right
+	if !has_selected: select(items.size() - 1) # bottom right
 	elif row > 0: selected -= columns
 
 func _ui_down():
-	if unselected: select(0) # top left
+	if !has_selected: select(0) # top left
 	elif row < last_row: selected += columns

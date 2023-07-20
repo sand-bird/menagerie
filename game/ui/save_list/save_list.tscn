@@ -121,7 +121,7 @@ focus_mode = 2
 mouse_filter = 0
 theme_override_constants/v_separation = 2
 script = SubResource("GDScript_mr5p7")
-mouse_mode = 1
+mouse_mode = 2
 rows = 3
 
 [node name="pages" type="Label" parent="."]
