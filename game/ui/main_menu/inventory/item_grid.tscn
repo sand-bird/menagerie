@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://hnir4b4agld2"]
 
 [ext_resource type="Texture2D" uid="uid://bocvk6om277re" path="res://assets/ui/elements/item_grid_small_9patch.png" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/inventory/item_grid.gd" id="2"]

@@ -4,6 +4,9 @@ func initialize(m: Monster):
 	$name.text = m.monster_name
 	$sex.update(m)
 	$loyalty/hearts.value = m.attributes.loyalty.lerp(0, 10)
+	pressed.connect(func():
+		Dispatcher.menu_open.emit(['monsters', m.uuid])
+	)
 
 #                              b g   c o l o r s                              #
 # --------------------------------------------------------------------------- #

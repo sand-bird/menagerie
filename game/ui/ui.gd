@@ -14,11 +14,9 @@ const REFS = [
 	UI_PATH + R + "/" + R + EXT
 ]
 
-const DEFAULT_MENU_PAGE = 'options'
-
 # we can't count on our main_menu node always being instantiated, but we still
 # want to remember the last open menu page, so we keep track of it here instead
-var last_menu_page
+var last_menu_path = []
 
 # UI used to be a singleton, where `ui_node` held a reference to the instanced
 # CanvasLayer that would hold the instances of the nodes in our stack. that was
@@ -141,9 +139,8 @@ func toggle(arg):
 # the signal on its own, so if it's already loaded it will handle it - but if
 # not, we need to add it to the ui stack and then call its open function
 # manually. we also take this opportunity to update last_menu_page.
-func open_menu(arg = null):
-	# figure out which menu page we're opening
-	var page = U.unpack(arg)
+func open_menu(args = null):
+	var path = U.pack(args)
 	
 	var menu: MainMenu
 	var menu_path = process_ref('main_menu')
@@ -152,7 +149,7 @@ func open_menu(arg = null):
 		Log.debug(self, "menu already present in stack!")
 		menu = stack[menu_index].node
 		# toggle the menu closed unless we're switching pages
-		if page == null or page == last_menu_page:
+		if path.is_empty() or path == last_menu_path:
 			close(menu_index)
 			return
 	else:
@@ -160,11 +157,11 @@ func open_menu(arg = null):
 		menu = open(menu_path)
 	
 	menu.open(
-		page if page != null
-		else last_menu_page if last_menu_page != null
-		else DEFAULT_MENU_PAGE
+		path if !path.is_empty()
+		else last_menu_path if !last_menu_path.is_empty()
+		else MainMenu.DEFAULT_CHAPTER
 	)
-	last_menu_page = page
+	last_menu_path = path
 
 # --------------------------------------------------------------------------- #
 

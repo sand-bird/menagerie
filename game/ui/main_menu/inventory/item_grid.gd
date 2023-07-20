@@ -24,7 +24,7 @@ var items = []
 var current_item = 0
 var current_page = 0
 
-@onready var Item = U.load_relative(scene_file_path, "grid_item")
+var Item
 var item_count = 0
 
 func init_bg(grid_width, cells):
@@ -46,6 +46,7 @@ func calc_size(item_size):
 # state is an object with the following:
 # items: object, current_item: int, current_page: int
 func initialize(grid_config = null, state = null):
+	Item = preload("res://ui/main_menu/inventory/grid_item.tscn")
 	for i in ['cols', 'rows', 'grid_size']:
 		if grid_config and grid_config.has(i):
 			set(i, grid_config[i])
@@ -143,8 +144,8 @@ func _input(e):
 	elif e.is_action_pressed("ui_right"): move_right()
 	elif e.is_action_pressed("ui_up"): move_up()
 	elif e.is_action_pressed("ui_down"): move_down()
-	elif e.is_action_pressed("ui_aux_right"): next_page()
-	elif e.is_action_pressed("ui_aux_left"): prev_page()
+	elif e.is_action_pressed("ui_focus_next"): next_page()
+	elif e.is_action_pressed("ui_focus_prev"): prev_page()
 	else: return
 	accept_event()
 

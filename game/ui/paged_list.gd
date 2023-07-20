@@ -15,7 +15,7 @@ enum MouseMode { HOVER, CLICK, NONE }
 
 # rows per page.
 # page size is the product of rows and columns (inherited from GridContainer).
-@export_range(1, 1024) var rows: int:
+@export_range(1, 1024) var rows: int = 1:
 	set(x): rows = maxi(x, 1)
 
 # if this is false, we force `selected` to be a valid index of `items` unless
@@ -27,7 +27,7 @@ enum MouseMode { HOVER, CLICK, NONE }
 
 # source data.  each element will be loaded into a grid item when we load the
 # page it's on.  the size of this array determines the total number of pages.
-var data: Array = []:
+var data: Array[Variant] = []:
 	set(x):
 		print('data changed!!')
 		data = x
@@ -41,6 +41,7 @@ var page: int = 0:
 	set(new):
 		page = clampi(new, 0, page_count - 1)
 		load_page(page)
+		on_page_changed(page)
 		page_changed.emit(page)
 
 # children on the current page.  should be no larger than rows * columns.
@@ -87,18 +88,18 @@ var last_row: int:
 
 # should take in a slice of data the same length as page_size, and return an
 # array of Control nodes which we will then add as children.
-func load_items(_data_slice: Array) -> Array[Control]:
+func load_items(_data_slice: Array[Variant]) -> Array[Control]:
 	return []
 
 # should initialize `data`.
 func initialize(): pass
 
 # do whatever should be done when a child is selected.
-func on_select(item: Control):
-	item.grab_focus()
+func on_select(item: Control): item.grab_focus()
 
-func on_deselect(item: Control):
-	item.release_focus()
+func on_deselect(item: Control): item.release_focus()
+
+func on_page_changed(page: int): pass
 
 # --------------------------------------------------------------------------- #
 
@@ -106,7 +107,7 @@ func _ready():
 	Dispatcher.menu_next_page.connect(next)
 	Dispatcher.menu_prev_page.connect(prev)
 	initialize()
-	load_page(0)
+	page = 0
 	if !allow_unselected: select(0)
 
 # --------------------------------------------------------------------------- #
@@ -135,22 +136,25 @@ func connect_item(item: Control, i: int):
 
 func next(wrap: bool):
 	page += 1
-	if wrap: select((columns * row) + (columns - 1))
+	if wrap: select(columns * row)
 
 func prev(wrap: bool):
 	page -= 1
-	if wrap: select((columns * row))
+	if wrap: select((columns * row) + (columns - 1))
 
 
 # =========================================================================== #
 #                         I N P U T   H A N D L I N G                         #
 # --------------------------------------------------------------------------- #
 
-const EVENT_KEYS = [&'ui_left', &'ui_right', &'ui_up', &'ui_down']
+const EVENT_KEYS = [
+	&'ui_left', &'ui_right', &'ui_up', &'ui_down',
+	&'ui_focus_next', &'ui_focus_prev'
+]
 
 func _input(e: InputEvent):
 	for key in EVENT_KEYS:
-		if e.is_action_pressed(key):
+		if e.get_action_strength(key) == 1:
 			call("_" + key)
 			accept_event()
 	if e.is_action_pressed(&'ui_cancel') and has_selected and allow_unselected:
@@ -176,3 +180,6 @@ func _ui_up():
 func _ui_down():
 	if !has_selected: select(0) # top left
 	elif row < last_row: selected += columns
+
+func _ui_focus_next(): Dispatcher.menu_next_page.emit(false)
+func _ui_focus_prev(): Dispatcher.menu_prev_page.emit(false)

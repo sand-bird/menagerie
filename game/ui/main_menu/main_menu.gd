@@ -37,39 +37,21 @@ direct navigation:
   (only shown when there is a source page to go back to).
 """
 
-const CHAPTERS = {
-	monsters = {
-		icon = "monster",
-		scene = "monsters/monsters"
-	},
-	items = {
-		icon = "items",
-		scene = "inventory/items"
-	},
-	objects = {
-		icon = "inventory",
-		scene = "inventory/objects"
-	},
-	town_map = {
-		icon = "town",
-		scene = "town_map/town_map"
-	},
-	calendar = {
-		icon = "calendar",
-		scene = "calendar/calendar"
-	},
-	encyclopedia = {
-		icon = "encyclopedia",
-		scene = "encyclopedia/encyclopedia"
-	},
-	options = {
-		icon = "options",
-		scene = "options/options"
-	}
+const DEFAULT_CHAPTER = &'monsters'
+var current_chapter = null
+
+@onready var chapters = {
+	monsters = MenuChapter.Monsters.new(),
+	items = MenuChapter.Items.new(),
+	objects = MenuChapter.Objects.new(),
+	town_map = MenuChapter.TownMap.new(),
+	calendar = MenuChapter.Calendar.new(),
+	encyclopedia = MenuChapter.Encyclopedia.new(),
+	settings = MenuChapter.Settings.new()
 }
 
 func _ready():
-	Dispatcher.menu_open.connect(open)
+	$tabs.initialize(chapters)
 	Dispatcher.menu_set_title.connect(set_title)
 	Dispatcher.menu_set_pages.connect(set_pages)
 
@@ -78,40 +60,60 @@ func _ready():
 #                               C H A P T E R S                               #
 # --------------------------------------------------------------------------- #
 
-# triggered on a `menu_open` dispatch.
+# called from Ui.open, which is triggered on a `menu_open` dispatch.
 func open(input = null):
-	var chapter = U.unpack(input)
-	if chapter == null:
-		Log.warn(self, "unexpected: someone dispatched called menu_open while menu was already open without a chapter argument. did we want to close insted?")
+	var path = U.pack(input)
+	var chapter_key = path[0] if !path.is_empty() else null
+	if chapter_key == null:
+		Log.warn(self, "unexpected: someone dispatched `menu_open` without an argument while menu was already open. did we want to close insted?")
+		return
+	if not chapter_key in chapters:
+		Log.error(self, ["(open) menu chapter '", chapter_key, "' not found!"])
 		return
 	
-	Log.debug(self, ["(open) menu chapter: '", chapter])
-
-	var chapter_info = CHAPTERS.get(chapter)
-	if chapter_info == null:
-		Log.error(self, ["(open) menu chapter '", chapter, "' not found!"])
-		return
-	$tabs/current.z_index = 0
-	$book/page_turn.play("default")
-	load_chapter(chapter_info.scene)
-	await $book/page_turn.animation_finished
-	$tabs.open(chapter)
+	Log.debug(self, ["(open) menu chapter: '", chapter_key])
+	
+	reset()
+	var dir = direction(path)
+	# don't play the page turn anim when first opening the menu
+	if dir != 0 and current_chapter != null:
+		$tabs/current.z_index = 0
+		$book/page_turn.play("default", dir, dir == -1)
+		await $book/page_turn.animation_finished
+	$tabs.open(path)
 	$tabs/current.z_index = 1
+	
+	var section_key = U.aget(path, 1)
+	var section = chapters[chapter_key].open(section_key)
+	$book/chapter.add_child(section)
+	current_chapter = chapter_key
 
 # --------------------------------------------------------------------------- #
 
-func load_chapter(scene_path):
+func direction(path) -> int:
+	var new_chapter = path[0]
+	var new_section = U.aget(path, 1)
+	var keys = chapters.keys()
+	var current_idx = keys.find(current_chapter)
+	var new_idx = keys.find(new_chapter)
+	var chapter_dir = (
+		1 if new_idx > current_idx else
+		-1 if new_idx < current_idx else 0
+	)
+	# if navigating to a different section within the same chapter,
+	# use the new section's direction relative to the current section
+	if chapter_dir != 0: return chapter_dir
+	return chapters[new_chapter].direction(new_section)
+
+# --------------------------------------------------------------------------- #
+
+func reset() -> void:
 	# in case our new scene doesn't override all the header info set by our
 	# last scene, we reset it to default
 	reset_headers()
 	# destroy the old chapter (todo: only do this if it's different)
 	for child in $book/chapter.get_children():
 		child.queue_free()
-	
-	var chapter = U.load_relative(scene_file_path, scene_path).instantiate()
-	chapter.open()
-	
-	$book/chapter.add_child(chapter)
 
 
 # =========================================================================== #

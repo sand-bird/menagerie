@@ -11,13 +11,12 @@ var tabs: Array[Control]
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 
-func _ready():
-	for id in MainMenu.CHAPTERS:
-		var chapter = MainMenu.CHAPTERS[id]
-		if (!chapter.has('condition') or
-				Condition.resolve(chapter.condition)):
+func initialize(chapters):
+	for key in chapters:
+		var chapter = chapters[key]
+		if ((not 'CONDITION' in chapter) or Condition.resolve(chapter.CONDITION)):
 			var tab = MenuTab.instantiate()
-			tab.load_info(id, chapter)
+			tab.load_info(key, chapter)
 			tabs.push_back(tab)
 			# add tabs to an invisible control so they'll be available for reparenting
 			$bench.add_child(tab)
@@ -28,9 +27,17 @@ func _ready():
 
 # must be called from MainMenu.open - if we connect to the dispatcher signal on
 # ready we will miss the first emit
-func open(chapter = null):
+func open(input):
+	var path = U.pack(input)
+	var chapter = U.aget(path, 0)
 	if chapter == null:
 		Log.error(self, ["(open) unexpected: chapter should not be null"])
+		return
+	
+	# if there is a section, stick the "current" chapter tab in prevs so we can
+	# navigate back to it.  "index" is the name for the first page
+	var has_section = path.size() > 1 and path[1] != 'index'
+	
 	var i = U.find_by(tabs, func(x, _i): return x.id == chapter)
 	
 	# start with all tabs benched to ensure they all get moved.
@@ -40,8 +47,8 @@ func open(chapter = null):
 		tab.is_current = false
 		tab.reparent($bench)
 	
-	var current = tabs[i]
-	var prevs = tabs.slice(0, i)
+	var current = null if has_section else tabs[i]
+	var prevs = tabs.slice(0, i + 1 if has_section else i)
 	var nexts = tabs.slice(i + 1)
 	# $next is set to RTL so tabs will be layered left-above-right,
 	# which means we need to add tabs to it in reverse order
@@ -49,6 +56,6 @@ func open(chapter = null):
 	
 	for tab in prevs: tab.reparent($prev)
 	for tab in nexts: tab.reparent($next)
-	current.reparent($current)
-	current.is_current = true
-
+	if current:
+		current.reparent($current)
+		current.is_current = true

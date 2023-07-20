@@ -10,10 +10,10 @@ func _ready():
 	mouse_exited.connect(unhover)
 	focus_exited.connect(unhover)
 
-func load_info(key, data):
+func load_info(key, chapter: MenuChapter):
 	id = key
 	$sprite/icon.texture = U.load_resource(
-			Constants.UI_ICON_PATH, data.icon)
+			Constants.UI_ICON_PATH, chapter.ICON)
 
 func set_is_current(val):
 	is_current = val

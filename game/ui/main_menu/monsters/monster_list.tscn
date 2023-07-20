@@ -2,31 +2,13 @@
 
 [ext_resource type="Script" path="res://ui/main_menu/monsters/monster_list.gd" id="1_0cfbb"]
 
-[node name="chapter" type="Control"]
-custom_minimum_size = Vector2(296, 142)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 296.0
-offset_bottom = 142.0
+[node name="monster_list" type="GridContainer"]
+custom_minimum_size = Vector2(286, 130)
+offset_right = 286.0
+offset_bottom = 130.0
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 3
+columns = 2
 script = ExtResource("1_0cfbb")
-
-[node name="left" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 7.0
-offset_right = -9.0
-theme_override_constants/separation = 3
-
-[node name="right" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 9.0
-offset_top = 7.0
-offset_right = -4.0
-theme_override_constants/separation = 3
+mouse_mode = 1
+rows = 4

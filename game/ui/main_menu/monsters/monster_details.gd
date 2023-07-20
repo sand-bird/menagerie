@@ -1,11 +1,12 @@
-extends Control
+extends MenuSection
 
 # temp, for testing
-func _ready(): pass
 #	var m: Monster = Monster.new({}, preload("res://garden/garden.tscn").instantiate())
 #	update(m)
 
-func initialize(key):
+func initialize(key = null):
+	title = tr(T.MONSTER_INFO)
+	Dispatcher.menu_set_pages.emit(0, 1)
 	var m: Monster = Player.garden.monsters.get(key)
 	update(m)
 

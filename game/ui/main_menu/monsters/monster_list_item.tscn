@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://caitnkowiwxu4" path="res://ui/main_menu/monsters/sex_icon.tscn" id="6_ekd1y"]
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_f1yfw"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cpey6"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5ul7"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -34,7 +34,7 @@ corner_radius_bottom_left = 3
 anti_aliasing = false
 
 [node name="monster_list_item" type="Button"]
-custom_minimum_size = Vector2(130, 30)
+custom_minimum_size = Vector2(134, 30)
 offset_right = 133.0
 offset_bottom = 30.0
 theme_override_styles/normal = ExtResource("1_ls4io")
@@ -72,7 +72,7 @@ offset_top = 15.0
 offset_right = 41.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_cpey6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_p5ul7")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0

@@ -1,4 +1,4 @@
-extends MenuChapter
+extends MenuSection
 
 func _ready():
 	title = "Town Map"

@@ -1,7 +1,7 @@
-extends MenuChapter
+extends MenuSection
 
 func _ready():
-	title = "Options"
+	title = "Settings"
 	initialize()
 
 func initialize(args = null):

@@ -71,9 +71,15 @@ static func unpack(arg):
 
 # for functions that use argument arrays as bootleg varargs, because boxing a
 # lone argument in an array[1] is a crime against fashion
-static func pack(arg):
+static func pack(arg) -> Array:
 	if typeof(arg) == TYPE_ARRAY: return arg
+	elif arg == null: return []
 	else: return [arg]
+
+# --------------------------------------------------------------------------- #
+
+static func aget(a: Array, i: int, default = null):
+	return a[i] if a.size() > i and i >= 0 else default
 
 # --------------------------------------------------------------------------- #
 

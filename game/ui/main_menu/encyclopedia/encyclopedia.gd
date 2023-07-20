@@ -1,4 +1,4 @@
-extends MenuChapter
+extends MenuSection
 """
 the encyclopedia contains information about all the different entities, grouped
 by type (monsters, objects, items, etc).
