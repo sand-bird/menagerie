@@ -104,6 +104,25 @@ static func find_by(arr: Array, fn: Callable) -> int:
 
 
 # =========================================================================== #
+#                            C O L L E C T I O N S                            #
+# --------------------------------------------------------------------------- #
+
+static func deep_equals(a, b) -> bool:
+	if a is Array:
+		if not b is Array: return false
+		if a.size() != b.size(): return false
+		for i in a.size(): if !deep_equals(a[i], b[i]): return false
+	if a is Dictionary:
+		if not b is Dictionary: return false
+		if a.size() != b.size(): return false # rules out keys in b but not a
+		for k in a:
+			if not k in b: return false
+			if !deep_equals(a[k], b[k]): return false
+	else: return a == b
+	return true
+
+
+# =========================================================================== #
 #                                S T R I N G S                                #
 # --------------------------------------------------------------------------- #
 

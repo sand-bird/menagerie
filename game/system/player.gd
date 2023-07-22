@@ -1,5 +1,7 @@
 extends Node
 
+signal inventory_changed
+
 # since there's only one player at a time, Player basically functions as a
 # store for game state. pretty much everything here is saved to and loaded from
 # the `player.save` file.
@@ -121,7 +123,8 @@ func get_printable_playtime(time = null):
 # this modifies the `qty` property on `new`, but it's ok since we won't use it
 func is_stackable(new: Dictionary, saved: Dictionary):
 	new.merge({ qty = saved.qty }, true)
-	return new.hash() == saved.hash()
+	var result = U.deep_equals(new, saved)
+	return result
 
 # --------------------------------------------------------------------------- #
 
@@ -149,9 +152,11 @@ func inventory_add(serialized: Dictionary, qty: int = 1):
 	for saved in inventory[id]:
 		if is_stackable(serialized, saved):
 			saved.qty += qty
+			inventory_changed.emit()
 			return
 	serialized.merge({ qty = qty }, true)
 	inventory[id].push_back(serialized)
+	inventory_changed.emit()
 
 # --------------------------------------------------------------------------- #
 
@@ -184,6 +189,7 @@ func inventory_remove(id, i):
 		return item.duplicate(true).erase('qty')
 	# if it's the last one, we need to remove it from the array
 	items.remove_at(i)
+	inventory_changed.emit()
 	return item.erase('qty') # TODO: make sure this still works after remove
 
 
