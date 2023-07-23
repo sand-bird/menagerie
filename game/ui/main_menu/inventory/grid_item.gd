@@ -1,6 +1,6 @@
 extends Button
 
-var qty
+var qty: int
 
 # iref is a pointer to a "stack" in Player.inventory.
 # will need to be updated if we want to use this to represent items outside of
@@ -12,13 +12,13 @@ func initialize(iref, item_size: Vector2):
 	set_qty(item.qty)
 	$icon.texture = Data.fetch_res([item.id, "icon"])
 
-func set_qty(item_qty):
+func set_qty(item_qty: int):
 	qty = item_qty
 	if qty == 1: $quantity.hide()
 	else:
 		$quantity.text = str(qty)
 		$quantity.offset_left = -$quantity.get_minimum_size().x
 
-func show_quantity(show):
-	if show && qty > 1: $quantity.show()
+func show_quantity(yes: bool):
+	if yes && qty > 1: $quantity.show()
 	else: $quantity.hide()

@@ -7,7 +7,7 @@ func move_to(pos):
 	dest_pos = pos
 	set_process(true)
 
-func _process(delta):
+func _process(_delta):
 	var dest_vector = dest_pos - position
 	position += dest_vector.limit_length(max(dest_vector.length() / 4.0, 2.0))
 	if position == dest_pos: set_process(false)

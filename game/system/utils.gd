@@ -1,7 +1,7 @@
 extends Node
 class_name U
 
-const log_name = "Utils"
+const LNAME = "Utils"
 
 # =========================================================================== #
 #                               F I L E   I / O                               #
@@ -14,7 +14,7 @@ const log_name = "Utils"
 static func load_relative(own_fn, sib_fn, ext = "tscn"):
 	var file = str(sib_fn, ".", ext)
 	var path = own_fn.get_base_dir().path_join(file)
-	Log.debug(log_name, ["loading: ", path])
+	Log.debug(LNAME, ["loading: ", path])
 	return load(path)
 
 # --------------------------------------------------------------------------- #
@@ -25,14 +25,14 @@ static func load_relative(own_fn, sib_fn, ext = "tscn"):
 static func load_resource(res_path, res_fn, ext = "png"):
 	var file = str(res_fn, ".", ext)
 	var path = res_path.path_join(file)
-	Log.debug(log_name, ["loading resource: ", path])
+	Log.debug(LNAME, ["loading resource: ", path])
 	return ResourceLoader.load(path)
 
 # --------------------------------------------------------------------------- #
 
 static func write_file(path, data):
-	Log.info(log_name, ["writing file: ", path])
-	Log.verbose(log_name, data)
+	Log.info(LNAME, ["writing file: ", path])
+	Log.verbose(LNAME, data)
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
 	file.close()
@@ -40,9 +40,9 @@ static func write_file(path, data):
 # --------------------------------------------------------------------------- #
 
 static func read_file(path):
-	Log.debug(log_name, ["reading file: ", path])
+	Log.debug(LNAME, ["reading file: ", path])
 	if !FileAccess.file_exists(path):
-		Log.warn(log_name, ["could not load `", path, "`: file does not exist!"])
+		Log.warn(LNAME, ["could not load `", path, "`: file does not exist!"])
 		return null
 	var file = FileAccess.open(path, FileAccess.READ)
 	var test_json_conv = JSON.new()
@@ -51,7 +51,7 @@ static func read_file(path):
 	file.close()
 	# even for verbose, this is a little much, but i'll
 	# leave it here in case we need to re-enable it
-	Log.verbose(log_name, data)
+	Log.verbose(LNAME, data)
 	return data
 
 
@@ -132,12 +132,15 @@ static func deep_equals(a, b) -> bool:
 #
 # TODO: add some logging here (though we don't receive any identifying info for
 # the trans object, so maybe rethink this at some point)
-static func trans(t):
+static func trans(t) -> String:
 	if t is String: return t
-	elif t is Dictionary:
-		for i in ['locale/test', 'locale/fallback']:
-			var locale = ProjectSettings.get(i)
-			if locale in t: return t[locale]
+	if not t is Dictionary:
+		Log.error(LNAME, ["(trans) unsupported input; must be string or dict. ", t])
+		return ""
+	# get_locale returns a full locale code like `en_US`, but we only care
+	# about the language code
+	var locale = TranslationServer.get_locale().split("_")[0]
+	if locale in t: return t[locale]
 	# the schema requires translatable text to always have an 'en' key
 	return t.get('en', "")
 

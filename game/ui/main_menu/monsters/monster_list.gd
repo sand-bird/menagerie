@@ -2,7 +2,7 @@ extends PagedList
 
 var ListItem = preload("res://ui/main_menu/monsters/monster_list_item.tscn")
 
-func initialize(arg = null):
+func initialize(_arg = null):
 	data = Player.garden.monsters.values() if Player.garden != null else []
 	Dispatcher.menu_set_title.emit(tr(T.MONSTERS))
 
@@ -16,5 +16,5 @@ func load_items(data_slice: Array) -> Array[Control]:
 		new_items.push_back(item)
 	return new_items
 
-func on_page_changed(page):
+func on_page_changed():
 	Dispatcher.menu_set_pages.emit(page, page_count)

@@ -25,7 +25,6 @@ var state_filter: Callable # Dict (serialized state) -> bool
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	$item_grid/items.selected_changed.connect(update_item_details)
 	Player.inventory_changed.connect(refresh_items)
 
 # --------------------------------------------------------------------------- #
@@ -36,6 +35,7 @@ func initialize(key = 'items'):
 	data_filter = func (data): return data.type == config.data_type
 	var indices = filter_items()
 	var grid_size = GRID_SIZES[Options.inventory_size]
+	$item_grid/items.selected_changed.connect(update_item_details)
 	$item_grid.initialize(indices, grid_size)
 
 # --------------------------------------------------------------------------- #

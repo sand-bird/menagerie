@@ -56,7 +56,7 @@ class Monsters extends MenuChapter:
 	const ICON = "monster"
 	func build_index():
 		sections[null] = PATH.path_join("monster_list.tscn")
-		for uuid in (Player.garden.monsters if Player.garden != null else []):
+		for uuid in (Player.garden.monsters if Player.garden != null else {}):
 			sections[uuid] = PATH.path_join("monster_details.tscn")
 
 class Items extends MenuChapter:

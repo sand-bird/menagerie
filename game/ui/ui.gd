@@ -159,7 +159,7 @@ func open_menu(args = null):
 	menu.open(
 		path if !path.is_empty()
 		else last_menu_path if !last_menu_path.is_empty()
-		else MainMenu.DEFAULT_CHAPTER
+		else [MainMenu.DEFAULT_CHAPTER]
 	)
 	last_menu_path = path
 

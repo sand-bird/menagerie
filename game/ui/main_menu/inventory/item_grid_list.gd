@@ -25,9 +25,9 @@ var GridItem = preload("res://ui/main_menu/inventory/grid_item.tscn")
 # array of Control nodes which we will then add as children.
 func load_items(data_slice: Array[Variant]) -> Array[Control]:
 	var new_items: Array[Control] = []
-	for data in data_slice:
+	for d in data_slice:
 		var item = GridItem.instantiate()
-		item.initialize(data, PROPERTIES[grid_size].item_size)
+		item.initialize(d, PROPERTIES[grid_size].item_size)
 		new_items.push_back(item)
 	return new_items
 
@@ -36,11 +36,11 @@ func load_items(data_slice: Array[Variant]) -> Array[Control]:
 # on a second interaction with an already-selected item
 func on_select(item: Control):
 	item.show_quantity(false)
-	item.grab_focus()
+	if item.is_inside_tree(): item.grab_focus()
 
 func on_deselect(item: Control):
 	item.show_quantity(true)
-	item.release_focus()
+	if item.is_inside_tree(): item.release_focus()
 
-func on_page_changed(page: int):
+func on_page_changed():
 	Dispatcher.menu_set_pages.emit(page, page_count)

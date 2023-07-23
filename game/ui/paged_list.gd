@@ -1,5 +1,37 @@
 extends GridContainer
 class_name PagedList
+"""
+Paginated GridContainer with automatic focus/selection handling.  Captures the
+focus inputs (ui_up, ui_focus_next, etc) and uses them to control selection
+state instead, which then calls `grab_focus` on the selected child node.
+(This can be changed on subclasses by overriding `on_select`/`on_deselect`.)
+This allows us to:
+
+1. automatically paginate on left/right inputs when the selected item is on the
+   corresponding edge of the grid (this also wraps the selector)
+2. automatically select/focus an item when a directional input is pressed while
+   nothing is selected
+3. configurably allow `ui_back` to clear the selection (see `allow_unselected`)
+4. configurably update the selection based on mouse interaction: hover, click,
+   or none (see `mouse_mode`)
+
+USAGE
+-----
+Configure `rows`, `columns`, `mouse_mode` and `allow_unselected` in the editor,
+or in code.
+
+Subclasses should implement `load_items` at minimum: this takes in the current
+page of data, and should return an array of Control nodes which PagedList will
+then add as children.
+
+Set `data` to initialize state.  Set `page` to update the current page and set
+`selected` (or call `select`) to update the current selected item.  These are
+clamped, so they're forgiving of values out of bounds.
+
+Other nodes can respond to state changes in two ways:
+1. parents can connect to the various `changed` signals
+2. subclasses can implement the various `on_` functions
+"""
 
 signal page_changed(page: int)
 signal page_count_changed(page_count: int)
@@ -25,8 +57,8 @@ enum MouseMode { HOVER, CLICK, NONE }
 #                                  s t a t e                                  #
 # --------------------------------------------------------------------------- #
 
-# source data.  each element will be loaded into a grid item when we load the
-# page it's on.  the size of this array determines the total number of pages.
+# source data.  the size of this array determines the total number of pages.
+# each element will be loaded into a grid item when we load the page it's on.  
 var data: Array[Variant] = []:
 	set(x):
 		data = x
@@ -41,8 +73,8 @@ var data: Array[Variant] = []:
 var page: int = 0:
 	set(new):
 		page = clampi(new, 0, page_count - 1)
-		load_page(page)
-		on_page_changed(page)
+		load_page()
+		on_page_changed()
 		page_changed.emit(page)
 
 # children on the current page.  should be no larger than rows * columns.
@@ -61,6 +93,7 @@ func select(new: int):
 	if has_selected: on_select(items[selected])
 	var selected_data = data[(page * page_size) + selected] if has_selected else null
 	selected_changed.emit(selected, selected_data)
+
 
 #                    c o m p u t e d   p r o p e r t i e s                    #
 # --------------------------------------------------------------------------- #
@@ -85,10 +118,22 @@ var row: int:
 var last_row: int:
 	get: return 0 if items.is_empty() else (items.size() - 1) / columns
 
-# --------------------------------------------------------------------------- #
-# abstract
 
-# should initialize `data`.  called from _ready.
+# =========================================================================== #
+
+func _ready():
+	Dispatcher.menu_next_page.connect(next)
+	Dispatcher.menu_prev_page.connect(prev)
+	initialize()
+	page = 0
+	if !allow_unselected: select(0)
+
+
+# =========================================================================== #
+#                               A B S T R A C T                               #
+# --------------------------------------------------------------------------- #
+
+# override this instead of _ready
 func initialize(): pass
 
 # should take in a slice of data the same length as page_size, and return an
@@ -101,24 +146,18 @@ func on_select(item: Control): item.grab_focus()
 
 func on_deselect(item: Control): item.release_focus()
 
-func on_page_changed(_page: int): pass
+func on_page_changed(): pass
 
+
+# =========================================================================== #
+#                             P A G I N A T I O N                             #
 # --------------------------------------------------------------------------- #
 
-func _ready():
-	Dispatcher.menu_next_page.connect(next)
-	Dispatcher.menu_prev_page.connect(prev)
-	initialize()
-	page = 0
-	if !allow_unselected: select(0)
-
-# --------------------------------------------------------------------------- #
-
-func load_page(index: int):
+# called from the `page` setter.  should not be called on its own.
+func load_page():
 	for child in get_children(): child.queue_free()
-	var start = page_size * index
-	var end = start + page_size
-	items = load_items(data.slice(start, end))
+	var start = page_size * page
+	items = load_items(data.slice(start, start + page_size))
 	for i in items.size():
 		var item = items[i]
 		connect_item(item, i)
@@ -127,6 +166,7 @@ func load_page(index: int):
 	# again.  setting `selected` also re-clamps it in case the page size shrunk.
 	select(selected)
 
+# set up each item to update `selected` on the appropriate mouse action
 func connect_item(item: Control, i: int):
 	match mouse_mode:
 		MouseMode.HOVER: item.mouse_entered.connect(func(): select(i))
@@ -161,6 +201,8 @@ func _input(e: InputEvent):
 		if e.get_action_strength(key) == 1:
 			call("_" + key)
 			accept_event()
+	# special case: only capture `ui_cancel` if we have a selection to clear and
+	# we are allowed to clear it
 	if e.is_action_pressed(&'ui_cancel') and has_selected and allow_unselected:
 		selected = -1
 		accept_event()

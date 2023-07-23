@@ -12,8 +12,8 @@ func initialize(key = null):
 
 # --------------------------------------------------------------------------- #
 
-func set_section_title(node: Label, title: StringName):
-	node.text = str(" ", tr(title).to_upper())
+func set_section_title(node: Label, t: StringName):
+	node.text = str(" ", tr(t).to_upper())
 
 # --------------------------------------------------------------------------- #
 
