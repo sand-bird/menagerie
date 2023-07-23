@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://hnir4b4agld2"]
+[gd_scene load_steps=5 format=3 uid="uid://hnir4b4agld2"]
 
 [ext_resource type="Texture2D" uid="uid://bocvk6om277re" path="res://assets/ui/elements/item_grid_small_9patch.png" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/inventory/item_grid.gd" id="2"]
 [ext_resource type="PackedScene" path="res://ui/main_menu/inventory/selector.tscn" id="3"]
+[ext_resource type="Script" path="res://ui/main_menu/inventory/item_grid_list.gd" id="3_yeyab"]
 
 [node name="item_grid" type="NinePatchRect"]
 offset_left = 166.0
@@ -23,6 +24,11 @@ layout_mode = 0
 pivot_offset = Vector2(94, 5)
 theme_override_constants/h_separation = 3
 theme_override_constants/v_separation = 3
+columns = 5
+script = ExtResource("3_yeyab")
+mouse_mode = 1
+rows = 5
+allow_unselected = false
 
 [node name="selector" parent="." instance=ExtResource("3")]
 layout_mode = 0

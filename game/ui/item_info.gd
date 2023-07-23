@@ -9,7 +9,7 @@ func update_item(state):
 	$item_icon/icon.texture = Data.fetch_res([state.id, 'icon'])
 	
 	# TODO: replace this with tags/properties (entities will not have a single category)
-	$item_properties/category.text = data.category
+#	$item_properties/category.text = data.category
 	
 	var value = state.get('value', data.value)
 	$item_properties/value.text = U.comma(value)
@@ -19,5 +19,5 @@ func update_item(state):
 	else:
 		$item_icon/quantity.show()
 		$item_icon/quantity.text = str(state.qty)
-		var min_size = $item_icon/quantity.get_minimum_size().x
+		#var min_size = $item_icon/quantity.get_minimum_size().x
 		#$item_icon/quantity.offset_left = -11 - min_size

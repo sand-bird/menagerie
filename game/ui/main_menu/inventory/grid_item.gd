@@ -1,23 +1,11 @@
 extends Button
 
 var qty
-var index
 
-# the notion of an inventory "item" is a bit misleading in
-# our terminology, since an Item is already a kind of thing
-# in the game. i couldn't come up with a better term though.
-
-# item data, like quantity and state if there is any, is
-# stored inside the Player singleton. the inventory ui only
-# stores pointers to this data.
-#
-# here we are dealing with one specific "item" from the ui's
-# list. we receive its index in the grid (for communicating
-# what's been selected, i think?), and its data, which is the
-# pointer. the "item_size" argument contains size info for
-# the element, depending on the parent ItemGrid's grid_size.
-func initialize(i, iref, item_size):
-	index = i
+# iref is a pointer to a "stack" in Player.inventory.
+# will need to be updated if we want to use this to represent items outside of
+# the player's inventory, eg in NPC shops.
+func initialize(iref, item_size: Vector2):
 	custom_minimum_size = item_size
 	size = item_size
 	var item = Player.inventory_get(iref)
@@ -30,9 +18,6 @@ func set_qty(item_qty):
 	else:
 		$quantity.text = str(qty)
 		$quantity.offset_left = -$quantity.get_minimum_size().x
-
-func _pressed():
-	Dispatcher.emit_signal("item_selected", index)
 
 func show_quantity(show):
 	if show && qty > 1: $quantity.show()

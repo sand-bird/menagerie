@@ -1,6 +1,6 @@
 extends PagedList
 
-@onready var ListItem = preload("res://ui/main_menu/monsters/monster_list_item.tscn")
+var ListItem = preload("res://ui/main_menu/monsters/monster_list_item.tscn")
 
 func initialize(arg = null):
 	data = Player.garden.monsters.values() if Player.garden != null else []

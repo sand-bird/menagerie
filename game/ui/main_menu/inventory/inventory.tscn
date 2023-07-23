@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="Script" path="res://ui/main_menu/inventory/inventory.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://drv63ikod5fcf" path="res://ui/item_info.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://ui/main_menu/inventory/item_grid.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://hnir4b4agld2" path="res://ui/main_menu/inventory/item_grid.tscn" id="5"]
 
 [node name="inventory" type="Control"]
 custom_minimum_size = Vector2(296, 142)

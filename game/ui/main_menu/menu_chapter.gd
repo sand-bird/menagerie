@@ -23,7 +23,7 @@ func _init():
 # open the chapter to the section associated with the key param, or to the first
 # section if the key is null.
 func open(key = null) -> Control: # key: String
-	if sections.is_empty(): build_index()
+#	if sections.is_empty(): build_index()
 	if sections.is_empty(): return
 	if key == null: key = sections.keys()[0]
 	if not key in sections:
@@ -62,12 +62,12 @@ class Monsters extends MenuChapter:
 class Items extends MenuChapter:
 	const PATH = "res://ui/main_menu/inventory"
 	const ICON = "items"
-	func build_index(): sections[null] = PATH.path_join("items.tscn")
+	func build_index(): sections[&'items'] = PATH.path_join("inventory.tscn")
 
 class Objects extends MenuChapter:
 	const PATH = "res://ui/main_menu/inventory"
 	const ICON = "inventory"
-	func build_index(): sections[null] = PATH.path_join("objects.tscn")
+	func build_index(): sections[&'objects'] = PATH.path_join("inventory.tscn")
 
 class TownMap extends MenuChapter:
 	const PATH = "res://ui/main_menu/town_map"

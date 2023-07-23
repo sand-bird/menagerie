@@ -1,9 +1,9 @@
 extends GridContainer
 class_name PagedList
 
-signal page_changed(_page: int)
-signal page_count_changed(_page_count: int)
-signal selected_changed(_selected: int)
+signal page_changed(page: int)
+signal page_count_changed(page_count: int)
+signal selected_changed(selected: int, data: Variant)
 
 #                                 c o n f i g                                 #
 # --------------------------------------------------------------------------- #
@@ -29,8 +29,9 @@ enum MouseMode { HOVER, CLICK, NONE }
 # page it's on.  the size of this array determines the total number of pages.
 var data: Array[Variant] = []:
 	set(x):
-		print('data changed!!')
 		data = x
+		# reload the page when data changes
+		page = page
 		# page count depends on data, rows, and columns.
 		# we should emit this on all 3, but it should be ok to just use data
 		# since we don't really expect rows or columns to change at runtime.
@@ -58,7 +59,8 @@ func select(new: int):
 	var min = -1 if allow_unselected or items.is_empty() else 0 
 	selected = clampi(new, min, items.size() - 1)
 	if has_selected: on_select(items[selected])
-	selected_changed.emit(selected)
+	var selected_data = data[(page * page_size) + selected] if has_selected else null
+	selected_changed.emit(selected, selected_data)
 
 #                    c o m p u t e d   p r o p e r t i e s                    #
 # --------------------------------------------------------------------------- #
@@ -81,25 +83,25 @@ var row: int:
 # get the last selectable row on the page.  should be no larger than rows - 1,
 # but may be smaller if we don't have a full page of items.
 var last_row: int:
-	get: return 0 if items.is_empty() else items.size() - 1 / columns
+	get: return 0 if items.is_empty() else (items.size() - 1) / columns
 
 # --------------------------------------------------------------------------- #
 # abstract
+
+# should initialize `data`.  called from _ready.
+func initialize(): pass
 
 # should take in a slice of data the same length as page_size, and return an
 # array of Control nodes which we will then add as children.
 func load_items(_data_slice: Array[Variant]) -> Array[Control]:
 	return []
 
-# should initialize `data`.
-func initialize(): pass
-
 # do whatever should be done when a child is selected.
 func on_select(item: Control): item.grab_focus()
 
 func on_deselect(item: Control): item.release_focus()
 
-func on_page_changed(page: int): pass
+func on_page_changed(_page: int): pass
 
 # --------------------------------------------------------------------------- #
 
@@ -135,10 +137,12 @@ func connect_item(item: Control, i: int):
 # --------------------------------------------------------------------------- #
 
 func next(wrap: bool):
+	if page >= page_count - 1: return
 	page += 1
 	if wrap: select(columns * row)
 
 func prev(wrap: bool):
+	if page <= 0: return
 	page -= 1
 	if wrap: select((columns * row) + (columns - 1))
 
