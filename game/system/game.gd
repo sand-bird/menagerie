@@ -11,7 +11,7 @@ func _ready():
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	Data.init()
-	Dispatcher.emit_signal("ui_open", "title_screen")
+	Dispatcher.ui_open.emit("title_screen")
 
 
 # =========================================================================== #
@@ -52,7 +52,7 @@ func load_garden(data):
 	$viewport.add_child(garden)
 	garden.init(data)
 	Player.garden = garden
-	Dispatcher.emit("ui_close", 0)
+	Dispatcher.ui_close.emit(0)
 
 
 # =========================================================================== #

@@ -22,7 +22,7 @@ func _pressed():
 	if is_current: return
 	unhover()
 	is_current = true
-	Dispatcher.emit_signal("menu_open", id)
+	Dispatcher.menu_open.emit(id)
 
 func hover():
 	if !is_current: $sprite.position.y = -1

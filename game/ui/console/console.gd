@@ -207,13 +207,13 @@ func cmd_save(_args):
 	if get_tree().current_scene.current_save_dir == null:
 		put("No save file loaded!")
 		return
-	Dispatcher.emit('save_game')
+	Dispatcher.save_game.emit()
 
 func cmd_quit(_args):
-	Dispatcher.emit('quit_game')
+	Dispatcher.quit_game.emit()
 
 func cmd_reset(_args):
-	Dispatcher.emit('reset_game')
+	Dispatcher.reset_game.emit()
 
 # --------------------------------------------------------------------------- #
 

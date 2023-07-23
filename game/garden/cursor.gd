@@ -78,7 +78,7 @@ func stick(body: Entity):
 		elif shape_node is RectangleShape2D:
 			shape_height = shape_node.size.y
 		hand_height = shape_height * SHAPE_HEIGHT_MULTIPLIER
-		Dispatcher.emit('entity_highlighted', body)
+		Dispatcher.entity_highlighted.emit(body)
 
 # --------------------------------------------------------------------------- #
 
@@ -86,7 +86,7 @@ func unstick(body: Node2D):
 	if body != curr_body: return
 	hand_height = DEFAULT_HAND_HEIGHT
 	curr_body = null
-	Dispatcher.emit('entity_unhighlighted', body)
+	Dispatcher.entity_unhighlighted.emit(body)
 
 # --------------------------------------------------------------------------- #
 
@@ -106,12 +106,12 @@ func measure_mouse_movement(delta):
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed():
 		if curr_body:
-			Dispatcher.emit("entity_selected", curr_body)
+			Dispatcher.entity_selected.emit(curr_body)
 			print('clicked target')
 			selecting = true
 			unstick(curr_body)
 		else:
-			Dispatcher.emit("entity_unselected")
+			Dispatcher.entity_unselected.emit()
 			selecting = false
 		# get_tree().set_input_as_handled()
 

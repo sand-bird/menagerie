@@ -44,9 +44,7 @@ Actions work similarly to behavior trees, though they aren't defined in as stric
 
 ## Dispatcher
 
-The global signal handler is called Dispatcher and lives in [`system/dispatcher.gd`](game/system/dispatcher.gd).  All the signals are defined in there, so it functions as handy library of them.
-
-As of Godot 4 these should be triggered with `Dispatcher.signal.emit(args)`, but some code still uses `Dispatcher.emit('signal', args)`.
+The global signal handler is called Dispatcher and lives in [`system/dispatcher.gd`](game/system/dispatcher.gd).  All the signals are defined in there, so it functions as handy library of them.  Trigger with `Dispatcher.signal.emit(args)`, or `Dispatcher.emit_signal('signal', args)` if the signal name is being computed dynamically.
 
 
 ## UI stack

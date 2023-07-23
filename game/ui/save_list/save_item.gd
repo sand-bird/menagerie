@@ -13,5 +13,5 @@ func load_info(index, save_info):
 	$index.text = str(index)
 
 func _pressed():
-	Dispatcher.emit('ui_close')
-	Dispatcher.emit('load_game', save_dir)
+	Dispatcher.ui_close.emit()
+	Dispatcher.load_game.emit(save_dir)
