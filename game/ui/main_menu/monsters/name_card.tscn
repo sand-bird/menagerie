@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dovwnv58etq4r"]
+[gd_scene load_steps=11 format=3 uid="uid://dovwnv58etq4r"]
 
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="1_cgx65"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="2_sgfrp"]
@@ -8,8 +8,9 @@
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="5_i14ns"]
 [ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="6_wr1l1"]
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_6cg88"]
+[ext_resource type="PackedScene" uid="uid://cn7iyfs48s1vn" path="res://ui/portrait.tscn" id="7_bdwnp"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p60va"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vufpw"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -51,7 +52,7 @@ anchor_bottom = 1.0
 offset_top = -12.0
 offset_bottom = -1.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_p60va")
+theme_override_styles/panel = SubResource("StyleBoxFlat_vufpw")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -71,7 +72,16 @@ value = 5.0
 max_value = 10
 metadata/_edit_lock_ = true
 
-[node name="portrait" type="TextureRect" parent="."]
+[node name="portrait" parent="." instance=ExtResource("7_bdwnp")]
+layout_mode = 0
+texture = ExtResource("3_03d0u")
+mask_margin = Vector2i(8, 8)
+mask_padding = 3
+bg_margin = 8
+border_radius = 5
+
+[node name="portrait0" type="TextureRect" parent="."]
+visible = false
 clip_children = 2
 layout_mode = 1
 offset_right = 38.0
@@ -80,7 +90,7 @@ theme = ExtResource("2_sgfrp")
 texture = ExtResource("3_03d0u")
 stretch_mode = 2
 
-[node name="sprite" type="Sprite2D" parent="portrait"]
+[node name="sprite" type="Sprite2D" parent="portrait0"]
 position = Vector2(7, 7)
 texture = ExtResource("4_kpmpr")
 centered = false

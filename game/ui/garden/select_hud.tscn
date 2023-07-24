@@ -109,3 +109,4 @@ offset_left = 5.0
 offset_top = -1.0
 offset_right = 34.0
 offset_bottom = 28.0
+mask_margin = Vector2i(2, 3)

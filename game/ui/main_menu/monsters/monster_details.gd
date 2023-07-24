@@ -22,6 +22,8 @@ func update(m: Monster):
 	$left/name_card/name.text = m.monster_name
 	$left/name_card/sex.update(m)
 	$left/name_card/loyalty/hearts.value = m.attributes.loyalty.lerp(0, 10)
+	var anim_info = m.get_anim_info(null, Vector2(1, 1))
+	$left/name_card/portrait.update(anim_info, m.sex)
 	
 	# species (morph)
 	set_section_title($left/info/species/title, T.SPECIES)

@@ -4,7 +4,70 @@
 [ext_resource type="Texture2D" uid="uid://bekreiaqh7xlj" path="res://data/monsters/milotic/idle_front_right.png" id="3_xl2fu"]
 
 [sub_resource type="GDScript" id="GDScript_inbm3"]
-script/source = "extends TextureRect
+script/source = "@tool
+extends TextureRect
+
+@export var mask_margin: Vector2i:
+	set(new):
+		mask_margin = new
+		update_mask_position()
+
+@export var mask_padding: int:
+	set(new):
+		mask_padding = new
+		update_mask_position()
+
+@export var bg_margin: int:
+	set(new):
+		bg_margin = new
+		update_bg_margin()
+
+@export var border_radius: int:
+	set(new):
+		border_radius = new
+		update_border_radius()
+
+# --------------------------------------------------------------------------- #
+
+func _ready():
+	update_mask_position()
+	update_bg_margin()
+	update_border_radius()
+
+# --------------------------------------------------------------------------- #
+
+func update_mask_position():
+	if !has_node('mask'): return
+	$mask.offset_bottom = -mask_margin.y
+	$mask.offset_left = mask_margin.x
+	$mask.offset_right = -mask_margin.x
+	$mask.offset_top = -mask_padding
+	$mask/sprite.update_texture()
+
+# --------------------------------------------------------------------------- #
+
+func update_border_radius():
+	if !has_node('bg') or !has_node('mask'): return
+	
+	for panel in [$bg, $mask]:
+		var panel_theme: StyleBoxFlat = panel.get_theme_stylebox(\"panel\")
+		panel_theme.set_corner_radius_all(border_radius)
+	
+	var mask_panel_theme: StyleBoxFlat = $mask.get_theme_stylebox(\"panel\")
+	mask_panel_theme.corner_radius_top_left = 0
+	mask_panel_theme.corner_radius_top_right = 0
+
+# --------------------------------------------------------------------------- #
+
+func update_bg_margin():
+	if !has_node('bg'): return
+	$bg.set_offsets_preset(
+			Control.PRESET_FULL_RECT,
+			Control.PRESET_MODE_MINSIZE,
+			bg_margin
+		)
+
+# --------------------------------------------------------------------------- #
 
 const FEMALE_BG = Color(\"f86790\")
 const MALE_BG = Color(\"40c8f8\")
@@ -19,20 +82,25 @@ func update(anim_info: Dictionary, sex = null):
 	sprite.hframes = anim_info.get('frames', 1)
 	sprite.flip_h = anim_info.get('flip', false)
 	sprite.texture = ResourceLoader.load(anim_info.spritesheet)
+
+# --------------------------------------------------------------------------- #
+
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6xie"]
+resource_local_to_scene = true
 bg_color = Color(0.913725, 0.709804, 0.639216, 1)
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 corner_detail = 5
 anti_aliasing = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bx3yr"]
-corner_radius_bottom_right = 33
-corner_radius_bottom_left = 33
+resource_local_to_scene = true
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 corner_detail = 4
 anti_aliasing = false
 
@@ -45,7 +113,7 @@ func _ready():
 
 func update_texture():
 	var parent_size = get_parent().size
-	var parent_padding = get_parent().offset_top / 1.2
+	var parent_padding = get_parent().offset_top / 2
 	print('parent padding ', parent_padding)
 	var size = get_rect().size
 	if size < parent_size:
@@ -56,7 +124,7 @@ func update_texture():
 		centered = false
 		position.x = parent_size.x - size.x
 		position.y = 0
-		position += Vector2(-2, 0)
+#		position += Vector2(-2, 0)
 "
 
 [node name="portrait" type="TextureRect"]
@@ -65,6 +133,10 @@ offset_bottom = 29.0
 texture = ExtResource("1_dbihw")
 stretch_mode = 2
 script = SubResource("GDScript_inbm3")
+mask_margin = Vector2i(1, 4)
+mask_padding = 5
+bg_margin = 3
+border_radius = 16
 
 [node name="bg" type="Panel" parent="."]
 show_behind_parent = true
