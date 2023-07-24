@@ -217,6 +217,8 @@ static func div(a, b) -> float: return float(a) / float(b)
 static func ceil_div(a, b) -> int: return ceil(float(a) / float(b))
 # ...and round the result
 static func round_div(a, b) -> int: return round(float(a) / float(b))
+# same result as integer division, but convenient to have the same api
+static func floor_div(a, b) -> int: return floor(float(a) / float(b))
 
 # --------------------------------------------------------------------------- #
 

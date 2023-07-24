@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_6cg88"]
 [ext_resource type="PackedScene" uid="uid://cn7iyfs48s1vn" path="res://ui/portrait.tscn" id="7_bdwnp"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vufpw"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6454p"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -52,7 +52,7 @@ anchor_bottom = 1.0
 offset_top = -12.0
 offset_bottom = -1.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_vufpw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_6454p")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -76,9 +76,9 @@ metadata/_edit_lock_ = true
 layout_mode = 0
 texture = ExtResource("3_03d0u")
 mask_margin = Vector2i(8, 8)
-mask_padding = 3
+mask_padding = 7
 bg_margin = 8
-border_radius = 5
+border_radius = 6
 
 [node name="portrait0" type="TextureRect" parent="."]
 visible = false
