@@ -70,26 +70,41 @@ func _update_facing(new_facing):
 func add_anim(anim_id: String, anim_data: Dictionary):
 	var library = AnimationLibrary.new()
 	
-	var y_dirs = ['back', 'front'] # back = 0, front = 1
-	var x_dirs = ['left', 'right'] # left = 0, right = 1
-	for y in range(2):
-		var y_dir = y_dirs[y]
-		var anims: Dictionary = anim_data[y_dir]
-		for x in range(2):
-			var x_dir = x_dirs[x]
-			var anim_name = str(y, "_", x)
-			library.add_animation(anim_name,
-				_init_facing(anims[x_dir]) if x_dir in anims else
-				_init_facing(anims.values()[0], true)
+	for y in range(2): for x in range(2):
+		library.add_animation(
+			str(y, "_", x),
+			create_animation_for_facing(
+				get_anim_info_for_facing(anim_data, Vector2(x, y))
 			)
+		)
 	add_animation_library(anim_id, library)
+
+# --------------------------------------------------------------------------- #
+
+const y_dirs = ['back', 'front'] # back = 0, front = 1
+const x_dirs = ['left', 'right'] # left = 0, right = 1
+
+# given a set of anim data, get the data for a particular facing.
+# anim data should always have `front` and `back` keys, and each of these may
+# have one or both of `left` and `right` keys.  if the desired horizontal facing
+# is not present in the anim data, we use the opposite facing and toggle its
+# `flip` property.
+func get_anim_info_for_facing(anim_data: Dictionary, raw_facing: Vector2):
+	var facing = raw_facing.normalized().ceil()
+	var y_dir = y_dirs[facing.y]
+	var x_dir = x_dirs[facing.x]
+	var anims: Dictionary = anim_data[y_dir]
+	if x_dir in anims: return anims[x_dir]
+	var anim = anims.values()[0].duplicate()
+	anim.merge({ flip = !anim.get('flip', false) }, true)
+	return anim
 
 # --------------------------------------------------------------------------- #
 
 # creates an animation for a specific facing direction, using an `anim_info`
 # object from the monster's data definition, and adds it to the AnimationPlayer
 # for our sprite.
-func _init_facing(anim_info, flip = false):
+func create_animation_for_facing(anim_info, flip = false) -> Animation:
 	# set the step and length parameters of the new animation depending on the
 	# frame count and fps specified in the data definition. the `step` parameter
 	# will determine the delay between frames when we insert them.
@@ -101,40 +116,14 @@ func _init_facing(anim_info, flip = false):
 	
 	var i: int # current track index
 	
-	# add a track to set the hframes value of our sprite.
-	i = anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(i, "sprite:hframes")
-	anim.track_insert_key(i, 0.0, anim_info.frames)
-	
-	# add a track to set whether our sprite is h-flipped (for right-facing
-	# animations without unique spritesheets).
-	# the data definition can optionally also specify whether the sprite should
-	# be flipped - in that case, a true value for the `flip` argument will cancel
-	# it out (boolean XOR).
-	var should_flip = (anim_info.flip != flip
-			if anim_info.has("flip") else flip)
-	i = anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(i, "sprite:flip_h")
-	anim.track_insert_key(i, 0.0, should_flip)
-	
-	# add a track to set the offset of the new texture.  by default the texture
-	# is horizontally centered and vertically bottom-aligned (the monster's
-	# position should line up with its feet).  this allows us to offset the
-	# sprite in case its "feet" are not at the bottom-center of the image.
-	var offset = U.parse_vec(anim_info.get('offset'), Vector2(0, 0))
-	if should_flip: offset.x = -offset.x
-	i = anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(i, "sprite:anim_offset")
-	anim.track_insert_key(i, 0.0, offset)
-	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
-	
-	# add a track to set our texture to the spritesheet specified in the data.
-	# must do this after all the properties that affect the sprite's offset,
-	# because sprite.gd updates its offset when its texture is updated.
-	i = anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(i, "sprite:texture")
-	var spritesheet = ResourceLoader.load(anim_info.spritesheet)
-	anim.track_insert_key(i, 0.0, spritesheet)
+	# update the following sprite properties based on anim_info:
+	# hframes, flip_h, aux_offset, texture
+	i = anim.add_track(Animation.TYPE_METHOD)
+	anim.track_set_path(i, "sprite")
+	anim.track_insert_key(i, 0.0, {
+		method = 'update_texture',
+		args = [anim_info]
+	})
 	
 	# add the animation track, with a keyframe for each frame in the spritesheet
 	# at intervals determined by the `step` parameter we calculated earlier

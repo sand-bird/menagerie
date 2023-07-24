@@ -30,7 +30,8 @@ func _init(_data: Dictionary, _garden: Garden):
 	super(_data, _garden)
 	mass = data.get('mass', 1)
 	
-	sprite.texture = ResourceLoader.load(data.sprite)
+	sprite.update_texture({ spritesheet = data.sprite, frames = 1 })
+	#sprite.texture = ResourceLoader.load(data.sprite)
 
 
 # =========================================================================== #

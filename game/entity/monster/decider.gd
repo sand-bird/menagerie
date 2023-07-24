@@ -45,7 +45,7 @@ logic to choose which action to perform next. here's how it should work:
 static func self_actions(m):
 	return [
 		WanderAction.new(m), 
-#		SleepAction.new(m),
+		SleepAction.new(m),
 		IdleAction.new(m)
 	]
 
