@@ -348,15 +348,28 @@ func get_memory_size():
 #                             A N I M A T I O N S                             #
 # --------------------------------------------------------------------------- #
 
+var morph_anims: Dictionary:
+	get: return Data.fetch([type, 'morphs', morph, 'animations'])
+
+# get the anim_info dict for a particular key and facing.
+# uses the current values from $anim if arguments are null.
+func get_anim_info(_anim_key = null, _facing = null) -> Dictionary:
+	var anim_key = _anim_key if _anim_key != null else anim.current
+	var facing = _facing if _facing != null else anim.facing
+	var anim_data = morph_anims.get(anim_key, morph_anims.get('idle'))
+	return anim.get_anim_info_for_facing(anim_data, facing)
+
+# --------------------------------------------------------------------------- #
+
 func load_anims():
-	var anim_data = Data.fetch([type, 'morphs', morph, 'animations'])
-	Log.verbose(self, ['anim data: ', anim_data])
+	Log.verbose(self, ['morph anim data: ', morph_anims])
 	# TODO: handle unexpected case where there is no anim_data
-	for anim_id in anim_data:
-		anim.add_anim(anim_id, anim_data[anim_id])
+	for anim_id in morph_anims:
+		anim.add_anim(anim_id, morph_anims[anim_id])
 	Log.debug(self, ['animations: ', anim.get_animation_list()])
 	play_anim(Constants.Anim.IDLE)
 
+# --------------------------------------------------------------------------- #
 
 func play_anim(anim_id, speed = 1.0, loops = 0):
 	anim.set_speed_scale(speed)

@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="6_wr1l1"]
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_6cg88"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2kudm"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p60va"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -51,7 +51,7 @@ anchor_bottom = 1.0
 offset_top = -12.0
 offset_bottom = -1.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_2kudm")
+theme_override_styles/panel = SubResource("StyleBoxFlat_p60va")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -74,14 +74,15 @@ metadata/_edit_lock_ = true
 [node name="portrait" type="TextureRect" parent="."]
 clip_children = 2
 layout_mode = 1
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 38.0
+offset_bottom = 38.0
 theme = ExtResource("2_sgfrp")
 texture = ExtResource("3_03d0u")
+stretch_mode = 2
 
 [node name="sprite" type="Sprite2D" parent="portrait"]
-position = Vector2(8, 8)
+position = Vector2(7, 7)
 texture = ExtResource("4_kpmpr")
 centered = false
 region_enabled = true
-region_rect = Rect2(10, 1, 24, 24)
+region_rect = Rect2(10, 2, 24, 24)

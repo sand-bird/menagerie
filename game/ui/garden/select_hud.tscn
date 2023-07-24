@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://o54onhiymp3l"]
+[gd_scene load_steps=10 format=3 uid="uid://o54onhiymp3l"]
 
 [ext_resource type="Script" path="res://ui/garden/select_hud.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://blwq5wkkfct1s" path="res://assets/ui/elements/drive_bg_horizontal.png" id="3"]
@@ -7,9 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://pcknbsbc2iqe" path="res://assets/ui/elements/drive_empty_horizontal.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://5774e086y88" path="res://assets/ui/elements/drive_full_horizontal.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://b5c51yxxmdugy" path="res://assets/ui/elements/drive_bg_vertical.png" id="6"]
-[ext_resource type="Texture2D" uid="uid://bdi7d2qrt6nx5" path="res://assets/ui/elements/portrait_bg.png" id="8"]
+[ext_resource type="PackedScene" uid="uid://cn7iyfs48s1vn" path="res://ui/portrait.tscn" id="9_6x0f7"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_eddpa"]
-[ext_resource type="Texture2D" uid="uid://cepng252pvxww" path="res://assets/ui/elements/portrait_frame.png" id="10_my3sx"]
 
 [node name="select_hud" type="ReferenceRect"]
 offset_left = 4.0
@@ -18,6 +17,7 @@ theme = ExtResource("3_kpdta")
 script = ExtResource("2")
 
 [node name="horizontal" type="TextureRect" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 27.0
 offset_top = 19.0
@@ -103,21 +103,9 @@ offset_bottom = 47.0
 theme_override_styles/normal = ExtResource("9_eddpa")
 text = "test 2"
 
-[node name="portrait" type="TextureRect" parent="."]
+[node name="portrait" parent="." instance=ExtResource("9_6x0f7")]
 layout_mode = 0
 offset_left = 5.0
 offset_top = -1.0
 offset_right = 34.0
 offset_bottom = 28.0
-texture = ExtResource("10_my3sx")
-
-[node name="back" type="TextureRect" parent="portrait"]
-show_behind_parent = true
-clip_children = 2
-layout_mode = 0
-offset_right = 29.0
-offset_bottom = 29.0
-texture = ExtResource("8")
-
-[node name="sprite" type="Sprite2D" parent="portrait/back"]
-position = Vector2(14, 14)

@@ -1,0 +1,102 @@
+[gd_scene load_steps=7 format=3 uid="uid://cn7iyfs48s1vn"]
+
+[ext_resource type="Texture2D" uid="uid://cepng252pvxww" path="res://assets/ui/elements/portrait_frame.png" id="1_dbihw"]
+[ext_resource type="Texture2D" uid="uid://bekreiaqh7xlj" path="res://data/monsters/milotic/idle_front_right.png" id="3_xl2fu"]
+
+[sub_resource type="GDScript" id="GDScript_inbm3"]
+script/source = "extends TextureRect
+
+const FEMALE_BG = Color(\"f86790\")
+const MALE_BG = Color(\"40c8f8\")
+const NONE_BG = Color(\"e9b5a3\")
+
+const BG_COLORS = [FEMALE_BG, MALE_BG]
+
+func update(anim_info: Dictionary, sex = null):
+	var panel_theme = $bg.get_theme_stylebox(\"panel\")
+	panel_theme.bg_color = BG_COLORS[sex] if sex != null else NONE_BG
+	var sprite = $mask/sprite
+	sprite.hframes = anim_info.get('frames', 1)
+	sprite.flip_h = anim_info.get('flip', false)
+	sprite.texture = ResourceLoader.load(anim_info.spritesheet)
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6xie"]
+bg_color = Color(0.913725, 0.709804, 0.639216, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+corner_detail = 5
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bx3yr"]
+corner_radius_bottom_right = 33
+corner_radius_bottom_left = 33
+corner_detail = 4
+anti_aliasing = false
+
+[sub_resource type="GDScript" id="GDScript_k3l88"]
+resource_name = "portrait_sprite.gd"
+script/source = "extends Sprite2D
+
+func _ready():
+	texture_changed.connect(update_texture)
+
+func update_texture():
+	var parent_size = get_parent().size
+	var parent_padding = get_parent().offset_top / 1.2
+	print('parent padding ', parent_padding)
+	var size = get_rect().size
+	if size < parent_size:
+		# center the sprite in the parent
+		centered = true
+		position = (parent_size / 2) - Vector2(0, parent_padding)
+	else:
+		centered = false
+		position.x = parent_size.x - size.x
+		position.y = 0
+		position += Vector2(-2, 0)
+"
+
+[node name="portrait" type="TextureRect"]
+offset_right = 29.0
+offset_bottom = 29.0
+texture = ExtResource("1_dbihw")
+stretch_mode = 2
+script = SubResource("GDScript_inbm3")
+
+[node name="bg" type="Panel" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_w6xie")
+
+[node name="mask" type="Panel" parent="."]
+clip_children = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = -5.0
+offset_right = -1.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bx3yr")
+
+[node name="sprite" type="Sprite2D" parent="mask"]
+position = Vector2(-5, 0)
+texture = ExtResource("3_xl2fu")
+centered = false
+hframes = 2
+script = SubResource("GDScript_k3l88")

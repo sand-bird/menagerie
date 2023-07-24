@@ -19,7 +19,8 @@ const FADE_TIME = 1.0
 # we must define a `connect_x` function for each of these values
 var target_types = {
 	Constants.EntityType.MONSTER: 'monster',
-	Constants.EntityType.OBJECT: 'object'
+	Constants.EntityType.OBJECT: 'object',
+	Constants.EntityType.ITEM: 'item'
 }
 
 @onready var sprite = $portrait/back/sprite
@@ -105,17 +106,27 @@ func update_monster():
 	$horizontal/social.value = target.social
 	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
 	
+	# front right
+	var anim_info = target.get_anim_info(null, Vector2i(1, 1))
+	print('selected anim info: ', anim_info)
+	
 	if target.sprite != null:
-		$portrait/back/sprite.texture = target.sprite.texture
-		$portrait/back/sprite.hframes = target.sprite.hframes
-		$portrait/back/sprite.frame = 0
-		$portrait/back/sprite.centered = false
-		$portrait/back/sprite.offset = target.sprite.offset
-		$portrait/back/sprite.flip_h = target.sprite.flip_h
-		$portrait/back/sprite.offset.y = -target.data.size - 2
+		$portrait.update(anim_info, target.sex)
+#		$portrait/back/sprite.texture = target.sprite.texture
+#		$portrait/back/sprite.hframes = target.sprite.hframes
+#		$portrait/back/sprite.frame = 0
+#		$portrait/back/sprite.centered = false
+#		$portrait/back/sprite.offset = target.sprite.offset
+#		$portrait/back/sprite.flip_h = target.sprite.flip_h
+#		$portrait/back/sprite.offset.y = -target.data.size - 2
 
 # --------------------------------------------------------------------------- #
 
 func connect_object():
-	$name_bar.text = 'an object'
+	$name_bar.text = U.trans(target.data.name)
 	$horizontal.hide()
+
+func connect_item():
+	$name_bar.text = U.trans(target.data.name)
+	$horizontal.hide()
+	$portrait.update({ spritesheet = target.data.sprite })
