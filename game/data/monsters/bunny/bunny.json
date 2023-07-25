@@ -21,14 +21,16 @@
             "left": {
               "spritesheet": "~idle_back.png",
               "frames": 4,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": 0.5 }
             }
           },
           "front": {
             "left": {
               "spritesheet": "~idle_front.png",
               "frames": 4,
-              "fps": 2.0
+              "fps": 2.0,
+              "offset": { "x": 0.5 }
             }
           }
         },
@@ -37,14 +39,16 @@
             "left": {
               "spritesheet": "~walk_back.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": 0.5 }
             }
           },
           "front": {
             "left": {
               "spritesheet": "~walk_front.png",
               "frames": 4,
-              "fps": 6.0
+              "fps": 6.0,
+              "offset": { "x": 0.5 }
             }
           }
         },

@@ -159,65 +159,6 @@ func _init(_data: Dictionary, _garden: Garden):
 
 
 # =========================================================================== #
-#                          S E R I A L I Z A T I O N                          #
-# --------------------------------------------------------------------------- #
-# see the `serialize` & `deserialize` functions on the parent class, Entity.
-# `deserialize` is called from the Entity constructor, and `serialize` is
-# called from the garden's `serialize` method.
-
-# list of property names to persist and load.
-# overrides `Entity.save_keys`, which returns the generic keys shared by all
-# entities (uuid, type, and - for now - position).
-# order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially `type`).  this is
-# why we start with the keys from `super` (Entity) and append our own keys.
-func save_keys() -> Array[StringName]:
-	var keys = super.save_keys()
-	keys.append_array([
-		&'sex', &'monster_name', &'morph', &'birthday', &'age',
-		&'belly', &'mood', &'energy', &'social',
-		&'orientation',
-		&'attributes', # TODO: 'preferences',
-		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
-	])
-	return keys
-
-#                                l o a d e r s                                #
-# --------------------------------------------------------------------------- #
-
-func load_orientation(_orientation):
-	orientation = U.parse_vec(_orientation, Vector2(1, 0))
-
-func load_attributes(_attributes):
-	if not _attributes is Dictionary: _attributes = {}
-	var attribute_overrides = Data.fetch([type, &'attributes'], {})
-	attributes = Attributes.new(_attributes, attribute_overrides)
-
-# ideally we would fail to load a monster with an invalid morph.  i'm not sure
-# how to fail out of the constructor though, so for now just pick a valid one
-func load_morph(_morph):
-	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
-	morph = _morph
-
-#                             g e n e r a t o r s                             #
-# --------------------------------------------------------------------------- #
-
-func generate_type(): return Data.by_type.monster.pick_random()
-# todo: this should be weighted by `data.gender_ratio` if provided
-func generate_sex(): return Sex.values().pick_random()
-func generate_morph(): return data.morphs.keys().pick_random()
-func generate_birthday(): return Clock.get_dict()
-func generate_age(): return 0
-
-func generate_monster_name():
-	var names = preload("res://addons/randomnamesgenerator/names_in_arrays.gd")
-	return (
-		names.v_RWFemaleFirstNames if sex == Sex.FEMALE
-		else names.v_RWMaleFirstNames
-	).pick_random()
-
-
-# =========================================================================== #
 #                           M I S C   M E T H O D S                           #
 # --------------------------------------------------------------------------- #
 
@@ -251,6 +192,11 @@ func announce(msg):
 	var l = garden.get_node('ui/log')
 	l.add_text('[' + monster_name + '] ' + msg + '\n')
 	l.scroll_to_line(l.get_line_count() - 1)
+
+# --------------------------------------------------------------------------- #
+
+func get_display_name():
+	return monster_name
 
 
 # =========================================================================== #
@@ -353,10 +299,10 @@ var morph_anims: Dictionary:
 
 # get the anim_info dict for a particular key and facing.
 # uses the current values from $anim if arguments are null.
-func get_anim_info(_anim_key = null, _facing = null) -> Dictionary:
-	var anim_key = _anim_key if _anim_key != null else anim.current
+func get_sprite_info(_key = null, _facing = null) -> Dictionary:
+	var key = _key if _key != null else anim.current
 	var facing = _facing if _facing != null else anim.facing
-	var anim_data = morph_anims.get(anim_key, morph_anims.get('idle'))
+	var anim_data = morph_anims.get(key, morph_anims.get('idle'))
 	return anim.get_anim_info_for_facing(anim_data, facing)
 
 # --------------------------------------------------------------------------- #
@@ -461,3 +407,62 @@ func get_target_energy():
 
 func get_target_social():
 	return MAX_SOCIAL * attributes.extraversion.lerp(1, 0)
+
+
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
+# see the `serialize` & `deserialize` functions on the parent class, Entity.
+# `deserialize` is called from the Entity constructor, and `serialize` is
+# called from the garden's `serialize` method.
+
+# list of property names to persist and load.
+# overrides `Entity.save_keys`, which returns the generic keys shared by all
+# entities (uuid, type, and - for now - position).
+# order matters for deserialization; some properties depend on others earlier
+# in the list to already be loaded or generated (especially `type`).  this is
+# why we start with the keys from `super` (Entity) and append our own keys.
+func save_keys() -> Array[StringName]:
+	var keys = super.save_keys()
+	keys.append_array([
+		&'sex', &'monster_name', &'morph', &'birthday', &'age',
+		&'belly', &'mood', &'energy', &'social',
+		&'orientation',
+		&'attributes', # TODO: 'preferences',
+		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
+	])
+	return keys
+
+#                                l o a d e r s                                #
+# --------------------------------------------------------------------------- #
+
+func load_orientation(_orientation):
+	orientation = U.parse_vec(_orientation, Vector2(1, 0))
+
+func load_attributes(_attributes):
+	if not _attributes is Dictionary: _attributes = {}
+	var attribute_overrides = Data.fetch([type, &'attributes'], {})
+	attributes = Attributes.new(_attributes, attribute_overrides)
+
+# ideally we would fail to load a monster with an invalid morph.  i'm not sure
+# how to fail out of the constructor though, so for now just pick a valid one
+func load_morph(_morph):
+	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
+	morph = _morph
+
+#                             g e n e r a t o r s                             #
+# --------------------------------------------------------------------------- #
+
+func generate_type(): return Data.by_type.monster.pick_random()
+# todo: this should be weighted by `data.gender_ratio` if provided
+func generate_sex(): return Sex.values().pick_random()
+func generate_morph(): return data.morphs.keys().pick_random()
+func generate_birthday(): return Clock.get_dict()
+func generate_age(): return 0
+
+func generate_monster_name():
+	var names = preload("res://addons/randomnamesgenerator/names_in_arrays.gd")
+	return (
+		names.v_RWFemaleFirstNames if sex == Sex.FEMALE
+		else names.v_RWMaleFirstNames
+	).pick_random()

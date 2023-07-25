@@ -35,6 +35,18 @@ func _init(_data: Dictionary, _garden: Garden):
 
 
 # =========================================================================== #
+#                           M I S C   M E T H O D S                           #
+# --------------------------------------------------------------------------- #
+
+func _on_tick_changed():
+	# call on_tick_change methods on traits
+	pass
+
+func get_sprite_info(_key = null, _facing = null):
+	return { spritesheet = data.sprite }
+
+
+# =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 # see the `serialize` & `deserialize` functions on the parent class, Entity.
@@ -48,12 +60,3 @@ func _init(_data: Dictionary, _garden: Garden):
 # --------------------------------------------------------------------------- #
 
 func generate_type(): return Data.by_type.item.pick_random()
-
-
-# =========================================================================== #
-#                           M I S C   M E T H O D S                           #
-# --------------------------------------------------------------------------- #
-
-func _on_tick_changed():
-	# call on_tick_change methods on traits
-	pass

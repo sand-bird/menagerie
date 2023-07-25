@@ -7,6 +7,7 @@ func initialize(m: Monster):
 	pressed.connect(func():
 		Dispatcher.menu_open.emit(['monsters', m.uuid])
 	)
+	$portrait.update(m)
 
 #                              b g   c o l o r s                              #
 # --------------------------------------------------------------------------- #

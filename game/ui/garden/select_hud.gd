@@ -93,6 +93,7 @@ func clear_target(_entity = null):
 # --------------------------------------------------------------------------- #
 
 func connect_monster():
+	$portrait.update(target, true)
 	target.drives_changed.connect(update_monster)
 	update_monster()
 
@@ -103,21 +104,15 @@ func update_monster():
 	$horizontal/energy.value = target.energy
 	$horizontal/social.value = target.social
 	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
-	
-	# front right
-	var anim_info = target.get_anim_info(null, Vector2i(1, 1))
-	print('selected anim info: ', anim_info)
-	
-	if target.sprite != null:
-		$portrait.update(anim_info, target.sex)
 
 # --------------------------------------------------------------------------- #
 
 func connect_object():
 	$name_bar.text = U.trans(target.data.name)
+	$portrait.update(target)
 	$horizontal.hide()
 
 func connect_item():
 	$name_bar.text = U.trans(target.data.name)
+	$portrait.update(target)
 	$horizontal.hide()
-	$portrait.update({ spritesheet = target.data.sprite })

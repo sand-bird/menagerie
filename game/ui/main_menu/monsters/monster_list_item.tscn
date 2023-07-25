@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://b66hmvwp1bp8v"]
+[gd_scene load_steps=14 format=3 uid="uid://b66hmvwp1bp8v"]
 
 [ext_resource type="StyleBox" uid="uid://pmkvaxixfrv2" path="res://assets/ui/panels/box_outset_light.tres" id="1_ls4io"]
 [ext_resource type="StyleBox" uid="uid://css127p16ot1n" path="res://assets/ui/panels/box_outset_dark.tres" id="2_puyik"]
@@ -9,8 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="6_ck5ny"]
 [ext_resource type="PackedScene" uid="uid://caitnkowiwxu4" path="res://ui/main_menu/monsters/sex_icon.tscn" id="6_ekd1y"]
 [ext_resource type="Texture2D" uid="uid://by17wc0pmuquh" path="res://assets/harvest_moon_heart.png" id="7_f1yfw"]
+[ext_resource type="PackedScene" uid="uid://cn7iyfs48s1vn" path="res://ui/portrait.tscn" id="10_y7nig"]
+[ext_resource type="Texture2D" uid="uid://fdikqw6i7djy" path="res://assets/ui/panels/item_box.png" id="11_l8mck"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5ul7"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ollw1"]
 resource_local_to_scene = true
 bg_color = Color(0.901961, 0.709804, 0.631373, 1)
 corner_radius_top_left = 5
@@ -72,7 +74,7 @@ offset_top = 15.0
 offset_right = 41.0
 offset_bottom = 26.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_p5ul7")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ollw1")
 
 [node name="loyalty" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -92,3 +94,21 @@ empty_texture = null
 value = 5.0
 max_value = 10
 metadata/_edit_lock_ = true
+
+[node name="portrait" parent="." instance=ExtResource("10_y7nig")]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 26.0
+offset_bottom = 26.0
+texture = ExtResource("11_l8mck")
+patch_margin_left = 5
+patch_margin_top = 9
+patch_margin_right = 5
+patch_margin_bottom = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+mask_margin = Vector2i(1, 1)
+mask_padding = 5
+bg_margin = 1
+border_radius = 6

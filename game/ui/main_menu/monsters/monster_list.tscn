@@ -10,5 +10,4 @@ theme_override_constants/h_separation = 18
 theme_override_constants/v_separation = 3
 columns = 2
 script = ExtResource("1_0cfbb")
-mouse_mode = 1
 rows = 4

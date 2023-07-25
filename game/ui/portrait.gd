@@ -1,5 +1,5 @@
 @tool
-extends TextureRect
+extends NinePatchRect
 
 @export var mask_margin: Vector2i:
 	set(new):
@@ -37,17 +37,21 @@ const MALE_BG = Color("40c8f8")
 const NONE_BG = Color("e9b5a3")
 const BG_COLORS = [FEMALE_BG, MALE_BG]
 
-# take in anim_info provided by `Monster.get_anim_info` and update the sprite
-func update(anim_info: Dictionary, sex = null):
+# note: this duplicates a lot of the logic in `entity/sprite`.
+# ideally we should have generic EntitySprite class that can parse sprite_info
+# and animate itself accordingly, and use it both here and in Entity.
+func update(e: Entity, idle = false):
+	var sprite_info = e.get_sprite_info('idle' if idle else null, Vector2(1, 1))
 	var panel_theme = $bg.get_theme_stylebox("panel")
-	panel_theme.bg_color = BG_COLORS[sex] if sex != null else NONE_BG
-	var sprite = $mask/sprite
-	sprite.hframes = anim_info.get('frames', 1)
-	sprite.flip_h = anim_info.get('flip', false)
-	sprite.texture = ResourceLoader.load(anim_info.spritesheet)
-	var offset = U.parse_vec(anim_info.get('offset'), Vector2(0, 0))
+	panel_theme.bg_color = BG_COLORS[e.sex] if 'sex' in e else NONE_BG
+	var sprite: Sprite2D = $mask/sprite
+	sprite.hframes = sprite_info.get('frames', 1)
+	sprite.flip_h = sprite_info.get('flip', false)
+	var offset = U.parse_vec(sprite_info.get('offset'), Vector2(0, 0))
 	if sprite.flip_h: offset.x = -offset.x
 	sprite.offset = offset
+	sprite.texture = ResourceLoader.load(sprite_info.spritesheet)
+	sprite.frame = min(e.sprite.frame, (sprite.hframes * sprite.vframes) - 1)
 
 # --------------------------------------------------------------------------- #
 
@@ -86,6 +90,9 @@ func update_bg_margin():
 		)
 
 # --------------------------------------------------------------------------- #
+# vertical alignment of the sprite relative to the container.
+# 0 is top, 1 is bottom, 0.5 is center.
+const VALIGN = 0.7
 
 # update the sprite's position.  called when a container size changes or when
 # the sprite's texture is updated.
@@ -96,19 +103,20 @@ func position_sprite():
 	var bg_size = $bg.size
 	var sprite_size = sprite.get_rect().size
 	
-	sprite.position.x = (
-		# right-align if the sprite is bigger than the container...
-		mask_size.x - sprite_size.x if sprite_size.x >= mask_size.x
-		# ...else center it. (when sprite_size = mask_size, these are both = 0)
-		else U.round_div(mask_size.x, 2) - U.round_div(sprite_size.x, 2)
-	)
-	# x-offset may interfere with right alignment on large sprites, so nix it
-	if sprite_size.x > mask_size.x: sprite.offset.x = 0
+	# right-align if the sprite is bigger than the container, else center it.
+	sprite.position.x = min(
+		mask_size.x - sprite_size.x, # used when sprite_size > mask_size
+		ceil((mask_size.x - sprite_size.x) * 0.5) # used when sprite_size < mask_size
+	) # when sprite_size == mask_size, this is 0
+	
+	# offset may interfere with right/top alignment on large sprites, so nix it
+	for i in ['x', 'y']:
+		if sprite_size[i] + sprite.offset[i] > mask_size[i]: sprite.offset[i] = 0
 	
 	# try to v-center the sprite on the $bg panel.
 	# max(0) means its position will never overflow the top of $mask; if it's
 	# taller than the mask, it will be top-aligned.
 	sprite.position.y = max(0,
-		U.round_div(bg_size.y, 2) - U.round_div(sprite_size.y, 2)
+		(bg_size.y - sprite_size.y) * VALIGN
 		+ $bg.offset_top - $mask.offset_top
 	)

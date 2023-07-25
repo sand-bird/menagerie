@@ -111,3 +111,5 @@ offset_right = 34.0
 offset_bottom = 28.0
 mask_margin = Vector2i(2, 3)
 mask_padding = 7
+bg_margin = 3
+border_radius = 15

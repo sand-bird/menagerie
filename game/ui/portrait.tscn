@@ -1,36 +1,35 @@
 [gd_scene load_steps=6 format=3 uid="uid://cn7iyfs48s1vn"]
 
 [ext_resource type="Texture2D" uid="uid://cepng252pvxww" path="res://assets/ui/elements/portrait_frame.png" id="1_dbihw"]
-[ext_resource type="Texture2D" uid="uid://bvutgkn6lwtcr" path="res://data/monsters/milotic/walk_front_right.png" id="2_eriy6"]
 [ext_resource type="Script" path="res://ui/portrait.gd" id="2_r1714"]
+[ext_resource type="Texture2D" uid="uid://bekreiaqh7xlj" path="res://data/monsters/milotic/idle_front_right.png" id="3_l1l3n"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6xie"]
 resource_local_to_scene = true
 bg_color = Color(0.913725, 0.709804, 0.639216, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+corner_radius_top_left = 17
+corner_radius_top_right = 17
+corner_radius_bottom_right = 17
+corner_radius_bottom_left = 17
 corner_detail = 5
 anti_aliasing = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bx3yr"]
 resource_local_to_scene = true
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+corner_radius_bottom_right = 17
+corner_radius_bottom_left = 17
 corner_detail = 4
 anti_aliasing = false
 
-[node name="portrait" type="TextureRect"]
+[node name="portrait" type="NinePatchRect"]
 offset_right = 29.0
 offset_bottom = 29.0
 texture = ExtResource("1_dbihw")
-stretch_mode = 2
 script = ExtResource("2_r1714")
-mask_margin = Vector2i(1, 3)
-mask_padding = 8
+mask_margin = Vector2i(2, 3)
+mask_padding = 6
 bg_margin = 3
-border_radius = 16
+border_radius = 17
 
 [node name="bg" type="Panel" parent="."]
 show_behind_parent = true
@@ -44,6 +43,7 @@ offset_right = -3.0
 offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_w6xie")
 
 [node name="mask" type="Panel" parent="."]
@@ -52,16 +52,18 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 1.0
-offset_top = -5.0
-offset_right = -1.0
+offset_left = 2.0
+offset_top = -3.0
+offset_right = -2.0
 offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bx3yr")
 
 [node name="sprite" type="Sprite2D" parent="mask"]
-position = Vector2(-15, 0)
-texture = ExtResource("2_eriy6")
+position = Vector2(-8, 0)
+texture = ExtResource("3_l1l3n")
 centered = false
-hframes = 4
+hframes = 2
+region_rect = Rect2(1, 1, 15, 15)

@@ -15,6 +15,10 @@ during initialization, input data must be deserialized first before any child
 nodes are created.  thus entity subclasses should always call `super()` at the
 *start* of their `_init` function, *then* initialize whatever extra child nodes
 they need.
+
+see `data/system/entity.schema` for the corresponding schema (which should be
+extended using `"$ref": "entity"` in the schema for each entity subclass).
+all properties which are required here should be required in the schema.
 """
 
 var garden: Garden
@@ -98,6 +102,45 @@ func add_named_child(node: Node, n: String):
 
 
 # =========================================================================== #
+#                           M I S C   M E T H O D S                           #
+# --------------------------------------------------------------------------- #
+
+# returns a sprite_info dict from the entity's data.  used for portraits.
+func get_sprite_info(_key = null, _facing = null) -> Dictionary:
+	return { spritesheet = "res://assets/ui/icons/monster.png" } # placeholder
+
+# returns a name suitable for display in menus.
+func get_display_name() -> String:
+	return U.trans(data.name)
+
+#                                p h y s i c s                                #
+# --------------------------------------------------------------------------- #
+
+func _integrate_forces(state: PhysicsDirectBodyState2D):
+	state.linear_velocity = state.linear_velocity.limit_length(100)		
+
+# --------------------------------------------------------------------------- #
+
+func _physics_process(_delta):
+	for child in get_children():
+		if 'rotation' in child: child.rotation = -rotation
+	var d_vecs = debug_vectors()
+	for key in d_vecs:
+		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
+
+#                                  d e b u g                                  #
+# --------------------------------------------------------------------------- #
+# configuration for raycasts to show for debug purposes.
+# need to reload when adding/uncommenting one since we set these up in _init.
+# can add more in subclasses by overriding the `debug_vectors` fn.
+func debug_vectors():
+	return {
+		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
+		rotation = [Color(1, 0, 1), func (): return Vector2.from_angle(rotation + (PI / 2)) * 25]
+	}
+
+
+# =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 
@@ -171,31 +214,3 @@ func generate_position():
 		randi_range(0, garden_size.x),
 		randi_range(0, garden_size.y)
 	)
-
-
-# =========================================================================== #
-#                           M I S C   M E T H O D S                           #
-# --------------------------------------------------------------------------- #
-
-func _integrate_forces(state: PhysicsDirectBodyState2D):
-	state.linear_velocity = state.linear_velocity.limit_length(100)		
-
-# --------------------------------------------------------------------------- #
-
-func _physics_process(_delta):
-	for child in get_children():
-		if 'rotation' in child: child.rotation = -rotation
-	var d_vecs = debug_vectors()
-	for key in d_vecs:
-		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
-
-# --------------------------------------------------------------------------- #
-
-# configuration for raycasts to show for debug purposes.
-# need to reload when adding/uncommenting one since we set these up in _init.
-# can add more in subclasses by overriding the `debug_vectors` fn.
-func debug_vectors():
-	return {
-		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
-		rotation = [Color(1, 0, 1), func (): return Vector2.from_angle(rotation + (PI / 2)) * 25]
-	}
