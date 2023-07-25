@@ -33,7 +33,10 @@ func load_game(save_dir: String):
 	var data = SaveUtils.read(current_save_dir)
 	load_player(data.player)
 	load_garden(data.garden)
-	Dispatcher.date_changed.connect(save_game)
+	# autosave at 6:00 am (TODO: make this configurable)
+	Dispatcher.hour_changed.connect(
+		func(): if Clock.hour == 6: save_game()
+	)
 
 # --------------------------------------------------------------------------- #
 

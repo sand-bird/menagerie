@@ -15,7 +15,7 @@ var items: Dictionary = {}
 var objects: Dictionary = {}
 
 func _ready():
-	pass
+	$tint.sync_anim()
 # added to test pathing, camera sticking, etc. todo: remove someday
 
 func init(data):
