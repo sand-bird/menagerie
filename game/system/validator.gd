@@ -30,6 +30,8 @@ TODO:
 # (v0.1.0) | data sources: bobs_mod (v1.0.0), menagerie (v0.1.0)
 
 const messages = {
+	schema_false = "rejected (subschema is false).",
+	not_not_valid = "should not be valid, but is.",
 	type_mismatch_single = "is the wrong type (should be %s, but is %s).",
 	type_mismatch_plural = "is the wrong type (should be one of %s, but is %s).",
 	enum_mismatch = "does not have an acceptable value (should be one of %s, but is %s).",
@@ -73,19 +75,12 @@ func _init(root: Dictionary):
 #     definition is added to its 'sources' array. the dict we see here has
 #     'data' and 'schema' keys with the sources array for each, corresponding
 #     to the ROOT of the breadcrumb (eg 'pufig').
-func report(result: int, message_key: String, message_args: Array,
-		breadcrumb: String, sources: Dictionary) -> int:
-	if not result:
-		var message = str("'", breadcrumb, "' ",
-				messages[message_key] % message_args)
-		if 'data' in sources:
-			message += " | data " + sources_to_string(sources.data)
-		if 'schema' in sources:
-			message += " | schema " + sources_to_string(sources.schema)
-		Log.error(log_name, message)
-		return 0
-	else:
-		return 1
+func report(valid: bool, message_key: String, message_args: Array,
+		breadcrumb: String, sources: Dictionary) -> Dictionary:
+	var result = { valid = int(valid), breadcrumb = breadcrumb }
+	if not valid:
+		result.error = messages[message_key] % message_args
+	return result
 
 
 # =========================================================================== #
@@ -169,8 +164,8 @@ func deep_equals(a, b):
 # root validation validates a data object against a schema object.  iterate over
 # keys in the data object and pick the right schema to use for each one.  if no
 # schema is found, throw an error.
-func validate(data: Dictionary) -> int:
-	var result = 1
+func validate(data: Dictionary) -> Dictionary:
+	var result = { valid = 1, errors = [] }
 	for key in data:
 		var instance = data[key]
 		var type = instance.type
@@ -180,17 +175,18 @@ func validate(data: Dictionary) -> int:
 		else:
 			Log.debug(log_name, ["(validate) key: ", key, " | type: ", type])
 			var instance_result = validate_instance(instance, schema, key, {})
-			if instance_result == 1:
+			if instance_result.valid == 1:
 				Log.info(log_name, ["(validate_data) '", key, "' is valid! \\o/"])
-			result &= instance_result
-	if result == 1:
+			append_sub(result, instance_result)
+	if result.valid == 1:
 		Log.info(log_name, ["(validate_data) all data is valid! \\o/"])
+	print(JSON.stringify(result.errors, " ", false))
 	return result
 
 # validate schemas against the metaschema!
-func validate_schemas() -> int:
+func validate_schemas() -> Dictionary:
 	var metaschema = schema_root.schema
-	var result = 1
+	var result = { valid = 1, errors = [] }
 	for key in schema_root:
 		if key == 'schema': continue
 		var instance = schema_root[key]
@@ -201,14 +197,30 @@ func validate_schemas() -> int:
 			for dkey in instance:
 				# sources is not a subschema, it's metadata
 				if dkey == 'sources': continue
-				result &= validate_instance(
-					instance[dkey], metaschema, str(key, '.', dkey), {}
+				var breadcrumb = str(key, '.', dkey)
+				var instance_result = validate_instance(
+					instance[dkey], metaschema, breadcrumb, {}
 				)
-		else: 
-			result &= validate_instance(instance, metaschema, key, {})
-	if result == 1:
+				result.valid &= instance_result.valid
+				result[breadcrumb] = instance_result
+		else:
+			var instance_result = validate_instance(instance, metaschema, key, {})
+			result.valid &= instance_result.valid
+			result[key] = instance_result
+	if result.valid == 1:
 		Log.info(log_name, ["(validate_schemas) all schemas are valid! \\o/"])
 	return result
+
+# --------------------------------------------------------------------------- #
+
+func append_sub(result: Dictionary, sub_result: Dictionary):
+	result.valid &= sub_result.valid
+	if !sub_result.valid:
+		if 'errors' in sub_result: result.errors.append_array(sub_result.errors)
+		if 'error' in sub_result: result.errors.push_back({
+			breadcrumb = sub_result.breadcrumb,
+			error = sub_result.error
+		})
 
 # --------------------------------------------------------------------------- #
 
@@ -219,10 +231,10 @@ func validate_schemas() -> int:
 # instance's type.  if the instance is an array or object, those functions may
 # then call this one, to recursively validate the instance's children.
 func validate_instance(data, schema, breadcrumb: String = "",
-		sources: Dictionary = {}) -> int:
+		sources: Dictionary = {}) -> Dictionary:
 	Log.verbose(log_name, ["(validate_instance) start | breadcrumb: ", breadcrumb])
-	var result = 1
-	if schema is bool: return 1 if schema else 0
+	if schema is bool: return report(schema, 'schema_false', [], breadcrumb, sources)
+	var result = { valid = 1, breadcrumb = breadcrumb, errors = [] }
 	schema = schema as Dictionary
 	var data_type = get_type(data)
 	
@@ -239,7 +251,7 @@ func validate_instance(data, schema, breadcrumb: String = "",
 				Log.warn(log_name, ["could not resolve ref ", arg,
 					" in ", '/'.join(PackedStringArray(ref_path)),
 					" | breadcrumb: ", breadcrumb])
-				return 0
+				return { valid = 0 }
 			else: ref = ref.get(arg)
 		schema.erase('$ref')
 		schema.merge(ref)
@@ -254,59 +266,65 @@ func validate_instance(data, schema, breadcrumb: String = "",
 	# handle resolving in-place subschemas
 	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc
 	if 'allOf' in schema and schema.allOf is Array:
-		var sub_result = 1
+		var all_of = { keyword = 'allOf', valid = 1, errors = [] }
 		for subschema in schema.allOf:
-			sub_result &= validate_instance(data, subschema, breadcrumb, sources)
-			if !sub_result: break
-		result &= sub_result
+			append_sub(all_of, validate_instance(data, subschema, breadcrumb, sources))
+		append_sub(result, all_of)
 	if 'anyOf' in schema and schema.anyOf is Array:
-		var sub_result = 0
+		var any_of = {  keyword = 'anyOf', valid = 0, errors = [] }
 		for subschema in schema.anyOf:
-			sub_result |= validate_instance(data, subschema, breadcrumb, sources)
-			if sub_result: break
-		result &= sub_result
+			var sub_result = validate_instance(data, subschema, breadcrumb, sources)
+			any_of.valid |= sub_result.valid
+			if !sub_result.valid: any_of.errors.push_back(sub_result)
+			if any_of.valid: break # can exit as soon as we find a match
+		append_sub(result, any_of)
 	if 'oneOf' in schema and schema.oneOf is Array:
+		var one_of = { keyword = 'oneOf', valid = 0, errors = [] }
 		var passed = 0
 		for subschema in schema.oneOf:
-			passed += validate_instance(data, subschema, breadcrumb, sources)
-			if passed > 1: break
-		result &= 1 if passed == 1 else 0
+			var sub_result = validate_instance(data, subschema, breadcrumb, sources)
+			append_sub(one_of, sub_result) # just to append errors
+			passed += sub_result.valid
+		one_of.valid = int(passed == 1)
+		append_sub(result, one_of)
 	if 'not' in schema and schema['not'] is Dictionary:
 		var sub_result = validate_instance(data, schema['not'], breadcrumb, sources)
-		result &= 1 if not sub_result else 0
+		append_sub(result,
+			report(!sub_result.valid, 'not_not_valid', [], breadcrumb, sources)
+		)
 	
 	# any-type validation
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-any
 	if 'type' in schema:
 		if schema.type is String:
-			result &= report(
+			append_sub(result, report(
 				matches_type(data, schema.type),
 				'type_mismatch_single', [schema.type, data_type],
 				breadcrumb, sources
-			)
+			))
 		elif schema.type is Array:
-			result &= report(
+			append_sub(result, report(
 				matches_any(data, schema.type, 'matches_type'),
 				'type_mismatch_plural', [schema.type, data_type],
 				breadcrumb, sources
-			)
+			))
 	if 'enum' in schema and schema['enum'] is Array and !schema['enum'].is_empty():
-		result &= report(
+		append_sub(result, report(
 			matches_any(data, schema['enum'], 'deep_equals'),
 			'enum_mismatch', [schema['enum'], data],
 			breadcrumb, sources
-		)
+		))
 	if 'const' in schema:
-		result &= report(
+		append_sub(result, report(
 			deep_equals(data, schema['const']),
 			'const_mismatch', [schema['const'], data],
 			breadcrumb, sources
-		)
+		))
 
 	# call specialized validators
 	var type_fn = str('validate_', data_type)
 	if has_method(type_fn):
-		result &= call(type_fn, data, schema, breadcrumb, sources)
+		append_sub(result, call(type_fn, data, schema, breadcrumb, sources))
 
 	Log.verbose(log_name, ["(validate_instance) ", breadcrumb, " | result: ", result])
 	return result
@@ -317,43 +335,43 @@ func validate_instance(data, schema, breadcrumb: String = "",
 # of `type` keyword validation, since we sometimes want to validate that a
 # number is actually an int.  this means we will call "validate_integer" for
 # them (see the end of `validate_instance`) instead of "validate_number".
-func validate_integer(data, schema, breadcrumb, sources) -> int:
+func validate_integer(data, schema, breadcrumb, sources) -> Dictionary:
 	return validate_number(data, schema, breadcrumb, sources)
 
 # http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-num
 func validate_number(data, schema: Dictionary,
-		breadcrumb: String = "", sources: Dictionary = {}) -> int:
-	var result = 1
+		breadcrumb: String = "", sources: Dictionary = {}) -> Dictionary:
+	var result = { valid = 1, breadcrumb = breadcrumb, errors = [] }
 	if 'multipleOf' in schema and is_number(schema.multipleOf) and schema.multipleOf > 0:
-		result &= report(
+		append_sub(result, report(
 			data % schema.multipleOf == 0,
 			'not_divisible', [schema.multipleOf, data],
 			breadcrumb, sources
-		)
+		))
 	if 'maximum' in schema and is_number(schema.maximum):
-		result &= report(
+		append_sub(result, report(
 			data <= schema.maximum,
 			'maximum_exceeded', [schema.maximum, data],
 			breadcrumb, sources
-		)
+		))
 	if 'exclusiveMaximum' in schema and is_number(schema.exclusiveMaximum):
-		result &= report(
+		append_sub(result, report(
 			data < schema.exclusiveMaximum,
 			'ex_max_exceeded', [schema.exclusiveMaximum, data],
 			breadcrumb, sources
-		)
+		))
 	if 'minimum' in schema and is_number(schema.minimum):
-		result &= report(
+		append_sub(result, report(
 			data >= schema.minimum,
 			'minimum_not_met', [schema.minimum, data],
 			breadcrumb, sources
-		)
+		))
 	if 'exclusiveMinimum' in schema and is_number(schema.exclusiveMinimum):
-		result &= report(
+		append_sub(result, report(
 			data > schema.exclusiveMinimum,
 			'ex_min_not_met', [schema.exclusiveMinimum, data],
 			breadcrumb, sources
-		)
+		))
 
 	Log.verbose(log_name, ["(validate_number) ", breadcrumb, " | result: ", result])
 	return result
@@ -362,34 +380,34 @@ func validate_number(data, schema: Dictionary,
 
 # http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-str
 func validate_string(data: String, schema: Dictionary,
-		breadcrumb: String = "", sources: Dictionary = {}) -> int:
-	var result = 1
+		breadcrumb: String = "", sources: Dictionary = {}) -> Dictionary:
+	var result = { valid = 1, breadcrumb = breadcrumb, errors = [] }
 	if 'maxLength' in schema and is_non_negative_int(schema.maxLength):
-		result &= report(
+		append_sub(result, report(
 			data.length() < schema.maxLength,
 			'max_length_exceeded', [schema.maxLength, data.length()],
 			breadcrumb, sources
-		)
+		))
 	if 'minLength' in schema and is_non_negative_int(schema.minLength):
-		result &= report(
+		append_sub(result, report(
 			data.length() > schema.minLength,
 			'min_length_not_met', [schema.minLength, data.length()],
 			breadcrumb, sources
-		)
+		))
 	if 'pattern' in schema:
 		var regex = RegEx.new()
 		regex.compile(schema.pattern)
-		result &= report(
+		append_sub(result, report(
 			regex.is_valid() and regex.search(data) != null,
 			'pattern_mismatch', [schema.pattern, data],
 			breadcrumb, sources
-		)
+		))
 	if 'format' in schema:
-		result &= report(
+		append_sub(result, report(
 			matches_format(data, schema.format),
 			'format_mismatch', [schema.format, data],
 			breadcrumb, sources
-		)
+		))
 	Log.verbose(log_name, ["(validate_string) ", breadcrumb, " | result: ", result])
 	return result
 
@@ -397,22 +415,22 @@ func validate_string(data: String, schema: Dictionary,
 
 # TODO: maxContains & minContains
 func validate_array(data: Array, schema: Dictionary,
-		breadcrumb: String, sources: Dictionary) -> int:
-	var result = 1
+		breadcrumb: String, sources: Dictionary) -> Dictionary:
+	var result = { valid = 1, breadcrumb = breadcrumb, errors = [] }
 	# validate the array itself
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-arr
 	if 'maxItems' in schema and is_non_negative_int(schema.maxItems):
-		result &= report(
+		append_sub(result, report(
 			data.size() <= schema.maxItems,
 			'max_items_exceeded', [schema.maxItems, data.size()],
 			breadcrumb, sources
-		)
+		))
 	if 'minItems' in schema and is_non_negative_int(schema.minItems):
-		result &= report(
+		append_sub(result, report(
 			data.size() >= schema.minItems,
 			'min_items_not_met', [schema.minItems, data.size()],
 			breadcrumb, sources
-		)
+		))
 	if 'uniqueItems' in schema and schema.uniqueItems:
 		var sorted = data.duplicate()
 		sorted.sort()
@@ -423,60 +441,60 @@ func validate_array(data: Array, schema: Dictionary,
 				dupes.push(sorted[i])
 				i += 1 # skip the next iteration
 			i += 1
-		result &= report(
+		append_sub(result, report(
 			dupes.is_empty(), 'not_unique', [dupes],
 			breadcrumb, sources
-		)
+		))
 	# apply subschemas to array items
 	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subschema
 	var prefix_items = 0
 	if 'prefixItems' in schema and schema.prefixItems is Array:
 		prefix_items = schema.prefixItems.size()
-		result &= report(
+		append_sub(result, report(
 			data.size() >= prefix_items,
 			'min_items_not_met', [prefix_items, data.size()],
 			breadcrumb, sources
-		)
+		))
 		for i in range(prefix_items):
-			result &= validate_instance(
+			append_sub(result, validate_instance(
 				data[i], schema.prefixItems[i],
 				str(breadcrumb, "[", i, "]"), sources
-			)
+			))
 	if 'items' in schema and schema.items is Dictionary:
 			for i in range(prefix_items, data.size()):
-				result &= validate_instance(data[i], schema.items,
-						str(breadcrumb, "[", i, "]"), sources)
+				append_sub(result, validate_instance(data[i], schema.items,
+						str(breadcrumb, "[", i, "]"), sources))
 	
 	Log.verbose(log_name, ["(validate_array) ", breadcrumb, " | result: ", result])
 	return result
 
 # --------------------------------------------------------------------------- #
 
-func validate_dictionary(data, schema, breadcrumb, sources) -> int:
-	var result = 1
+func validate_dictionary(data, schema, breadcrumb, sources) -> Dictionary:
+	var result = { valid = 1, breadcrumb = breadcrumb, errors = [] }
 	# validate the object itself
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-obj
 	if 'maxProperties' in schema and is_non_negative_int(schema.maxProperties):
-		result &= report(
+		append_sub(result, report(
 			data.size() <= schema.maxProperties,
 			'max_props_exceeded', [schema.maxProperties, data.size()],
 			breadcrumb, sources
-		)
+		))
 	if 'minProperties' in schema and is_non_negative_int(schema.minProperties):
-		result &= report(
+		append_sub(result, report(
 			data.size() >= schema.minProperties,
 			'min_props_not_met', [schema.minProperties, data.size()],
 			breadcrumb, sources
-		)
+		))
 	if 'required' in schema and schema.required is Array:
 		var missing = []
 		for key in schema.required:
 			if not data.has(key): missing.append(key)
-		result &= report(
+		append_sub(result, report(
 			missing.is_empty(),
 			'missing_required', [missing],
 			breadcrumb, sources
-		)
+		))
 	if 'dependentRequired' in schema and schema.dependentRequired is Dictionary:
 		var reqs = schema.dependentRequired
 		for req in reqs:
@@ -484,11 +502,11 @@ func validate_dictionary(data, schema, breadcrumb, sources) -> int:
 			if data.has(req):
 				for key in reqs[req]:
 					if not data.has(key): missing.append(key)
-			result &= report(
+			append_sub(result, report(
 				missing.is_empty(),
 				'missing_required', [missing],
 				breadcrumb, sources
-			)
+			))
 	# resolve subschemas for properties
 	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subschemas
 	var additional_properties = data.keys()
@@ -496,10 +514,10 @@ func validate_dictionary(data, schema, breadcrumb, sources) -> int:
 		for key in data:
 			if key in schema.properties:
 				additional_properties.erase(key)
-				result &= validate_instance(
+				append_sub(result, validate_instance(
 					data[key], schema.properties[key],
 					str(breadcrumb, '.', key), sources
-				)
+				))
 	if 'patternProperties' in schema and schema.patternProperties is Dictionary:
 		for key in data:
 			for pattern in schema.patternProperties:
@@ -507,16 +525,16 @@ func validate_dictionary(data, schema, breadcrumb, sources) -> int:
 				regex.compile(pattern)
 				if regex.is_valid() and regex.search(key):
 					additional_properties.erase(key)
-					result &= validate_instance(
+					append_sub(result, validate_instance(
 						data[key], schema.patternProperties[pattern],
 						str(breadcrumb, '.', key), sources
-					)
+					))
 	if 'additionalProperties' in schema and schema.additionalProperties is Dictionary:
 		for key in additional_properties:
-			result &= validate_instance(
+			append_sub(result, validate_instance(
 				data[key], schema.additionalProperties, 
 				str(breadcrumb, '.', key), sources
-			)
+			))
 	
 	Log.verbose(log_name, ["(validate_dictionary) ", breadcrumb, " | result: ", result])
 	return result
