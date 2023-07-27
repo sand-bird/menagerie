@@ -158,12 +158,26 @@
     "$comment": "we should validate that the file exists, if possible",
     "type": "string"
   },
-  "vector": {
+  "partialVector": {
+    "$comment": "A vector whose properties are optional because they will be defaulted at runtime.",
     "type": "object",
-    "required": ["x", "y"],
+    "propertyNames": {
+      "enum": ["x", "y"]
+    },
     "additionalProperties": {
       "type": "number"
     }
+  },
+  "partialVectori": {
+    "$ref": "#/partialVector",
+    "additionalProperties": {
+      "type": "integer"
+    }
+  },
+  "vector": {
+    "$comment": "A vector where both x and y must be specified.",
+    "$ref": "#/partialVector",
+    "required": ["x", "y"]
   },
   "vectori": {
     "$ref": "#/vector",
@@ -171,7 +185,7 @@
       "type": "integer"
     }
   },
-  "animated_sprite": {
+  "animatedSprite": {
     "type": "object",
     "required": [
       "spritesheet",
@@ -195,7 +209,7 @@
         "default": "true"
       },
       "offset": {
-        "$ref": "#/vectori"
+        "$ref": "#/partialVector"
       }
     }
   }

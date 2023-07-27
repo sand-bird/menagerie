@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "$comment": "Shared schema for all entities (monster, object, item).  Defines properties required by the Entity superclass.",
+  "required": [
+    "id",
+    "type",
+    "name",
+    "description",
+    "size",
+    "mass"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "definitions/id"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["monster", "item", "object"]
+    },
+    "name": {
+      "$ref": "definitions/text16"
+    },
+    "description": {
+      "$ref": "definitions/text128"
+    },
+    "size": {
+      "type": "integer",
+      "$comment": "Radius of the entity's collision circle in pixels",
+      "minimum": 1
+    },
+    "mass": {
+      "type": "number",
+      "$comment": "Base mass in kilograms",
+      "minimum": 1.0
+    }
+  }
+}

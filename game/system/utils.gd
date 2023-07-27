@@ -102,6 +102,14 @@ static func find_by(arr: Array, fn: Callable) -> int:
 		if fn.call(arr[i], i): return i
 	return -1
 
+# --------------------------------------------------------------------------- #
+
+# a map function that takes an index parameter
+static func mapi(arr: Array, fn: Callable) -> Array:
+	var mapped = []
+	for i in arr.size(): mapped.push_back(fn.call(arr[i], i))
+	return mapped
+
 
 # =========================================================================== #
 #                            C O L L E C T I O N S                            #
