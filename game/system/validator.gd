@@ -1,103 +1,105 @@
+## Validates our json files using json-schema.  Written against the 2020-12
+## draft (the latest as of 2023-07).
 class_name Validator
 const log_name = "Validator"
 
-"""
-validates our json files using json-schema.  written against the 2020-12 draft
-(the latest at the time of this writing, 2023-04).
-
-initialization requires a `schema_root` object where each key is an entity type
-and each value is the schema for that type.  the root is not in itself a valid
-schema, only an index; thus, the first step to validating a data definition is
-to match it against the correct schema by looking up its type in `schema_root`.
-we handle this in the entrypoint function `validate`, which accepts the entire
-data object.  this in turn calls `validate_instance` with each data definition
-and its corresponding schemafile, which will recurse until it has validated the
-instance and all its children.
-"""
-
-# http://json-schema.org/draft/2020-12/json-schema-core.html#name-output-structure
+## [url]http://json-schema.org/draft/2020-12/json-schema-core.html#name-output-structure[/url]
 enum OutputFormat { BASIC, DETAILED }
 
-class E:#rror
+## A mapping of data definition types to schemas (not in itself a valid schema.)
+## During validation, [param $ref] paths are resolved relative to the schema root.
+var schema_root: Dictionary = {}
+## See [enum OutputFormat]
+var output_format: OutputFormat
+
+# --------------------------------------------------------------------------- #
+
+## Initialization requires a [param schema_root] object where each key is an
+## entity type and each value is the schema for that type.  The root is not in
+## itself a valid schema, only an index -- thus, the first step to validating
+## all of our game data is to match each data definition against the correct
+## schema by looking up the value of its [param type] property in [param schema_root].
+## We handle this in the entrypoint function [method validate], which then calls
+## [method validate_instance] to recursively validate each data definition
+## as a JSON instance.
+func _init(root: Dictionary, format: OutputFormat = OutputFormat.BASIC):
+	schema_root = root
+	output_format = format
+
+
+# =========================================================================== #
+#                         E R R O R   M E S S A G E S                         #
+# --------------------------------------------------------------------------- #
+
+## Namespace for error messages.  Conveninently also lets us get around the 
+## "static called on instance" warning.
+class E:
 	static func bad_ref(arg: String, path: Array):
 		return "could not resolve ref %s in %s" % [arg, '/'.join(path)]
 	static func rejected():
 		return "rejected (subschema is false)"
 	static func not_not_valid():
-		return "should not be valid, but is"
-	static func type_mismatch_single(a, b):
-		return "is the wrong type (should be %s, but is %s)" % [a, b]
-	static func type_mismatch_plural(a, b):
-		return "is the wrong type (should be one of %s, but is %s)" % [a, b]
-	static func enum_mismatch(a, b):
-		return "does not have an acceptable value (should be one of %s, but is %s)" % [a, b]
+		return "expected an error, but got a valid result"
+	static func type_mismatch_single(a: StringName, b):
+		return "wrong type (should be %s, but is %s)" % [a, b]
+	static func type_mismatch_plural(a: Array, b):
+		return "invalid type (should be one of %s, but is %s)" % [a, b]
+	static func enum_mismatch(a: Array, b):
+		return "invalid value (should be one of %s, but is %s)" % [a, b]
 	static func const_mismatch(a, b):
-		return "has the wrong value (should be %s, but is %s)" % [a, b]
+		return "wrong value (should be %s, but is %s)" % [a, b]
 	static func pattern_mismatch(a, b):
-		return "does not match the required pattern '%s' (is %s)" % [a, b]
-	static func max_length_exceeded(a, b):
-		return "is too long (should be up to %s characters, but is %s)" % [a, b]
-	static func min_length_not_met(a, b):
-		return "is too short (should be at least %s characters, but is %s)" % [a, b]
+		return "pattern mismatch (should match '%s', but is %s)" % [a, b]
+	static func max_length_exceeded(a: int, b: int):
+		return "too long (should be up to %s characters, but is %s)" % [a, b]
+	static func min_length_not_met(a: int, b: int):
+		return "too short (should be at least %s characters, but is %s)" % [a, b]
 	static func not_divisible(a, b):
-		return "is not divisible by %s (is %s)" % [a, b]
+		return "not divisible by %s (is %s)" % [a, b]
 	static func maximum_exceeded(a, b):
-		return "is too large (should be at most %s, but is %s)" % [a, b]
+		return "too large (should be at most %s, but is %s)" % [a, b]
 	static func ex_max_exceeded(a, b):
-		return "is too large (should be less than %s, but is %s)" % [a, b]
+		return "too large (should be less than %s, but is %s)" % [a, b]
 	static func minimum_not_met(a, b):
-		return "is too small (should be at least %s, but is %s)" % [a, b]
+		return "too small (should be at least %s, but is %s)" % [a, b]
 	static func ex_min_not_met(a, b):
-		return "is too small (should be more than %s, but is %s)" % [a, b]
-	static func max_props_exceeded(a, b):
-		return "has too many properties (should have at most %s, but has %s)" % [a, b]
-	static func min_props_not_met(a, b):
-		return "has too few properties (should have at least %s, but has %s)" % [a, b]
-	static func missing_required(a):
-		return "is missing required properties: %s" % [a]
-	static func max_items_exceeded(a, b):
-		return "has too many items (should have at most %s, but has %s)" % [a, b]
-	static func min_items_not_met(a, b):
-		return "has too few items (should have at least %s, but has %s)" % [a, b]
-	static func not_unique(a):
-		return "has duplicate items (%s)" % [a]
-	static func format_mismatch(a, b):
-		return "is not a valid %s (is %s)" % [a, b]
-
-var schema_root: Dictionary = {}
-var output_format: OutputFormat
+		return "too small (should be more than %s, but is %s)" % [a, b]
+	static func max_props_exceeded(a: int, b: int):
+		return "too many properties (should have at most %s, but has %s)" % [a, b]
+	static func min_props_not_met(a: int, b: int):
+		return "too few properties (should have at least %s, but has %s)" % [a, b]
+	static func missing_required(a: Array):
+		return "missing required properties: %s" % [a]
+	static func max_items_exceeded(a: int, b: int):
+		return "too many items (should have at most %s, but has %s)" % [a, b]
+	static func min_items_not_met(a: int, b: int):
+		return "too few items (should have at least %s, but has %s)" % [a, b]
+	static func not_unique(a: Array):
+		return "duplicate items: %s" % [a]
+	static func format_mismatch(a: StringName, b):
+		return "not a valid %s (is %s)" % [a, b]
 
 # --------------------------------------------------------------------------- #
 
-func _init(root: Dictionary, format: OutputFormat = OutputFormat.BASIC):
-	schema_root = root
-	output_format = format
-	# validate root schema using a metaschema (prob hardcoded)
-
-# --------------------------------------------------------------------------- #
-
-# if the result is false (meaning error), we report it using the given
-# arguments, then pass it along.
-# - message_key: some key in our `messages` dict, for getting the error message
-# - message_args: passed to the message we get after looking up `message_key`.
-#     currently we don't verify whether the number of args matches up...
-#     so, uh, be careful
-# - data_path: eg, 'pufig.morphs.pink'; identifies the thing that failed
-#     validation. goes in front of our message
-# - schema_path: path to the keyword
+## Generates a leaf result.  If the result is invalid, adds the error message
+## to the result's [param error] key.
+## Note: we use int for [param valid] instead of bool so we can combine results
+## with bitwise setters (eg, [code]a.valid &= b.valid[/code]).
 func report(
 	valid: bool, message: String, data_path: String,
-	schema_ctx: Dictionary = {}, next_path: String = ""
+	schema_ctx: Dictionary = {}, s_ext: String = ""
 ) -> Dictionary:
-	var res = new_result(int(valid), data_path, schema_ctx, next_path)
+	var res = new_result(int(valid), data_path, schema_ctx, s_ext)
 	if !valid: res.error = message
 	return res
 
 # --------------------------------------------------------------------------- #
 
-# generate a result object.  this unnests schema_context.
-# does not include error info; that is added in `report` (for leaves) and
-# `append` (for parents)
+## Generate a result object.  This appends the next schema key ([param s_ext])
+## to the schema context [param s], if applicable, and then merges the schema
+## context into the result.
+## Does not include error info; that is added in [method report] (for leaves)
+## and [method append] (for parents).
 func new_result(
 	valid: int, data_path: String = "",
 	s: Dictionary = {}, s_ext: String = ""
@@ -107,64 +109,74 @@ func new_result(
 	# if we don't already have a schema context, use schema_ext to create one
 	# otherwise, append schema_ext to each of the paths in schema_context
 #	else: ext_schema(schema_ctx, schema_ext)
-	res.merge(schema_context(s, s_ext))
+	res.merge(schema_context(s_ext, s))
 	return res
 
 # --------------------------------------------------------------------------- #
 
-# extends a schema context.  this can also be used to create a schema context
-# by passing in an empty dict.  returns a new dict.
+## Creates or extends a schema context, returning a new object.
+## A schema context consists of two optional properties: [param keywordLocation]
+## and [param absoluteKeywordLocation] (defined here: [url]http://json-schema.org/draft/2020-12/json-schema-core.html#section-12.3.1[/url]).
 func schema_context(
-	source = {}, ext: String = "", ext_absolute: String = ""
+	ext: String = "", source = {}, ext_absolute: String = ""
 ) -> Dictionary:
 	var s = source.duplicate()
 	if ext != "":
+		# passing in a nonempty value for `ext` means we should start tracking
+		# `keywordLocation` if we're not already
 		if 'keywordLocation' not in s: s.keywordLocation = ""
-		for key in s: s[key] = s[key].path_join(ext)	
+		# append the new extension to each existing key
+		for key in s: s[key] = s[key].path_join(ext)
 	if ext_absolute != "":
+		# absolute keyword locations overwrite any previous value
 		s.absoluteKeywordLocation = ext_absolute
 	return s
 
 # --------------------------------------------------------------------------- #
 
+## Appends a sub-result to a parent result.  If [param output_type] is
+## [enum OutputType.BASIC], we merge the sub-result's errors array into the
+## parent's to achieve a flat list; otherwise, we add the sub-result as a child
+## according to these rules from the json-schema spec:
+## [url]http://json-schema.org/draft/2020-12/json-schema-core.html#section-12.4.3[url]
 func append_sub(result: Dictionary, sub_result: Dictionary, include_valid = false):
 	result.valid &= sub_result.valid
 	if sub_result.valid:
-		if include_valid: append_error(result, sub_result)
+		if include_valid: _append_error(result, sub_result)
 		return
 	# sub_result is a leaf
-	if 'error' in sub_result: append_error(result, sub_result)
+	if 'error' in sub_result: _append_error(result, sub_result)
 	# sub_result is done recursing, so we can prune its children
 	elif 'errors' in sub_result:
 		if output_format == OutputFormat.BASIC: # flattens errors
-			append_errors(result, sub_result.errors)
+			_append_errors(result, sub_result.errors)
 		else: # returns nested output
 			if sub_result.errors.size() == 0: return # omit childless nodes
 			if sub_result.errors.size() == 1:
 				sub_result = sub_result.errors[0]
-			append_error(result, sub_result)
+			_append_error(result, sub_result)
 
 # --------------------------------------------------------------------------- #
 
-func append_error(result: Dictionary, error) -> void:
+func _append_error(result: Dictionary, error) -> void:
 	if not 'errors' in result: result.errors = []
 	result.errors.push_back(error)
 
-func append_errors(result: Dictionary, errors: Array) -> void:
+func _append_errors(result: Dictionary, errors: Array) -> void:
 	if not 'errors' in result: result.errors = []
 	result.errors.append_array(errors)
 
 
 # =========================================================================== #
-#                     V A L I D A T E   F U N C T I O N S                     #
+#                             V A L I D A T I O N                             #
 # --------------------------------------------------------------------------- #
-# reference: http://json-schema.org/draft/2020-12/json-schema-validation.html
-
-# root validation validates a data object against a schema object.  iterate over
-# keys in the data object and pick the right schema to use for each one.  if no
-# schema is found, throw an error.
+## Reference: http://json-schema.org/draft/2020-12/json-schema-validation.html
+##
+## Validates a data definitions object against [param schema_root].
+## Iterates over keys in the data object and picks the right schema to use for
+## each one.  If no schema is found, throws an error.
 func validate(data: Dictionary) -> Dictionary:
-	var result = new_result(1, "data")
+	var result = new_result(1, 'data')
 	for key in data:
 		var instance = data[key]
 		var type = instance.type
@@ -184,29 +196,31 @@ func validate(data: Dictionary) -> Dictionary:
 	print(JSON.stringify(result, " ", false))
 	return result
 
-# validate schemas against the metaschema!
+# --------------------------------------------------------------------------- #
+
+## Validates schemas against the metaschema at [param schema_root.schema]!
 func validate_schemas() -> Dictionary:
 	var metaschema = schema_root.schema
-	var result = new_result(1, "schema")
+	var result = new_result(1, 'schema')
 	for key in schema_root:
-		if key == 'schema': continue
+		if key == &'schema': continue
 		var instance = schema_root[key]
 		Log.debug(log_name, ["(validate) schema: ", key])
 		# `definitions.schema` is a special case, as it is not a schema itself
 		# but a collection of schemas (analogous to '$defs' in a typical schema)
-		if key == 'definitions':
+		if key == &'definitions':
 			for dkey in instance:
 				# sources is not a subschema, it's metadata
-				if dkey == 'sources': continue
+				if dkey == &'sources': continue
 				var d = key.path_join(dkey)
 				var instance_result = validate_instance(
-					instance[dkey], metaschema, d, schema_context({}, 'schema')
+					instance[dkey], metaschema, d, schema_context('schema')
 				)
 				result.valid &= instance_result.valid
 				result[d] = instance_result
 		else:
 			var instance_result = validate_instance(
-				instance, metaschema, key, schema_context({}, 'schema')
+				instance, metaschema, key, schema_context('schema')
 			)
 			result.valid &= instance_result.valid
 			result[key] = instance_result
@@ -214,18 +228,20 @@ func validate_schemas() -> Dictionary:
 		Log.info(log_name, ["(validate_schemas) all schemas are valid! \\o/"])
 	return result
 
+#                             c o r e   l o g i c                             #
 # --------------------------------------------------------------------------- #
 
-# generic validation function for a single instance, using a subschema which
-# applies to the instance.  if the schema has its own subschemas (eg `allOf`,
-# we recursively resolve those against the instance as appropriate.  finally,
-# we pass the instance and schema into specific validators depending on the
-# instance's type.  if the instance is an array or object, those functions may
-# then call this one, to recursively validate the instance's children.
+## Generic validation function for a single "instance", using a subschema which
+## applies to the instance.  If the schema has its own subschemas (eg [param allOf]),
+## we recursively resolve those against the instance as appropriate.  Finally,
+## we pass the instance and schema into the dedicated validator function for the
+## instance's type.  If the instance is an array or object, those functions may
+## then call this one, to recursively validate the instance's children.
+## Note: this can't be static because it uses [param schema_root] to resolve refs.
 func validate_instance(
 	data, schema, d: String = "", _s: Dictionary = {}, s_ext: String = ""
 ) -> Dictionary:
-	var s = schema_context(_s, s_ext)
+	var s = schema_context(s_ext, _s)
 	Log.verbose(log_name, [
 		"(validate_instance) start | data_path: ", d, " | schema_path: ", s])
 	if schema is bool: return report(schema, E.rejected(), d, s, s_ext)
@@ -234,9 +250,8 @@ func validate_instance(
 	var data_type = get_type(data)
 	
 	# if the schema contains a ref, resolve it using the schema_root.
-	# if the schema is composed of subschemas, 
 	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc
-	if '$ref' in schema:
+	if &'$ref' in schema:
 		var ref_value = schema['$ref']
 		Log.verbose(log_name, ["resolving ref: ", ref_value, " | data_path: ", d])
 		var ref_path = ref_value.split('/')
@@ -251,22 +266,22 @@ func validate_instance(
 			else: ref = ref.get(arg)
 #		schema.erase('$ref')
 #		schema.merge(ref)
-		var new_s = schema_context(s, "$ref", ref_value)
+		var new_s = schema_context("$ref", s, ref_value)
 		var sub_result = validate_instance(data, ref, d, new_s)
 		append_sub(result, sub_result)
 		Log.verbose(log_name, ["resolved ref: ", ref_value, " | data_path: ", d])
 	
 	# add the instance's and schema's sources if any
 	var sources = {}
-	if data is Dictionary and 'sources' in data and data.sources:
+	if data is Dictionary and &'sources' in data and data.sources:
 		sources.data = data.sources
-	if 'sources' in schema and schema.sources:
+	if &'sources' in schema and schema.sources:
 		sources.schema = schema.sources
 	if !sources.is_empty(): result.sources = sources
 	
 	# handle resolving in-place subschemas
 	# https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subsc
-	if 'allOf' in schema and schema.allOf is Array:
+	if &'allOf' in schema and schema.allOf is Array:
 		var all_of = new_result(1, d, s, 'allOf')
 		for i in schema.allOf.size():
 			var subschema = schema.allOf[i]
@@ -274,7 +289,7 @@ func validate_instance(
 				data, subschema, d, s, prop_join('allOf', i)
 			))
 		append_sub(result, all_of)
-	if 'anyOf' in schema and schema.anyOf is Array:
+	if &'anyOf' in schema and schema.anyOf is Array:
 		var any_of = new_result(0, d, s, 'anyOf')
 		for i in schema.anyOf.size():
 			var subschema = schema.anyOf[i]
@@ -285,19 +300,19 @@ func validate_instance(
 			append_sub(any_of, sub_result)
 			if any_of.valid: break # can exit as soon as we find a match
 		append_sub(result, any_of)
-	if 'oneOf' in schema and schema.oneOf is Array:
+	if &'oneOf' in schema and schema.oneOf is Array:
 		var one_of = new_result(1, d, s, 'oneOf')
 		var passed = 0
 		for i in schema.oneOf.size():
 			var subschema = schema.oneOf[i]
 			var sub_result = validate_instance(
 				data, subschema, d, s, prop_join('oneOf', i)
-			)
-			append_sub(one_of, sub_result, true) # just to append errors
+			) # also add valid results, since they may cause oneOf to fail
+			append_sub(one_of, sub_result, true)
 			passed += sub_result.valid
 		one_of.valid = int(passed == 1)
 		append_sub(result, one_of)
-	if 'not' in schema and (schema['not'] is Dictionary or schema['not'] is bool):
+	if &'not' in schema and (schema['not'] is Dictionary or schema['not'] is bool):
 		var sub_result = validate_instance(data, schema['not'])
 		append_sub(result, report(
 			!sub_result.valid, E.not_not_valid(), d, s, 'not'
@@ -305,26 +320,26 @@ func validate_instance(
 	
 	# any-type validation
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-any
-	if 'type' in schema:
+	if &'type' in schema:
 		if schema.type is String:
 			append_sub(result, report(
-				matches_type(data, schema.type),
+				matches_type(schema.type, data),
 				E.type_mismatch_single(schema.type, data_type),
 				d, s, 'type'
 			))
 		elif schema.type is Array:
 			append_sub(result, report(
-				matches_any(data, schema.type, matches_type),
+				schema.type.any(matches_type.bind(data)),
 				E.type_mismatch_plural(schema.type, data_type),
 				d, s, 'type'
 			))
-	if 'enum' in schema and schema['enum'] is Array and !schema['enum'].is_empty():
+	if &'enum' in schema and schema['enum'] is Array and !schema['enum'].is_empty():
 		append_sub(result, report(
-			matches_any(data, schema['enum'], Callable(U, 'deep_equals')),
+			schema['enum'].any(Callable(U, 'deep_equals').bind(data)),
 			E.enum_mismatch(schema['enum'], data),
 			d, s, 'enum'
 		))
-	if 'const' in schema:
+	if &'const' in schema:
 		append_sub(result, report(
 			U.deep_equals(data, schema['const']),
 			E.const_mismatch(schema['const'], data),
@@ -341,15 +356,21 @@ func validate_instance(
 
 # --------------------------------------------------------------------------- #
 
-# int values are identified as type "integer" (see `get_type`) for the benefit
-# of `type` keyword validation, since we sometimes want to validate that a
-# number is actually an int.  this means we will call "validate_integer" for
-# them (see the end of `validate_instance`) instead of "validate_number".
-func validate_integer(data, schema, d: String = "", s: Dictionary = {}) -> Dictionary:
+## Calls [method validate_number]; there are no json-schema keywords specific
+## to integers.  This function exists because we call type-specific validator
+## functions by typename, and we identify integer values as type
+## [code]"integer"[/code] so we can validate that they are actually integers.
+## This means we will call [method validate_integer] for them (see the end of
+## [method validate_instance]) instead of [method validate_number].
+func validate_integer(
+	data, schema, d: String = "", s: Dictionary = {}
+) -> Dictionary:
 	return validate_number(data, schema, d, s)
 
-# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-num
-func validate_number(data, schema, d: String = "", s: Dictionary = {}) -> Dictionary:
+## [url]http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-num[/url]
+func validate_number(
+	data, schema, d: String = "", s: Dictionary = {}
+) -> Dictionary:
 	var result = new_result(1, d, s)
 	if &'multipleOf' in schema and is_number(schema.multipleOf) and schema.multipleOf > 0:
 		append_sub(result, report(
@@ -387,8 +408,10 @@ func validate_number(data, schema, d: String = "", s: Dictionary = {}) -> Dictio
 
 # --------------------------------------------------------------------------- #
 
-# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-str
-func validate_string(data, schema, d: String = "", s: Dictionary = {}) -> Dictionary:
+## [url]http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-str[/url]
+func validate_string(
+	data, schema, d: String = "", s: Dictionary = {}
+) -> Dictionary:
 	var result = new_result(1, d, s)
 	if &'maxLength' in schema and is_non_negative_int(schema.maxLength):
 		append_sub(result, report(
@@ -412,7 +435,7 @@ func validate_string(data, schema, d: String = "", s: Dictionary = {}) -> Dictio
 		))
 	if &'format' in schema:
 		append_sub(result, report(
-			matches_format(data, schema.format),
+			matches_format(schema.format, data),
 			E.format_mismatch(schema.format, data),
 			d, s, 'format'
 		))
@@ -421,8 +444,12 @@ func validate_string(data, schema, d: String = "", s: Dictionary = {}) -> Dictio
 
 # --------------------------------------------------------------------------- #
 
-# TODO: maxContains & minContains
-func validate_array(data, schema, d: String = "", s: Dictionary = {}) -> Dictionary:
+## [url=http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-arr]Validation Keywords for Arrays[/url] / 
+## [url=https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subschema]Keywords for Applying Subschemas to Arrays[/url]
+## (TODO: maxContains & minContains)
+func validate_array(
+	data, schema, d: String = "", s: Dictionary = {}
+) -> Dictionary:
 	var result = new_result(1, d, s)
 	# validate the array itself
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-arr
@@ -445,7 +472,7 @@ func validate_array(data, schema, d: String = "", s: Dictionary = {}) -> Diction
 		var i = 0
 		while i < sorted.size() - 1:
 			if U.deep_equals(sorted[i], sorted[i + 1]):
-				dupes.push(sorted[i])
+				dupes.push_back(sorted[i])
 				i += 1 # skip the next iteration
 			i += 1
 		append_sub(result, report(
@@ -478,7 +505,11 @@ func validate_array(data, schema, d: String = "", s: Dictionary = {}) -> Diction
 
 # --------------------------------------------------------------------------- #
 
-func validate_dictionary(data, schema, d: String = "", s: Dictionary = {}) -> Dictionary:
+## [url=http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-obj]Validation Keywords for Objects[/url] / 
+## [url=https://json-schema.org/draft/2020-12/json-schema-core.html#name-keywords-for-applying-subschemas]Keywords for Applying Subschemas to Objects[/url]
+func validate_dictionary(
+	data, schema, d: String = "", s: Dictionary = {}
+) -> Dictionary:
 	var result = new_result(1, d, s)
 	# validate the object itself
 	# http://json-schema.org/draft/2020-12/json-schema-validation.html#name-validation-keywords-for-obj
@@ -552,65 +583,56 @@ func validate_dictionary(data, schema, d: String = "", s: Dictionary = {}) -> Di
 #                                 U T I L S                                   #
 # --------------------------------------------------------------------------- #
 
-func sources_to_string(sources: Array) -> String:
-	var source_strings: PackedStringArray = []
-	for i in sources.size():
-		source_strings.append(str(sources[i].id, " (v", sources[i].version, ")"))
-	return str("sources: ", ", ".join(source_strings))
-
-# --------------------------------------------------------------------------- #
-
+## Maps internal datatypes to a json type string.
 func get_type(data):
 	return {
-		TYPE_DICTIONARY: 'dictionary',
-		TYPE_ARRAY: 'array',
-		TYPE_INT: 'integer',
-		TYPE_FLOAT: 'number',
-		TYPE_NIL: 'null',
-		TYPE_STRING: 'string',
-		TYPE_BOOL: 'boolean'
+		TYPE_DICTIONARY: &'dictionary',
+		TYPE_ARRAY: &'array',
+		TYPE_INT: &'integer',
+		TYPE_FLOAT: &'number',
+		TYPE_NIL: &'null',
+		TYPE_STRING: &'string',
+		TYPE_BOOL: &'boolean'
 	}[typeof(data)]
 
 # --------------------------------------------------------------------------- #
 
+## Returns true if [param x] is an integer greater than 0.
 func is_non_negative_int(x):
 	return x is int and x >= 0
 
-# sigh
+## Returns true if [param x] is an integer or a float.
 func is_number(x):
 	return x is int or x is float
 
 # --------------------------------------------------------------------------- #
 
-func matches_any(data, items, f: Callable):
-	var matches = false
-	for item in items:
-		if f.call(data, item):
-			matches = true
-			break
-	return matches
-
-# --------------------------------------------------------------------------- #
-
-func matches_type(data, type):
+## Returns true if [param data]'s type matches the [param type] param, a json
+## type string (object, array, integer, number, string, boolean, or null).
+func matches_type(type: StringName, data: Variant) -> bool:
 	match type:
-		'object': return data is Dictionary
-		'array': return data is Array
-		'integer': return data is int
-		'number': return (data is float or data is int)
-		'string': return data is String
-		'boolean': return data is bool
-		'null': return data == null
+		&'object': return data is Dictionary
+		&'array': return data is Array
+		&'integer': return data is int
+		&'number': return (data is float or data is int)
+		&'string': return data is String
+		&'boolean': return data is bool
+		&'null': return data == null
 	return true
 
 # --------------------------------------------------------------------------- #
 
-func matches_format(data: String, format):
+## Validates [param data] against one of three supported format types:
+## [param regex], [param filepath], or [param date] (not implemented yet).
+func matches_format(format: StringName, data: String):
 	match format:
-		'regex': return RegEx.create_from_string(data).is_valid()
-		'filepath': return ResourceLoader.exists(data)
-		'date': return true
+		&'regex': return RegEx.create_from_string(data).is_valid()
+		&'filepath': return ResourceLoader.exists(data)
+		&'date': return true # TODO
 
 # --------------------------------------------------------------------------- #
 
+## Joins a path to a property or index using brackets, ie [code]path[prop][/code].
+## (Json-schema uses [code]/[/code] for all joins, even indices, but I think this
+## looks better.)
 func prop_join(path, prop): return str(path, '[', prop, ']')

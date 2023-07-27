@@ -48,7 +48,9 @@ func match_errors(expected: Array, result: Dictionary):
 
 
 # =========================================================================== #
-#                            C O L L E C T I O N S                            #
+#                                  T E S T S                                  #
+# --------------------------------------------------------------------------- #
+#                      v a l i d a t e _ i n s t a n c e                      #
 # --------------------------------------------------------------------------- #
 
 func test_bool_schema():
@@ -61,8 +63,9 @@ func test_bool_schema():
 # --------------------------------------------------------------------------- #
 
 func test_sibling_props_combine_with_refs():
-	print("test_sibling_props_combine_with_refs")
-	var v = Validator.new({ "req_a": { "required": ["a"] } })
+	var v = Validator.new({
+		"req_a": { "required": ["a"] }
+	})
 	var schema = {
 		"$ref": "req_a",
 		"required": ["b"]
@@ -94,7 +97,7 @@ func test_anyof():
 	result = v.validate_instance(4, schema)
 	var expected_errors = range(3).map(func(i): return {
 		"keywordLocation": "anyOf[%s]/const" % i,
-		"error": "has the wrong value (should be %s, but is 4)" % (i + 1)
+		"error": E.const_mismatch(i + 1, 4)
 	})
 	assert_invalid(result, expected_errors)
 
@@ -148,3 +151,56 @@ func test_not():
 	assert_invalid(result, expected_error)
 	result = v.validate_instance(1, { "not": { "const": 2 } })
 	assert_valid(result)
+
+# --------------------------------------------------------------------------- #
+
+func test_type():
+	var v = Validator.new({})
+	var result = v.validate_instance(0, { "type": "integer" })
+	assert_valid(result)
+	result = v.validate_instance(1.5, { "type": "integer" })
+	assert_invalid(result, E.type_mismatch_single("integer", "number"))
+	
+	for args in [
+		[{}, 'object'], [[], 'array'], [1, 'integer'], [3.14, 'number'],
+		['boo', 'string'], [true, 'boolean'], [null, 'null']
+	]:
+		assert_valid(v.validate_instance(args[0], { "type": args[1] }))
+	
+	var most_types = ["object", "array", "integer", "number", "string", "boolean"]
+	var all_types = most_types + ["null"]
+	result = v.validate_instance(null, { "type": most_types })
+	assert_invalid(result, E.type_mismatch_plural(most_types, "null"))
+	result = v.validate_instance(null, { "type": all_types })
+	assert_valid(result)
+
+
+#                         v a l i d a t e _ a r r a y                         #
+# --------------------------------------------------------------------------- #
+
+func test_unique_items():
+	var v = Validator.new({})
+	var unique = { "uniqueItems": true }
+	
+	var result = v.validate_array([], unique)
+	assert_valid(result)
+	result = v.validate_array([1, 2, 3], unique)
+	assert_valid(result)
+	# uniqueItems: false does nothing
+	result = v.validate_array([1, 2, 3], { "uniqueItems": false })
+	assert_valid(result)
+	
+	result = v.validate_array([1, 2, 3, 2, 1], unique)
+	assert_invalid(result, E.not_unique([1, 2]))
+	
+	result = v.validate_array([
+		{ "a": { "b": { "c": 1 }}},
+		{ "a": { "b": { "c": 2 }}}
+	], unique)
+	assert_valid(result)
+	
+	result = v.validate_array([
+		{ "a": { "b": { "c": 1 }}},
+		{ "a": { "b": { "c": 1 }}}
+	], unique)
+	assert_invalid(result, E.not_unique([{ "a": { "b": { "c": 1 }}}]))
