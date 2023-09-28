@@ -89,10 +89,10 @@ const x_dirs = ['left', 'right'] # left = 0, right = 1
 # have one or both of `left` and `right` keys.  if the desired horizontal facing
 # is not present in the anim data, we use the opposite facing and toggle its
 # `flip` property.
-func get_anim_info_for_facing(anim_data: Dictionary, raw_facing: Vector2):
-	var facing = raw_facing.normalized().ceil()
-	var y_dir = y_dirs[facing.y]
-	var x_dir = x_dirs[facing.x]
+func get_anim_info_for_facing(anim_data: Dictionary, raw_facing: Vector2 = facing):
+	var _facing = raw_facing.normalized().ceil()
+	var y_dir = y_dirs[_facing.y]
+	var x_dir = x_dirs[_facing.x]
 	var anims: Dictionary = anim_data[y_dir]
 	if x_dir in anims: return anims[x_dir]
 	var anim = anims.values()[0].duplicate()
@@ -104,7 +104,7 @@ func get_anim_info_for_facing(anim_data: Dictionary, raw_facing: Vector2):
 # creates an animation for a specific facing direction, using an `anim_info`
 # object from the monster's data definition, and adds it to the AnimationPlayer
 # for our sprite.
-func create_animation_for_facing(anim_info, flip = false) -> Animation:
+func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	# set the step and length parameters of the new animation depending on the
 	# frame count and fps specified in the data definition. the `step` parameter
 	# will determine the delay between frames when we insert them.

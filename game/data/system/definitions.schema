@@ -151,12 +151,13 @@
   "id": {
     "type": "string",
     "maxLength": 32,
-    "pattern": "\\S+",
-    "$comment": "No spaces"
+    "pattern": "^[\\w-]+$",
+    "$comment": "Letters only, no spaces (hyphens and underscores ok)"
   },
   "file": {
     "$comment": "we should validate that the file exists, if possible",
-    "type": "string"
+    "type": "string",
+    "format": "filepath"
   },
   "partialVector": {
     "$comment": "A vector whose properties are optional because they will be defaulted at runtime.",

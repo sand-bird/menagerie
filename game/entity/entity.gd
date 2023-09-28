@@ -38,7 +38,8 @@ var data:
 	get: return Data.fetch(type)
 	set(_x): return
 
-# var traits: Array[Trait] = []
+# modular behavior implementations (not currently used for monsters)
+var traits: Array[Trait] = []
 
 
 # =========================================================================== #
@@ -103,6 +104,8 @@ func add_named_child(node: Node, n: String):
 
 # =========================================================================== #
 #                           M I S C   M E T H O D S                           #
+# =========================================================================== #
+#                               a b s t r a c t                               #
 # --------------------------------------------------------------------------- #
 
 # returns a sprite_info dict from the entity's data.  used for portraits.
@@ -116,6 +119,8 @@ func get_display_name() -> String:
 #                                p h y s i c s                                #
 # --------------------------------------------------------------------------- #
 
+# truncate linear velocity so that janky grab physics can't rocket things
+# across the map
 func _integrate_forces(state: PhysicsDirectBodyState2D):
 	state.linear_velocity = state.linear_velocity.limit_length(100)		
 
@@ -152,53 +157,35 @@ func save_keys() -> Array[StringName]:
 
 # --------------------------------------------------------------------------- #
 
-func serialize():
+func serialize() -> Dictionary:
 	var serialized = {}
 	for key in save_keys():
-		serialized[key] = serialize_value(get(key))
+		serialized[key] = U.serialize_value(get(key))
+	for t in traits:
+		serialized.merge(t.serialize())
 	return serialized
-
-func serialize_value(value: Variant, key: String = ''):
-	if value == null:
-		Log.warn(self, ["serializing null value for key `", key, "`"])
-	elif value is Array:
-		return value.map(serialize_value)
-	elif value is Vector2 or value is Vector2i:
-		# don't serialize nan values or it will break json parsing
-		if (JSON.stringify(value.x) == 'nan' or
-			JSON.stringify(value.y) == 'nan'): return {}
-		return { x = value.x, y = value.y }
-	elif value is Object:
-		if value.has_method('serialize'): return value.serialize()
-		else: Log.error(self, [
-			"tried to serialize object without `serialize` method: ", value])
-	else: return value
 
 # --------------------------------------------------------------------------- #
 
-func deserialize(serialized = {}):
-	var sk = save_keys()
-	for key in sk:
-		deserialize_value(serialized.get(key), key)
-
-func deserialize_value(value: Variant, key: String):
-	var loader = str('load_', key)
-	# if the key has a loader, just call it and trust it to initialize
-	if has_method(loader): call(loader, value)
-	elif value == null:
-		var generator = str('generate_', key)
-		if has_method(generator): set(key, call(generator))
-	else: set(key, value)
+func deserialize(serialized = {}) -> void:
+	for key in save_keys():
+		U.deserialize_value(self, serialized.get(key), key)
+	# need to deserialize `type` before loading trait data
+	var trait_data = Data.fetch([type, &'traits'], {})
+	for key in trait_data:
+		if key in Traits.valid_traits:
+			var t = Traits.load(key).new(trait_data, serialized, self)
+			traits.push_back(t)
 
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-func load_position(_position):
+func load_position(_position) -> void:
 	position = U.parse_vec(_position, generate_position())
 
 # ideally we would fail to load an entity with an invalid type.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
-func load_type(_type):
+func load_type(_type) -> void:
 	if _type == null or Data.missing(_type): _type = generate_type()
 	type = _type
 

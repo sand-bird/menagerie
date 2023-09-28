@@ -93,7 +93,7 @@ func clear_target(_entity = null):
 # --------------------------------------------------------------------------- #
 
 func connect_monster():
-	$portrait.update(target, true)
+	$portrait.update(target, false)
 	target.drives_changed.connect(update_monster)
 	update_monster()
 

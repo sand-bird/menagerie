@@ -629,6 +629,7 @@ func matches_format(format: StringName, data: String):
 		&'regex': return RegEx.create_from_string(data).is_valid()
 		&'filepath': return ResourceLoader.exists(data)
 		&'date': return true # TODO
+		&'tag': return data in Tags.TAGS.keys()
 
 # --------------------------------------------------------------------------- #
 

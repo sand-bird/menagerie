@@ -41,6 +41,7 @@ const BG_COLORS = [FEMALE_BG, MALE_BG]
 # ideally we should have generic EntitySprite class that can parse sprite_info
 # and animate itself accordingly, and use it both here and in Entity.
 func update(e: Entity, idle = false):
+	@warning_ignore("incompatible_ternary")
 	var sprite_info = e.get_sprite_info('idle' if idle else null, Vector2(1, 1))
 	var panel_theme = $bg.get_theme_stylebox("panel")
 	panel_theme.bg_color = BG_COLORS[e.sex] if 'sex' in e else NONE_BG

@@ -6,8 +6,6 @@ class_name Item
 # target's class instead.
 const entity_type = Constants.EntityType.ITEM
 
-var traits: Array[Trait] = []
-
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #

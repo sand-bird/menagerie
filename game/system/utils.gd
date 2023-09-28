@@ -3,6 +3,31 @@ class_name U
 
 const LNAME = "Utils"
 
+static func serialize_value(value: Variant, key: String = ''):
+	if value == null:
+		Log.warn(LNAME, ["serializing null value for key `", key, "`"])
+	elif value is Array:
+		return value.map(serialize_value)
+	elif value is Vector2 or value is Vector2i:
+		return format_vec(value)
+	elif value is Object:
+		if value.has_method('serialize'): return value.serialize()
+		else: Log.error(LNAME, [
+			"tried to serialize object without `serialize` method: ", value])
+	else: return value
+
+# --------------------------------------------------------------------------- #
+
+static func deserialize_value(o: Object, value: Variant, key: String) -> void:
+	var loader = str('load_', key)
+	# if the key has a loader, just call it and trust it to initialize
+	if o.has_method(loader): o.call(loader, value)
+	elif value == null:
+		var generator = str('generate_', key)
+		if o.has_method(generator): o.set(key, o.call(generator))
+	else: o.set(key, value)
+
+
 # =========================================================================== #
 #                               F I L E   I / O                               #
 # --------------------------------------------------------------------------- #
@@ -201,7 +226,10 @@ static func parse_vec(data, default = null):
 
 # --------------------------------------------------------------------------- #
 
-static func format_vec(vec: Vector2):
+static func format_vec(vec: Vector2, allow_partial = true):
+	# don't serialize nan values or it will break json parsing
+	if (JSON.stringify(vec.x) == 'nan' or JSON.stringify(vec.y) == 'nan'):
+		return {} if allow_partial else { x = 0, y = 0 }
 	return { x = vec.x, y = vec.y }
 
 # --------------------------------------------------------------------------- #

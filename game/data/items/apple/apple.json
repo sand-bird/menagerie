@@ -12,5 +12,10 @@
   },
   "icon": "~/apple.png",
   "sprite": "~/apple.png",
-  "value": 10
+  "value": 10,
+  "traits": {
+    "edible": {
+      "flavors": ["sweet", "tart"]
+    }
+  }
 }

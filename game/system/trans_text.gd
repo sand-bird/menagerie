@@ -62,3 +62,25 @@ const HEARTH = &"hearth"
 const HALLOW = &"hallow"
 const AURORA = &"aurora"
 const RIME = &"rime"
+
+#                                f l a v o r s                                #
+# --------------------------------------------------------------------------- #
+
+const SWEET = &"sweet"
+const SOUR = &"sour"
+const SALTY = &"salty"
+const BITTER = &"bitter"
+const SPICY = &"spicy"
+const SAVORY = &"savory"
+const TART = &"tart"
+
+
+# =========================================================================== #
+#                                   T A G S                                   #
+# --------------------------------------------------------------------------- #
+
+const FRUIT = &"fruit"
+const VEGETABLE = &"vegetable"
+const MEAT = &"meat"
+const MINERAL = &"mineral"
+const FUNGUS = &"fungus"

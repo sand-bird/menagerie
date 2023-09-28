@@ -32,6 +32,41 @@
       "type": "number",
       "$comment": "Base mass in kilograms",
       "minimum": 1.0
+    },
+    "tags": {
+      "$comment": "An array of 'aesthetic tags' reflecting various characteristics of the entity",
+      "type": "array",
+      "uniqueItems": true,
+      "values": {
+        "type": "string",
+        "format": "tag",
+        "$comment": "The `tag` format validates tags against constants defined in the code.  This allows us to maintain a single source of truth for available tags."
+      }
+    },
+    "traits": {
+      "type": "object",
+      "properties": {
+        "edible": {
+          "$comment": "Entity advertises 'eat' actions which fill a monster's belly and affect its `nutrition` attribute",
+          "type": "object",
+          "required": [
+            "flavors"
+          ],
+          "properties": {
+            "flavors": {
+              "type": "array",
+              "$comment": "Flavor tags; see edible.gd. Ideally we would add a special keyword to match this against game data at runtime, like wih tags, rather than hardcoding it here",
+              "items": {
+                "enum": [
+                  "sweet", "sour", "salty", "bitter", "spicy", "savory", "tart"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     }
   }
 }
