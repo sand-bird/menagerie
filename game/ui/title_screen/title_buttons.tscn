@@ -1,61 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://gv40ojjgu6rh"]
+[gd_scene load_steps=3 format=3 uid="uid://gv40ojjgu6rh"]
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="Script" path="res://ui/title_screen/title_buttons.gd" id="2"]
 
-[sub_resource type="GDScript" id="1"]
-script/source = "extends \"res://ui/event_button.gd\"
-
-func _ready():
-	text = tr(T.LOAD_GAME).capitalize()
-	signal_name = \"ui_open\"
-	args = \"save_list\"
-"
-
-[sub_resource type="GDScript" id="2"]
-script/source = "extends \"res://ui/event_button.gd\"
-
-func _ready():
-	text = tr(T.NEW_GAME).capitalize()
-	signal_name = \"ui_open\"
-	args = [\"name_input\", 1, true]
-"
-
-[sub_resource type="GDScript" id="3"]
-script/source = "extends \"res://ui/event_button.gd\"
-
-func _ready():
-	text = tr(T.QUIT_GAME).capitalize()
-	signal_name = \"quit_game\"
-"
-
-[node name="title_buttons" type="VBoxContainer"]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
+[node name="title_buttons" type="GridContainer"]
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -48.0
-offset_top = -96.0
-offset_right = 48.0
-offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("1")
-alignment = 1
 script = ExtResource("2")
-
-[node name="load_game" type="Button" parent="."]
-layout_mode = 2
-text = "<load game>"
-clip_text = true
-script = SubResource("1")
-
-[node name="new_game" type="Button" parent="."]
-layout_mode = 2
-text = "<new game>"
-script = SubResource("2")
-
-[node name="quit_game" type="Button" parent="."]
-layout_mode = 2
-text = "<quit game>"
-clip_text = true
-script = SubResource("3")
