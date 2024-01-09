@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://ivx0r5k7kf4u"]
+[gd_scene load_steps=12 format=3 uid="uid://ivx0r5k7kf4u"]
 
 [ext_resource type="Script" path="res://ui/main_menu/encyclopedia/encyclopedia.gd" id="2"]
-[ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="3"]
 [ext_resource type="StyleBox" uid="uid://dlg6y06x67oax" path="res://assets/ui/panels/flat.tres" id="3_cx7r1"]
 [ext_resource type="Texture2D" uid="uid://cltvm0xbpken5" path="res://assets/ui/elements/book.png" id="3_mvdw5"]
 [ext_resource type="StyleBox" uid="uid://pmkvaxixfrv2" path="res://assets/ui/panels/box_outset_light.tres" id="4_usb2l"]
@@ -14,14 +13,15 @@
 [ext_resource type="Texture2D" uid="uid://2ao873qh6btb" path="res://assets/other/the_wizard__s_desk_ii_by_the_bogbrush_project-3091174828.jpeg" id="10_udsid"]
 
 [node name="encyclopedia" type="Control"]
+custom_minimum_size = Vector2(296, 142)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 296.0
 offset_bottom = 142.0
-theme = ExtResource("3")
 script = ExtResource("2")
 
 [node name="align" type="TextureRect" parent="."]
+visible = false
 z_index = -1
 layout_mode = 0
 offset_left = -10.0

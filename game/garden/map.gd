@@ -38,7 +38,10 @@ func load_terrain(data):
 		for x in data[y].size():
 			var idx = data[y][x]
 			set_terrain_cell(Vector2i(x, y), idx)
-	var size = Vector2(data[0].size(), data.size()) * cell_quadrant_size
+	# this _should_ be the size of a grid square but it might be weird -
+	# from the docs: "A quadrant is a group of tiles to be drawn together on a
+	# single canvas item, for optimization purposes"
+	var size = Vector2(data[0].size(), data.size()) * rendering_quadrant_size
 	Log.info(self, ["garden size: ", size])
 	Log.info(self, ["terrain used rect: ", get_used_rect()])
 	Log.info(self, ["terrain used cells: ", get_used_cells(0)])

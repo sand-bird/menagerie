@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://addons/event_button/button.gd" id="3"]
 
 [node name="settings" type="Control"]
+custom_minimum_size = Vector2(296, 142)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 296.0

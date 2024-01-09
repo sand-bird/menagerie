@@ -33,6 +33,8 @@ var current: int = -1:
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	# size of the usable area in the menu ui (page space under the headers)
+	custom_minimum_size = Vector2(296, 142)
 	print('menu_section _ready')
 	Dispatcher.menu_next_page.connect(next_page)
 	Dispatcher.menu_prev_page.connect(prev_page)
