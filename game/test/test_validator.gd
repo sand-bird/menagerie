@@ -92,7 +92,7 @@ func test_anyof():
 	var v = Validator.new({})
 	
 	var result = v.validate_instance(3, schema)
-	assert_valid(v.validate_instance(3, schema))
+	assert_valid(result)
 	
 	result = v.validate_instance(4, schema)
 	var expected_errors = range(3).map(func(i): return {
@@ -173,6 +173,30 @@ func test_type():
 	assert_invalid(result, E.type_mismatch_plural(most_types, "null"))
 	result = v.validate_instance(null, { "type": all_types })
 	assert_valid(result)
+
+
+#                        v a l i d a t e _ s t r i n g                        #
+# --------------------------------------------------------------------------- #
+
+func test_min_length():
+	var schema = { "minLength": 5 }
+	var v = Validator.new({})
+	var result = v.validate_string('5char', schema)
+	assert_valid(result)
+	result = v.validate_string('6chars', schema)
+	assert_valid(result)
+	result = v.validate_string('3ch', schema)
+	assert_invalid(result, E.min_length_not_met(5, 3))
+
+func test_max_length():
+	var schema = { "maxLength": 5 }
+	var v = Validator.new({})
+	var result = v.validate_string('5char', schema)
+	assert_valid(result)
+	result = v.validate_string('3ch', schema)
+	assert_valid(result)
+	result = v.validate_string('6chars', schema)
+	assert_invalid(result, E.max_length_exceeded(5, 6))
 
 
 #                         v a l i d a t e _ a r r a y                         #

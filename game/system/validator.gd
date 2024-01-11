@@ -415,13 +415,13 @@ func validate_string(
 	var result = new_result(1, d, s)
 	if &'maxLength' in schema and is_non_negative_int(schema.maxLength):
 		append_sub(result, report(
-			data.length() < schema.maxLength,
+			data.length() <= schema.maxLength,
 			E.max_length_exceeded(schema.maxLength, data.length()),
 			d, s, 'maxLength'
 		))
 	if &'minLength' in schema and is_non_negative_int(schema.minLength):
 		append_sub(result, report(
-			data.length() > schema.minLength,
+			data.length() >= schema.minLength,
 			E.min_length_not_met(schema.minLength, data.length()),
 			d, s, 'minLength'
 		))
