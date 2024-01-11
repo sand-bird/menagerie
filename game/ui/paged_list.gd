@@ -82,17 +82,32 @@ var page: int = 0:
 var items: Array[Control] = []
 # index of the selected item
 var selected: int = -1: set = select
+# items can lose focus for two reasons:
+#  1. because of a change in selection, or
+#  2. because we clicked outside the item.
+# when the selection changes, we manage focus via `on_select` & `on_deselect`,
+# so we don't have to do anything extra.
+# when clicking outside the item though, we need to either clear the selection
+# (if allow_unselected is true) or re-focus the item by selecting it again,
+# to ensure that focus always matches the selected item.  this is handled in a
+# `focus_exited` listener on each item, which we set up in `connect_item`.
+# this boolean tells the `focus_exited` handler not to do anything, since the
+# item is losing focus due to a selection change.
+var ignore_unfocus: bool = false
 
 func select(new: int):
-	# deselect the last item, if any
-	if has_selected and selected < items.size(): on_deselect(items[selected])
+	ignore_unfocus = true
+	# deselect the last selected item if necessary
+	if has_selected and selected < items.size() and selected != new:
+		on_deselect(items[selected])
 	# set the new value, clamped to `items`.
 	# a value of -1 means nothing is selected
-	var min = -1 if allow_unselected or items.is_empty() else 0 
+	var min = -1 if allow_unselected or items.is_empty() else 0
 	selected = clampi(new, min, items.size() - 1)
 	if has_selected: on_select(items[selected])
 	var selected_data = data[(page * page_size) + selected] if has_selected else null
 	selected_changed.emit(selected, selected_data)
+	ignore_unfocus = false
 
 
 #                    c o m p u t e d   p r o p e r t i e s                    #
@@ -142,6 +157,8 @@ func load_items(_data_slice: Array[Variant]) -> Array[Control]:
 	return []
 
 # do whatever should be done when a child is selected.
+# note: we might _always_ want to manage focus on select/deselect, so it may
+# be better to do so outside these abstract functions.
 func on_select(item: Control): item.grab_focus()
 
 func on_deselect(item: Control): item.release_focus()
@@ -166,6 +183,8 @@ func load_page():
 	# again.  setting `selected` also re-clamps it in case the page size shrunk.
 	select(selected)
 
+# --------------------------------------------------------------------------- #
+
 # set up each item to update `selected` on the appropriate mouse action
 func connect_item(item: Control, i: int):
 	match mouse_mode:
@@ -173,6 +192,13 @@ func connect_item(item: Control, i: int):
 		MouseMode.CLICK: item.gui_input.connect(
 			func(e): if e is InputEventMouseButton and e.pressed: select(i)
 		)
+	item.focus_exited.connect(
+		func():
+			prints('focus_exited', selected, item, ignore_unfocus)
+			if ignore_unfocus: return
+			if allow_unselected: selected = -1
+			else: select(selected)
+	)
 
 # --------------------------------------------------------------------------- #
 
