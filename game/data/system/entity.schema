@@ -31,7 +31,7 @@
     "mass": {
       "type": "number",
       "$comment": "Base mass in kilograms",
-      "minimum": 1.0
+      "minimum": 0.01
     },
     "tags": {
       "$comment": "An array of 'aesthetic tags' reflecting various characteristics of the entity",
@@ -52,6 +52,9 @@
           "required": [
             "flavors"
           ],
+          "propertyNames": {
+            "enum": ["flavors", "protein", "carbs", "fat", "fiber"]
+          },
           "properties": {
             "flavors": {
               "type": "array",
@@ -63,6 +66,12 @@
               },
               "minItems": 1,
               "uniqueItems": true
+            },
+            "additionalProperties": {
+              "$comment": "All properties on `edible` except for `flavor` refer to energy sources. The value is the amount of the energy souce in grams present in the edible.",
+              "type": "number",
+              "minimum": 0,
+              "default": 0
             }
           }
         }

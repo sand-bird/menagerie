@@ -15,6 +15,9 @@ func _ready(): pass
 
 # --------------------------------------------------------------------------- #
 
+# `config` is initialization parameters and comes from the data definition for
+# the entity to which this trait belongs.  `state` comes from the serialized
+# state for that entity.
 func _init(config: Dictionary, state: Dictionary, parent_: Entity):
 	parent = parent_
 	configure(config)
@@ -22,9 +25,20 @@ func _init(config: Dictionary, state: Dictionary, parent_: Entity):
 
 # --------------------------------------------------------------------------- #
 
+# list of property names to load from a data definition
+func config_keys() -> Array[StringName]:
+	return [] as Array[StringName]
+
+# --------------------------------------------------------------------------- #
+
 # takes a trait configuration object from an entity's data definition and sets
-# up the trait.  should be implemented by subclasses.
-func configure(config: Dictionary = {}): pass
+# up the trait.  works exactly the same way as `deserialize`, except with
+# config keys instead of save keys.
+func configure(config: Dictionary = {}):
+	var ck = config_keys()
+	for key in ck:
+		U.deserialize_value(self, config.get(key), key)
+
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

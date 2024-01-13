@@ -18,6 +18,14 @@ static func serialize_value(value: Variant, key: String = ''):
 
 # --------------------------------------------------------------------------- #
 
+# sets properties on the passed-in object using the given key and value, which
+# correspond to some serialized state.
+# delegates more complex behavior to `load_x` and `generate_x` functions on the
+# object, where x matches the given key:
+# - `generate` should create and return a value for the property and is used if
+#   the passed-in value is null (we then set it on the object in this function).
+# - `load` functions set the property on the object themselves, returning void.
+#   these take in the passed-in value so they can manipulate or validate it.
 static func deserialize_value(o: Object, value: Variant, key: String) -> void:
 	var loader = str('load_', key)
 	# if the key has a loader, just call it and trust it to initialize

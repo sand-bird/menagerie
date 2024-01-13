@@ -30,7 +30,9 @@
             "description",
             "cond",
             "weight",
-            "animations"
+            "animations",
+            "energy_source_efficiency",
+            "ideal_energy_source_balance"
           ]
         },
         "properties": {
@@ -103,6 +105,50 @@
                   "$ref": "definitions/animatedSprite"
                 }
               }
+            }
+          },
+          "energy_source_efficiency": {
+            "type": "object",
+            "propertyNames": [
+              "protein", "carbs", "fat", "fiber", "mana", "sunlight"
+            ],
+            "properties": {
+              "protein": {
+                "$ref": "definitions/percentage",
+                "default": 1
+              },
+              "carbs": {
+                "$ref": "definitions/percentage",
+                "default": 1
+              },
+              "fat": {
+                "$ref": "definitions/percentage",
+                "default": 1
+              },
+              "fiber": {
+                "$ref": "definitions/percentage",
+                "default": 0.05
+              },
+              "mana": {
+                "$ref": "definitions/percentage",
+                "default": 0
+              },
+              "sunlight": {
+                "$ref": "definitions/percentage",
+                "default": 0
+              }
+            }
+          },
+          "ideal_energy_source_balance": {
+            "type": "object",
+            "$comment": "Ratio of energy sources in the monster's ideal diet. Deviations from this will negatively impact the monster's health.",
+            "propertyNames": [
+              "protein", "carbs", "fat", "fiber", "mana", "sunlight"
+            ],
+            "additionalProperties": {
+              "type": "number",
+              "default": 0,
+              "minValue": 0
             }
           }
         }

@@ -119,6 +119,11 @@
     "maxValue": 8,
     "minValue": 1
   },
+  "percentage": {
+    "type": "number",
+    "minValue": 0,
+    "maxValue": 1
+  },
   "text": {
     "$comment": "Translatable text; object mapping location codes to text in that language",
     "type": "object",

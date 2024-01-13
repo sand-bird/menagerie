@@ -6,7 +6,7 @@
     "en": "Nice Apple"
   },
   "size": 4,
-  "mass": 1,
+  "mass": 0.2,
   "description": {
     "en": "Red and delicious!"
   },
@@ -15,7 +15,11 @@
   "value": 10,
   "traits": {
     "edible": {
-      "flavors": ["sweet", "tart"]
+      "flavors": ["sweet", "tart"],
+      "protein": 0.5,
+      "carbs": 28,
+      "fat": 0.4,
+      "fiber": 5
     }
   }
 }
