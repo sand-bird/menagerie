@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=3 uid="uid://coekbwtf1jj4k"]
+
+[ext_resource type="Script" path="res://test/pagedlist_test_1.gd" id="1_ejvay"]
+[ext_resource type="Script" path="res://test/pagedlist_test.gd" id="1_mhbs5"]
+[ext_resource type="Script" path="res://test/pagedlist_test_2.gd" id="2_e2kj5"]
+
+[node name="pagedlist_test" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mhbs5")
+
+[node name="2" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("2_e2kj5")
+rows = 2
+allow_unselected = false
+
+[node name="1" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 2
+columns = 2
+script = ExtResource("1_ejvay")
+rows = 2
+
+[node name="1_selected" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 0
+
+[node name="2_selected" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.0
+grow_horizontal = 2
+grow_vertical = 0

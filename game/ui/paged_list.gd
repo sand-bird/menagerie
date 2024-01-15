@@ -11,9 +11,17 @@ This allows us to:
    corresponding edge of the grid (this also wraps the selector)
 2. automatically select/focus an item when a directional input is pressed while
    nothing is selected
-3. configurably allow `ui_back` to clear the selection (see `allow_unselected`)
+3. configurably allow `ui_cancel` to clear the selection (see `allow_unselected`)
 4. configurably update the selection based on mouse interaction: hover, click,
    or none (see `mouse_mode`)
+
+Note: this component relies on `_input` to capture focus inputs before they can
+do anything.  As a result, it doesn't play well with other UI components, eg
+text inputs (where ui direction inputs move the cursor), or other PagedLists.
+this is okay for now, but we may have to rethink this when it's time to develop
+more complex uis, like shop pages.  in that case, we can try updating `selected`
+to respond to focus changes instead of the other way around, and paginate if
+`find_valid_focus_neighbor` (new in godot 4.2) returns nothing.
 
 USAGE
 -----
@@ -194,7 +202,9 @@ func connect_item(item: Control, i: int):
 		)
 	item.focus_exited.connect(
 		func():
-			prints('focus_exited', selected, item, ignore_unfocus)
+			Log.verbose(self, ['focus_exited ', item,
+				' | selected: ', selected, items[selected],
+				' | ignore_unfocus: ', ignore_unfocus])
 			if ignore_unfocus: return
 			if allow_unselected: selected = -1
 			else: select(selected)
