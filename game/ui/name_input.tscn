@@ -2,7 +2,6 @@
 
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="1"]
 [ext_resource type="StyleBox" uid="uid://brscslj4wkjes" path="res://assets/ui/panels/box_border_outset.tres" id="2_4mo73"]
-[ext_resource type="Script" path="res://ui/event_button.gd" id="2_t682i"]
 [ext_resource type="StyleBox" uid="uid://dljlrme4cg8ve" path="res://assets/ui/panels/box_border_outset_light.tres" id="3_7q86k"]
 
 [sub_resource type="GDScript" id="1"]
@@ -12,14 +11,16 @@ script/source = "extends Panel
 func _ready():
 	$submit_button.args = \"\"
 	$submit_button.disabled = true
+	$input_field.grab_focus()
 	$input_field.text_changed.connect(_update_button)
 
 func _update_button(text):
 	$submit_button.args = text
 	$submit_button.disabled = text.length() < 1
+
 "
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id="2"]
 script/source = "extends \"res://ui/event_button.gd\"
 
 func _ready(): 
@@ -45,6 +46,7 @@ offset_left = 8.0
 offset_top = 29.0
 offset_right = 101.0
 offset_bottom = 48.0
+caret_blink = true
 
 [node name="label" type="Label" parent="."]
 layout_mode = 0
@@ -66,4 +68,4 @@ theme_override_styles/normal = ExtResource("2_4mo73")
 theme_override_styles/disabled = ExtResource("3_7q86k")
 disabled = true
 text = "OK!"
-script = SubResource( 2 )
+script = SubResource("2")
