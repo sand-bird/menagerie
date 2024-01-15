@@ -38,10 +38,10 @@ func _ready():
 # --------------------------------------------------------------------------- #
 
 var input_map = {
-	ui_menu = [open_menu],
-	ui_menu_monsters = [open_menu, 'monsters'],
-	ui_menu_items = [open_menu, 'items'],
-	ui_menu_objects = [open_menu, 'objects'],
+	menu = [open_menu],
+	menu_monsters = [open_menu, 'monsters'],
+	menu_items = [open_menu, 'items'],
+	menu_objects = [open_menu, 'objects'],
 	ui_cancel = [close]
 }
 

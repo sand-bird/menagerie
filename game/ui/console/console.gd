@@ -244,7 +244,7 @@ func _ready():
 # --------------------------------------------------------------------------- #
 
 func _input(event):
-	if event.is_action_pressed('ui_console'):
+	if event.is_action_pressed('console'):
 		visible = !visible
 	if visible and event.is_pressed() and event is InputEventKey:
 		# Typing
