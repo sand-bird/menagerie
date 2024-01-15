@@ -8,7 +8,7 @@ func initialize():
 	data = [
 		{
 			title = T.NEW_GAME,
-			on_press = func(): Dispatcher.ui_open.emit("name_input", 1, true)
+			on_press = func(): Dispatcher.ui_open.emit(["name_input", 1, true])
 		},
 		{
 			title = T.QUIT_GAME,

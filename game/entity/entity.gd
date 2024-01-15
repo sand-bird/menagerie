@@ -174,7 +174,7 @@ func deserialize(serialized = {}) -> void:
 	var trait_data = Data.fetch([type, &'traits'], {})
 	for key in trait_data:
 		if key in Traits.valid_traits:
-			var t = Traits.load(key).new(trait_data, serialized, self)
+			var t = Traits.load(key).new(trait_data.get(key), serialized, self)
 			traits.push_back(t)
 
 #                                l o a d e r s                                #
