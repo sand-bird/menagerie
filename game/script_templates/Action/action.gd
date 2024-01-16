@@ -1,29 +1,17 @@
 extends Action
-class_name ApproachAction
+"""
+"""
 
-# calls move to pos of target, recalculate path every tick
-# success when target is reached
-# fail if duration runs out
-# longish default duration - used as a timeout in case pet gets stuck
-
-@onready var target: Entity
-# how far from the target we want to approach to.
-# typically we want to be right on top of the target, but for some advanced
-# actions like games or "observe", we want to maintain some distance.
-@onready var distance: int
-
-
-func _init(m, _target, _distance = 0, speed = null, timeout = null):
-	super(m, timeout)
-	name = 'approach'
-
+func _init(_m, _other_args, _timeout = null):
+	super(_m, _timeout)
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
+
 # result should be the amount by which the action is expected to increase or
 # decrease the drive (negative for a decrease).
 func estimate_mood() -> float: return 0
-func estimate_belly() -> float: return target.mass
+func estimate_belly() -> float: return 0
 func estimate_energy() -> float: return 0
 func estimate_social() -> float: return 0
 

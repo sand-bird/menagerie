@@ -13,8 +13,10 @@ func _init(_m, _t = null):
 	if !t: t = calc_duration()
 	super._init(_m, _t)
 
-func estimate_result():
-	return { energy = float(t) * energy_per_tick }
+#                    u t i l i t y   c a l c u l a t i o n                    #
+# --------------------------------------------------------------------------- #
+
+func estimate_energy() -> float: return float(t) * energy_per_tick
 
 func mod_utility(u):
 	match Clock.hour:
@@ -23,6 +25,9 @@ func mod_utility(u):
 		21, 2: return u * 1.2
 		20, 3: return u * 1.1
 		_: return u
+
+#                              e x e c u t i o n                              #
+# --------------------------------------------------------------------------- #
 
 func _start():
 	m.play_anim('lie_down')

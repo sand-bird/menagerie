@@ -1,6 +1,11 @@
 extends Action
 class_name EatAction
+"""
+action to eat an item.
 
+prerequisites: target is grabbed (grab action, which has its own prerequisite
+of approaching the target)
+"""
 # eat (item)
 # prepend other actions targeting item if necessary (approach, steal)
 # success when item is eaten
@@ -15,6 +20,15 @@ func _init(m, _target, timeout = null):
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
+
+# +mood based on preference for target
+func estimate_mood() -> float: return 0
+# +belly based on mass of target
+func estimate_belly() -> float: return target.mass
+# +energy based on energy content of target
+func estimate_energy() -> float: return 0
+# note: may be social results if eating the item would involve grabbing it from
+# another monster (determined by prerequisite actions).
 
 # test test test
 func mod_utility(utility: float): return 100

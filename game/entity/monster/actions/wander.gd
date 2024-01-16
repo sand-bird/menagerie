@@ -19,8 +19,14 @@ func _init(_m, _t = null):
 	if !t: t = randi_range(min_dur, max_dur)
 	super._init(_m, _t)
 
-func estimate_result():
-	return { energy = -0.2 * t }
+#                    u t i l i t y   c a l c u l a t i o n                    #
+# --------------------------------------------------------------------------- #
+
+func estimate_energy() -> float: return -0.2 * t
+
+
+#                              e x e c u t i o n                              #
+# --------------------------------------------------------------------------- #
 
 func _start():
 #	m.announce('is wandering around.')
@@ -48,6 +54,8 @@ func new_move():
 	move_action = MoveAction.new(m, dest, 0.6, min_dur)
 	move_action.exited.connect(_on_move_exit)
 
+# --------------------------------------------------------------------------- #
+
 func pick_dest():
 	randomize()
 	var direction = Vector2(
@@ -56,6 +64,8 @@ func pick_dest():
 	)
 	var distance = randf_range(40, 60)
 	return (direction * distance) + m.position
+
+# --------------------------------------------------------------------------- #
 
 func cleanup_move():
 	move_action.exited.disconnect(_on_move_exit)

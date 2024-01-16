@@ -74,12 +74,19 @@ static func diff_efficiency(desired, delta, total):
 
 # --------------------------------------------------------------------------- #
 
+const DRIVES = [&'belly', &'energy', &'social', &'mood']
+
 # calculates the utility of an action for the given monster by comparing the
 # result of the action's `calc_effect` against the monster's current drives.
 static func calc_utility(m, action):
-	var effect = action.estimate_result()
-	var desired_energy = m.get_target_energy() - m.energy
-	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
+	var utility: float = 0
+	for drive in DRIVES:
+		var drive_result = action.call(str('estimate_', drive))
+		#prints('action', action.name, 'yields', drive_result, 'for', drive)
+	
+#	var effect = action.estimate_result()
+#	var desired_energy = m.get_target_energy() - m.energy
+#	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
 	Log.info(LNAME, ['(calc_utility) action: ', action, ' for ', action.t, ' ticks | monster: ', m, ' | utility: ', utility])
 	return action.mod_utility(utility)
 

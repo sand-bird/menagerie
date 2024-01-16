@@ -9,10 +9,12 @@ velocity = truncate (velocity + acceleration, max_speed)
 position = position + velocity
 """
 
+const JOULES_PER_CALORIE = 4184
+
 # a magic number used to calculate desired velocity.
 # input speed should be a float where 1 is a "normal" walking speed.
 # this multipler allows us to tune the speed calculation to achieve this result.
-const SPEED_MULTIPLIER: float = 3
+const FORCE_MULTIPLIER: float = 3
 # modifies the speed of the walk animation.
 # walk animation FPS should be tuned around the "standard" input speed of 1.
 # we then use the input speed to modify the speed of the animation, so if the
@@ -25,29 +27,41 @@ const FPS_COEFFICIENT = 0.6
 # fail on timeout
 
 var dest: Vector2
-var speed: float
+# a multiplier for how fast we should move, relative to "normal" speed (1).
+var speed: float = 1
 var path: Array
 
 var nav: NavigationAgent2D
 
-func _init(_m, _dest: Vector2, _speed: float, _t = null):
+# DEBUG DEBUG
+var running_calories = 0
+var estimated = 0
+
+func _init(_m, _dest: Vector2, _speed: float = 1, _t = null):
 	super(_m, _t)
+	last_pos = m.position
 	name = 'move'
 	dest = _dest
-	speed = _speed * m.attributes.vigor.lerp(0.5, 2.0)
+	speed = _speed
+	estimated = estimate_energy()
 
-# moving costs a variable amount of energy per tick depending on speed;
-# it costs more energy to move faster over the same amount of ground.
-#
-# when we estimate the cost of the action, our information is incomplete:
-# we do not know how many ticks it will take, or even how much distance the
-# actual path will cover; we only know the distance to the destination as the
-# crow flies.
-#
-# we can figure this out later. for now just return a flat number.
-func estimate_result():
-	return { energy = -10.0 }
 
+#                    u t i l i t y   c a l c u l a t i o n                    #
+# --------------------------------------------------------------------------- #
+
+func estimate_energy() -> float:
+	# ask the navigation server for a path to the destination so we can estimate
+	# how far we actually have to travel.  we can't use the monster's nav agent
+	# because it's not actually performing the action yet, only considering it.
+	var map = m.nav.get_navigation_map()
+	var est_path = NavigationServer2D.map_get_path(map, m.position, dest, true)
+	var distance = 0
+	for i in est_path.size() - 1:
+		distance += (est_path[i] as Vector2).distance_to(est_path[i + 1])
+	return -calc_calories_spent(distance)
+
+
+#                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
 
 func _start():
@@ -60,8 +74,21 @@ func _start():
 	# TODO: include the vigor modifier here
 	m.play_anim(Constants.Anim.WALK, speed ** FPS_COEFFICIENT)
 
+# --------------------------------------------------------------------------- #
+
+@onready var last_pos: Vector2
 func _tick():
-	return { energy = -1.0 * speed }
+	if last_pos == null or last_pos == Vector2(0, 0):
+		last_pos = m.position
+		return {}
+	var distance = m.position.distance_to(last_pos)
+	var calories_spent = calc_calories_spent(distance)
+	last_pos = m.position
+	# debug
+	running_calories -= calories_spent
+	return { energy = -calories_spent }
+
+# --------------------------------------------------------------------------- #
 
 # on proc (physics process), do all the movement stuff
 func _proc(_delta):
@@ -69,19 +96,25 @@ func _proc(_delta):
 		Log.debug(self, 'nav finished')
 		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
+		prints('
+=========
+total cal:', String.num(running_calories, 2), '
+estimated:', String.num(estimated, 2), '
+ratio:', String.num(running_calories / estimated, 2), '
+=========')
 		return
 	
 	var target = nav.get_next_path_position()
 
-	m.desired_velocity = (
-		(target - m.position).normalized()
-		* speed * MoveAction.calc_magnitude(m)
-	)
-	#m.velocity = m.desired_velocity
+	m.desired_velocity = (target - m.position).normalized() * calc_force()
 	var steering = m.desired_velocity - m.velocity
 	var acceleration: Vector2 = steering / m.mass
 	m.velocity = m.velocity + acceleration
 	
+	# grabber and grabbee are treated as a single RigidBody, so we can apply the
+	# force to either to create movement.  applying it to the grabbee causes the
+	# attached bodies to align in the direction of movement with the grabbee in
+	# front, provided that the force is sufficient to swing it around.
 	if m.is_grabbing():
 		m.grabbed.apply_central_force(m.velocity)
 		m.orientation = m.vec_to_grabbed().normalized()
@@ -91,10 +124,28 @@ func _proc(_delta):
 
 # --------------------------------------------------------------------------- #
 
-# used for drawing debug raycasts in the monster script
-static func calc_magnitude(monster: Monster) -> float:
+# returns the amount of force required to move the monster at the desired speed.
+func calc_force() -> float:
 	return (
-		SPEED_MULTIPLIER
+		FORCE_MULTIPLIER
 		* ProjectSettings.get_setting('physics/2d/default_linear_damp')
-		* monster.data.mass * monster.data.size
+		* m.data.mass
+		# "normal" speed actually varies based on the monster's size; larger
+		# monsters move faster than smaller ones when walking at the same pace.
+		* m.data.size
+		# a monster's vigor attribute modifies its move speed;
+		# we include it here so it will be applied consistently.
+		* m.attributes.vigor.lerp(0.5, 2.0)
+		# ^ the above is the force required to move the monster at its "normal"
+		# speed (a relaxed walk).
+		# finally, we add in the speed multiplier for this move action.
+		* speed
 	)
+
+# --------------------------------------------------------------------------- #
+
+# calculate work done in joules to move the monster over a given distance
+# at the current speed.
+func calc_calories_spent(distance: float) -> float:
+	var work = calc_force() * distance
+	return work / JOULES_PER_CALORIE
