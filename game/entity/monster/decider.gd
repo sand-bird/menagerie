@@ -53,14 +53,21 @@ static func self_actions(m):
 
 # polls the sources around the monster for possible actions.  returns a list of
 # possible actions.
-static func poll_sources(m):
+static func poll_sources(m: Monster):
 	var actions = []
-	# access the garden through the monster reference and get all sources within
-	# a radius of the monster.
-	# a source is, i guess, anything that implements `get_actions(monster)`.
+
+	var bodies: Array[Node2D] = m.perception.get_overlapping_bodies()
+	var entities: Array[Entity] = []
+	entities.assign(
+		bodies.filter(func (b): return b != m and b is Entity)
+	)
+	for entity in entities:
+		actions.append_array(entity.get_actions(m))
 	
 	actions.append_array(self_actions(m))
 	return actions
+
+# --------------------------------------------------------------------------- #
 
 static func diff_efficiency(desired, delta, total):
 	return 1.0 - (abs(desired - delta) / total)

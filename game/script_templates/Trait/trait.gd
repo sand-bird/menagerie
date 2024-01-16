@@ -1,5 +1,8 @@
 extends Trait
 
+func get_actions(_m: Monster) -> Array[Action]:
+	return [] as Array[Action]
+
 # list of property names to load from a data definition
 func config_keys() -> Array[StringName]:
 	return [] as Array[StringName]

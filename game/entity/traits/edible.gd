@@ -34,8 +34,9 @@ const FLAVORS = {
 
 #                                 c o n f i g                                 #
 # --------------------------------------------------------------------------- #
-func config_keys() -> Array[StringName]:
-	return [&'flavors', &'kcal'] as Array[StringName]
+func config_keys() -> Array[StringName]: return [
+		&'flavors', &'protein', &'fat', &'carbs', &'fiber'
+	] as Array[StringName]
 
 var flavors: Array[StringName] = []
 
@@ -50,10 +51,15 @@ var fiber: float = 0
 func save_keys() -> Array[StringName]:
 	return [&'amount_remaining'] as Array[StringName]
 
-
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
+func load_flavors(_flavors):
+	for flavor in _flavors:
+		if FLAVORS.has(flavor): flavors.push_back(StringName(flavor))
 
-#                             g e n e r a t o r s                             #
+#                                a c t i o n s                                #
 # --------------------------------------------------------------------------- #
+
+func get_actions(m: Monster) -> Array[Action]:
+	return [EatAction.new(m, parent)]

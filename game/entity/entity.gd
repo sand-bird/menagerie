@@ -116,13 +116,20 @@ func get_sprite_info(_key = null, _facing = null) -> Dictionary:
 func get_display_name() -> String:
 	return U.trans(data.name)
 
+# returns the actions the given monster can perform on this entity.
+func get_actions(m: Monster) -> Array[Action]:
+	var actions = [] as Array[Action]
+	for t in traits:
+		actions.append_array(t.get_actions(m))
+	return actions
+
 #                                p h y s i c s                                #
 # --------------------------------------------------------------------------- #
 
 # truncate linear velocity so that janky grab physics can't rocket things
 # across the map
 func _integrate_forces(state: PhysicsDirectBodyState2D):
-	state.linear_velocity = state.linear_velocity.limit_length(100)		
+	state.linear_velocity = state.linear_velocity.limit_length(100)
 
 # --------------------------------------------------------------------------- #
 

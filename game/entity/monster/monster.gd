@@ -20,7 +20,7 @@ enum Sex { FEMALE, MALE }
 var anim: AnimationPlayer
 var nav: NavigationAgent2D
 var joint: PinJoint2D
-# var perception: Area2D
+var perception: Area2D
 # var vel_text: Label
 
 # =========================================================================== #
@@ -148,6 +148,14 @@ func _init(_data: Dictionary, _garden: Garden):
 	nav.target_desired_distance = sqrt(size)
 	nav.path_max_distance = size
 	add_named_child(nav, 'nav')
+	
+	perception = Area2D.new()
+	var perception_shape = CollisionShape2D.new()
+	var circle = CircleShape2D.new()
+	circle.radius = 100
+	perception_shape.shape = circle
+	perception.add_child(perception_shape)
+	add_named_child(perception, 'perception')
 	
 	joint = PinJoint2D.new()
 	joint.softness = 0

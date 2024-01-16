@@ -6,6 +6,10 @@ superclass for entity traits.
 
 var parent: Entity
 
+# abstract, override on trait implementations
+func get_actions(_m: Monster) -> Array[Action]:
+	return [] as Array[Action]
+
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
