@@ -21,7 +21,7 @@ var anim: AnimationPlayer
 var nav: NavigationAgent2D
 var joint: PinJoint2D
 var perception: Area2D
-# var vel_text: Label
+var debug_text: Label
 
 # =========================================================================== #
 #                             P R O P E R T I E S                             #
@@ -164,6 +164,12 @@ func _init(_data: Dictionary, _garden: Garden):
 #	joint.bias = 0.9
 	# for now, put the joint at the center of the collision shape
 	add_named_child(joint, 'joint')
+	
+	debug_text = Label.new()
+	debug_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	debug_text.size.x = 64
+	debug_text.position = Vector2(-32, 4)
+	add_named_child(debug_text, 'debug_text')
 
 
 # =========================================================================== #
@@ -179,16 +185,14 @@ func _physics_process(delta):
 
 # --------------------------------------------------------------------------- #
 
-var can_grab: bool = true
-
-func _on_collide(node: Node2D):
-	if node is Entity and !is_grabbing() and can_grab: grab(node)
+func _on_collide(_node: Node2D): pass
 
 # --------------------------------------------------------------------------- #
 
 func _on_tick_changed():
 	age += 1
 	if current_action:
+		debug_text.text = current_action.name
 		var action_result = current_action.tick()
 		update_drives(action_result)
 	else: choose_action()
@@ -211,29 +215,24 @@ func get_display_name():
 #                               G R A B B I N G                               #
 # --------------------------------------------------------------------------- #
 
-func disable_grab(_cooldown: float):
-#	announce(str("cannot grab for ", cooldown, " seconds"))
-	can_grab = false
-	get_tree().create_timer(10).timeout.connect(enable_grab)
+var can_grab: bool = true
 
-func enable_grab():
-	can_grab = true
-#	announce("can now grab")
+func disable_grab(cooldown: float = 10):
+	can_grab = false
+	get_tree().create_timer(cooldown).timeout.connect(enable_grab)
+
+func enable_grab(): can_grab = true
 
 # --------------------------------------------------------------------------- #
 
 func grab(node: Entity):
 	joint.node_b = node.get_path()
-	var grab_duration = randi_range(10, 120)
-	announce(str(
-		"is grabbing ", get_grabbed_name(), " for ", grab_duration, " seconds"
-	))
-	get_tree().create_timer(grab_duration).timeout.connect(release)
+	announce(str("is grabbing ", get_grabbed_name()))
 
 func release(msg: String = "released "):
 	announce(msg + get_grabbed_name())
 	joint.node_b = ""
-	disable_grab(randi_range(5, 10))
+	disable_grab()
 
 # --------------------------------------------------------------------------- #
 
@@ -277,7 +276,8 @@ func choose_action():
 
 # --------------------------------------------------------------------------- #
 
-func _on_action_exit(status):
+func _on_action_exit(status, drive_diff):
+	update_drives(drive_diff)
 	Log.debug(self, ['action exited with status ', status, ': ', current_action])
 	current_action.exited.disconnect(_on_action_exit)
 	past_actions.append(current_action)

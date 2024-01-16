@@ -23,26 +23,31 @@ const FORCE_MULTIPLIER: float = 3
 # twice as fast, the animation will play 1.5 times as fast with a speed of 2.
 const FPS_COEFFICIENT = 0.6
 
-# success when dest is reached
-# fail on timeout
-
 var dest: Vector2
 # a multiplier for how fast we should move, relative to "normal" speed (1).
 var speed: float = 1
+# how far from the target we want to approach to.
+# typically we want to be right on top of the target, but for some advanced
+# actions like games or "observe", we want to maintain some distance.
+var target_distance: float
 var path: Array
 
-var nav: NavigationAgent2D
+# the position of the monster when we last spent energy (ie, last tick).
+# `spend_energy` calculates the energy cost to move from here to the monster's
+# current position, then updates `last_pos`.
+@onready var last_pos: Vector2 = m.position
 
 # DEBUG DEBUG
 var running_calories = 0
 var estimated = 0
 
-func _init(_m, _dest: Vector2, _speed: float = 1, _t = null):
+func _init(_m, _dest: Vector2, _speed: float = 1, _distance: float = _m.data.size, _t = null):
 	super(_m, _t)
 	last_pos = m.position
 	name = 'move'
 	dest = _dest
 	speed = _speed
+	target_distance = _distance
 	estimated = estimate_energy()
 
 
@@ -58,15 +63,15 @@ func estimate_energy() -> float:
 	var distance = 0
 	for i in est_path.size() - 1:
 		distance += (est_path[i] as Vector2).distance_to(est_path[i + 1])
-	return -calc_calories_spent(distance)
+	return -calc_energy_cost(distance)
 
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
 
 func _start():
-	nav = m.nav
-	nav.set_target_position(dest)
+	m.nav.target_desired_distance = target_distance
+	m.nav.set_target_position(dest)
 	# nav agent with object avoidance fires a signal when it's done calculating
 	# the "safe" velocity.  this happens at the end of the physics process, so
 	# we can call `move_and_slide` in the handler
@@ -76,23 +81,19 @@ func _start():
 
 # --------------------------------------------------------------------------- #
 
-@onready var last_pos: Vector2
-func _tick():
-	if last_pos == null or last_pos == Vector2(0, 0):
-		last_pos = m.position
-		return {}
-	var distance = m.position.distance_to(last_pos)
-	var calories_spent = calc_calories_spent(distance)
-	last_pos = m.position
-	# debug
-	running_calories -= calories_spent
-	return { energy = -calories_spent }
+func _exit(_status):
+	m.play_anim(Constants.Anim.IDLE)
+	return { energy = spend_energy() }
+
+# --------------------------------------------------------------------------- #
+
+func _tick(): return { energy = spend_energy() }
 
 # --------------------------------------------------------------------------- #
 
 # on proc (physics process), do all the movement stuff
 func _proc(_delta):
-	if nav.is_navigation_finished():
+	if m.nav.is_navigation_finished():
 		Log.debug(self, 'nav finished')
 		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
@@ -104,7 +105,7 @@ ratio:', String.num(running_calories / estimated, 2), '
 =========')
 		return
 	
-	var target = nav.get_next_path_position()
+	var target = m.nav.get_next_path_position()
 
 	m.desired_velocity = (target - m.position).normalized() * calc_force()
 	var steering = m.desired_velocity - m.velocity
@@ -122,6 +123,8 @@ ratio:', String.num(running_calories / estimated, 2), '
 		m.apply_central_force(m.velocity)
 		m.orientation = m.linear_velocity.normalized()
 
+
+#                                  u t i l s                                  #
 # --------------------------------------------------------------------------- #
 
 # returns the amount of force required to move the monster at the desired speed.
@@ -146,6 +149,22 @@ func calc_force() -> float:
 
 # calculate work done in joules to move the monster over a given distance
 # at the current speed.
-func calc_calories_spent(distance: float) -> float:
+func calc_energy_cost(distance: float) -> float:
 	var work = calc_force() * distance
 	return work / JOULES_PER_CALORIE
+
+# --------------------------------------------------------------------------- #
+
+# calculates the energy spent in moving from the last stored position to the
+# current one, and updates the stored position for next time.
+# run once per tick, and once on exit.
+func spend_energy() -> float:
+	if last_pos == null or last_pos == Vector2(0, 0):
+		last_pos = m.position
+		return 0
+	var distance = m.position.distance_to(last_pos)
+	var calories_spent = calc_energy_cost(distance)
+	last_pos = m.position
+	# debug
+	running_calories -= calories_spent
+	return -calories_spent
