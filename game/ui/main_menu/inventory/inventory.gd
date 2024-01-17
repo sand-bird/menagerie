@@ -1,10 +1,5 @@
 extends MenuSection
 
-const GRID_SIZES = {
-		Constants.InventorySize.SMALL: Constants.GridSize.SMALL,
-		Constants.InventorySize.LARGE: Constants.GridSize.LARGE
-	}
-
 # we have two different versions of the inventory for different kinds of entity,
 # items and objects/sessiles.  they are differentiated only by their title and
 # initial filter (a data_filter that matches `type`).
@@ -34,9 +29,8 @@ func initialize(key = 'items'):
 	title = tr(config.title)
 	data_filter = func (data): return data.type == config.data_type
 	var indices = filter_items()
-	var grid_size = GRID_SIZES[Options.inventory_size]
 	$item_grid/items.selected_changed.connect(update_item_details)
-	$item_grid.initialize(indices, grid_size)
+	$item_grid.initialize(indices)
 
 # --------------------------------------------------------------------------- #
 

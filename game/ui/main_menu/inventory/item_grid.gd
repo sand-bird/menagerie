@@ -1,7 +1,9 @@
 extends NinePatchRect
 """
 A grid of items with a sliding selector.  Uses PagedList internally.
-Works with two grid sizes: small is 6x6, and large is 5x5.
+Works with two grid sizes: small is 6x6, and large is 5x5.  Currently the grid
+size is determined by Options.inventory_size since this component is only used
+inside the inventory menu.
 
 Ideally this would be generic enough to use outside the inventory menu, eg in
 an NPC shop.  However, it currently works with pointers to the inventory - each
@@ -10,27 +12,26 @@ element in the `data` param to `initialize` (stored in $items) is an array of
 refactored if we want to use item_grid elsewhere.
 """
 
-
 const PROPERTIES = {
-	Constants.GridSize.SMALL: {
+	Options.InventorySize.SMALL: {
 		grid_bg = "item_grid_small_9patch",
 		selector = "selector_small",
 		item_size = Vector2(20, 20)
 	},
-	Constants.GridSize.LARGE: {
+	Options.InventorySize.LARGE: {
 		grid_bg = "item_grid_large_9patch",
 		selector = "selector_big",
 		item_size = Vector2(24, 24)
 	}
 }
-var grid_size: Constants.GridSize = Constants.GridSize.SMALL
+var grid_size: Options.InventorySize = Options.InventorySize.SMALL
 var props:
 	get: return PROPERTIES[grid_size]
 
 # --------------------------------------------------------------------------- #
 
-func initialize(data: Array, _grid_size: Constants.GridSize):
-	grid_size = _grid_size
+func initialize(data: Array):
+	grid_size = Options.inventory_size
 	$items.grid_size = grid_size
 	$items.data = data
 	init_selector()

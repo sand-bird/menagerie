@@ -1,6 +1,6 @@
 extends Camera2D
 
-var ScrollMode = Constants.ScrollMode
+var ScrollMode = Options.ScrollMode
 
 # so we can turn off drag scrolling if we are using drag for something else,
 # such as laying tiles.

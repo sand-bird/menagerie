@@ -77,12 +77,12 @@ func _start():
 	# we can call `move_and_slide` in the handler
 	# nav.velocity_computed.connect(move)
 	# TODO: include the vigor modifier here
-	m.play_anim(Constants.Anim.WALK, speed ** FPS_COEFFICIENT)
+	m.play_anim(Monster.Anim.WALK, speed ** FPS_COEFFICIENT)
 
 # --------------------------------------------------------------------------- #
 
 func _exit(_status):
-	m.play_anim(Constants.Anim.IDLE)
+	m.play_anim(Monster.Anim.IDLE)
 	return { energy = spend_energy() }
 
 # --------------------------------------------------------------------------- #

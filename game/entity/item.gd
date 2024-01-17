@@ -1,11 +1,6 @@
 extends Entity
 class_name Item
 
-# TODO: remove. this is currently used for the garden's "select hud".
-# we should rewrite that component to add different child nodes based on the
-# target's class instead.
-const entity_type = Constants.EntityType.ITEM
-
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #

@@ -1,8 +1,5 @@
 extends Container
 
-# const EventButton = preload("res://ui/event_button.gd")
-# const Direction = Constants.Direction
-
 var entity
 
 var options = {

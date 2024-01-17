@@ -1,11 +1,6 @@
 extends Control
 class_name Garden
 
-#warning-ignore-all:unused_class_variable
-
-# const GardenObject = preload("res://garden/object.tscn")
-# const GardenItem = preload("res://garden/item.tscn")
-
 # we maintain a lookup table for our entities, primarily so that conditions
 # can check what's in the garden (though it also makes serialization easier).
 # these should match 1 to 1 with the actual entities in the garden, just like
@@ -63,20 +58,21 @@ func get_map_size():
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 
+const entity_keys = [&'objects', &'monsters', &'items']
+
 func serialize():
-	return {
+	var data = {
 #		camera = $camera.serialize(),
 		terrain = $map.save_terrain(),
-		objects = save_objects(),
-		monsters = save_monsters(),
-		items = save_items()
 	}
+	for key in entity_keys:
+		data[key] = save_entities(key)
+	return data
 
 func deserialize(data: Dictionary):
 	$map.load_terrain(data.terrain)
-	load_objects(data.objects)
-	load_monsters(data.monsters)
-	load_items(data.items)
+	for key in entity_keys:
+		load_entities(key, data)
 #	if data.has("camera"):
 #		$camera.deserialize(data.camera)
 
@@ -90,62 +86,30 @@ func deserialize(data: Dictionary):
 # note note: scene tiles literally just instance the scene at the specific tile
 # coordinates, not really useful for this
 
-func save_objects():
+func save_entities(key: StringName):
+	var collection = get(key)
 	var data = {}
-	for uid in objects:
-		data[uid] = objects[uid].serialize()
+	for uuid in collection:
+		data[uuid] = collection[uuid].serialize()
 	return data
 
-func load_objects(data):
-	var GardenObject = load('res://object/garden_object.tscn')
-	print(data)
-	for uid in data:
-		var object = GardenObject.instantiate()
-		object.initialize(data[uid])
-		objects[uid] = object
-		$entities.add_child(object)
-#		place_object(object)
-
-# --------------------------------------------------------------------------- #
-
-func save_monsters():
-	var data = {}
-	for uuid in monsters:
-		data[uuid] = monsters[uuid].serialize()
-	return data
+var class_map = {
+	&'objects': Sessile,
+	&'monsters': Monster,
+	&'items': Item
+}
 
 # data is an map of ids to serialized monsters
-func load_monsters(data = {}):
-	for uuid in data:
-		var monster_data = data[uuid]
-		monster_data.uuid = uuid
-		load_monster(monster_data)
+func load_entities(key: StringName, data = {}):
+	var entities = data[key]
+	for uuid in entities:
+		var entity_data = entities[uuid]
+		entity_data.uuid = uuid
+		load_entity(key, entity_data)
 
 # data is a serialized monster - see Monster.deserialize
-func load_monster(data = {}):
-	var monster = Monster.new(data, self)
-	monsters[monster.uuid] = monster
-	monster.name = monster.uuid
-	$entities.add_child(monster)
-
-# --------------------------------------------------------------------------- #
-
-func save_items():
-	var data = {}
-	for uid in items:
-		data[uid] = items[uid].serialize()
-	return data
-
-# data is an map of ids to serialized items
-func load_items(data = {}):
-	for uuid in data:
-		var item_data = data[uuid]
-		item_data.uuid = uuid
-		load_item(item_data)
-
-# data is a serialized item
-func load_item(data = {}):
-	var item = Item.new(data, self)
-	items[item.uuid] = item
-	item.name = item.uuid
-	$entities.add_child(item)
+func load_entity(key: StringName, data = {}):
+	var entity = class_map[key].new(data, self)
+	get(key)[entity.uuid] = entity
+	entity.name = entity.uuid
+	$entities.add_child(entity)

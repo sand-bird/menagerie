@@ -1,12 +1,14 @@
 extends Entity
 class_name Monster
 
-# TODO: remove. this is currently used for the garden's "select hud".
-# we should rewrite that component to add different child nodes based on the
-# target's class instead.
-const entity_type = Constants.EntityType.MONSTER
-
 signal drives_changed
+
+const Anim = {
+	IDLE = "idle",
+	LIE_DOWN = "lie_down",
+	WALK = "walk",
+	SLEEP = "sleep"
+}
 
 const MAX_BELLY = 100.0
 const MAX_ENERGY = 100.0
@@ -321,7 +323,7 @@ func load_anims():
 	for anim_id in morph_anims:
 		anim.add_anim(anim_id, morph_anims[anim_id])
 	Log.debug(self, ['animations: ', anim.get_animation_list()])
-	play_anim(Constants.Anim.IDLE)
+	play_anim(Anim.IDLE)
 
 # --------------------------------------------------------------------------- #
 

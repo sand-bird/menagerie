@@ -254,7 +254,6 @@ static func eval_arg(arg, caller = null, parent = null):
 static func eval_sigil(arg, caller, parent):
 	match arg[0]:
 		'$': return resolve_global(U.strip_sigil(arg))
-		'#': return Constants.new().get(U.strip_sigil(arg).capitalize().replace(' ', ''))
 		'@': return caller[U.strip_sigil(arg)]
 		'*': return parent
 	return arg

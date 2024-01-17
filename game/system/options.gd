@@ -7,9 +7,22 @@ extends Node
 # =========================================================================== #
 #                              C O N S T A N T S                              #
 # --------------------------------------------------------------------------- #
-var ControlMode = Constants.ControlMode
-var ScrollMode = Constants.ScrollMode
-var InventorySize = Constants.InventorySize
+enum ControlMode {
+	MOUSE_AND_KEY, # edge, drag, button
+	TOUCH, # drag
+	JOYPAD, # joystick, edge
+	KEYBOARD_ONLY # button, edge
+}
+enum ScrollMode {
+	EDGE_SCROLL, # mouse & key, joypad, key only
+	DRAG_SCROLL, # touch, mouse + key
+	KEY_SCROLL, # mouse + key, key only
+	JOYSTICK_SCROLL, # joypad
+}
+enum InventorySize {
+	LARGE, # 5x5 (meant for touch)
+	SMALL # 6x6
+}
 
 # =========================================================================== #
 #                                O P T I O N S                                #

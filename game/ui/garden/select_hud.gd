@@ -16,15 +16,7 @@ const CLEAR_DELAY = 2.0
 # how long it takes for it to fade out (included in CLEAR_DELAY)
 const FADE_TIME = 1.0
 
-# we must define a `connect_x` function for each of these values
-var target_types = {
-	Constants.EntityType.MONSTER: 'monster',
-	Constants.EntityType.OBJECT: 'object',
-	Constants.EntityType.ITEM: 'item'
-}
-
 var target: Entity
-var EntityType = Constants.EntityType
 var time_to_clear = null
 
 # --------------------------------------------------------------------------- #
@@ -46,11 +38,8 @@ func _process(delta):
 
 func _on_highlight(entity: Node2D):
 	# make sure the entity is valid
-	if !entity or not 'entity_type' in entity:
+	if !entity or not entity is Entity:
 		Log.warn(self, ["(_on_highlight) bad entity:", entity])
-		return
-	if not (entity.entity_type in target_types):
-		Log.warn(self, ["(_on_highlight) invalid target type:", entity.entity_type])
 		return
 	# should reset clear state even if it's the same target
 	time_to_clear = null
@@ -71,8 +60,9 @@ func set_target(new_target: Node2D):
 		clear_target()
 	# hook up the new target
 	target = new_target
-	var target_type = target_types[new_target.entity_type]
-	call('connect_' + target_type)
+	if target is Monster: connect_monster()
+	elif target is Item: connect_item()
+	elif target is Sessile: connect_object()
 	show()
 
 # --------------------------------------------------------------------------- #

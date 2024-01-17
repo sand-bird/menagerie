@@ -62,7 +62,7 @@ func _ready():
 	update_visibility(Options.control_mode)
 
 func update_visibility(control_mode):
-	if control_mode == Constants.ControlMode.TOUCH: show()
+	if control_mode == Options.ControlMode.TOUCH: show()
 	else: hide()
 "
 

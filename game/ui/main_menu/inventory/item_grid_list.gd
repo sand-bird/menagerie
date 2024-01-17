@@ -1,18 +1,18 @@
 extends PagedList
 
 const PROPERTIES = {
-	Constants.GridSize.SMALL: {
+	Options.InventorySize.SMALL: {
 		item_size = Vector2(20, 20),
 		columns = 6,
 		rows = 6
 	},
-	Constants.GridSize.LARGE: {
+	Options.InventorySize.LARGE: {
 		item_size = Vector2(24, 24),
 		columns = 5,
 		rows = 5
 	}
 }
-var grid_size: Constants.GridSize:
+var grid_size: Options.InventorySize:
 	set(x):
 		grid_size = x
 		# update rows and columns whenever the grid size is updated
