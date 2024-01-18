@@ -10,7 +10,6 @@ const Anim = {
 	SLEEP = "sleep"
 }
 
-const MAX_ENERGY = 100.0
 const MAX_SOCIAL = 100.0
 const MAX_MOOD = 200.0
 
@@ -67,8 +66,11 @@ var belly: float = belly_capacity / 2.0:
 
 var mood: float = MAX_MOOD / 2.0:
 	set(value): mood = clamp(value, 0, MAX_MOOD)
-var energy: float = MAX_ENERGY / 2.0:
-	set(value): energy = clamp(value, 0, MAX_ENERGY)
+	
+var energy_capacity: float
+var energy: float = energy_capacity / 2.0:
+	set(value): energy = clamp(value, 0, energy_capacity)
+
 var social: float = MAX_SOCIAL / 2.0:
 	set(value): social = clamp(value, 0, MAX_SOCIAL)
 
@@ -403,7 +405,7 @@ func update_belly(delta: float, appetite_mod_scale: float = 1):
 	var fill_mod = attributes.appetite.lerp(max_mod, min_mod)
 	var drain_mod = attributes.appetite.lerp(min_mod, max_mod)
 	# apply the appropriate multiplier to the belly delta
-	energy += delta * fill_mod if delta > 0 else delta * drain_mod
+	belly += delta * fill_mod if delta > 0 else delta * drain_mod
 
 # --------------------------------------------------------------------------- #
 
@@ -419,7 +421,7 @@ func update_mood(delta: float): mood += delta
 # determined by the inverse of its pep attribute (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
 func get_target_energy():
-	return MAX_ENERGY * attributes.pep.lerp(1, 0)
+	return energy_capacity * attributes.pep.lerp(1, 0)
 
 func get_target_social():
 	return MAX_SOCIAL * attributes.extraversion.lerp(1, 0)
@@ -469,7 +471,7 @@ on each tick.
 # metabolic rate, and a monster's default state is awake)
 func metabolize() -> void:
 	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
-	var energy_upkeep = -U.div(get_bmr(), TICKS_PER_DAY) # 1.5 for bunny
+	var energy_upkeep = U.div(get_bmr(), TICKS_PER_DAY) / 3 # 1.5 for bunny
 	# bunny belly cap is 0.3 kg, so amount to digest ~= 0.001 kg.
 	var amount_to_digest = min(U.div(belly_capacity * 2, TICKS_PER_DAY), belly)
 	# energy density of apple is 127.6 kcal / 0.2 kg = 638 kcal / kg.
@@ -544,6 +546,10 @@ func load_morph(_morph):
 func load_belly(_belly):
 	belly_capacity = data.get(&'belly_capacity', data.mass * 0.1)
 	belly = _belly
+
+func load_energy(_energy):
+	energy_capacity = get_bmr() * 2
+	energy = _energy
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

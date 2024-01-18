@@ -94,13 +94,13 @@ func update_monster():
 	var m: Monster = target as Monster
 	$drives.show()
 	$name_bar.text = m.get_display_name()
-	$drives/container/belly/percent.text = String.num(m.belly / m.belly_capacity * 100, 2)
+	$drives/container/belly/percent.text = String.num(m.belly / m.belly_capacity * 100, 1)
 	$drives/container/belly/current.text = String.num(m.belly, 2)
 	$drives/container/belly/max.text = String.num(m.belly_capacity, 2)
 	
-	$drives/container/energy/percent.text = String.num(m.energy / m.MAX_ENERGY * 100, 1)
-	$drives/container/energy/current.text = String.num(m.energy, 1)
-	$drives/container/energy/max.text = String.num(m.MAX_ENERGY, 1)
+	$drives/container/energy/percent.text = String.num(m.energy / m.energy_capacity * 100, 1)
+	$drives/container/energy/current.text = String.num(m.energy, 0)
+	$drives/container/energy/max.text = String.num(m.energy_capacity, 0)
 	
 	$drives/container/mood/percent.text = String.num(m.mood / m.MAX_MOOD * 100, 2)
 	$drives/container/mood/current.text = String.num(m.mood, 2)

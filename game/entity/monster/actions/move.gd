@@ -149,7 +149,7 @@ func calc_force() -> float:
 # calculate work done in kcals to move the monster over a given distance at the
 # current speed.
 func calc_energy_cost(distance: float) -> float:
-	var distance_in_meters = distance / Constants.PIXELS_PER_METER
+	var distance_in_meters = distance #/ Constants.PIXELS_PER_METER
 	var work_in_joules = calc_force() * distance_in_meters
 	return work_in_joules / Constants.JOULES_PER_KCAL
 

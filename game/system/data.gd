@@ -67,7 +67,7 @@ func init():
 # native functions :(
 func fetch(a, default = null, warn = true):
 	var args = U.pack(a)
-	Log.debug(self, ["(fetch) ", args])
+	Log.verbose(self, ["(fetch) ", args])
 
 	var result
 	# note: i think this was to make it compatible with native `get`.
