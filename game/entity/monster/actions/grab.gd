@@ -12,10 +12,16 @@ prerequisites: in range (approach)
 """
 
 @onready var target: Entity
+# behavior switch: if true, we exit as soon as the monster grabs the target
+# without releasing it; if false, we hold the target until timeout, then exit
+# and release it. 
+# this is janky and dumb; maybe make these modes separate actions instead.
+var exit_on_grab: bool = false
 
 func _init(_m, _target, _t = null):
 	super(_m, _t)
-	prints('init grab action | timeout:', t)
+	if _t == null: exit_on_grab = true
+	prints('init grab action | timeout:', t, '| exit on grab:', exit_on_grab)
 	target = _target
 	name = 'grab'
 	require_in_range()
@@ -45,10 +51,11 @@ func _tick():
 	if require_in_range() and m.grabbed != target:
 		prints(t, 'ticks remaining on grab')
 		m.grab(target)
+		if exit_on_grab: exit(Status.SUCCESS)
 
 func _timeout():
 	if m.grabbed == target: exit(Status.SUCCESS)
 	else: exit(Status.FAILED)
 
 func _exit(_status):
-	m.release()
+	if !exit_on_grab: m.release()

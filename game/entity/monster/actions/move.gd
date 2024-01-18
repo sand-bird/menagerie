@@ -9,8 +9,6 @@ velocity = truncate (velocity + acceleration, max_speed)
 position = position + velocity
 """
 
-const JOULES_PER_CALORIE = 4184
-
 # a magic number used to calculate desired velocity.
 # input speed should be a float where 1 is a "normal" walking speed.
 # this multipler allows us to tune the speed calculation to achieve this result.
@@ -82,12 +80,12 @@ func _start():
 # --------------------------------------------------------------------------- #
 
 func _exit(_status):
+	spend_energy()
 	m.play_anim(Monster.Anim.IDLE)
-	return { energy = spend_energy() }
 
 # --------------------------------------------------------------------------- #
 
-func _tick(): return { energy = spend_energy() }
+func _tick(): spend_energy()
 
 # --------------------------------------------------------------------------- #
 
@@ -128,14 +126,15 @@ ratio:', String.num(running_calories / estimated, 2), '
 # --------------------------------------------------------------------------- #
 
 # returns the amount of force required to move the monster at the desired speed.
+# this is measured in "newtons" (kg * m/s²)
 func calc_force() -> float:
 	return (
 		FORCE_MULTIPLIER
 		* ProjectSettings.get_setting('physics/2d/default_linear_damp')
-		* m.data.mass
+		* m.mass
 		# "normal" speed actually varies based on the monster's size; larger
 		# monsters move faster than smaller ones when walking at the same pace.
-		* m.data.size
+		* m.size
 		# a monster's vigor attribute modifies its move speed;
 		# we include it here so it will be applied consistently.
 		* m.attributes.vigor.lerp(0.5, 2.0)
@@ -147,24 +146,25 @@ func calc_force() -> float:
 
 # --------------------------------------------------------------------------- #
 
-# calculate work done in joules to move the monster over a given distance
-# at the current speed.
+# calculate work done in kcals to move the monster over a given distance at the
+# current speed.
 func calc_energy_cost(distance: float) -> float:
-	var work = calc_force() * distance
-	return work / JOULES_PER_CALORIE
+	var distance_in_meters = distance / Constants.PIXELS_PER_METER
+	var work_in_joules = calc_force() * distance_in_meters
+	return work_in_joules / Constants.JOULES_PER_KCAL
 
 # --------------------------------------------------------------------------- #
 
 # calculates the energy spent in moving from the last stored position to the
-# current one, and updates the stored position for next time.
-# run once per tick, and once on exit.
-func spend_energy() -> float:
+# current one, removes it from the monster, and updates the stored position for
+# next time.  runs once per tick, and once on exit.
+func spend_energy() -> void:
 	if last_pos == null or last_pos == Vector2(0, 0):
 		last_pos = m.position
-		return 0
+		return
 	var distance = m.position.distance_to(last_pos)
-	var calories_spent = calc_energy_cost(distance)
+	var kcal_spent = calc_energy_cost(distance)
 	last_pos = m.position
 	# debug
-	running_calories -= calories_spent
-	return -calories_spent
+	running_calories -= kcal_spent
+	m.update_energy(-kcal_spent)

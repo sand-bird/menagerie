@@ -6,6 +6,14 @@ action to eat an item.
 prerequisites: target is grabbed (grab action, which has its own prerequisite
 of approaching the target)
 """
+
+const KCAL_PER_GRAM = {
+	protein = 4,
+	carbs = 4,
+	fat = 9,
+	fiber = 2
+}
+
 # eat (item)
 # prepend other actions targeting item if necessary (approach, steal)
 # success when item is eaten
@@ -17,6 +25,12 @@ func _init(m, _target, timeout = null):
 	target = _target
 	super(m, timeout)
 	name = 'eat'
+	require_grabbing()
+
+func require_grabbing() -> bool:
+	var is_grabbing = m.grabbed == target
+	if !is_grabbing: prereq = GrabAction.new(m, target)
+	return is_grabbing
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
@@ -26,7 +40,7 @@ func estimate_mood() -> float: return 0
 # +belly based on mass of target
 func estimate_belly() -> float: return target.mass
 # +energy based on energy content of target
-func estimate_energy() -> float: return 0
+func estimate_energy() -> float: return calc_energy_density()
 # note: may be social results if eating the item would involve grabbing it from
 # another monster (determined by prerequisite actions).
 
@@ -40,18 +54,22 @@ func mod_utility(utility: float): return 100
 # called once, when the action starts running
 func _start():
 	m.announce('wants to eat ' + target.get_display_name())
-	pass
 
-func _unpause(): _start()
-
-# called each ingame tick
 func _tick(): pass
 
-# called each process update
 func _proc(_delta): pass
 
-# behavior when the timeout expires. all actions need a timeout to prevent
-# infinite loops. by default the action fails, but this can be overridden by
-# subclasses.
-func _timeout():
-	exit(Status.FAILED)
+# --------------------------------------------------------------------------- #
+
+# TODO: this should be an enum
+const ENERGY_SOURCES = [&'protein', &'fat', &'fiber', &'carbs']
+
+func calc_energy_density():
+	var efficiency = m.get_energy_source_efficiency()
+	var edible: EdibleTrait = target.traits.edible
+	var total_kcal: float = 0.0
+	for source in ENERGY_SOURCES:
+		var source_grams = edible[source]
+		var kcal = source_grams * KCAL_PER_GRAM[source] * efficiency[source]
+		total_kcal += kcal
+	return total_kcal / target.mass

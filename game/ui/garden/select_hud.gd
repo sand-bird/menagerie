@@ -12,7 +12,7 @@ to do this we start an internal timer
 """
 
 # how long to leave the UI on the screen when nothing is highlighted
-const CLEAR_DELAY = 2.0
+const CLEAR_DELAY = 10.0
 # how long it takes for it to fade out (included in CLEAR_DELAY)
 const FADE_TIME = 1.0
 
@@ -74,7 +74,10 @@ func set_target(new_target: Node2D):
 func clear_target(_entity = null):
 	hide()
 	if !target: return
+	Dispatcher.tick_changed.disconnect(update_monster)
+	$drives.hide()
 	for c in get_incoming_connections():
+#		c.signal.disconnect(c.callable)
 		if c['signal'].get_object() == target:
 			Log.verbose(self, ['(clear_target) found connection to target:', c['signal']])
 			c['signal'].disconnect(c['callable'])
@@ -84,16 +87,29 @@ func clear_target(_entity = null):
 
 func connect_monster():
 	$portrait.update(target, false)
-	target.drives_changed.connect(update_monster)
+	Dispatcher.tick_changed.connect(update_monster)
 	update_monster()
 
 func update_monster():
-	$name_bar.text = target.monster_name
-	$horizontal.show()
-	$horizontal/belly.value = target.belly
-	$horizontal/energy.value = target.energy
-	$horizontal/social.value = target.social
-	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
+	var m: Monster = target as Monster
+	$drives.show()
+	$name_bar.text = m.get_display_name()
+	$drives/container/belly/percent.text = String.num(m.belly / m.belly_capacity * 100, 2)
+	$drives/container/belly/current.text = String.num(m.belly, 2)
+	$drives/container/belly/max.text = String.num(m.belly_capacity, 2)
+	
+	$drives/container/energy/percent.text = String.num(m.energy / m.MAX_ENERGY * 100, 1)
+	$drives/container/energy/current.text = String.num(m.energy, 1)
+	$drives/container/energy/max.text = String.num(m.MAX_ENERGY, 1)
+	
+	$drives/container/mood/percent.text = String.num(m.mood / m.MAX_MOOD * 100, 2)
+	$drives/container/mood/current.text = String.num(m.mood, 2)
+	$drives/container/mood/max.text = String.num(m.MAX_MOOD, 2)
+#	$horizontal.show()
+#	$horizontal/belly.value = target.belly
+#	$horizontal/energy.value = target.energy
+#	$horizontal/social.value = target.social
+#	$horizontal/current_action.text = target.current_action.name if target.current_action else 'none'
 
 # --------------------------------------------------------------------------- #
 

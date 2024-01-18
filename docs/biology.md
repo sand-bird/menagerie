@@ -2,6 +2,15 @@
 
 trying to figure out how to simulate food & nutrition
 
+### References
+
+- [Cats and carbohydrates](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5753635/)
+- [Allometry: Body Size Constraints in Animal Design](https://www.ncbi.nlm.nih.gov/books/NBK218080/)
+- [What determines the basal rate of metabolism?](file:///home/michelle/Downloads/JEBbmrhigh.2019pdf.pdf)
+- [Calculating the metabolizable energy of macronutrients](https://academic.oup.com/nutritionreviews/article/75/1/37/2684502)
+- [The Role of Fiber in Ruminant Ration Formation](https://cdn.canr.udel.edu/wp-content/uploads/2014/02/The-Role-of-Fiber-in-Ruminant-Ration-Formulation.pdf)
+- [Measuring food digestion rates](https://ifst.onlinelibrary.wiley.com/doi/epdf/10.1002/fsat.3004_14.x)
+
 ## Food facts
 
 - Energy in food comes primarily from carbohydrates, fats, proteins, and alcohol (ethanol); organisms metabolize these into energy (catabolism) for powering muscles or building new compounds (anabolism).
@@ -11,7 +20,7 @@ trying to figure out how to simulate food & nutrition
 - Carnivory vs herbivory also depends on the presence of specific nutrients:
   - "Cats have high protein requirements and their metabolisms appear unable to synthesize essential nutrients such as retinol, arginine, taurine, and arachidonic acid; thus, in nature, they must consume flesh to supply these nutrients."
   - "it appears that nectar-feeding birds such as sunbirds rely on the ants and other insects that they find in flowers, not for a richer supply of protein, but for essential nutrients such as cobalt/vitamin b12 that are absent from nectar. Similarly, monkeys of many species eat maggoty fruit, sometimes in clear preference to sound fruit."
-- Protein & carbs provide 4 kcal/gram; fats provide 9 kcal/gram
+- Protein & carbs provide 4 kcal/gram; fats provide 9 kcal/gram; soluble fibers apparently provide 2 kcal/gram
 - Recommended daily allowance of protein for a human is 0.8 grams (3.2 kcal) protein per kilogram body weight
 
 Some food stats via fatsecret.com:

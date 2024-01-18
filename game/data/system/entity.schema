@@ -68,7 +68,7 @@
               "uniqueItems": true
             },
             "additionalProperties": {
-              "$comment": "All properties on `edible` except for `flavor` refer to energy sources. The value is the amount of the energy souce in grams present in the edible.",
+              "$comment": "All properties on `edible` except for `flavor` refer to energy sources. The value is the amount of the energy souce in grams present in the edible (to make it as easy as possible to create edibles based on real-life foods). We convert these to energy (kcals) when a monster eats the edible.",
               "type": "number",
               "minimum": 0,
               "default": 0

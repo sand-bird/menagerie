@@ -22,6 +22,8 @@ func _init(_m, _t = null):
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
+# TODO: improve this calculation based on energy calcs in MoveAction (need to
+# estimate roughly how far the monster will be moving based on duration)
 func estimate_energy() -> float: return -0.2 * t
 
 
@@ -33,12 +35,9 @@ func _start():
 	new_move()
 
 func _tick():
-	if move_action:
-		return move_action.tick()
-	elif wait_counter > 0:
-		wait_counter -= 1
-	else:
-		new_move()
+	if move_action: move_action.tick()
+	elif wait_counter > 0: wait_counter -= 1
+	else: new_move()
 
 func _proc(delta):
 	if move_action: move_action.proc(delta)

@@ -161,7 +161,7 @@ var output_level = VERBOSE
 # TODO: Find (or implement in Godot) a more clever way to achieve that
 var output_strategies = [
 	STRATEGY_FILE,
-	STRATEGY_FILE,
+	STRATEGY_FILE | STRATEGY_PRINT,
 	STRATEGY_FILE | STRATEGY_PRINT,
 	STRATEGY_FILE | STRATEGY_PRINT,
 	STRATEGY_FILE | STRATEGY_PRINT

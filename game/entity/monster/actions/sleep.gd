@@ -16,6 +16,10 @@ func _init(_m, _t = null):
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
+# TODO: fix this calculation.  sleeping doesn't "restore" energy, but it does
+# slow down the monster's metabolism and cause it to consume less energy
+# relative to being awake.  this should return the energy saved by spending
+# the duration sleeping vs idling (determined by the monster's BMR)
 func estimate_energy() -> float: return float(t) * energy_per_tick
 
 func mod_utility(u):
@@ -37,14 +41,16 @@ func _start():
 func _unpause():
 	exit(Status.FAILED)
 
-func _tick():
-	return { energy = energy_per_tick }
+# it'd be cute to make it snore occasionally
+func _tick(): pass
 
 func _timeout():
 	exit(Status.SUCCESS)
 
 # --------------------------------------------------------------------------- #
 
+# TODO: fix this too.  i'm not really sure how we should actually decide how
+# long to sleep, but "energy needed" ain't it
 func calc_duration():
 	var energy_needed = m.get_target_energy() - m.energy
 	var dur_needed = energy_needed / energy_per_tick

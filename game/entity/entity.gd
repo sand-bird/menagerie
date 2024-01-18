@@ -33,13 +33,14 @@ var shape: CollisionShape2D
 # ---------------
 var uuid: StringName # unique id of the entity
 var type: StringName # id of the entity's data definition
+var size: int # radius of the entity's collision shape
 
 var data:
 	get: return Data.fetch(type)
 	set(_x): return
 
 # modular behavior implementations (not currently used for monsters)
-var traits: Array[Trait] = []
+var traits: Dictionary = {}
 
 
 # =========================================================================== #
@@ -67,7 +68,7 @@ func _init(_data: Dictionary, _garden: Garden):
 			base_script if base_script else script
 		).resource_path.get_base_dir()
 	
-	var size = data.size
+	size = data.size
 	mass = data.mass
 	# rotation looks bad at low res so we turn it off.
 	# it can be reenabled for specific entities via traits 
@@ -119,7 +120,7 @@ func get_display_name() -> String:
 # returns the actions the given monster can perform on this entity.
 func get_actions(m: Monster) -> Array[Action]:
 	var actions = [] as Array[Action]
-	for t in traits:
+	for t in traits.values():
 		actions.append_array(t.get_actions(m))
 	return actions
 
@@ -160,7 +161,7 @@ func debug_vectors():
 # order matters for deserialization; some properties depend on others earlier
 # in the list to already be loaded or generated (especially `type`).
 func save_keys() -> Array[StringName]:
-	return [&'uuid', &'type', &'position'] as Array[StringName]
+	return [&'uuid', &'type', &'position', &'traits'] as Array[StringName]
 
 # --------------------------------------------------------------------------- #
 
@@ -168,8 +169,6 @@ func serialize() -> Dictionary:
 	var serialized = {}
 	for key in save_keys():
 		serialized[key] = U.serialize_value(get(key))
-	for t in traits:
-		serialized.merge(t.serialize())
 	return serialized
 
 # --------------------------------------------------------------------------- #
@@ -181,8 +180,9 @@ func deserialize(serialized = {}) -> void:
 	var trait_data = Data.fetch([type, &'traits'], {})
 	for key in trait_data:
 		if key in Traits.valid_traits:
-			var t = Traits.load(key).new(trait_data.get(key), serialized, self)
-			traits.push_back(t)
+			traits[key] = Traits.load(key).new(
+				trait_data.get(key), serialized, self
+			)
 
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #

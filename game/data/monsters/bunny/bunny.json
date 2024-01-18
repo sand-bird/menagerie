@@ -10,6 +10,11 @@
   "gender_ratio": 0.5,
   "size": 5,
   "mass": 3,
+  "belly_capacity": 0.5,
+  "metabolic_rate": 200.0,
+  "energy_source_efficiency": {
+    "fiber": 0.8
+  },
   "morphs": {
     "sprout": {
       "name": {

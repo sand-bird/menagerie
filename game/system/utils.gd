@@ -332,3 +332,36 @@ static func rand_parab(a, b, c):
 			)
 		)
 	else: return b
+
+# --------------------------------------------------------------------------- #
+
+# 1 hour = 3600 seconds = 12 ticks
+# 1 tick = 3600 / 12 seconds = 300 seconds
+# 1 watt = 1 joule / second = 300 joules / tick
+
+# 1 kcal = 4184 joules
+# 1 joule = 1 / 4184 kcal
+# 1 watt = 300 joules / tick = (300 / 4184) kcal / tick = 0.07 kcal/tick
+
+# 1 watt = 0.07 kcal/tick
+func watts_to_kcal_per_tick(watts: float): # should be ~0.0717017
+	var seconds_per_hour = 60 * 60
+	var seconds_per_tick = U.div(seconds_per_hour, Clock.TICKS_IN_HOUR)
+	# 1 watt = 1 joule / second
+	return watts * seconds_per_tick / Constants.JOULES_PER_KCAL
+
+# 1 watt = 1 joule / second
+# 1 day = 60 * 60 * 24 seconds = 86400 seconds
+# 1 joule = 1 / 
+func watts_to_kcal_per_day(watts: float): # should be ~20.65
+	var seconds_per_day = 60 * 60 * 24
+	var joules_per_day = watts * seconds_per_day
+	return joules_per_day / Constants.JOULES_PER_KCAL
+
+# to calc energy capacity (in kcals), first find energy spend per day.
+# this is a function of the animal's basal metabolic rate.
+# bunny has mass of 3kg and bmr of 6 watts
+
+
+# 1 day = 12 ticks * 24 hours = 288 ticks
+# rabbit bmr = 6 watts = 0.07 * 6 kcal/tick = 0.43 kcal/tick = 123 kcal/day

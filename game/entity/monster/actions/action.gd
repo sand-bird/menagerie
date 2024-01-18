@@ -50,20 +50,11 @@ func _init(monster, timeout = null):
 
 # --------------------------------------------------------------------------- #
 
-func _on_prereq_exit(_status: Status, drive_diff: Dictionary):
-	prints('prereq', prereq.name, 'exited: status', _status, '| drive_diff:', drive_diff)
+func _on_prereq_exit(_status: Status):
+	Log.debug(self, ['prereq `', prereq.name, '` exited | status', _status])
 	prereq.exited.disconnect(_on_prereq_exit)
 	prereq.queue_free()
 	prereq = null
-	# TODO: this is weird and inconsistent with how we normally update drives
-	# (ie, the monster calls `update_drives` with the drive_diff returned from
-	# `Action.tick` or passed into the exit signal handler).
-	# considering how we might handle actions that trigger drive updates on
-	# multiple monsters (ie social actions, but also actions that _may_ be
-	# social depending on the target, like `grab`) could lead us to a better
-	# solution here.  (perhaps the answer is to call `update_drives` from
-	# actions as-needed, rather than returning diffs to the acting monster?)
-	m.update_drives(drive_diff)
 
 # =========================================================================== #
 #                                U T I L I T Y                                #
@@ -138,27 +129,25 @@ func proc(delta: float) -> void:
 
 # --------------------------------------------------------------------------- #
 
-# returns a drive_diff: a dict containing the change in each of our four drives
-# caused by this tick of execution
-func tick() -> Dictionary:
+func tick() -> void:
 	if status == Status.NEW: start()
 	if status == Status.PAUSED: unpause()
-	if status != Status.RUNNING: return {}
+	if status != Status.RUNNING: return
 	# count down the timeout while running (even if we're running a prereq).
 	# even when we timeout, we still want to call _tick, so we can get the
 	# drive diff for the last tick of execution
 	t -= 1
-	if t > 0: return prereq.tick() if prereq else _tick()
-	_timeout()
-	return {}
+	if t <= 0: _timeout()
+	elif prereq: prereq.tick()
+	else: _tick()
 
 # --------------------------------------------------------------------------- #
 
 func exit(exit_status: Status) -> void:
 	status = exit_status
-	var drive_diff = _exit(status)
-	Log.verbose(self, ['(exit) status: ', status, drive_diff])
-	exited.emit(status, drive_diff)
+	_exit(status)
+	Log.verbose(self, ['(exit) status: ', status])
+	exited.emit(status)
 
 # --------------------------------------------------------------------------- #
 
@@ -179,7 +168,7 @@ func _start(): pass
 func _unpause(): _start()
 
 # called each ingame tick
-func _tick() -> Dictionary: return {}
+func _tick() -> void: pass
 
 # called each process update
 func _proc(_delta): pass
@@ -187,11 +176,9 @@ func _proc(_delta): pass
 # behavior when the timeout expires. all actions need a timeout to prevent
 # infinite loops. by default the action fails, but this can be overridden by
 # subclasses.
-func _timeout():
-	exit(Status.FAILED)
+func _timeout(): exit(Status.FAILED)
 
-# called on exit; returns a final drive diff for the action.
-# this allows us to capture any change in drives since the last tick, as well as
-# any drive changes that depend on the outcome of the action.
-func _exit(_status: Status) -> Dictionary:
-	return {}
+# called on exit.  this allows actions to update drives (with changes since the
+# last tick or with any changes that depend on the outcome of the action),
+# and to perform any necessary cleanup (eg, resetting animations).
+func _exit(_status: Status) -> void: pass

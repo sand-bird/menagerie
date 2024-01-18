@@ -16,6 +16,60 @@
       "maximum": 1,
       "default": 0.5
     },
+    "belly_capacity": {
+      "type": "number",
+      "$comment": "How much mass the monster can hold in its belly. Defaults to 1/10 of the monster's mass.",
+      "minimum": 0
+    },
+    "energy_source_efficiency": {
+      "type": "object",
+      "propertyNames": [
+        "protein", "carbs", "fat", "fiber", "mana", "sunlight"
+      ],
+      "properties": {
+        "protein": {
+          "$ref": "definitions/percentage",
+          "default": 1
+        },
+        "carbs": {
+          "$ref": "definitions/percentage",
+          "default": 1
+        },
+        "fat": {
+          "$ref": "definitions/percentage",
+          "default": 1
+        },
+        "fiber": {
+          "$ref": "definitions/percentage",
+          "default": 0.05
+        },
+        "mana": {
+          "$ref": "definitions/percentage",
+          "default": 0
+        },
+        "light": {
+          "$ref": "definitions/percentage",
+          "default": 0
+        }
+      }
+    },
+    "ideal_energy_source_balance": {
+      "type": "object",
+      "$comment": "Ratio of energy sources in the monster's ideal diet. Deviations from this will negatively impact the monster's health.",
+      "propertyNames": [
+        "protein", "carbs", "fat", "fiber", "mana", "sunlight"
+      ],
+      "additionalProperties": {
+        "type": "number",
+        "default": 0,
+        "minValue": 0
+      }
+    },
+    "metabolic_rate": {
+      "type": "number",
+      "$comment": "Basal metabolic rate of the monster in kcal per day (eg, for humans, ~1500).",
+      "minimum": 0
+    },
     "morphs": {
       "type": "object",
       "additionalProperties": {
@@ -30,9 +84,7 @@
             "description",
             "cond",
             "weight",
-            "animations",
-            "energy_source_efficiency",
-            "ideal_energy_source_balance"
+            "animations"
           ]
         },
         "properties": {
@@ -105,50 +157,6 @@
                   "$ref": "definitions/animatedSprite"
                 }
               }
-            }
-          },
-          "energy_source_efficiency": {
-            "type": "object",
-            "propertyNames": [
-              "protein", "carbs", "fat", "fiber", "mana", "sunlight"
-            ],
-            "properties": {
-              "protein": {
-                "$ref": "definitions/percentage",
-                "default": 1
-              },
-              "carbs": {
-                "$ref": "definitions/percentage",
-                "default": 1
-              },
-              "fat": {
-                "$ref": "definitions/percentage",
-                "default": 1
-              },
-              "fiber": {
-                "$ref": "definitions/percentage",
-                "default": 0.05
-              },
-              "mana": {
-                "$ref": "definitions/percentage",
-                "default": 0
-              },
-              "sunlight": {
-                "$ref": "definitions/percentage",
-                "default": 0
-              }
-            }
-          },
-          "ideal_energy_source_balance": {
-            "type": "object",
-            "$comment": "Ratio of energy sources in the monster's ideal diet. Deviations from this will negatively impact the monster's health.",
-            "propertyNames": [
-              "protein", "carbs", "fat", "fiber", "mana", "sunlight"
-            ],
-            "additionalProperties": {
-              "type": "number",
-              "default": 0,
-              "minValue": 0
             }
           }
         }
