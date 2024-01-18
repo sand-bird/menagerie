@@ -21,13 +21,6 @@ const DEFAULT_PARAMS = {
 var value: float:
 	set(x): value = clamp(x, MIN_VALUE, MAX_VALUE)
 
-@warning_ignore("shadowed_global_identifier") # this doesn't actually work lol
-func lerp(from: float, to: float) -> float:
-	return lerpf(from, to, value)
-
-func ilerp(from: int, to: int) -> int:
-	return int(lerp(from, to + 1, value))
-
 var variance:
 	set(_x): push_error("cannot set attribute variance")
 	get: return (value - DEFAULT_PARAMS.mean) / DEFAULT_PARAMS.deviation
@@ -41,6 +34,44 @@ func _init(arg = {}, inheritance = null):
 		value = Attribute.generate(arg, inheritance)
 	else: # note: using `self` here will throw an error in Logger
 		Log.error(LNAME, ["invalid input: ", arg])
+
+# =========================================================================== #
+#                                  U S A G E                                  #
+# --------------------------------------------------------------------------- #
+
+# linearly interpolates between `from` and `to` using the attribute's value as
+# the weight.  effectively this scales the attribute, and is very useful for
+# converting attributes into multipliers, eg `lerp(0, 2)`.
+@warning_ignore("shadowed_global_identifier") # this doesn't actually work lol
+func lerp(from: float, to: float) -> float:
+	return lerpf(from, to, value)
+
+func ilerp(from: int, to: int) -> int:
+	return int(lerp(from, to + 1, value))
+
+# --------------------------------------------------------------------------- #
+
+# scales an input value (generally a change to a monster's drive) based on the
+# attribute's value.  assuming the attribute's value is above 0.5, this applies
+# a positive multiplier if `x` is positive and an inverse multiplier if it is
+# negative, increasing gains and mitigating losses.
+# the multiplier is proportionate to the attribute's value; thus, if its value
+# less than 0.5, the multiplier is flipped, decreasing gains and increasing
+# losses.  if the attribute's value is exactly 0.5, the multiplier is always 1.
+#
+# the `scale` parameter scales the multiplier: with `scale = 2`, the maximum
+# attribute value of 1.0 will double the input if it is positive and halve it if
+# it is negative, while the minimum value of 0.0 would have the opposite effect.
+# with `scale = 3`, we triple or third it, etc.  `scale` must be at least 1.
+# 
+# the `invert` parameter flips the effect, so that attribute values greater than
+# 0.5 will DEcrease gains and INcrease losses, and vice versa for values <0.5.
+func modify(x: float, scale: float, invert: bool = false):
+		assert(scale >= 1)
+		var multiplier = scale ** self.lerp(-1, 1)
+		var dampener = scale ** self.lerp(1, -1)
+		var should_multiply = x < 0 if invert else x > 0
+		return x * multiplier if should_multiply else x * dampener
 
 
 # =========================================================================== #

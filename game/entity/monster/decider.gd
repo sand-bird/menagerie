@@ -42,7 +42,7 @@ logic to choose which action to perform next. here's how it should work:
 """
 
 # actions advertised by the monster itself.  these are always available.
-static func self_actions(m):
+static func self_actions(m) -> Array[Action]:
 	return [
 		WanderAction.new(m), 
 		SleepAction.new(m),
@@ -53,8 +53,8 @@ static func self_actions(m):
 
 # polls the sources around the monster for possible actions.  returns a list of
 # possible actions.
-static func poll_sources(m: Monster):
-	var actions = []
+static func poll_sources(m: Monster) -> Array[Action]:
+	var actions: Array[Action] = []
 
 	var bodies: Array[Node2D] = m.perception.get_overlapping_bodies()
 	var entities: Array[Entity] = []
@@ -69,18 +69,25 @@ static func poll_sources(m: Monster):
 
 # --------------------------------------------------------------------------- #
 
-static func diff_efficiency(desired, delta, total):
+static func diff_efficiency(desired: float, delta: float, total: float) -> float:
 	return 1.0 - (abs(desired - delta) / total)
 
 # --------------------------------------------------------------------------- #
 
+static func delta_utility(desired: float, current: float, delta: float):
+	var desired_delta = desired - current
+	return delta / desired_delta
+
 # calculates the utility of an action for the given monster by comparing the
 # result of the action's `calc_effect` against the monster's current drives.
-static func calc_utility(m, action):
+static func calc_utility(m: Monster, action: Action):
 	var utility: float = 0
+	prints('================', action.name, '===================')
 	for drive in Action.DRIVES:
-		var drive_result = action.estimate_drive(drive)
-		#prints('action', action.name, 'yields', drive_result, 'for', drive)
+		var delta = action.estimate_drive(drive)
+		var max = m.get(str(drive, '_capacity'))
+		var drive_utility = delta_utility(max, m.get(drive), delta)
+		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
 	
 #	var effect = action.estimate_result()
 #	var desired_energy = m.get_target_energy() - m.energy

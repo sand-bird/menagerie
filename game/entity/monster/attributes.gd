@@ -62,7 +62,7 @@ learning = { mean = 0, deviation = 0, heritability = 0 },
 
 # accumulative attribute reflecting good feeding. exists to boost VIT.
 # malnourished / sleek
-nutrition = { deviation = 0.15, heritability = 0 },
+nutrition = { deviation = 0.15, heritability = 1 },
 # affects energy consumption and regeneration (higher vigor means energy
 # recovers faster and drains slower). increased by expending energy.
  # sickly / hearty
@@ -101,7 +101,7 @@ beauty = { heritability = 0.8 },
 # likely to take out its bad mood on others, and won't let negative inter-
 # actions affect its MOOD as much.")
 # histrionic / poised
-poise = { mean = 0.1, heritability = 0.2 },
+poise = { mean = 0.3, heritability = 0.2 },
 
 # AMI
 # ---
@@ -119,7 +119,7 @@ humility = {},
 kindness = { deviation = 0.2 },
 # multiplies the target's mood change for sympathy calculations.
 # convert to a (0, 2) multplier: empathy * 2
-empathy = { deviation = 0.2 }, # autistic / empathic
+empathy = { mean = 0.4, deviation = 0.2 }, # autistic / empathic
 
 # SPR
 # ---
@@ -204,7 +204,7 @@ func serialize():
 var INT: float:
 	set(_x): return
 	get: return U.weighted_mean([
-		[iq.value, 1],
+		[iq.value, 2],
 		[learning.value, 1]
 	])
 var iq: Attribute
@@ -241,7 +241,7 @@ var CHA: float:
 	get: return U.weighted_mean([
 		[confidence.value, 1],
 		[beauty.value, 1],
-		[poise.value, 1],
+		[poise.value, 0.5],
 	])
 var confidence: Attribute
 var beauty: Attribute
@@ -253,8 +253,8 @@ var AMI: float:
 	set(_x): return
 	get: return U.weighted_mean([
 		[humility.value, 1],
-		[kindness.value, 1],
-		[empathy.value, 1],
+		[kindness.value, 2],
+		[empathy.value, 1.5],
 	])
 var humility: Attribute
 var kindness: Attribute
@@ -266,7 +266,7 @@ var SPR: float:
 	set(_x): return
 	get: return U.weighted_mean([
 		[happiness.value, 1],
-		[loyalty.value, 1],
+		[loyalty.value, 0.5],
 		[actualization.value, 1],
 	])
 var happiness: Attribute

@@ -10,9 +10,6 @@ const Anim = {
 	SLEEP = "sleep"
 }
 
-const MAX_SOCIAL = 100.0
-const MAX_MOOD = 200.0
-
 enum Sex { FEMALE, MALE }
 
 # child nodes
@@ -64,15 +61,18 @@ var belly_energy_density: float # in kcal / kg, digestion efficiency included
 var belly: float = belly_capacity / 2.0:
 	set(value): belly = clamp(value, 0, belly_capacity)
 
-var mood: float = MAX_MOOD / 2.0:
-	set(value): mood = clamp(value, 0, MAX_MOOD)
-	
 var energy_capacity: float
 var energy: float = energy_capacity / 2.0:
 	set(value): energy = clamp(value, 0, energy_capacity)
 
-var social: float = MAX_SOCIAL / 2.0:
-	set(value): social = clamp(value, 0, MAX_SOCIAL)
+var social_capacity: float = 100
+var social: float = social_capacity / 2.0:
+	set(value): social = clamp(value, 0, social_capacity)
+
+var mood_capacity: float = 100
+var mood: float = mood_capacity / 2.0:
+	set(value): mood = clamp(value, 0, mood_capacity)
+
 
 # personality
 # -----------
@@ -146,7 +146,6 @@ func _init(_data: Dictionary, _garden: Garden):
 
 	nav = NavigationAgent2D.new()
 #	nav.debug_enabled = true
-	var size = data.size
 	nav.radius = size
 	nav.neighbor_distance = 500
 	nav.avoidance_enabled = false
@@ -377,15 +376,7 @@ func update_drives(drive_diff: Dictionary) -> void:
 # will double or halve energy recovery, respectively (and vice versa for energy
 # drain), but this can be tweaked using the second parameter.
 func update_energy(delta: float, vigor_mod_scale: float = 2):
-	assert(vigor_mod_scale > 0)
-	var min_mod = 1.0 / vigor_mod_scale
-	var max_mod = 1.0 * vigor_mod_scale
-	# high vigor increases recovery and decreases drain, and vice versa.
-	# the magnitude of this effect is determined by `vigor_mod_scale`.
-	var recovery_mod = attributes.vigor.lerp(min_mod, max_mod)
-	var drain_mod = attributes.vigor.lerp(max_mod, min_mod)
-	# apply the appropriate multiplier to the energy delta
-	energy += delta * recovery_mod if delta > 0 else delta * drain_mod
+	energy += attributes.vigor.modify(delta, vigor_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
@@ -397,19 +388,14 @@ func update_energy(delta: float, vigor_mod_scale: float = 2):
 # appetite should still modify the capacity (max size) of the belly, and it can
 # also modify the rate of digestion (more appetite means food digests faster).
 func update_belly(delta: float, appetite_mod_scale: float = 1):
-	assert(appetite_mod_scale > 0)
-	var min_mod = 1.0 / appetite_mod_scale
-	var max_mod = 1.0 * appetite_mod_scale
 	# high appetite decreases filling and increases drain, and vice versa.
-	# the magnitude of this effect is determined by `appetite_mod_scale`.
-	var fill_mod = attributes.appetite.lerp(max_mod, min_mod)
-	var drain_mod = attributes.appetite.lerp(min_mod, max_mod)
-	# apply the appropriate multiplier to the belly delta
-	belly += delta * fill_mod if delta > 0 else delta * drain_mod
+	belly += attributes.appetite.modify(delta, appetite_mod_scale, true)
 
 # --------------------------------------------------------------------------- #
 
-func update_social(delta: float): social += delta
+func update_social(delta: float, confidence_mod_scale: float = 2):
+	# high confidence increases social gain and decreases loss, and vice versa.
+	social += attributes.confidence.modify(delta, confidence_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
@@ -424,7 +410,7 @@ func get_target_energy():
 	return energy_capacity * attributes.pep.lerp(1, 0)
 
 func get_target_social():
-	return MAX_SOCIAL * attributes.extraversion.lerp(1, 0)
+	return social_capacity * attributes.extraversion.lerp(1, 0)
 
 
 # =========================================================================== #
@@ -518,10 +504,10 @@ func get_energy_source_efficiency():
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
-		&'sex', &'monster_name', &'morph', &'birthday', &'age',
+		&'sex', &'monster_name', &'morph', &'birthday', &'age', &'attributes',
 		&'belly', &'mood', &'energy', &'social',
 		&'orientation',
-		&'attributes', # TODO: 'preferences',
+		# TODO: 'preferences',
 		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
 	])
 	return keys
@@ -536,20 +522,19 @@ func load_attributes(_attributes):
 	if not _attributes is Dictionary: _attributes = {}
 	var attribute_overrides = Data.fetch([type, &'attributes'], {})
 	attributes = Attributes.new(_attributes, attribute_overrides)
+	# initialize stateless propreties which depend on attributes (and data)
+	belly_capacity = (
+		data.get(&'belly_capacity', data.mass * 0.1)
+		* attributes.appetite.lerp(0, 2)
+	)
+	energy_capacity = get_bmr() * 2 * attributes.pep.lerp(0, 2)
+	social_capacity = 100 * attributes.extraversion.lerp(0, 2)
 
 # ideally we would fail to load a monster with an invalid morph.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
 func load_morph(_morph):
 	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
 	morph = _morph
-
-func load_belly(_belly):
-	belly_capacity = data.get(&'belly_capacity', data.mass * 0.1)
-	belly = _belly
-
-func load_energy(_energy):
-	energy_capacity = get_bmr() * 2
-	energy = _energy
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

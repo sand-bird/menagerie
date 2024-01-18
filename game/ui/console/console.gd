@@ -118,7 +118,7 @@ func cmd_spawn_monster(args = []):
 		return
 	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
 	var times = int(args[1]) if args.size() > 1 else 1
-	for i in times: Player.garden.load_monster(data)
+	for i in times: Player.garden.load_entity(&'monsters', data)
 
 # --------------------------------------------------------------------------- #
 
