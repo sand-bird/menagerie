@@ -1,5 +1,5 @@
-extends Trait
 class_name EdibleTrait
+extends Trait
 
 """
 trait for entities that can be eaten and provide nutrition.

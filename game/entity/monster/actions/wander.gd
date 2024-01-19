@@ -1,5 +1,5 @@
-extends Action
 class_name WanderAction
+extends Action
 """
 repeatedly picks and moves to a destination a short distance away until the
 duration runs out.

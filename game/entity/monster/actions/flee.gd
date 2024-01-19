@@ -1,5 +1,5 @@
-extends MoveAction
 class_name FleeAction
+extends MoveAction
 
 # boids flee behavior from target
 # success when duration runs out

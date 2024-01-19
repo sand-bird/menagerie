@@ -1,5 +1,5 @@
-extends RefCounted
 class_name Attributes
+extends RefCounted
 """
 attributes are a collection of values that influence various aspects of a
 monster's behavior.  taken as a whole, they represent the monster's personality.

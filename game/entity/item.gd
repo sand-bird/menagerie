@@ -1,5 +1,5 @@
-extends Entity
 class_name Item
+extends Entity
 
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #

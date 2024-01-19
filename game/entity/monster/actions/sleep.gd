@@ -1,5 +1,5 @@
-extends Action
 class_name SleepAction
+extends Action
 
 # must sleep at least an hour
 const min_dur = 2 * Clock.TICKS_IN_HOUR

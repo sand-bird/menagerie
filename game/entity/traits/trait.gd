@@ -1,5 +1,5 @@
-extends RefCounted
 class_name Trait
+extends RefCounted
 """
 superclass for entity traits.
 """

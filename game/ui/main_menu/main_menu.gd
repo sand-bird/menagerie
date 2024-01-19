@@ -1,5 +1,5 @@
-extends Control
 class_name MainMenu
+extends Control
 """
 the book-shaped menu for most things in the game.
 

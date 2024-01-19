@@ -1,5 +1,5 @@
-extends Object
 class_name T
+extends Object
 """
 this is an index of all translatable text in the game's code (datafiles define
 per-language translatable text strings internally).  its purpose is to make sure

@@ -1,5 +1,5 @@
-extends Control
 class_name Garden
+extends Control
 
 # we maintain a lookup table for our entities, primarily so that conditions
 # can check what's in the garden (though it also makes serialization easier).

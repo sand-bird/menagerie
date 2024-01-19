@@ -1,5 +1,5 @@
-extends Action
 class_name EatAction
+extends Action
 """
 action to eat an item.
 

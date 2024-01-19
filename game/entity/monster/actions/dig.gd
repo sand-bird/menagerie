@@ -1,5 +1,5 @@
-extends Action
 class_name DigAction
+extends Action
 """
 dig a hole at a certain position.  can specify a position and have the monster
 navigate there, or use the monster's current position by default.

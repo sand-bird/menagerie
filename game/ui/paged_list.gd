@@ -1,5 +1,5 @@
-extends GridContainer
 class_name PagedList
+extends GridContainer
 """
 Paginated GridContainer with automatic focus/selection handling.  Captures the
 focus inputs (ui_up, ui_focus_next, etc) and uses them to control selection

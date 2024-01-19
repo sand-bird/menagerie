@@ -1,5 +1,5 @@
-extends Action
 class_name MoveAction
+extends Action
 """
 seek a position vector via boids steering behavior.
 

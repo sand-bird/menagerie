@@ -1,5 +1,5 @@
-extends MoveAction
 class_name ApproachAction
+extends MoveAction
 """
 move action that targets an entity and repaths every tick.
 """

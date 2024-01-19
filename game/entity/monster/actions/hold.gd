@@ -1,5 +1,5 @@
-extends GrabAction
 class_name HoldAction
+extends GrabAction
 """
 grab an entity and hold it until timeout.
 if the monster is not in grabbing range of the target, it will first approach

@@ -1,5 +1,5 @@
-extends Action
 class_name GrabAction
+extends Action
 """
 action to grab an entity.
 exits with success when the entity is grabbed.

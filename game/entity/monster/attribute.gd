@@ -1,5 +1,5 @@
-extends RefCounted
 class_name Attribute
+extends RefCounted
 const LNAME = &"Attribute"
 
 const MIN_VALUE: float = 0.0

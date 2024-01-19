@@ -1,5 +1,5 @@
-extends Node
 class_name U
+extends Node
 
 const LNAME = "Utils"
 

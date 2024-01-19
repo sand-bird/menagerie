@@ -1,2 +1,2 @@
-extends Entity
 class_name Sessile
+extends Entity

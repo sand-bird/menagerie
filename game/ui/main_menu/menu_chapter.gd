@@ -1,5 +1,5 @@
-extends RefCounted
 class_name MenuChapter
+extends RefCounted
 """
 base class for menu chapters; implements nagivation logic general to all menu
 chapters.  individual chapters should extend this class and implement their own

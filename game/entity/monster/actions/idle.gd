@@ -1,5 +1,5 @@
-extends Action
 class_name IdleAction
+extends Action
 
 const min_dur = int(0.5 * Clock.TICKS_IN_HOUR)
 const max_dur = 3 * Clock.TICKS_IN_HOUR

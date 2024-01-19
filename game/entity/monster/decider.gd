@@ -1,5 +1,5 @@
-extends Node
 class_name Decider
+extends Node
 const LNAME = 'Decider'
 """
 logic to choose which action to perform next. here's how it should work:

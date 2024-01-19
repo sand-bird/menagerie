@@ -1,5 +1,5 @@
-extends Entity
 class_name Monster
+extends Entity
 
 signal drives_changed
 

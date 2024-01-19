@@ -1,5 +1,5 @@
-extends Action
 class_name StealAction
+extends Action
 """
 steal the target or steal from the target, depending on what kind of entity
 the target is?  or maybe we should just have `steal` and `steal_from`...

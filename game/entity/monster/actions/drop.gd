@@ -1,5 +1,5 @@
-extends Action
 class_name DropAction
+extends Action
 """
 drop a grabbed entity.
 

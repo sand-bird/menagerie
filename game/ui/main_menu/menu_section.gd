@@ -1,5 +1,5 @@
-extends Control
 class_name MenuSection
+extends Control
 """
 base class for menu sections; implements nagivation logic general to all menu
 sections.  individual sections should extend this class and implement their own

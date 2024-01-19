@@ -1,5 +1,5 @@
-extends Node
 class_name Action
+extends Node
 """
 basic behavior tree style action.  has two active methods, "proc" and "tick".
 the former runs on the physics clock, and the latter runs every in-game tick.

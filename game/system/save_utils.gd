@@ -1,5 +1,5 @@
-extends Node
 class_name SaveUtils
+extends Node
 const LNAME = 'SaveUtils'
 
 const SAVE_ROOT = "user://saves/"

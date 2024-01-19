@@ -1,5 +1,5 @@
-extends RigidBody2D
 class_name Entity
+extends RigidBody2D
 """
 base class for "garden entities": monsters, objects/sessiles, and items.
 
