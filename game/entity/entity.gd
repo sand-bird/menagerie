@@ -55,9 +55,9 @@ var traits: Dictionary = {}
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize entities in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-func _init(_data: Dictionary, _garden: Garden):
-	garden = _garden
-	deserialize(_data)
+func _init(data_: Dictionary, garden_: Garden):
+	garden = garden_
+	deserialize(data_)
 	
 	var script: Script = get_script()
 	# if this is called from a subclass of Entity, `base_script` is `entity.gd`,
@@ -187,14 +187,14 @@ func deserialize(serialized = {}) -> void:
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-func load_position(_position) -> void:
-	position = U.parse_vec(_position, generate_position())
+func load_position(input) -> void:
+	position = U.parse_vec(input, generate_position())
 
 # ideally we would fail to load an entity with an invalid type.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
-func load_type(_type) -> void:
-	if _type == null or Data.missing(_type): _type = generate_type()
-	type = _type
+func load_type(input) -> void:
+	if input == null or Data.missing(input): input = generate_type()
+	type = input
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

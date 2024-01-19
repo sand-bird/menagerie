@@ -19,18 +19,21 @@ const KCAL_PER_GRAM = {
 # success when item is eaten
 # fail if item is lost or if previous steps fail
 
-@onready var target: Entity = null
+@onready var t: Entity = null
 
-func _init(m, _target, timeout = null):
-	target = _target
-	super(m, timeout)
+# options: timeout
+func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+	super(monster, options.get('timeout'))
+	t = target
 	name = 'eat'
 	require_grabbing()
 
-func require_grabbing() -> bool:
-	var is_grabbing = m.grabbed == target
-	if !is_grabbing: prereq = GrabAction.new(m, target)
-	return is_grabbing
+# --------------------------------------------------------------------------- #
+
+func require_grabbing() -> bool: return require(
+	m.is_grabbing(t),
+	func(): prereq = GrabAction.new(m, t)
+)
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
@@ -38,7 +41,7 @@ func require_grabbing() -> bool:
 # +mood based on preference for target
 func estimate_mood() -> float: return 0
 # +belly based on mass of target
-func estimate_belly() -> float: return target.mass
+func estimate_belly() -> float: return t.mass
 # +energy based on energy content of target
 func estimate_energy() -> float: return calc_energy_density()
 # note: may be social results if eating the item would involve grabbing it from
@@ -53,7 +56,7 @@ func mod_utility(utility: float): return 100
 
 # called once, when the action starts running
 func _start():
-	m.announce('wants to eat ' + target.get_display_name())
+	m.announce('wants to eat ' + t.get_display_name())
 
 func _tick(): pass
 
@@ -66,10 +69,10 @@ const ENERGY_SOURCES = [&'protein', &'fat', &'fiber', &'carbs']
 
 func calc_energy_density():
 	var efficiency = m.get_energy_source_efficiency()
-	var edible: EdibleTrait = target.traits.edible
+	var edible: EdibleTrait = t.traits.edible
 	var total_kcal: float = 0.0
 	for source in ENERGY_SOURCES:
 		var source_grams = edible[source]
 		var kcal = source_grams * KCAL_PER_GRAM[source] * efficiency[source]
 		total_kcal += kcal
-	return total_kcal / target.mass
+	return total_kcal / t.mass

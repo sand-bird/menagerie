@@ -4,15 +4,12 @@ class_name ApproachAction
 move action that targets an entity and repaths every tick.
 """
 
-# maximum distance squared between the old target position and the new target
-# position before we recalculate the path.
-const MAX_DEST_DRIFT = 10
+@onready var t: Entity
 
-@onready var target: Entity
-
-func _init(_m: Monster, _target: Entity, _distance: int = 0, _speed: float = 1, _t = null):
-	super(_m, _target.position, _speed, _distance, _t)
-	target = _target
+# options (inherited from MoveAction): speed, target_distance, timeout
+func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+	super(monster, target.position, options)
+	t = target
 	name = 'approach'
 
 #                              e x e c u t i o n                              #
@@ -22,5 +19,5 @@ func _init(_m: Monster, _target: Entity, _distance: int = 0, _speed: float = 1, 
 # once per tick.
 func _tick():
 #	if dest.distance_squared_to(target.position) > MAX_DEST_DRIFT:
-	m.nav.target_position = target.position
+	m.nav.target_position = t.position
 	super._tick()

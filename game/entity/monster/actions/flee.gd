@@ -1,12 +1,21 @@
-extends Action
+extends MoveAction
+class_name FleeAction
 
 # boids flee behavior from target
 # success when duration runs out
 # fail if reached by target
 
-func _init(m, target, speed = null, t = null):
-	super(m, t)
-	pass
+@onready var t: Entity = null
+
+# options: speed, target_distance, duration
+func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+	# note: the `duration` option is equivalent to `timeout` on the base class.
+	# convention is to call it `duration` when it's a success condition (like
+	# here) and `timeout` when it's a failure condition (like in MoveAction).
+	if options.has('duration'): options.timeout = options.duration
+	super(monster, target.position, options)
+	t = target
+	name = 'approach'
 
 func _timeout():
 	exit(Status.SUCCESS)

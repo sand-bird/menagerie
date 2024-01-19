@@ -2,38 +2,27 @@ extends Action
 class_name GrabAction
 """
 action to grab an entity.
-currently this attempts to grab the target until timeout, then succeeds if we
-are grabbing the target and fails if not, and releases the target on exit.
-we also want to support a mode where the action succeeds as soon as the target
-is grabbed, and does _not_ release the target on exit (so we can use grabbing
-as a prerequisite for other actions, eg eating.)
+exits with success when the entity is grabbed.
 
 prerequisites: in range (approach)
 """
 
-@onready var target: Entity
-# behavior switch: if true, we exit as soon as the monster grabs the target
-# without releasing it; if false, we hold the target until timeout, then exit
-# and release it. 
-# this is janky and dumb; maybe make these modes separate actions instead.
-var exit_on_grab: bool = false
+@onready var t: Entity
 
-func _init(_m, _target, _t = null):
-	super(_m, _t)
-	if _t == null: exit_on_grab = true
-	prints('init grab action | timeout:', t, '| exit on grab:', exit_on_grab)
-	target = _target
+# options: timeout
+func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+	super(monster, options.get('timeout'))
+	t = target
 	name = 'grab'
 	require_in_range()
 
-# require the monster to be in "grab range" of the target (or already grabbing
-# it), else we queue an `approach` action as a prerequisite.
 func require_in_range() -> bool:
-	if m.grabbed == target: return true
-	var grabbing_range = pow(m.data.size + target.data.size, 2)
-	var in_range = m.position.distance_squared_to(target.position) < grabbing_range
-	if !in_range: prereq = ApproachAction.new(m, target, grabbing_range)
-	return in_range
+	var grab_range = pow(m.data.size + t.data.size, 2)
+	return require(
+		m.grabbed == t or m.position.distance_squared_to(t.position) < grab_range,
+		func (): prereq = ApproachAction.new(m, t, { target_distance = grab_range })
+	)
+
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
@@ -43,19 +32,14 @@ func estimate_mood() -> float: return 0
 # +social if grabbed is a monster
 func estimate_social() -> float: return 0
 
+func mod_utility(_utility): return -1
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
 
 func _tick():
-	if require_in_range() and m.grabbed != target:
-		prints(t, 'ticks remaining on grab')
-		m.grab(target)
-		if exit_on_grab: exit(Status.SUCCESS)
+	if require_in_range() and m.grabbed != t: m.grab(t)
+	if m.grabbed == t: exit(Status.SUCCESS)
 
 func _timeout():
-	if m.grabbed == target: exit(Status.SUCCESS)
-	else: exit(Status.FAILED)
-
-func _exit(_status):
-	if !exit_on_grab: m.release()
+	exit(Status.SUCCESS if m.is_grabbing(t) else Status.FAILED)

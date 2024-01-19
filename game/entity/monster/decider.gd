@@ -92,7 +92,7 @@ static func calc_utility(m: Monster, action: Action):
 #	var effect = action.estimate_result()
 #	var desired_energy = m.get_target_energy() - m.energy
 #	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
-	Log.info(LNAME, ['(calc_utility) action: ', action, ' for ', action.t, ' ticks | monster: ', m, ' | utility: ', utility])
+	Log.info(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #
@@ -101,7 +101,7 @@ static func choose_action(m):
 	var actions = poll_sources(m)
 	Log.info(LNAME, ['(choose_action) actions: ', actions])
 	
-	var best_utility = 0
+	var best_utility = -INF
 	var best_action = actions[0]
 	for action in actions:
 		var utility = calc_utility(m, action)

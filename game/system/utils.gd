@@ -3,6 +3,13 @@ class_name U
 
 const LNAME = "Utils"
 
+# french/spanish/portuguese for "or" since that's a reserved keyword
+static func ou(a: Variant, b: Variant): return b if !a else a
+# specifically nullish coalescing (qq stands for ??)
+static func qq(a: Variant, b: Variant): return b if a == null else a
+
+# --------------------------------------------------------------------------- #
+
 static func serialize_value(value: Variant, key: String = ''):
 	if value == null:
 		Log.warn(LNAME, ["serializing null value for key `", key, "`"])
@@ -162,6 +169,13 @@ static func deep_equals(a, b) -> bool:
 	else: return a == b
 	return true
 
+# sugar for chaining `dict.get(a, dict.get(b, ...))`.
+# update this comment if we ever actually use it
+static func get_any(
+	dict: Dictionary, options: Array[Variant], fallback: Variant = null
+) -> Variant:
+	for key in options: if dict.has(key): return dict[key]
+	return fallback
 
 # =========================================================================== #
 #                                S T R I N G S                                #

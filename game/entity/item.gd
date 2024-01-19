@@ -19,8 +19,8 @@ func _ready():
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-func _init(_data: Dictionary, _garden: Garden):
-	super(_data, _garden)
+func _init(data_: Dictionary, garden_: Garden):
+	super(data_, garden_)
 	mass = data.get('mass', 1)
 	
 	sprite.update_texture({ spritesheet = data.sprite, frames = 1 })

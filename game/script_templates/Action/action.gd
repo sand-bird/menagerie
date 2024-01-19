@@ -2,8 +2,9 @@ extends Action
 """
 """
 
-func _init(_m, _other_args, _timeout = null):
-	super(_m, _timeout)
+func _init(monster: Monster, _other_args, timeout = null):
+	super(monster, timeout)
+	name = "action_name"
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
@@ -27,16 +28,13 @@ func mod_utility(utility: float): return utility
 # called once, when the action starts running
 func _start(): pass
 
-func _unpause(): _start()
-
 # called each ingame tick
 func _tick(): pass
 
 # called each process update
 func _proc(_delta): pass
 
-# behavior when the timeout expires. all actions need a timeout to prevent
-# infinite loops. by default the action fails, but this can be overridden by
+# behavior when the timeout expires.  all actions need a timeout to prevent
+# infinite loops.  by default the action fails, but this can be overridden by
 # subclasses.
-func _timeout():
-	exit(Status.FAILED)
+func _timeout(): exit(Status.FAILED)

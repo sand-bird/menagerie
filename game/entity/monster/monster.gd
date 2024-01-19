@@ -128,8 +128,8 @@ func _ready():
 # instead, we should create the entire scene programmatically.  this allows us
 # to initialize monsters in a single step with `new`, rather than having to
 # instantiate an incomplete scene and then initialize it in a separate step.
-func _init(_data: Dictionary, _garden: Garden):
-	super(_data, _garden)
+func _init(data_: Dictionary, garden_: Garden):
+	super(data_, garden_)
 	
 	inertia = 10
 	
@@ -515,26 +515,25 @@ func save_keys() -> Array[StringName]:
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-func load_orientation(_orientation):
-	orientation = U.parse_vec(_orientation, Vector2(1, 0))
+func load_orientation(input):
+	orientation = U.parse_vec(input, Vector2(1, 0))
 
-func load_attributes(_attributes):
-	if not _attributes is Dictionary: _attributes = {}
+func load_attributes(input):
+	if not input is Dictionary: input = {}
 	var attribute_overrides = Data.fetch([type, &'attributes'], {})
-	attributes = Attributes.new(_attributes, attribute_overrides)
+	attributes = Attributes.new(input, attribute_overrides)
 	# initialize stateless propreties which depend on attributes (and data)
-	belly_capacity = (
-		data.get(&'belly_capacity', data.mass * 0.1)
-		* attributes.appetite.lerp(0, 2)
+	belly_capacity = attributes.appetite.modify(
+		data.get(&'belly_capacity', data.mass * 0.1), 2
 	)
-	energy_capacity = get_bmr() * 2 * attributes.pep.lerp(0, 2)
-	social_capacity = 100 * attributes.extraversion.lerp(0, 2)
+	energy_capacity = attributes.pep.modify(get_bmr() * 2, 2)
+	social_capacity = attributes.extraversion.modify(100, 2)
 
 # ideally we would fail to load a monster with an invalid morph.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
-func load_morph(_morph):
-	if Data.missing([type, &'morphs', _morph]): _morph = generate_morph()
-	morph = _morph
+func load_morph(input):
+	if Data.missing([type, &'morphs', input]): input = generate_morph()
+	morph = input
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

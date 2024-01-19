@@ -9,29 +9,30 @@ const min_dur = 1 * Clock.TICKS_IN_HOUR
 const max_dur = 6 * Clock.TICKS_IN_HOUR
 
 var move_action: MoveAction
+var move_speed: float
 # ticks to wait between move actions
 var wait_counter = 0
 
-# TODO: allow speed to be passed in here
-func _init(_m, _t = null):
-	super(_m)
+# options: duration, speed
+func _init(monster: Monster, options: Dictionary = {}):
+	super(monster, options.get('duration', randi_range(min_dur, max_dur)))
+	move_speed = options.get('speed', 0.6)
 	name = 'wander'
-	if !t: t = randi_range(min_dur, max_dur)
-	super._init(_m, _t)
+
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
 # TODO: improve this calculation based on energy calcs in MoveAction (need to
 # estimate roughly how far the monster will be moving based on duration)
-func estimate_energy() -> float: return -0.2 * t
+func estimate_energy() -> float: return -0.2 * timer
 
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
 
 func _start():
-#	m.announce('is wandering around.')
+	m.announce('is wandering around.')
 	new_move()
 
 func _tick():
@@ -50,7 +51,9 @@ func _timeout():
 
 func new_move():
 	var dest = pick_dest()
-	move_action = MoveAction.new(m, dest, 0.6, min_dur)
+	move_action = MoveAction.new(m, dest, {
+		speed = move_speed, timeout = min_dur
+	})
 	move_action.exited.connect(_on_move_exit)
 
 # --------------------------------------------------------------------------- #

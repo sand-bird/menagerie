@@ -4,11 +4,10 @@ class_name IdleAction
 const min_dur = int(0.5 * Clock.TICKS_IN_HOUR)
 const max_dur = 3 * Clock.TICKS_IN_HOUR
 
-func _init(_m, _t = null):
-	super(_m)
+# options: duration
+func _init(monster: Monster, options: Dictionary = {}):
+	super(monster, options.get('duration', randi_range(min_dur, max_dur)))
 	name = 'idle'
-	if !_t: _t = randi_range(min_dur, max_dur)
-	super._init(_m, t)
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #

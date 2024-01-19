@@ -39,13 +39,15 @@ var path: Array
 var running_calories = 0
 var estimated = 0
 
-func _init(_m, _dest: Vector2, _speed: float = 1, _distance: float = _m.data.size, _t = null):
-	super(_m, _t)
+# options: speed, target_distance, timeout
+func _init(monster: Monster, destination: Vector2, options: Dictionary = {}):
+	super(monster, options.get('timeout'))
 	last_pos = m.position
 	name = 'move'
-	dest = _dest
-	speed = _speed
-	target_distance = _distance
+	dest = destination
+	speed = options.get('speed', 1.0)
+	assert(speed > 0, "move speed multiplier must be greater than 0")
+	target_distance = options.get('target_distance', m.data.size)
 	estimated = estimate_energy()
 
 

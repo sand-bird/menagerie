@@ -34,6 +34,7 @@ Clock="*res://system/clock.gd"
 
 gdscript/warnings/shadowed_global_identifier=0
 gdscript/warnings/return_value_discarded=false
+gdscript/warnings/static_called_on_instance=0
 gdscript/warnings/integer_division=false
 gdscript/warnings/unused_argument=false
 indicators_enabled=true

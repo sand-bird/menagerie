@@ -26,7 +26,7 @@ func _input(e):
 		for uuid in monsters:
 			var m = monsters[uuid]
 			m.set_current_action(
-				MoveAction.new(m, get_global_mouse_position(), 1, 20)
+				MoveAction.new(m, get_global_mouse_position(), { distance = 200 })
 			)
 #		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
 

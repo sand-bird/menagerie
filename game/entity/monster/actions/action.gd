@@ -32,7 +32,7 @@ static func get_status(status_code):
 var m: Monster
 var status := Status.NEW
 # time remaining, decremented every tick. when this hits 0 we call _timeout().
-var t: int = Clock.TICKS_IN_HOUR * 3
+var timer: int = Clock.TICKS_IN_HOUR * 3
 # real milliseconds (not ticks) during which the action is paused, set with
 # sleep(). not sure if we'll ever actually need this.
 var sleep_timer: float = 0
@@ -46,15 +46,31 @@ var prereq: Action = null:
 
 func _init(monster, timeout = null):
 	m = monster
-	if timeout != null: t = timeout
+	if timeout != null: timer = timeout
 
 # --------------------------------------------------------------------------- #
 
 func _on_prereq_exit(_status: Status):
 	Log.debug(self, ['prereq `', prereq.name, '` exited | status', _status])
-	prereq.exited.disconnect(_on_prereq_exit)
+	clean_up_prereq()
+
+# --------------------------------------------------------------------------- #
+
+func clean_up_prereq():
+	if !prereq: return
 	prereq.queue_free()
 	prereq = null
+
+# --------------------------------------------------------------------------- #
+
+# a convenience function for requirements, used to build `require_x` functions
+# in actions with slightly less boilerplate.  calls the `on_failure` callback
+# if the condition is false, then returns the condition, so that the function
+# can be used as in `if require_whatever(): do_thing()`.  the callback performs
+# some side effect, generally creating an action and assigning it to `prereq`.
+static func require(condition: bool, on_failure: Callable) -> bool:
+	if !condition: on_failure.call()
+	return condition
 
 # =========================================================================== #
 #                                U T I L I T Y                                #
@@ -101,14 +117,14 @@ func mod_utility(utility: float): return utility
 # these are the public methods and should NOT overridden by action subclasses.
 
 func start() -> void:
-	Log.verbose(self, ['(start) timeout: ', t])
+	Log.verbose(self, ['(start) timeout: ', timer])
 	status = Status.RUNNING
 	_start()
 
 # --------------------------------------------------------------------------- #
 
 func unpause() -> void:
-	Log.verbose(self, ['(unpause) timeout: ', t])
+	Log.verbose(self, ['(unpause) timeout: ', timer])
 	status = Status.RUNNING
 	_unpause()
 
@@ -133,11 +149,9 @@ func tick() -> void:
 	if status == Status.NEW: start()
 	if status == Status.PAUSED: unpause()
 	if status != Status.RUNNING: return
-	# count down the timeout while running (even if we're running a prereq).
-	# even when we timeout, we still want to call _tick, so we can get the
-	# drive diff for the last tick of execution
-	t -= 1
-	if t <= 0: _timeout()
+	# count down the timer while running (even if we're running a prereq).
+	timer -= 1
+	if timer <= 0: _timeout()
 	elif prereq: prereq.tick()
 	else: _tick()
 
@@ -146,6 +160,7 @@ func tick() -> void:
 func exit(exit_status: Status) -> void:
 	status = exit_status
 	_exit(status)
+	clean_up_prereq()
 	Log.verbose(self, ['(exit) status: ', status])
 	exited.emit(status)
 
