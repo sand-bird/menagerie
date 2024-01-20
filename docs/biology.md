@@ -5,8 +5,9 @@ trying to figure out how to simulate food & nutrition
 ### References
 
 - [Cats and carbohydrates](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5753635/)
+- [A Guide to the Principles of Animal Nutrition (Oregon State University)](https://open.oregonstate.education/animalnutrition)
 - [Allometry: Body Size Constraints in Animal Design](https://www.ncbi.nlm.nih.gov/books/NBK218080/)
-- [What determines the basal rate of metabolism?](file:///home/michelle/Downloads/JEBbmrhigh.2019pdf.pdf)
+- [What determines the basal rate of metabolism?](https://journals.biologists.com/jeb/article/222/15/jeb205591/3856/What-determines-the-basal-rate-of-metabolism)
 - [Calculating the metabolizable energy of macronutrients](https://academic.oup.com/nutritionreviews/article/75/1/37/2684502)
 - [The Role of Fiber in Ruminant Ration Formation](https://cdn.canr.udel.edu/wp-content/uploads/2014/02/The-Role-of-Fiber-in-Ruminant-Ration-Formulation.pdf)
 - [Measuring food digestion rates](https://ifst.onlinelibrary.wiley.com/doi/epdf/10.1002/fsat.3004_14.x)
