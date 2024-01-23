@@ -82,17 +82,17 @@ static func delta_utility(desired: float, current: float, delta: float):
 # result of the action's `calc_effect` against the monster's current drives.
 static func calc_utility(m: Monster, action: Action):
 	var utility: float = 0
-	prints('================', action.name, '===================')
+#	prints('================', action.name, '===================')
 	for drive in Action.DRIVES:
 		var delta = action.estimate_drive(drive)
 		var max = m.get(str(drive, '_capacity'))
 		var drive_utility = delta_utility(max, m.get(drive), delta)
-		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
+#		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
 	
 #	var effect = action.estimate_result()
 #	var desired_energy = m.get_target_energy() - m.energy
 #	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
-	Log.info(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
+#	Log.debug(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #

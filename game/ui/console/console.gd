@@ -112,13 +112,17 @@ func cmd_monsters(_args):
 
 # --------------------------------------------------------------------------- #
 
+# args: monster name, count (int), custom state (json)
 func cmd_spawn_monster(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
-	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
+	var type = (args[0] if args.size() > 0 else Data.by_type['monster'].pick_random())
 	var times = int(args[1]) if args.size() > 1 else 1
-	for i in times: Player.garden.load_entity(&'monsters', data)
+	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
+	state.merge({ type = type })
+	for i in (times if times > 0 else 1):
+		Player.garden.load_entity(&'monsters', state)
 
 # --------------------------------------------------------------------------- #
 

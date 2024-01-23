@@ -56,21 +56,28 @@ var learned_actions: Array[StringName] = []
 
 # drives
 # ------
-var belly_capacity: float # in kg, depends on the monster's mass (default 10%)
-var belly_energy_density: float # in kcal / kg, digestion efficiency included
-var belly: float = belly_capacity / 2.0:
+# belly is in kg (like mass)
+var belly_capacity: float # depends on mass and belly_size from data
+var belly: float = belly_capacity:
 	set(value): belly = clamp(value, 0, belly_capacity)
+	
+# nutrition sources, catabolized into energy per tick
+var porps: float = 0 # protein
+var scoses: float = 0 # carbs
+var fobbles: float = 0 # fats
+var lumens: float = 0 # sunlight
 
-var energy_capacity: float
-var energy: float = energy_capacity / 2.0:
+# energy is in "kcal"
+var energy_capacity: float # depends on mass and metabolism rate
+var energy: float = energy_capacity:
 	set(value): energy = clamp(value, 0, energy_capacity)
 
 var social_capacity: float = 100
-var social: float = social_capacity / 2.0:
+var social: float = social_capacity:
 	set(value): social = clamp(value, 0, social_capacity)
 
 var mood_capacity: float = 100
-var mood: float = mood_capacity / 2.0:
+var mood: float = mood_capacity:
 	set(value): mood = clamp(value, 0, mood_capacity)
 
 
@@ -116,7 +123,14 @@ func debug_vectors():
 func _ready():
 	joint.node_a = get_path()
 	Dispatcher.tick_changed.connect(_on_tick_changed)
+	Dispatcher.hour_changed.connect(debug_energy_spend)
 	body_entered.connect(_on_collide)
+
+
+var last_energy: float = energy
+func debug_energy_spend():
+	Log.debug(self, ['===== energy spent (', type, '): ', last_energy - energy, ' ====='])
+	last_energy = energy
 
 # --------------------------------------------------------------------------- #
 
@@ -366,39 +380,32 @@ func update_drives(drive_diff: Dictionary) -> void:
 
 # --------------------------------------------------------------------------- #
 
-# "energy" represents both literal stored calories and the abstract concept of
-# vital energy.  thus energy changes are modified by vigor (physical fitness);
 # pets with higher vigor use less energy to perform the same amount of activity
-# as those with lower vigor, and can extract more energy from what they eat
-# because their digestive processes are more efficient.
-#
-# the default vigor multiplier scale is 2, meaning maximum and minimum vigor
-# will double or halve energy recovery, respectively (and vice versa for energy
-# drain), but this can be tweaked using the second parameter.
+# as those with lower vigor, and can extract more energy from stored energy
+# sources.  the default vigor multiplier scale is 2, meaning maximum and minimum
+# vigor will double or halve energy recovery, respectively (and vice versa for
+# energy drain), but this can be tweaked using the second parameter.
 func update_energy(delta: float, vigor_mod_scale: float = 2):
 	energy += attributes.vigor.modify(delta, vigor_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
-# note: appetite was originally supposed to modify delta belly in the same way
-# that vigor modifies delta energy.  however, the current plan is for `belly` to
-# represent the actual mass of the food which the monster has eaten but not yet
-# digested, so it might be weird for appetite to modify that.
-#
-# appetite should still modify the capacity (max size) of the belly, and it can
-# also modify the rate of digestion (more appetite means food digests faster).
-func update_belly(delta: float, appetite_mod_scale: float = 1):
-	# high appetite decreases filling and increases drain, and vice versa.
+# belly changes are modified by appetite in the same way that energy is modified
+# by vigor, but inverted, so that higher appetite values will increase belly
+# loss (causing the pet to become hungry faster) by up to 2x, and decrease gain
+# (causing it to be less sated when it eats food) by up to half.
+func update_belly(delta: float, appetite_mod_scale: float = 2):
 	belly += attributes.appetite.modify(delta, appetite_mod_scale, true)
 
 # --------------------------------------------------------------------------- #
 
+# high confidence increases social gain and decreases loss, and vice versa.
 func update_social(delta: float, confidence_mod_scale: float = 2):
-	# high confidence increases social gain and decreases loss, and vice versa.
 	social += attributes.confidence.modify(delta, confidence_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
+# mood is unmodified by attributes (for now)
 func update_mood(delta: float): mood += delta
 
 # --------------------------------------------------------------------------- #
@@ -416,65 +423,63 @@ func get_target_social():
 # =========================================================================== #
 #                             M E T A B O L I S M                             #
 # --------------------------------------------------------------------------- #
-# note: this is a lot of numbers to calibrate when creating a monster:
-# - belly size (some fraction of mass)
-# - digestion speed (some fraction of belly size? could also be function of BMR)
-# - basal metabolic rate (function of mass)
-# might be easier to have broader levers for these in data defs as enums rather
-# than hard values, eg belly size is small/medium/large, bmr slow/medium/fast,
-# etc.  the main concern is that the monster's ideal diet should always be able
-# to provide it with enough energy - maybe we can ensure this somehow?
-
-"""
-further note on simulating digestion speed:
-
-digestion speed in real life is measured as a) time to absorb nutrients (eg ~4
-hours for a human to absorb glucose, depending on particle size) and b) time to
-pass the indigestible matter all the way through and out the other end.
-
-in other words, digestion speed depends on the contents of the belly, not just
-their energy density - a belly full of pure glucose should theoretically take 4h
-to digest (and yield very little poop, only what the body couldn't metabolize).
-
-so the solution may be to (again) deepen the simulation: track the mass of each
-energy source consumed in addition to the total mass.  on each tick, metabolize
-(consume) an appropriate amount of each energy source, then "age" the rest.
-
-how do we model stomach contents if they can comprise several different meals at
-different times? maybe we just store each meal in the belly (combining multiple
-bites from one eat action into a single meal), and digest each one accordingly
-on each tick.
-"""
+const SCOSE_KCAL_VALUE: float = 4
+const PORP_KCAL_VALUE: float = 4
+const FOBBLE_KCAL_VALUE: float = 9
 
 # handle the monster's ongoing biological processes:
-# - consume energy in proportion to the monster's basal metabolic rate
-# - digest food:
-#   - empty the belly
-#   - produce energy
-#   - update the nutrition attribute
-# note that if the monster is asleep, we should reduce energy consumption.
-# (not how BMR is supposed to work, but we can treat it as more of a "default"
-# metabolic rate, and a monster's default state is awake)
+# - digest food, reducing `belly` (eventually we should turn this into poop)
+# - catabolize stored energy (porps/scoses/fobbles/lumens)
+# - burn energy for metabolism
 func metabolize() -> void:
+	# TODO: attrition rate should also be modified by BMR
+	var belly_attrition_rate = (belly_capacity / 200.0)
+	update_belly(-belly_attrition_rate)
+	
 	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
-	var energy_upkeep = U.div(get_bmr(), TICKS_PER_DAY) / 3 # 1.5 for bunny
-	# bunny belly cap is 0.3 kg, so amount to digest ~= 0.001 kg.
-	var amount_to_digest = min(U.div(belly_capacity * 2, TICKS_PER_DAY), belly)
-	# energy density of apple is 127.6 kcal / 0.2 kg = 638 kcal / kg.
-	# yield for 0.001 kg = 0.6646
-	var energy_yield = amount_to_digest * belly_energy_density
-	update_belly(-amount_to_digest)
-	update_energy(energy_yield - energy_upkeep)
+	
+	var energy_attrition_rate := U.div(get_bmr(), TICKS_PER_DAY)
+	# we should catabolize enough energy each tick to keep up with attrition.
+	# for bunny with attrition .07291666666667, this is 0.018229167 scoses OR
+	# porps (at 4 per kcal), OR 0.008101852 fobbles (@ 9 kcal per).
+	# ideally we split equally between energy sources. however, if we don't have
+	# enough of one or two energy sources, we should make up the difference from
+	# those remaining.
+	var energy_catabolized := 0.0
+	var max_porp_consumption_rate := energy_attrition_rate / PORP_KCAL_VALUE
+	var max_scose_consumption_rate := energy_attrition_rate / SCOSE_KCAL_VALUE
+	var max_fobble_consumption_rate = energy_attrition_rate / FOBBLE_KCAL_VALUE
+	# TODO: determine the actual amount of porps, scoses and fobbles to consume
+	# based on what we have available (total should be <= energy_attrition_rate)
+	
+	
+	prints(type, 'energy attrition', energy_attrition_rate, '| capacity:', energy_capacity, '| percent:', (energy_attrition_rate / energy_capacity) * TICKS_PER_DAY * 100)
+
+"""
+attrition rates:
+bunny: 0.07
+pufig: 0.31
+milotic: 2.19
+
+
+
+
+
+large apple, 0.2 kg (66% of bunny belly)
+"porps": 0.6 * 4 = 2.4 kcal
+"scoses": 30 * 4 = 120 kcal
+"fobbles": 0.4 * 9 = 3.6 kcal
+"""
 
 # --------------------------------------------------------------------------- #
 
-# returns the monster's base metabolic rate in kcal per day.
-# if the data doesn't define a metabolic rate, calculate it using our mass and
-# an "average" mass-specific metabolic rate of 7.
-# we may be able to come up with a better average based on tags - eg, average
-# mass-specific BMR for birds is 20+, while for reptiles it's less than 1.
+# returns the monster's base metabolic rate in kcal (energy units) per day.
+# this is dependent on mass and the optional `metabolism` data property, which
+# is a multiplier representing how fast or slow the monster's mass-specific
+# metabolic rate is relative to the "average".
 func get_bmr() -> float:
-	return data.get(&'metabolic_rate', mass * 7 * 20.65)
+	return data.mass * 7
+	# return data.get(&'metabolic_rate',  * 20.65)
 
 # --------------------------------------------------------------------------- #
 
@@ -552,3 +557,9 @@ func generate_monster_name():
 		names.v_RWFemaleFirstNames if sex == Sex.FEMALE
 		else names.v_RWMaleFirstNames
 	).pick_random()
+
+# start the monster off with full drives
+func generate_belly(): return belly_capacity
+func generate_energy(): return energy_capacity
+func generate_mood(): return mood_capacity
+func generate_social(): return social_capacity

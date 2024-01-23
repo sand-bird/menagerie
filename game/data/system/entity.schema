@@ -53,7 +53,7 @@
             "flavors"
           ],
           "propertyNames": {
-            "enum": ["flavors", "protein", "carbs", "fat", "fiber"]
+            "enum": ["flavors", "porps", "scoses", "fobbles"]
           },
           "properties": {
             "flavors": {
@@ -68,7 +68,7 @@
               "uniqueItems": true
             },
             "additionalProperties": {
-              "$comment": "All properties on `edible` except for `flavor` refer to energy sources. The value is the amount of the energy souce in grams present in the edible (to make it as easy as possible to create edibles based on real-life foods). We convert these to energy (kcals) when a monster eats the edible.",
+              "$comment": "All properties on `edible` except for `flavor` refer to energy sources. `porps` are analogous to protein, `scoses` to carbohydrates, and `fobbles` to fats. After consuming these, monsters store them and gradually convert them to energy.",
               "type": "number",
               "minimum": 0,
               "default": 0

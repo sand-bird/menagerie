@@ -16,10 +16,9 @@
   "traits": {
     "edible": {
       "flavors": ["sweet", "tart"],
-      "protein": 0.5,
-      "carbs": 28,
-      "fat": 0.4,
-      "fiber": 5
+      "porps": 0.6,
+      "scoses": 30,
+      "fobbles": 0.4
     }
   }
 }

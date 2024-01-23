@@ -94,15 +94,12 @@ func _tick(): spend_energy()
 # on proc (physics process), do all the movement stuff
 func _proc(_delta):
 	if m.nav.is_navigation_finished():
-		Log.debug(self, 'nav finished')
 		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
-		prints('
-=========
-total cal:', String.num(running_calories, 2), '
-estimated:', String.num(estimated, 2), '
-ratio:', String.num(running_calories / estimated, 2), '
-=========')
+		Log.debug(self, [m.type,
+			' total cal: ', String.num(running_calories, 2),
+			' | estimated: ', String.num(estimated, 2),
+			' | ratio: ', String.num(running_calories / estimated, 2)])
 		return
 	
 	var target = m.nav.get_next_path_position()
