@@ -55,6 +55,18 @@ Takes 3 arguments, the first of which is required:
   2. quantity to add (default is 1)
   3. custom state (must be JSON-parseable, and cannot include any spaces)""",
 	
+	spawn_monster = """Spawn a new monster in the garden at the cursor position (assuming a garden is loaded).
+Takes 3 arguments, all optional:
+	1. the ID of the monster to spawn (picks a random one if not given)
+	2. the quantity to spawn (default is 1)
+	3. custom state (must be JSON-parseable, and cannot include any spaces)""",
+
+	spawn_item = """Spawn a new item in the garden at the cursor position (assuming a garden is loaded).
+Takes 3 arguments, all optional:
+	1. the ID of the item to spawn (picks a random one if not given)
+	2. the quantity to spawn (default is 1)
+	3. custom state (must be JSON-parseable, and cannot include any spaces)""",
+
 	save = """Save the game (assuming a safe file is loaded).""",
 	
 	quit = """Quits the game.
@@ -91,11 +103,13 @@ func cmd_spawn_item(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
-	var data = JSON.parse_string(args[0]) if args.size() > 0 else {}
+	var type = (args[0] if args.size() > 0 else Data.by_type.item.pick_random())
 	var times = int(args[1]) if args.size() > 1 else 1
+	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
 	var pos = Player.garden.get_local_mouse_position()
-	data.merge({ position = { x = pos.x, y = pos.y } })
-	for i in times: Player.garden.load_item(data)
+	state.merge({ type = type, position = { x = pos.x, y = pos.y } })
+	for i in (times if times > 0 else 1):
+		Player.garden.load_entity(&'items', state)
 
 
 #                               m o n s t e r s                               #
@@ -117,10 +131,11 @@ func cmd_spawn_monster(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
-	var type = (args[0] if args.size() > 0 else Data.by_type['monster'].pick_random())
+	var type = (args[0] if args.size() > 0 else Data.by_type.monster.pick_random())
 	var times = int(args[1]) if args.size() > 1 else 1
 	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
-	state.merge({ type = type })
+	var pos = Player.garden.get_local_mouse_position()
+	state.merge({ type = type, position = { x = pos.x, y = pos.y } })
 	for i in (times if times > 0 else 1):
 		Player.garden.load_entity(&'monsters', state)
 

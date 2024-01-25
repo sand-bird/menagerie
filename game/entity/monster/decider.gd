@@ -56,6 +56,9 @@ static func self_actions(m) -> Array[Action]:
 static func poll_sources(m: Monster) -> Array[Action]:
 	var actions: Array[Action] = []
 
+	# Area2D's list of overlapping bodies refreshes on physics frames,
+	# so we need to await one to make sure it's up to date
+	await m.get_tree().physics_frame
 	var bodies: Array[Node2D] = m.perception.get_overlapping_bodies()
 	var entities: Array[Entity] = []
 	entities.assign(
@@ -91,23 +94,25 @@ static func diff_efficiency(
 # result of the action's `calc_effect` against the monster's current drives.
 static func calc_utility(m: Monster, action: Action):
 	var utility: float = 0
-#	prints('================', action.name, '===================')
+	prints('================ (calc_utility)', m.name, action.name, ' (', action.timer, 'ticks) ===================')
 	for drive in Action.DRIVES:
 		var delta := action.estimate_drive(drive)
 		var current: float = m.get(drive)
 		var max: float = m.get(str(drive, '_capacity'))
 		var target: float = m.get(str('target_', drive))
 		var drive_utility := diff_efficiency(delta, target, current, max)
-		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
+		if !is_zero_approx(delta):
+			Log.debug(LNAME, [action.name, ': ', drive, ' | delta: ',
+				String.num(delta, 4), ' | utility: ', String.num(drive_utility, 4)])
 		utility += drive_utility
 	
-	Log.debug(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
+	Log.debug(LNAME, ['utility: ', String.num(utility, 4)])
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #
 
 static func choose_action(m):
-	var actions = poll_sources(m)
+	var actions = await poll_sources(m)
 	Log.info(LNAME, ['(choose_action) actions: ', actions])
 	
 	var best_utility = -INF

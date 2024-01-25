@@ -244,7 +244,7 @@ func _on_tick_changed():
 	if current_action:
 		debug_text.text = current_action.name
 		current_action.tick()
-	else: choose_action()
+	else: await choose_action()
 
 # --------------------------------------------------------------------------- #
 
@@ -325,7 +325,7 @@ func set_current_action(action, queue_current = false):
 # --------------------------------------------------------------------------- #
 
 func choose_action():
-	set_current_action(Decider.choose_action(self))
+	set_current_action(await Decider.choose_action(self))
 	Log.info(self, '(choose_action) ' + current_action.name)
 
 # --------------------------------------------------------------------------- #
@@ -344,7 +344,7 @@ func _on_action_exit(status):
 		set_current_action(next_action, false)
 		next_action = null
 	else:
-		choose_action()
+		await choose_action()
 
 # --------------------------------------------------------------------------- #
 
@@ -534,7 +534,8 @@ func get_bmr() -> float:
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
-		&'sex', &'monster_name', &'morph', &'birthday', &'age', &'attributes',
+		&'type', &'sex', &'monster_name', &'morph', &'birthday', &'age',
+		&'attributes',
 		&'belly', &'mood', &'energy', &'social',
 		&'scoses', &'porps', &'fobbles', &'lumens',
 		&'orientation',

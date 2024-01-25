@@ -37,16 +37,15 @@ const FLAVORS = {
 #                                 c o n f i g                                 #
 # --------------------------------------------------------------------------- #
 func config_keys() -> Array[StringName]: return [
-		&'flavors', &'protein', &'fat', &'carbs', &'fiber'
+		&'flavors', &'porps', &'fobbles', &'scoses'
 	] as Array[StringName]
 
 var flavors: Array[StringName] = []
 
 # energy sources
-var protein: float = 0
-var fat: float = 0
-var carbs: float = 0
-var fiber: float = 0
+var porps: float = 0
+var fobbles: float = 0
+var scoses: float = 0
 
 #                                  s t a t e                                  #
 # --------------------------------------------------------------------------- #
@@ -64,4 +63,4 @@ func load_flavors(_flavors):
 # --------------------------------------------------------------------------- #
 
 func get_actions(m: Monster) -> Array[Action]:
-	return [GrabAction.new(m, parent)]
+	return [EatAction.new(m, parent)]

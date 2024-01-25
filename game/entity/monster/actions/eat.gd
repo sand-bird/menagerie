@@ -7,13 +7,6 @@ prerequisites: target is grabbed (grab action, which has its own prerequisite
 of approaching the target)
 """
 
-const KCAL_PER_GRAM = {
-	protein = 4,
-	carbs = 4,
-	fat = 9,
-	fiber = 2
-}
-
 # eat (item)
 # prepend other actions targeting item if necessary (approach, steal)
 # success when item is eaten
@@ -43,12 +36,10 @@ func estimate_mood() -> float: return 0
 # +belly based on mass of target
 func estimate_belly() -> float: return t.mass
 # +energy based on energy content of target
-func estimate_energy() -> float: return calc_energy_density()
+func estimate_energy() -> float: return calc_energy_value()
 # note: may be social results if eating the item would involve grabbing it from
 # another monster (determined by prerequisite actions).
 
-# test test test
-func mod_utility(utility: float): return 100
 
 
 #                              e x e c u t i o n                              #
@@ -58,21 +49,24 @@ func mod_utility(utility: float): return 100
 func _start():
 	m.announce('wants to eat ' + t.get_display_name())
 
-func _tick(): pass
+# TODO: multiple bites
+func _tick():
+	if require_grabbing() and prereq == null:
+		var edible: EdibleTrait = t.traits.edible
+		m.update_belly(t.mass)
+		for source in Monster.energy_source_values:
+			if source in edible: m[source] += edible[source]
+		t.tree_exited.connect(func(): exit(Status.SUCCESS))
+		t.queue_free()
 
-func _proc(_delta): pass
 
 # --------------------------------------------------------------------------- #
 
-# TODO: this should be an enum
-const ENERGY_SOURCES = [&'protein', &'fat', &'fiber', &'carbs']
-
-func calc_energy_density():
-	var efficiency = m.get_energy_source_efficiency()
+func calc_energy_value() -> float:
+	var energy_value: float = 0
 	var edible: EdibleTrait = t.traits.edible
-	var total_kcal: float = 0.0
-	for source in ENERGY_SOURCES:
-		var source_grams = edible[source]
-		var kcal = source_grams * KCAL_PER_GRAM[source] * efficiency[source]
-		total_kcal += kcal
-	return total_kcal / t.mass
+	for source in Monster.energy_source_values:
+		var source_qty: float = edible[source] if source in edible else 0
+		var kcal: float = source_qty * Monster.energy_source_values[source]
+		energy_value += kcal
+	return minf(energy_value, m.target_energy)
