@@ -57,29 +57,59 @@ var learned_actions: Array[StringName] = []
 # drives
 # ------
 # belly is in kg (like mass)
-var belly_capacity: float # depends on mass and belly_size from data
+var belly_capacity: float: # depends on mass and belly_size from data
+	set(value):
+		belly_capacity = value
+		belly = minf(belly, belly_capacity)
 var belly: float = belly_capacity:
-	set(value): belly = clamp(value, 0, belly_capacity)
-	
+	set(value): belly = clampf(value, 0, belly_capacity)
+var target_belly:
+	get: return belly_capacity
+	set(_x): return
+
 # nutrition sources, catabolized into energy per tick
-var porps: float = 0 # protein
-var scoses: float = 0 # carbs
-var fobbles: float = 0 # fats
-var lumens: float = 0 # sunlight
+var porps: float = 0: # protein
+	set(value): porps = maxf(0, value)
+var scoses: float = 0: # carbs
+	set(value): scoses = maxf(0, value)
+var fobbles: float = 0: # fats
+	set(value): fobbles = maxf(0, value)
+var lumens: float = 0: # sunlight
+	set(value): lumens = maxf(0, value)
 
 # energy is in "kcal"
-var energy_capacity: float # depends on mass and metabolism rate
+var energy_capacity: float: # depends on mass and metabolism rate
+	set(value):
+		energy_capacity = value
+		energy = minf(energy, energy_capacity)
 var energy: float = energy_capacity:
-	set(value): energy = clamp(value, 0, energy_capacity)
+	set(value): energy = clampf(value, 0, energy_capacity)
+# target energy reflects the pet's preference for activity or rest, and is
+# determined by the inverse of its pep attribute (which ranges from 0 to 1).
+# high pep & low target energy means a more active pet, and vice versa.
+var target_energy:
+	get: return energy_capacity * attributes.pep.lerp(1, 0)
+	set(_x): return
 
-var social_capacity: float = 100
+var social_capacity: float = 100:
+	set(value):
+		social_capacity = value
+		social = minf(social, social_capacity)
 var social: float = social_capacity:
-	set(value): social = clamp(value, 0, social_capacity)
+	set(value): social = clampf(value, 0, social_capacity)
+var target_social:
+	get: return social_capacity * attributes.extraversion.lerp(1, 0)
+	set(_x): return
 
-var mood_capacity: float = 100
+var mood_capacity: float = 100:
+	set(value):
+		mood_capacity = value
+		mood = minf(mood, mood_capacity)
 var mood: float = mood_capacity:
-	set(value): mood = clamp(value, 0, mood_capacity)
-
+	set(value): mood = clampf(value, 0, mood_capacity)
+var target_mood:
+	get: return mood_capacity
+	set(_x): return
 
 # personality
 # -----------
@@ -408,24 +438,10 @@ func update_social(delta: float, confidence_mod_scale: float = 2):
 # mood is unmodified by attributes (for now)
 func update_mood(delta: float): mood += delta
 
-# --------------------------------------------------------------------------- #
-
-# target energy reflects the pet's preference for activity or rest, and is
-# determined by the inverse of its pep attribute (which ranges from 0 to 1).
-# high pep & low target energy means a more active pet, and vice versa.
-func get_target_energy():
-	return energy_capacity * attributes.pep.lerp(1, 0)
-
-func get_target_social():
-	return social_capacity * attributes.extraversion.lerp(1, 0)
-
 
 # =========================================================================== #
 #                             M E T A B O L I S M                             #
 # --------------------------------------------------------------------------- #
-const SCOSE_KCAL_VALUE: float = 4
-const PORP_KCAL_VALUE: float = 4
-const FOBBLE_KCAL_VALUE: float = 9
 
 # handle the monster's ongoing biological processes:
 # - digest food, reducing `belly` (eventually we should turn this into poop)
@@ -437,33 +453,53 @@ func metabolize() -> void:
 	update_belly(-belly_attrition_rate)
 	
 	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
-	
-	var energy_attrition_rate := U.div(get_bmr(), TICKS_PER_DAY)
-	# we should catabolize enough energy each tick to keep up with attrition.
-	# for bunny with attrition .07291666666667, this is 0.018229167 scoses OR
-	# porps (at 4 per kcal), OR 0.008101852 fobbles (@ 9 kcal per).
-	# ideally we split equally between energy sources. however, if we don't have
-	# enough of one or two energy sources, we should make up the difference from
-	# those remaining.
-	var energy_catabolized := 0.0
-	var max_porp_consumption_rate := energy_attrition_rate / PORP_KCAL_VALUE
-	var max_scose_consumption_rate := energy_attrition_rate / SCOSE_KCAL_VALUE
-	var max_fobble_consumption_rate = energy_attrition_rate / FOBBLE_KCAL_VALUE
-	# TODO: determine the actual amount of porps, scoses and fobbles to consume
-	# based on what we have available (total should be <= energy_attrition_rate)
-	
-	
-	prints(type, 'energy attrition', energy_attrition_rate, '| capacity:', energy_capacity, '| percent:', (energy_attrition_rate / energy_capacity) * TICKS_PER_DAY * 100)
+
+	var metabolic_rate: = U.div(get_bmr(), TICKS_PER_DAY)
+	var energy_consumed = metabolic_rate * (0.8 if is_asleep() else 1.0)
+	var energy_generated = catabolize(metabolic_rate * (3.0 if is_asleep() else 1.1))
+	# note that this is NOT equivalent to calling `update_energy(generated)` and
+	# `update_energy(-consumed)` separately unless our pep attribute is exactly
+	# 0.5, because of the way the pep multiplier works (see `Attribute.modify`).
+	# diffing the two first ensures a consistent relationship between them.
+	update_energy(energy_generated - energy_consumed)
+
+# --------------------------------------------------------------------------- #
+
+# amount of energy each unit of each energy source is worth
+const energy_source_values = {
+	porps = 4.0, scoses = 3.0, fobbles = 9.0, lumens = 2.0
+}
+# attempts to consume energy sources _evenly_ to generate the desired amount of
+# energy.  mutates the energy sources, and returns the energy generated (may be
+# less than `energy_needed` if we didn't have enough energy sources).
+func catabolize(energy_needed: float):
+	var energy_generated: float = 0.0
+	var sources: = energy_source_values.keys().filter(func (s): return get(s) > 0)
+	# loop until we fill our needed energy or run out of energy sources
+	while !is_zero_approx(energy_needed) and sources.size() > 0:
+		# attempt to generate an equal amount of energy from each remaining source
+		var energy_per_source := U.div(energy_needed, sources.size())
+		for source in sources:
+			var amount_to_consume: float = energy_per_source / energy_source_values[source]
+			var amount_consumed := clampf(amount_to_consume, 0, get(source))
+			set(source, get(source) - amount_consumed)
+			if get(source) <= 0: sources.erase(source)
+			var energy_yield: float = amount_consumed * energy_source_values[source]
+			energy_generated += energy_yield
+			energy_needed -= energy_yield
+	return energy_generated
+
+
+func is_asleep(): return (
+	current_action is SleepAction
+	and current_action.status == Action.Status.RUNNING
+)
 
 """
 attrition rates:
 bunny: 0.07
 pufig: 0.31
 milotic: 2.19
-
-
-
-
 
 large apple, 0.2 kg (66% of bunny belly)
 "porps": 0.6 * 4 = 2.4 kcal
@@ -480,17 +516,6 @@ large apple, 0.2 kg (66% of bunny belly)
 func get_bmr() -> float:
 	return data.mass * 7
 	# return data.get(&'metabolic_rate',  * 20.65)
-
-# --------------------------------------------------------------------------- #
-
-const DEFAULT_ENERGY_SOURCE_EFFICIENCY = {
-	protein = 1.0, carbs = 1.0, fat = 1.0,
-	fiber = 0.1, mana = 0.0, light = 0.0
-}
-func get_energy_source_efficiency():
-	var e = data.get(&'energy_source_efficiency', {})
-	e.merge(DEFAULT_ENERGY_SOURCE_EFFICIENCY)
-	return e
 
 
 # =========================================================================== #
@@ -511,6 +536,7 @@ func save_keys() -> Array[StringName]:
 	keys.append_array([
 		&'sex', &'monster_name', &'morph', &'birthday', &'age', &'attributes',
 		&'belly', &'mood', &'energy', &'social',
+		&'scoses', &'porps', &'fobbles', &'lumens',
 		&'orientation',
 		# TODO: 'preferences',
 		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'

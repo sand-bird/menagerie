@@ -4,7 +4,6 @@ extends Action
 # must sleep at least an hour
 const min_dur = 2 * Clock.TICKS_IN_HOUR
 const max_dur = 24 * Clock.TICKS_IN_HOUR
-const energy_per_tick = 2.0
 
 # options: duration
 func _init(monster: Monster, options: Dictionary = {}):
@@ -18,7 +17,7 @@ func _init(monster: Monster, options: Dictionary = {}):
 # slow down the monster's metabolism and cause it to consume less energy
 # relative to being awake.  this should return the energy saved by spending
 # the duration sleeping vs idling (determined by the monster's BMR)
-func estimate_energy() -> float: return float(timer) * energy_per_tick
+func estimate_energy() -> float: return float(timer) * energy_per_tick(m)
 
 func mod_utility(u):
 	match Clock.hour:
@@ -47,9 +46,19 @@ func _timeout():
 
 # --------------------------------------------------------------------------- #
 
+# returns the difference in energy gained per tick between when the monster is
+# asleep and awake.
+static func energy_per_tick(monster: Monster):
+	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
+	var metabolic_rate: = U.div(monster.get_bmr(), TICKS_PER_DAY)
+	# TODO: centralize this data
+	var base = 1.1 - 1.0
+	var asleep = 3.0 - 0.8
+	return metabolic_rate * (asleep - base)
+
 # TODO: fix this too.  i'm not really sure how we should actually decide how
 # long to sleep, but "energy needed" ain't it
 static func calc_duration(monster: Monster):
-	var energy_needed = monster.get_target_energy() - monster.energy
-	var dur_needed = energy_needed / energy_per_tick
+	var energy_needed = monster.target_energy - monster.energy
+	var dur_needed = energy_needed / energy_per_tick(monster)
 	return clamp(dur_needed, min_dur, max_dur)

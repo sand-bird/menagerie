@@ -24,7 +24,7 @@ var data = {}
 
 var by_type = {}
 
-func init():
+func _init():
 	# loads schemas and datafiles from data/
 	var sourceinfo = {
 		"id": "menagerie",
@@ -53,7 +53,6 @@ func init():
 	var val = Validator.new(schemas)
 	val.validate_schemas()
 	val.validate(data)
-	return true
 
 #	Log.debug(self, ["data: ", data.keys()])
 #	Log.verbose(self, data)

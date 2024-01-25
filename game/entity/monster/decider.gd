@@ -69,14 +69,23 @@ static func poll_sources(m: Monster) -> Array[Action]:
 
 # --------------------------------------------------------------------------- #
 
-static func diff_efficiency(desired: float, delta: float, total: float) -> float:
-	return 1.0 - (abs(desired - delta) / total)
+# calculates the utility of a delta value by computing the change it would
+# cause to the "desired delta", the difference between the current value and
+# target value.  deltas the reduce the "desired delta" have positive utility.
+static func diff_efficiency(
+	delta: float, target_value: float, current_value: float, capacity: float
+) -> float:
+	var desired_delta := target_value - current_value
+	# alternately, new_desired_delta = desired_delta - delta
+	var new_desired_delta := target_value - (current_value + delta)
+	# improvement is the difference in length between the old and new desired
+	# delta, regardless of direction.  if the new desired delta is longer,
+	# improvement (thus utility) is negative, and vice versa.
+	var improvement := absf(desired_delta) - absf(new_desired_delta)
+	# utility of a delta is relative to total capacity of the drive
+	return improvement / capacity
 
 # --------------------------------------------------------------------------- #
-
-static func delta_utility(desired: float, current: float, delta: float):
-	var desired_delta = desired - current
-	return delta / desired_delta
 
 # calculates the utility of an action for the given monster by comparing the
 # result of the action's `calc_effect` against the monster's current drives.
@@ -84,15 +93,15 @@ static func calc_utility(m: Monster, action: Action):
 	var utility: float = 0
 #	prints('================', action.name, '===================')
 	for drive in Action.DRIVES:
-		var delta = action.estimate_drive(drive)
-		var max = m.get(str(drive, '_capacity'))
-		var drive_utility = delta_utility(max, m.get(drive), delta)
-#		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
+		var delta := action.estimate_drive(drive)
+		var current: float = m.get(drive)
+		var max: float = m.get(str(drive, '_capacity'))
+		var target: float = m.get(str('target_', drive))
+		var drive_utility := diff_efficiency(delta, target, current, max)
+		prints(action.name, drive, '| delta:', delta, '| utility:', drive_utility)
+		utility += drive_utility
 	
-#	var effect = action.estimate_result()
-#	var desired_energy = m.get_target_energy() - m.energy
-#	var utility = diff_efficiency(desired_energy, effect.get('energy', 0.0), m.MAX_ENERGY)
-#	Log.debug(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
+	Log.debug(LNAME, ['(calc_utility) action: ', action, ' for ', action.timer, ' ticks | monster: ', m, ' | utility: ', utility])
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #

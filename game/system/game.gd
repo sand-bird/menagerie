@@ -10,7 +10,6 @@ func _ready():
 		(Dispatcher[sig] as Signal).connect(Callable(self, sig))
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	Data.init()
 	Dispatcher.ui_open.emit("title_screen")
 
 
