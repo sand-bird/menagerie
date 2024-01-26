@@ -19,9 +19,15 @@ func _init(monster: Monster, target: Entity, options: Dictionary = {}):
 	super(monster, options.get('timeout'))
 	t = target
 	name = 'eat'
+	require_target()
 	require_grabbing()
 
+
+#                           r e q u i r e m e n t s                           #
 # --------------------------------------------------------------------------- #
+
+func require_target() -> bool:
+	return require(!!t, func(): exit(Status.FAILED))
 
 func require_grabbing() -> bool: return require(
 	m.is_grabbing(t),
@@ -41,7 +47,6 @@ func estimate_energy() -> float: return calc_energy_value()
 # another monster (determined by prerequisite actions).
 
 
-
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
 
@@ -51,7 +56,7 @@ func _start():
 
 # TODO: multiple bites
 func _tick():
-	if require_grabbing() and prereq == null:
+	if require_target() and require_grabbing() and prereq == null:
 		var edible: EdibleTrait = t.traits.edible
 		m.update_belly(t.mass)
 		for source in Monster.energy_source_values:

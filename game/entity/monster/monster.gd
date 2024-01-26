@@ -189,13 +189,12 @@ func _init(data_: Dictionary, garden_: Garden):
 	load_anims()
 
 	nav = NavigationAgent2D.new()
-#	nav.debug_enabled = true
+	nav.debug_enabled = true
 	nav.radius = size
 	nav.neighbor_distance = 500
 	nav.avoidance_enabled = false
-	nav.debug_enabled = true
 	nav.path_desired_distance = size
-	nav.target_desired_distance = size * 2
+	nav.target_desired_distance = size
 	nav.path_max_distance = size
 	add_named_child(nav, 'nav')
 	

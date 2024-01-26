@@ -93,8 +93,9 @@ func _tick(): spend_energy()
 
 # on proc (physics process), do all the movement stuff
 func _proc(_delta):
-	if m.nav.is_navigation_finished():
-		m.velocity = Vector2(0, 0)
+	# note: this seems to work better with `target_desired_distance` than
+	# `NavigationAgent2D.is_navigation_finished`
+	if m.nav.is_target_reached():
 		exit(Status.SUCCESS)
 		Log.debug(self, [m.id,
 			' total cal: ', String.num(running_calories, 2),
