@@ -138,7 +138,7 @@ var velocity = Vector2(0, 0)
 
 func debug_vectors():
 	var vecs = {
-		vec_to_grabbed = [Color(0, 1, 0), func (): return vec_to_grabbed() * 5]
+		vec_to_grabbed = [Color(0, 1, 0), func (): return vec_to_grabbed()]
 #		desired_velocity = [Color(0, 0, 1), func (): return desired_velocity],
 #		velocity = [Color(1, 1, 0), func (): return velocity],
 	}
@@ -159,7 +159,7 @@ func _ready():
 
 var last_energy: float = energy
 func debug_energy_spend():
-	Log.debug(self, ['===== energy spent (', type, '): ', last_energy - energy, ' ====='])
+	Log.debug(self, ['===== energy spent (', id, '): ', last_energy - energy, ' ====='])
 	last_energy = energy
 
 # --------------------------------------------------------------------------- #
@@ -193,8 +193,9 @@ func _init(data_: Dictionary, garden_: Garden):
 	nav.radius = size
 	nav.neighbor_distance = 500
 	nav.avoidance_enabled = false
-	nav.path_desired_distance = sqrt(size)
-	nav.target_desired_distance = sqrt(size)
+	nav.debug_enabled = true
+	nav.path_desired_distance = size
+	nav.target_desired_distance = size * 2
 	nav.path_max_distance = size
 	add_named_child(nav, 'nav')
 	
@@ -293,7 +294,7 @@ func get_grabbed_name():
 	return (
 		"[NONE]" if grabbed == null else
 		str("[", grabbed.monster_name, "]") if grabbed is Monster
-		else str(grabbed.type)
+		else str(grabbed.id)
 	)
 
 # if target is passed, returns true only if the monster is grabbing the target;
@@ -358,7 +359,7 @@ func get_memory_size():
 # --------------------------------------------------------------------------- #
 
 var morph_anims: Dictionary:
-	get: return Data.fetch([type, 'morphs', morph, 'animations'])
+	get: return Data.fetch([id, 'morphs', morph, 'animations'])
 
 # get the anim_info dict for a particular key and facing.
 # uses the current values from $anim if arguments are null.
@@ -495,6 +496,13 @@ func is_asleep(): return (
 	and current_action.status == Action.Status.RUNNING
 )
 
+func available_energy():
+	var e = energy_source_values.keys().reduce(
+		func (acc, source): return acc + get(source) * energy_source_values[source],
+		0.0
+	)
+	return e
+
 """
 attrition rates:
 bunny: 0.07
@@ -527,14 +535,14 @@ func get_bmr() -> float:
 
 # list of property names to persist and load.
 # overrides `Entity.save_keys`, which returns the generic keys shared by all
-# entities (uuid, type, and - for now - position).
+# entities (uuid, id, and - for now - position).
 # order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially `type`).  this is
+# in the list to already be loaded or generated (especially id`).  this is
 # why we start with the keys from `super` (Entity) and append our own keys.
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
-		&'type', &'sex', &'monster_name', &'morph', &'birthday', &'age',
+		&'sex', &'monster_name', &'morph', &'birthday', &'age',
 		&'attributes',
 		&'belly', &'mood', &'energy', &'social',
 		&'scoses', &'porps', &'fobbles', &'lumens',
@@ -552,7 +560,7 @@ func load_orientation(input):
 
 func load_attributes(input):
 	if not input is Dictionary: input = {}
-	var attribute_overrides = Data.fetch([type, &'attributes'], {})
+	var attribute_overrides = Data.fetch([id, &'attributes'], {})
 	attributes = Attributes.new(input, attribute_overrides)
 	# initialize stateless propreties which depend on attributes (and data)
 	belly_capacity = attributes.appetite.modify(
@@ -564,13 +572,13 @@ func load_attributes(input):
 # ideally we would fail to load a monster with an invalid morph.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
 func load_morph(input):
-	if Data.missing([type, &'morphs', input]): input = generate_morph()
+	if Data.missing([id, &'morphs', input]): input = generate_morph()
 	morph = input
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #
 
-func generate_type(): return Data.by_type.monster.pick_random()
+func generate_id(): return Data.by_type.monster.pick_random()
 func generate_sex():
 	return Sex.FEMALE if randf() < data.get(&'gender_ratio', 0.5) else Sex.MALE
 # TODO: take into account condition and weight

@@ -3,7 +3,7 @@ extends PagedList
 var ListItem = preload("res://ui/main_menu/monsters/monster_list_item.tscn")
 
 func initialize(_arg = null):
-	data = Player.garden.monsters.values() if Player.garden != null else []
+	data = Player.garden.monsters if Player.garden != null else []
 	Dispatcher.menu_set_title.emit(tr(T.MONSTERS))
 
 # data_slice is Array[Monster] in this case

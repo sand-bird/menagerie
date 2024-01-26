@@ -32,11 +32,11 @@ var shape: CollisionShape2D
 # core properties
 # ---------------
 var uuid: StringName # unique id of the entity
-var type: StringName # id of the entity's data definition
+var id: StringName # id of the entity's data definition
 var size: int # radius of the entity's collision shape
 
 var data:
-	get: return Data.fetch(type)
+	get: return Data.fetch(id)
 	set(_x): return
 
 # modular behavior implementations (not currently used for monsters)
@@ -159,9 +159,9 @@ func debug_vectors():
 
 # list of property names to persist and load.
 # order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially `type`).
+# in the list to already be loaded or generated (especially id`).
 func save_keys() -> Array[StringName]:
-	return [&'uuid', &'type', &'position', &'traits'] as Array[StringName]
+	return [&'uuid', &'id', &'position', &'traits'] as Array[StringName]
 
 # --------------------------------------------------------------------------- #
 
@@ -177,7 +177,7 @@ func deserialize(serialized = {}) -> void:
 	for key in save_keys():
 		U.deserialize_value(self, serialized.get(key), key)
 	# need to deserialize `type` before loading trait data
-	var trait_data = Data.fetch([type, &'traits'], {})
+	var trait_data = Data.fetch([id, &'traits'], {})
 	for key in trait_data:
 		if key in Traits.valid_traits:
 			traits[key] = Traits.load(key).new(
@@ -190,17 +190,17 @@ func deserialize(serialized = {}) -> void:
 func load_position(input) -> void:
 	position = U.parse_vec(input, generate_position())
 
-# ideally we would fail to load an entity with an invalid type.  i'm not sure
+# ideally we would fail to load an entity with an invalid id.  i'm not sure
 # how to fail out of the constructor though, so for now just pick a valid one
-func load_type(input) -> void:
-	if input == null or Data.missing(input): input = generate_type()
-	type = input
+func load_id(input) -> void:
+	if input == null or Data.missing(input): input = generate_id()
+	id = input
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #
 
 func generate_uuid(): return Uuid.v4()
-func generate_type(): return Data.data.keys().pick_random()
+func generate_id(): return Data.data.keys().pick_random()
 
 func generate_position():
 	var garden_size = garden.get_map_size()

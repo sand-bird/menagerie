@@ -141,6 +141,11 @@ static func find_by(arr: Array, fn: Callable) -> int:
 	for i in arr.size():
 		if fn.call(arr[i], i): return i
 	return -1
+# --------------------------------------------------------------------------- #
+
+# fn: (value: T, i: int) -> Variant
+static func pick_by(arr: Array, fn: Callable) -> Variant:
+	return arr[find_by(arr, fn)]
 
 # --------------------------------------------------------------------------- #
 

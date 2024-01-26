@@ -5,9 +5,15 @@ extends Control
 # can check what's in the garden (though it also makes serialization easier).
 # these should match 1 to 1 with the actual entities in the garden, just like
 # the ui singleton's stack should match with the instanced ui node's children.
-var monsters: Dictionary = {}
-var items: Dictionary = {}
-var objects: Dictionary = {}
+var monsters:
+	get: return get_tree().get_nodes_in_group(&'monsters')
+	set(_x): return
+var items:
+	get: return get_tree().get_nodes_in_group(&'items')
+	set(_x): return
+var objects:
+	get: return get_tree().get_nodes_in_group(&'objects')
+	set(_x): return
 
 func _ready():
 	$tint.sync_anim()
@@ -26,9 +32,10 @@ func _input(e):
 		for uuid in monsters:
 			var m = monsters[uuid]
 			m.set_current_action(
-				MoveAction.new(m, get_global_mouse_position(), { distance = 200 })
+				MoveAction.new(m, get_global_mouse_position(), { distance = 200 }),
+				true
 			)
-#		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
+		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
 
 # --------------------------------------------------------------------------- #
 
@@ -89,8 +96,8 @@ func deserialize(data: Dictionary):
 func save_entities(key: StringName):
 	var collection = get(key)
 	var data = {}
-	for uuid in collection:
-		data[uuid] = collection[uuid].serialize()
+	for entity in collection:
+		data[entity.uuid] = entity.serialize()
 	return data
 
 var class_map = {
@@ -99,17 +106,18 @@ var class_map = {
 	&'items': Item
 }
 
-# data is an map of ids to serialized monsters
-func load_entities(key: StringName, data = {}):
-	var entities = data[key]
+# state is a map of type keys (&'monsters', etc) to "entity maps", where each
+# a map of uuids to a serialized entity
+func load_entities(key: StringName, state = {}):
+	var entities = state[key]
 	for uuid in entities:
 		var entity_data = entities[uuid]
 		entity_data.uuid = uuid
 		load_entity(key, entity_data)
 
-# data is a serialized monster - see Monster.deserialize
-func load_entity(key: StringName, data = {}):
-	var entity = class_map[key].new(data, self)
-	get(key)[entity.uuid] = entity
+# state is a serialized monster - see Monster.deserialize
+func load_entity(key: StringName, state = {}):
+	var entity = class_map[key].new(state, self)
+	entity.add_to_group(key)
 	entity.name = entity.uuid
 	$entities.add_child(entity)

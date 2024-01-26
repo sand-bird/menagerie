@@ -55,15 +55,9 @@ Takes 3 arguments, the first of which is required:
   2. quantity to add (default is 1)
   3. custom state (must be JSON-parseable, and cannot include any spaces)""",
 	
-	spawn_monster = """Spawn a new monster in the garden at the cursor position (assuming a garden is loaded).
+	spawn = """Spawns entities in the garden at the cursor position assuming a garden is loaded.
 Takes 3 arguments, all optional:
-	1. the ID of the monster to spawn (picks a random one if not given)
-	2. the quantity to spawn (default is 1)
-	3. custom state (must be JSON-parseable, and cannot include any spaces)""",
-
-	spawn_item = """Spawn a new item in the garden at the cursor position (assuming a garden is loaded).
-Takes 3 arguments, all optional:
-	1. the ID of the item to spawn (picks a random one if not given)
+	1. the ID (eg {c}pufig{/c}) or type (eg {c}monster{/c} or {c}item{/c}) of the entity to spawn.  If a type is given, picks a random entity of that type.
 	2. the quantity to spawn (default is 1)
 	3. custom state (must be JSON-parseable, and cannot include any spaces)""",
 
@@ -99,17 +93,29 @@ func cmd_help(args = []):
 
 # --------------------------------------------------------------------------- #
 
-func cmd_spawn_item(args = []):
+# args: entity name or type, count (int), custom state (json)
+func cmd_spawn(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
-	var type = (args[0] if args.size() > 0 else Data.by_type.item.pick_random())
+	if args.size() < 1:
+		put("Error: {c}spawn{/c} requires an id (eg {c}pufig{/c}) or type (eg {c}monster{/c})")
+		return
+	const types = [&'monster', &'item', &'object']
+	var id = args[0]
+	if id in types: # id is a type, pick a random one
+		if id == &'object':
+			put("Error: objects not supported yet")
+			return
+		id = Data.by_type[id].pick_random()
 	var times = int(args[1]) if args.size() > 1 else 1
 	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
 	var pos = Player.garden.get_local_mouse_position()
-	state.merge({ type = type, position = { x = pos.x, y = pos.y } })
+	state.merge({ id = id, position = { x = pos.x, y = pos.y } })
+	var type = Data.fetch([id, 'type'])
+	var garden_key = type + 's'
 	for i in (times if times > 0 else 1):
-		Player.garden.load_entity(&'items', state)
+		Player.garden.load_entity(garden_key, state)
 
 
 #                               m o n s t e r s                               #
@@ -119,25 +125,10 @@ func cmd_monsters(_args):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
 		return
-	var mons = Player.garden.monsters.values().map(
+	var mons = Player.garden.monsters.map(
 		func (x: Monster): return x.serialize()
 	)
 	put(JSON.stringify(mons, "  ", false, false))
-
-# --------------------------------------------------------------------------- #
-
-# args: monster name, count (int), custom state (json)
-func cmd_spawn_monster(args = []):
-	if Player.garden == null:
-		put("Error: no garden is loaded")
-		return
-	var type = (args[0] if args.size() > 0 else Data.by_type.monster.pick_random())
-	var times = int(args[1]) if args.size() > 1 else 1
-	var state = JSON.parse_string(args[2]) if args.size() > 2 else {}
-	var pos = Player.garden.get_local_mouse_position()
-	state.merge({ type = type, position = { x = pos.x, y = pos.y } })
-	for i in (times if times > 0 else 1):
-		Player.garden.load_entity(&'monsters', state)
 
 # --------------------------------------------------------------------------- #
 

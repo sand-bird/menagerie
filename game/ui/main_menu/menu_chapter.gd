@@ -27,7 +27,7 @@ func open(key = null) -> Control: # key: String
 	if sections.is_empty(): return
 	if key == null: key = sections.keys()[0]
 	if not key in sections:
-		Log.error(self, ["tried to open invalid section: ", key])
+		Log.error('MenuChapter', ["tried to open invalid section: ", key])
 		return
 	var section = load(sections[key]).instantiate()
 	section.initialize(key)
@@ -56,8 +56,8 @@ class Monsters extends MenuChapter:
 	const ICON = "monster"
 	func build_index():
 		sections[null] = PATH.path_join("monster_list.tscn")
-		for uuid in (Player.garden.monsters if Player.garden != null else {}):
-			sections[uuid] = PATH.path_join("monster_details.tscn")
+		for monster in (Player.garden.monsters if Player.garden != null else {}):
+			sections[monster.uuid] = PATH.path_join("monster_details.tscn")
 
 class Items extends MenuChapter:
 	const PATH = "res://ui/main_menu/inventory"

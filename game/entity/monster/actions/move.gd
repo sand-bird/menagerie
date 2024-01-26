@@ -96,7 +96,7 @@ func _proc(_delta):
 	if m.nav.is_navigation_finished():
 		m.velocity = Vector2(0, 0)
 		exit(Status.SUCCESS)
-		Log.debug(self, [m.type,
+		Log.debug(self, [m.id,
 			' total cal: ', String.num(running_calories, 2),
 			' | estimated: ', String.num(estimated, 2),
 			' | ratio: ', String.num(running_calories / estimated, 2)])

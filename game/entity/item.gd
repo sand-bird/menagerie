@@ -52,4 +52,4 @@ func get_sprite_info(_key = null, _facing = null):
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #
 
-func generate_type(): return Data.by_type.item.pick_random()
+func generate_id(): return Data.by_type.item.pick_random()

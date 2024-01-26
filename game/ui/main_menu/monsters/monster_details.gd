@@ -7,7 +7,7 @@ extends MenuSection
 func initialize(key = null):
 	title = tr(T.MONSTER_INFO)
 	Dispatcher.menu_set_pages.emit(0, 1)
-	var m: Monster = Player.garden.monsters.get(key)
+	var m: Monster = U.pick_by(Player.garden.monsters, func(m, _i): return m.uuid == key)
 	update(m)
 
 # --------------------------------------------------------------------------- #
