@@ -51,7 +51,8 @@ func _init(monster, timeout = null):
 # --------------------------------------------------------------------------- #
 
 func _on_prereq_exit(_status: Status):
-	Log.debug(self, ['prereq `', prereq.name, '` exited | status ', _status])
+	Log.debug(self, ['prereq exited: ', prereq.name if prereq else '(none)',
+		' | status ', _status])
 	clean_up_prereq()
 
 # --------------------------------------------------------------------------- #

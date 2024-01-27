@@ -94,7 +94,7 @@ static func diff_efficiency(
 # result of the action's `calc_effect` against the monster's current drives.
 static func calc_utility(m: Monster, action: Action):
 	var utility: float = 0
-	prints('================ (calc_utility)', m.name, action.name, ' (', action.timer, 'ticks) ===================')
+	print(action.name, ' (', action.timer, ')')
 	for drive in Action.DRIVES:
 		var delta := action.estimate_drive(drive)
 		var current: float = m.get(drive)
@@ -102,19 +102,21 @@ static func calc_utility(m: Monster, action: Action):
 		var target: float = m.get(str('target_', drive))
 		var drive_utility := diff_efficiency(delta, target, current, max)
 		if !is_zero_approx(delta):
-			Log.debug(LNAME, [action.name, ': ', drive, ' | delta: ',
-				String.num(delta, 4), ' | utility: ', String.num(drive_utility, 4)])
+			print('\t', drive,
+				' | delta: ', String.num(delta, 4),
+				' | utility: ', String.num(drive_utility, 4)
+			)
 		utility += drive_utility
 	
-	Log.debug(LNAME, ['utility: ', String.num(utility, 4)])
+	print('\tutility: ', String.num(utility, 4))
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #
 
 static func choose_action(m):
 	var actions = await poll_sources(m)
-	Log.info(LNAME, ['(choose_action) actions: ', actions])
-	
+	print('\n===== (choose_action) ', m.id, ' ', m.monster_name, ' =====')
+	print(actions.map(func(a): return a.name))
 	var best_utility = -INF
 	var best_action = actions[0]
 	for action in actions:
@@ -124,29 +126,5 @@ static func choose_action(m):
 			best_action = action
 		# exit early if we find a really good one
 	
+	print('^^^^^^^^^ selected: ', best_action.name, ' ^^^^^^^^^\n')
 	return best_action
-
-# --------------------------------------------------------------------------- #
-"""
-func old_calc(m):
-	randomize()
-	var target_energy = m.get_target_energy()
-
-	if m.energy < target_energy and randf() > m.energy / 100.0:
-		var energy_per_tick = float(Action.energy_values.sleep) / float(Clock.TICKS_IN_HOUR)
-		var energy_to_recover = randi_range(target_energy, 100) - m.energy
-		var sleep_time = energy_to_recover / energy_per_tick
-		
-		Log.debug(m, ['going to sleep! energy to recover: ', energy_to_recover,
-			' | sleep time: ', sleep_time])
-		m.current_action = Action.Sleep.new(m,
-			clamp(sleep_time, Clock.TICKS_IN_HOUR, Clock.TICKS_IN_HOUR * 8))
-	
-	elif randf() > m.attributes.pep:
-		m.current_action = Action.Idle.new(m, randi_range(2, 8))
-	else:
-		m.current_action = Action.Walk.new(m, # so ugly :(
-			m.position + Vector2(randf_range(-80, 80), randf_range(-80, 80)))
-
-	Log.debug(m, ["chose action: ", m.current_action.action_id])
-"""
