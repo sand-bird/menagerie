@@ -13,19 +13,20 @@ func _init(monster: Monster, options: Dictionary = {}):
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
-# TODO: fix this calculation.  sleeping doesn't "restore" energy, but it does
-# slow down the monster's metabolism and cause it to consume less energy
-# relative to being awake.  this should return the energy saved by spending
-# the duration sleeping vs idling (determined by the monster's BMR)
-func estimate_energy() -> float: return float(timer) * energy_per_tick(m)
+func estimate_energy() -> float:
+	var available_energy =  m.available_energy(true)
+	return minf(float(timer) * energy_per_tick(m), available_energy)
 
-func mod_utility(u):
-	match Clock.hour:
-		23, 0: return u * 1.4
-		22, 1: return u * 1.3
-		21, 2: return u * 1.2
-		20, 3: return u * 1.1
-		_: return u
+# TODO: make this a modifier like Attribute.modify, where it's a positive
+# multiplier on positive utility, and an inverse multiplier on negative utility
+# at night, and vice versa during the day 
+#func mod_utility(u):
+#	match Clock.hour:
+#		23, 0: return u * 1.4
+#		22, 1: return u * 1.3
+#		21, 2: return u * 1.2
+#		20, 3: return u * 1.1
+#		_: return u
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #
@@ -51,14 +52,15 @@ func _timeout():
 static func energy_per_tick(monster: Monster):
 	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
 	var metabolic_rate: = U.div(monster.get_bmr(), TICKS_PER_DAY)
-	# TODO: centralize this data
+	# TODO: centralize this data, it's duplicated in `Monster.metabolize`
 	var base = 1.1 - 1.0
 	var asleep = 3.0 - 0.8
 	return metabolic_rate * (asleep - base)
 
-# TODO: fix this too.  i'm not really sure how we should actually decide how
-# long to sleep, but "energy needed" ain't it
 static func calc_duration(monster: Monster):
-	var energy_needed = monster.target_energy - monster.energy
+	var energy_needed = minf(
+		monster.target_energy - monster.energy,
+		monster.available_energy(true)
+	)
 	var dur_needed = energy_needed / energy_per_tick(monster)
 	return clamp(dur_needed, min_dur, max_dur)

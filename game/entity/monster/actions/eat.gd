@@ -37,14 +37,20 @@ func require_grabbing() -> bool: return require(
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
+func estimate_belly() -> float: return t.mass
+
+# monsters should know that eating will give them energy, even if the payoff is
+# not immediate.  
+func estimate_energy() -> float: return 0
+	# note: these two functions do exactly the same thing.  this is ok for now
+	# since we're probably gonna simplify energy sources _again_ to a single
+	# `stored_energy` / `energy_density` property.
+#	var energy_value =  t.traits.edible.calc_energy_value()
+#	var available_energy = m.available_energy()
+#	return minf(energy_value, m.target_energy)
+
 # +mood based on preference for target
 func estimate_mood() -> float: return 0
-# +belly based on mass of target
-func estimate_belly() -> float: return t.mass
-# +energy based on energy content of target
-func estimate_energy() -> float: return calc_energy_value()
-# note: may be social results if eating the item would involve grabbing it from
-# another monster (determined by prerequisite actions).
 
 
 #                              e x e c u t i o n                              #
@@ -63,15 +69,3 @@ func _tick():
 			if source in edible: m[source] += edible[source]
 		t.tree_exited.connect(func(): exit(Status.SUCCESS))
 		t.queue_free()
-
-
-# --------------------------------------------------------------------------- #
-
-func calc_energy_value() -> float:
-	var energy_value: float = 0
-	var edible: EdibleTrait = t.traits.edible
-	for source in Monster.energy_source_values:
-		var source_qty: float = edible[source] if source in edible else 0
-		var kcal: float = source_qty * Monster.energy_source_values[source]
-		energy_value += kcal
-	return minf(energy_value, m.target_energy)

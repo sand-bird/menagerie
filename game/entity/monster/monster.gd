@@ -88,7 +88,7 @@ var energy: float = energy_capacity:
 # determined by the inverse of its pep attribute (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
 var target_energy:
-	get: return energy_capacity * attributes.pep.lerp(1, 0)
+	get: return energy_capacity * attributes.pep.lerp(0.8, 0.2)
 	set(_x): return
 
 var social_capacity: float = 100:
@@ -455,6 +455,8 @@ func metabolize() -> void:
 	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
 
 	var metabolic_rate: = U.div(get_bmr(), TICKS_PER_DAY)
+	# while awake, 9% (0.1/1.1) of energy sources catabolized goes to surplus energy (0.1 for every 1.1)
+	# while asleep, 79% (3/3.8) goes to surplus energy
 	var energy_consumed = metabolic_rate * (0.8 if is_asleep() else 1.0)
 	var energy_generated = catabolize(metabolic_rate * (3.0 if is_asleep() else 1.1))
 	# note that this is NOT equivalent to calling `update_energy(generated)` and
@@ -481,9 +483,13 @@ func catabolize(energy_needed: float):
 		var energy_per_source := U.div(energy_needed, sources.size())
 		for source in sources:
 			var amount_to_consume: float = energy_per_source / energy_source_values[source]
-			var amount_consumed := clampf(amount_to_consume, 0, get(source))
+			# we can consume at most 10% of the energy source per tick.
+			# this ensures that catabolism tapers off as starvation approaches.
+			var amount_consumable = get(source)  * 0.1
+			var amount_consumed := clampf(amount_to_consume, 0, amount_consumable)
 			set(source, get(source) - amount_consumed)
-			if get(source) <= 0: sources.erase(source)
+			if get(source) <= 0 or amount_consumed >= amount_consumable:
+				sources.erase(source)
 			var energy_yield: float = amount_consumed * energy_source_values[source]
 			energy_generated += energy_yield
 			energy_needed -= energy_yield
@@ -495,12 +501,21 @@ func is_asleep(): return (
 	and current_action.status == Action.Status.RUNNING
 )
 
-func available_energy():
-	var e = energy_source_values.keys().reduce(
-		func (acc, source): return acc + get(source) * energy_source_values[source],
-		0.0
+# returns the amount of energy representing by our energy sources that does not
+# need to go toward offsetting energy attrition.  this varies depending on
+# whether the monster is asleep or awake.
+func available_energy(asleep: bool = is_asleep()):
+	var total_available: float = 0.0
+	for source in energy_source_values:
+		total_available += get(source) * energy_source_values[source]
+	# most of total available energy from catabolizing energy sources goes to
+	# maintaining metabolism.  the amount that gets turned into energy depends
+	# on whether the monster is asleep or awake.  (TODO: DRY this if we keep it,
+	# these numbers are copied in `metabolize` and in SleepAction)
+	var surplus_energy = total_available * (
+		(0.1  / 1.0) if asleep else (3.0 / 3.8)
 	)
-	return e
+	return surplus_energy
 
 """
 attrition rates:

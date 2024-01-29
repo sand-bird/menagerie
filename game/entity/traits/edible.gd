@@ -34,6 +34,14 @@ const FLAVORS = {
 	&'tart': T.TART
 }
 
+func calc_energy_value() -> float:
+	var energy_value: float = 0
+	for source in Monster.energy_source_values:
+		var source_qty: float = get(source) if source in self else 0
+		var kcal: float = source_qty * Monster.energy_source_values[source]
+		energy_value += kcal
+	return energy_value
+
 #                                 c o n f i g                                 #
 # --------------------------------------------------------------------------- #
 func config_keys() -> Array[StringName]: return [

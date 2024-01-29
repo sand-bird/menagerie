@@ -79,14 +79,19 @@ static func diff_efficiency(
 	delta: float, target_value: float, current_value: float, capacity: float
 ) -> float:
 	var desired_delta := target_value - current_value
-	# alternately, new_desired_delta = desired_delta - delta
-	var new_desired_delta := target_value - (current_value + delta)
+	# alternately, new_desired_delta = target_value - (current_value + delta)
+	var new_desired_delta := desired_delta - delta
 	# improvement is the difference in length between the old and new desired
 	# delta, regardless of direction.  if the new desired delta is longer,
 	# improvement (thus utility) is negative, and vice versa.
 	var improvement := absf(desired_delta) - absf(new_desired_delta)
+	# length of the desired delta relative to total capacity represents the
+	# urgency of the desire.  use this to scale the utility result so that
+	# improvements to more urgent drives have relatively greater utility.
+	var urgency := desired_delta / capacity
+	var scale = 2 ** lerpf(-1, 1, urgency) # poor man's Attribute.modify
 	# utility of a delta is relative to total capacity of the drive
-	return improvement / capacity
+	return (improvement / capacity) * scale
 
 # --------------------------------------------------------------------------- #
 
@@ -116,7 +121,12 @@ static func calc_utility(m: Monster, action: Action):
 static func choose_action(m):
 	var actions = await poll_sources(m)
 	print('\n===== (choose_action) ', m.id, ' ', m.monster_name, ' =====')
-	print(actions.map(func(a): return a.name))
+	print('belly: ', String.num(m.belly, 2), ' / ', String.num(m.belly_capacity, 2),
+		' (', String.num(100.0 * m.belly / m.belly_capacity, 1), '%)',
+		' | energy: ', String.num(m.energy, 2), ' / ', String.num(m.energy_capacity, 2),
+		' (', String.num(100.0 * m.energy / m.energy_capacity, 1), '%)',
+		' t. ', String.num(100.0 * m.target_energy / m.energy_capacity, 1), '%'
+	)
 	var best_utility = -INF
 	var best_action = actions[0]
 	for action in actions:

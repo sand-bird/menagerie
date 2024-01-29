@@ -29,8 +29,7 @@ func init(data):
 
 func _input(e):
 	if e is InputEventMouseButton and e.is_pressed() and !monsters.is_empty():
-		for uuid in monsters:
-			var m = monsters[uuid]
+		for m in monsters:
 			m.set_current_action(
 				MoveAction.new(m, get_global_mouse_position(), { distance = 200 }),
 				true
