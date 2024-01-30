@@ -50,7 +50,7 @@ func update(m: Monster):
 	# open question: what do we do about attrs whose mean is below the median
 	# (because they are meant to accumulate over time, eg vigor's mean is 0.4)?
 	var attr_keys = m.attributes.attribute_keys()
-	U.sort_by(attr_keys, func(a): return -abs(m.attributes[a].variance))
+#	U.sort_by(attr_keys, func(a): return -abs(m.attributes[a].variance))
 #	U.sort_by(attr_keys, func(a): return -m.attributes[a].value)
 	
 	set_section_title($right/traits/title, T.TRAITS)

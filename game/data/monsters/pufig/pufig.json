@@ -77,8 +77,8 @@
     "appetite": {
       "mean": 0.7
     },
-    "aggressiveness": {
-      "mean": 0.4
+    "humility": {
+      "mean": 0.6
     }
   }
 }

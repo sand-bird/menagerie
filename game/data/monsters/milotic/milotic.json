@@ -77,5 +77,10 @@
         }
       }
     }
+  },
+  "attributes": {
+    "appetite": {
+      "mean": 0.3
+    }
   }
 }

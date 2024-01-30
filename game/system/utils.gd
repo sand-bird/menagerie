@@ -238,6 +238,14 @@ static func comma(num: int):
 		i -= 3
 	return strnum
 
+# --------------------------------------------------------------------------- #
+
+# String.num(x) with sensible defaults for number of decimal places
+static func str_num(x: float, decimals: int = -1) -> String: return (
+	String.num(x, 3 if x < 1 else 2 if x < 10 else 1 if x < 100 else 0)
+	if decimals < 0 else String.num(x, decimals)
+)
+
 
 # =========================================================================== #
 #                                V E C T O R S                                #

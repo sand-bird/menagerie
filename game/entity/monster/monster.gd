@@ -63,7 +63,7 @@ var belly_capacity: float: # depends on mass and belly_size from data
 		belly = minf(belly, belly_capacity)
 var belly: float = belly_capacity:
 	set(value): belly = clampf(value, 0, belly_capacity)
-var target_belly:
+var target_belly: float:
 	get: return belly_capacity
 	set(_x): return
 
@@ -87,7 +87,7 @@ var energy: float = energy_capacity:
 # target energy reflects the pet's preference for activity or rest, and is
 # determined by the inverse of its pep attribute (which ranges from 0 to 1).
 # high pep & low target energy means a more active pet, and vice versa.
-var target_energy:
+var target_energy: float:
 	get: return energy_capacity * attributes.pep.lerp(0.8, 0.2)
 	set(_x): return
 
@@ -97,7 +97,7 @@ var social_capacity: float = 100:
 		social = minf(social, social_capacity)
 var social: float = social_capacity:
 	set(value): social = clampf(value, 0, social_capacity)
-var target_social:
+var target_social: float:
 	get: return social_capacity * attributes.extraversion.lerp(1, 0)
 	set(_x): return
 
@@ -107,7 +107,7 @@ var mood_capacity: float = 100:
 		mood = minf(mood, mood_capacity)
 var mood: float = mood_capacity:
 	set(value): mood = clampf(value, 0, mood_capacity)
-var target_mood:
+var target_mood: float:
 	get: return mood_capacity
 	set(_x): return
 
@@ -205,6 +205,7 @@ func _init(data_: Dictionary, garden_: Garden):
 	perception_shape.shape = circle
 	perception.add_child(perception_shape)
 	add_named_child(perception, 'perception')
+	perception.hide()
 	
 	joint = PinJoint2D.new()
 	joint.softness = 0
@@ -216,8 +217,6 @@ func _init(data_: Dictionary, garden_: Garden):
 	
 	debug_text = Label.new()
 	debug_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	debug_text.size.x = 64
-	debug_text.position = Vector2(-32, 4)
 	add_named_child(debug_text, 'debug_text')
 
 
@@ -276,7 +275,6 @@ func enable_grab(): can_grab = true
 
 func grab(node: Entity):
 	joint.node_b = node.get_path()
-	announce(str("is grabbing ", get_grabbed_name()))
 
 func release(msg: String = "released "):
 	announce(msg + get_grabbed_name())
@@ -351,6 +349,14 @@ func _on_action_exit(status):
 # number of past actions to remember: 2-8 depending on pet iq.
 func get_memory_size():
 	return attributes.iq.ilerp(2, 8)
+
+# --------------------------------------------------------------------------- #
+
+# note: `is_sleeping` is already a method on RigidBody2D
+func is_asleep(): return (
+	current_action is SleepAction
+	and current_action.status == Action.Status.RUNNING
+)
 
 
 # =========================================================================== #
@@ -443,101 +449,42 @@ func update_mood(delta: float): mood += delta
 #                             M E T A B O L I S M                             #
 # --------------------------------------------------------------------------- #
 
+# amount of energy each unit of each energy source is worth
+const energy_source_values = {
+	porps = 4.0, scoses = 3.0, fobbles = 9.0, lumens = 2.0
+}
 # handle the monster's ongoing biological processes:
 # - digest food, reducing `belly` (eventually we should turn this into poop)
 # - catabolize stored energy (porps/scoses/fobbles/lumens)
 # - burn energy for metabolism
 func metabolize() -> void:
-	# TODO: attrition rate should also be modified by BMR
-	var belly_attrition_rate = (belly_capacity / 200.0)
-	update_belly(-belly_attrition_rate)
+	var belly_attrition = (belly_capacity / 200.0)
+	update_belly(-belly_attrition)
 	
-	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
-
-	var metabolic_rate: = U.div(get_bmr(), TICKS_PER_DAY)
-	# while awake, 9% (0.1/1.1) of energy sources catabolized goes to surplus energy (0.1 for every 1.1)
-	# while asleep, 79% (3/3.8) goes to surplus energy
-	var energy_consumed = metabolic_rate * (0.8 if is_asleep() else 1.0)
-	var energy_generated = catabolize(metabolic_rate * (3.0 if is_asleep() else 1.1))
-	# note that this is NOT equivalent to calling `update_energy(generated)` and
-	# `update_energy(-consumed)` separately unless our pep attribute is exactly
-	# 0.5, because of the way the pep multiplier works (see `Attribute.modify`).
-	# diffing the two first ensures a consistent relationship between them.
-	update_energy(energy_generated - energy_consumed)
-
-# --------------------------------------------------------------------------- #
-
-# amount of energy each unit of each energy source is worth
-const energy_source_values = {
-	porps = 4.0, scoses = 3.0, fobbles = 9.0, lumens = 2.0
-}
-# attempts to consume energy sources _evenly_ to generate the desired amount of
-# energy.  mutates the energy sources, and returns the energy generated (may be
-# less than `energy_needed` if we didn't have enough energy sources).
-func catabolize(energy_needed: float):
-	var energy_generated: float = 0.0
-	var sources: = energy_source_values.keys().filter(func (s): return get(s) > 0)
-	# loop until we fill our needed energy or run out of energy sources
-	while !is_zero_approx(energy_needed) and sources.size() > 0:
-		# attempt to generate an equal amount of energy from each remaining source
-		var energy_per_source := U.div(energy_needed, sources.size())
-		for source in sources:
-			var amount_to_consume: float = energy_per_source / energy_source_values[source]
-			# we can consume at most 10% of the energy source per tick.
-			# this ensures that catabolism tapers off as starvation approaches.
-			var amount_consumable = get(source)  * 0.1
-			var amount_consumed := clampf(amount_to_consume, 0, amount_consumable)
-			set(source, get(source) - amount_consumed)
-			if get(source) <= 0 or amount_consumed >= amount_consumable:
-				sources.erase(source)
-			var energy_yield: float = amount_consumed * energy_source_values[source]
-			energy_generated += energy_yield
-			energy_needed -= energy_yield
-	return energy_generated
-
-
-func is_asleep(): return (
-	current_action is SleepAction
-	and current_action.status == Action.Status.RUNNING
-)
-
-# returns the amount of energy representing by our energy sources that does not
-# need to go toward offsetting energy attrition.  this varies depending on
-# whether the monster is asleep or awake.
-func available_energy(asleep: bool = is_asleep()):
-	var total_available: float = 0.0
+	# decay (catabolize) energy sources and calculate the total energy yield
+	var food_energy := 0.0
 	for source in energy_source_values:
-		total_available += get(source) * energy_source_values[source]
-	# most of total available energy from catabolizing energy sources goes to
-	# maintaining metabolism.  the amount that gets turned into energy depends
-	# on whether the monster is asleep or awake.  (TODO: DRY this if we keep it,
-	# these numbers are copied in `metabolize` and in SleepAction)
-	var surplus_energy = total_available * (
-		(0.1  / 1.0) if asleep else (3.0 / 3.8)
-	)
-	return surplus_energy
-
-"""
-attrition rates:
-bunny: 0.07
-pufig: 0.31
-milotic: 2.19
-
-large apple, 0.2 kg (66% of bunny belly)
-"porps": 0.6 * 4 = 2.4 kcal
-"scoses": 30 * 4 = 120 kcal
-"fobbles": 0.4 * 9 = 3.6 kcal
-"""
-
-# --------------------------------------------------------------------------- #
-
-# returns the monster's base metabolic rate in kcal (energy units) per day.
-# this is dependent on mass and the optional `metabolism` data property, which
-# is a multiplier representing how fast or slow the monster's mass-specific
-# metabolic rate is relative to the "average".
-func get_bmr() -> float:
-	return data.mass * 7
-	# return data.get(&'metabolic_rate',  * 20.65)
+		# TODO: maybe vary decay rate by energy source (eg fobbles decay slower)
+		var decay_amount = get(source) * 0.05
+		self[source] -= decay_amount
+		food_energy += decay_amount * energy_source_values[source]
+	# cap usable food energy by a portion of the monster's mass.
+	# anything over this amount is wasted.
+	var max_food_energy := mass ** 0.8 # why not
+	var scale := clampf(food_energy / max_food_energy, 0, 1)
+	# the multiplier needs to dip below 0 to force monsters with no food energy
+	# reserves out of energy equilibrium - otherwise, they may get stuck in an
+	# idle loop.  we can always still recover energy by sleeping.
+	var multiplier := lerpf(-0.2, 1.5, scale)
+	# TODO: DRY this (also used in SleepAction)
+	var base_energy_recovery := energy_capacity / 200.0
+	var energy_recovery := base_energy_recovery * multiplier
+	
+	prints('(metabolize) recovery:', U.str_num(energy_recovery),
+		'| total:', U.str_num(food_energy),
+		'| max:', U.str_num(max_food_energy),
+		'| monster:', id, monster_name)
+	update_energy(energy_recovery)
 
 
 # =========================================================================== #
@@ -574,13 +521,13 @@ func load_orientation(input):
 
 func load_attributes(input):
 	if not input is Dictionary: input = {}
-	var attribute_overrides = Data.fetch([id, &'attributes'], {})
+	var attribute_overrides = data.get(&'attributes', {})
 	attributes = Attributes.new(input, attribute_overrides)
 	# initialize stateless propreties which depend on attributes (and data)
 	belly_capacity = attributes.appetite.modify(
 		data.get(&'belly_capacity', data.mass * 0.1), 2
 	)
-	energy_capacity = attributes.pep.modify(get_bmr() * 2, 2)
+	energy_capacity = attributes.pep.modify(data.mass * 10, 2)
 	social_capacity = attributes.extraversion.modify(100, 2)
 
 # ideally we would fail to load a monster with an invalid morph.  i'm not sure

@@ -1,9 +1,20 @@
 class_name SleepAction
 extends Action
+"""
+sleep and recover energy.
+
+this action calls `update_energy` on the monster every tick to restore a flat
+percentage of the monster's energy (currently 1/200), modified by vigor.
+
+monsters can also recover energy without sleeping by catabolizing food energy
+(see `Monster.metabolize`).  currently, sleep energy recovery works separately
+from and in addition to natural recovery, to ensure that sleeping can always
+recover some energy so the monster is not trapped in a death loop.
+"""
 
 # must sleep at least an hour
-const min_dur = 2 * Clock.TICKS_IN_HOUR
-const max_dur = 24 * Clock.TICKS_IN_HOUR
+const min_dur: int = 2 * Clock.TICKS_IN_HOUR
+const max_dur: int = 24 * Clock.TICKS_IN_HOUR
 
 # options: duration
 func _init(monster: Monster, options: Dictionary = {}):
@@ -14,8 +25,7 @@ func _init(monster: Monster, options: Dictionary = {}):
 # --------------------------------------------------------------------------- #
 
 func estimate_energy() -> float:
-	var available_energy =  m.available_energy(true)
-	return minf(float(timer) * energy_per_tick(m), available_energy)
+	return float(timer) * energy_per_tick(m)
 
 # TODO: make this a modifier like Attribute.modify, where it's a positive
 # multiplier on positive utility, and an inverse multiplier on negative utility
@@ -40,27 +50,21 @@ func _unpause():
 	exit(Status.FAILED)
 
 # it'd be cute to make it snore occasionally
-func _tick(): pass
+func _tick():
+	m.update_energy(energy_per_tick(m))
 
 func _timeout():
 	exit(Status.SUCCESS)
 
 # --------------------------------------------------------------------------- #
 
-# returns the difference in energy gained per tick between when the monster is
-# asleep and awake.
-static func energy_per_tick(monster: Monster):
-	const TICKS_PER_DAY = Clock.TICKS_IN_HOUR * Clock.HOURS_IN_DAY # 288
-	var metabolic_rate: = U.div(monster.get_bmr(), TICKS_PER_DAY)
-	# TODO: centralize this data, it's duplicated in `Monster.metabolize`
-	var base = 1.1 - 1.0
-	var asleep = 3.0 - 0.8
-	return metabolic_rate * (asleep - base)
+# TODO: take catabolism bonus into account; decide whether sleep energy recovery
+# is handled in the sleep action or in the monster (via checking is_asleep)
+static func energy_per_tick(monster: Monster) -> float:
+	# same as `base_energy_recovery` in `Monster.metabolize`
+	return monster.energy_capacity / 200.0
 
-static func calc_duration(monster: Monster):
-	var energy_needed = minf(
-		monster.target_energy - monster.energy,
-		monster.available_energy(true)
-	)
-	var dur_needed = energy_needed / energy_per_tick(monster)
-	return clamp(dur_needed, min_dur, max_dur)
+static func calc_duration(monster: Monster) -> int:
+	var energy_needed := monster.target_energy - monster.energy
+	var dur_needed := energy_needed / energy_per_tick(monster)
+	return clampi(dur_needed, min_dur, max_dur)

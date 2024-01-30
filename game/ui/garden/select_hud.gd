@@ -92,24 +92,24 @@ func connect_monster():
 
 func update_monster():
 	var m: Monster = target as Monster
+	
+	
 	$drives.show()
 	$name_bar.text = m.get_display_name()
-	$drives/container/belly/percent.text = String.num(m.belly / m.belly_capacity * 100, 1)
-	$drives/container/belly/current.text = String.num(m.belly, 2)
-	$drives/container/belly/max.text = String.num(m.belly_capacity, 2)
+	const bar_length: int = 8
+	$drives/container/belly/bar.max_value = bar_length
+	$drives/container/belly/bar.value = lerpf(0, bar_length, m.belly / m.belly_capacity)
+	$drives/container/belly/current.text = U.str_num(m.belly)
+	$drives/container/belly/max.text = U.str_num(m.belly_capacity)
 	
-	$drives/container/energy/percent.text = String.num(m.energy / m.energy_capacity * 100, 1)
-	$drives/container/energy/current.text = String.num(m.energy, 2)
-	$drives/container/energy/max.text = String.num(m.energy_capacity, 2)
+	$drives/container/energy/bar.max_value = bar_length
+	$drives/container/energy/bar.value = lerpf(0, bar_length, m.energy / m.energy_capacity)
+	$drives/container/energy/current.text = U.str_num(m.energy)
+	$drives/container/energy/max.text = U.str_num(m.energy_capacity)
 	
-	$drives/container/mood/percent.text = String.num(m.mood / m.mood_capacity * 100, 2)
-	$drives/container/mood/current.text = String.num(m.mood, 2)
-	$drives/container/mood/max.text = String.num(m.mood_capacity, 2)
-	
-	$sources/container/scoses/value.text = String.num(m.scoses, 3)
-	$sources/container/porps/value.text = String.num(m.porps, 3)
-	$sources/container/fobbles/value.text = String.num(m.fobbles, 3)
-	$sources/container/lumens/value.text = String.num(m.lumens, 3)
+	$sources/container/scoses/value.text = U.str_num(m.scoses)
+	$sources/container/porps/value.text = U.str_num(m.porps)
+	$sources/container/fobbles/value.text = U.str_num(m.fobbles)
 #	$horizontal.show()
 #	$horizontal/belly.value = target.belly
 #	$horizontal/energy.value = target.energy

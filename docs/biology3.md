@@ -37,7 +37,7 @@ _however_, i still think that energy value is a useful differentiator for food. 
   - define a "max digestible" threshold based on monster mass/bmr, any energy source above that threshold is wasted:
      ```gdscript
      scale = clampf(source / max_digestible, 0, 1)
-     multiplier lerpf(1, 2, scale)
+     multiplier = lerpf(1, 2, scale)
      ```
 
 this plus exponential decay should help address the issue that energy sources scale independently from mass - eg, it's possible to define a food with little mass but thousands of grams of energy sources.  for energy purposes, this food will simply buff energy recovery rates for longer.  later, once we tackle the nutrition attribute, we can set standards for how much of each energy source is healthy for a pet at any given time.

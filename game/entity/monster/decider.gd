@@ -97,9 +97,12 @@ static func diff_efficiency(
 
 # calculates the utility of an action for the given monster by comparing the
 # result of the action's `calc_effect` against the monster's current drives.
-static func calc_utility(m: Monster, action: Action):
+# note: we don't explicitly prevent actions that would deplete more of a drive
+# than the monster already has; the utility calculation should ensure those
+# actions almost never get chosen.
+static func calc_utility(m: Monster, action: Action, log: bool):
 	var utility: float = 0
-	print(action.name, ' (', action.timer, ')')
+	if log: print(action.name, ' (', action.timer, ')')
 	for drive in Action.DRIVES:
 		var delta := action.estimate_drive(drive)
 		var current: float = m.get(drive)
@@ -107,21 +110,24 @@ static func calc_utility(m: Monster, action: Action):
 		var target: float = m.get(str('target_', drive))
 		var drive_utility := diff_efficiency(delta, target, current, max)
 		if !is_zero_approx(delta):
-			print('\t', drive,
+			if log: print('\t', drive,
 				' | delta: ', String.num(delta, 4),
 				' | utility: ', String.num(drive_utility, 4)
 			)
 		utility += drive_utility
 	
-	print('\tutility: ', String.num(utility, 4))
+	# TODO: if the monster previously attempted the same action with the same
+	# target and it failed, add a utility penalty (-0.5)
+	
+	if log: print('\tutility: ', String.num(utility, 4))
 	return action.mod_utility(utility)
 
 # --------------------------------------------------------------------------- #
 
-static func choose_action(m):
+static func choose_action(m: Monster, log: bool = true):
 	var actions = await poll_sources(m)
-	print('\n===== (choose_action) ', m.id, ' ', m.monster_name, ' =====')
-	print('belly: ', String.num(m.belly, 2), ' / ', String.num(m.belly_capacity, 2),
+	if log: print('\n===== (choose_action) ', m.id, ' ', m.monster_name, ' =====')
+	if log: print('belly: ', String.num(m.belly, 2), ' / ', String.num(m.belly_capacity, 2),
 		' (', String.num(100.0 * m.belly / m.belly_capacity, 1), '%)',
 		' | energy: ', String.num(m.energy, 2), ' / ', String.num(m.energy_capacity, 2),
 		' (', String.num(100.0 * m.energy / m.energy_capacity, 1), '%)',
@@ -130,11 +136,11 @@ static func choose_action(m):
 	var best_utility = -INF
 	var best_action = actions[0]
 	for action in actions:
-		var utility = calc_utility(m, action)
+		var utility = calc_utility(m, action, log)
 		if utility > best_utility:
 			best_utility = utility
 			best_action = action
 		# exit early if we find a really good one
 	
-	print('^^^^^^^^^ selected: ', best_action.name, ' ^^^^^^^^^\n')
+	if log: print('^^^^^^^^^ selected: ', best_action.name, ' ^^^^^^^^^\n')
 	return best_action

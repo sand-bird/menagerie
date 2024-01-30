@@ -4,8 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://blwq5wkkfct1s" path="res://assets/ui/elements/drive_bg_horizontal.png" id="3"]
 [ext_resource type="StyleBox" uid="uid://gdfkqnnjp33g" path="res://assets/ui/panels/box_border_inset.tres" id="3_4ljyg"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="3_kpdta"]
-[ext_resource type="Texture2D" uid="uid://pcknbsbc2iqe" path="res://assets/ui/elements/drive_empty_horizontal.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://5774e086y88" path="res://assets/ui/elements/drive_full_horizontal.png" id="5"]
+[ext_resource type="PackedScene" uid="uid://c5q6hyceb71sn" path="res://ui/multi_texture_progress_bar.tscn" id="4_kq3sw"]
+[ext_resource type="Texture2D" uid="uid://bkk7663muwd68" path="res://assets/ui/icons/attribute_point_c.png" id="5_g6gq5"]
 [ext_resource type="Texture2D" uid="uid://b5c51yxxmdugy" path="res://assets/ui/elements/drive_bg_vertical.png" id="6"]
 [ext_resource type="PackedScene" uid="uid://cn7iyfs48s1vn" path="res://ui/portrait.tscn" id="9_6x0f7"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_eddpa"]
@@ -16,30 +16,22 @@ offset_top = 4.0
 theme = ExtResource("3_kpdta")
 script = ExtResource("2")
 
-[node name="drives" type="Panel" parent="."]
+[node name="drives" type="PanelContainer" parent="."]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 19.0
-offset_right = 116.0
-offset_bottom = 59.0
+offset_right = 143.0
+offset_bottom = 46.0
 theme_override_styles/panel = ExtResource("3_4ljyg")
 
 [node name="container" type="VBoxContainer" parent="drives"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 3.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
 [node name="belly" type="HBoxContainer" parent="drives/container"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 0
 alignment = 2
 
@@ -48,25 +40,16 @@ clip_contents = true
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 text = "B:"
-horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="percent" type="Label" parent="drives/container/belly"]
-custom_minimum_size = Vector2(22, 0)
+[node name="bar" parent="drives/container/belly" instance=ExtResource("4_kq3sw")]
 layout_mode = 2
-text = "67%"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_open_paren" type="Label" parent="drives/container/belly"]
-custom_minimum_size = Vector2(6, 0)
-layout_mode = 2
-text = "("
-horizontal_alignment = 2
-vertical_alignment = 1
+full_texture = ExtResource("5_g6gq5")
+value = 5.0
+max_value = 8
 
 [node name="current" type="Label" parent="drives/container/belly"]
-custom_minimum_size = Vector2(18, 0)
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 text = "100"
 horizontal_alignment = 2
@@ -76,20 +59,13 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 text = "/"
-horizontal_alignment = 2
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="max" type="Label" parent="drives/container/belly"]
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(18, 0)
 layout_mode = 2
 text = "1000"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_close_paren" type="Label" parent="drives/container/belly"]
-custom_minimum_size = Vector2(4, 0)
-layout_mode = 2
-text = ")"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -103,27 +79,18 @@ clip_contents = true
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 text = "E:"
-horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="percent" type="Label" parent="drives/container/energy"]
-custom_minimum_size = Vector2(22, 0)
+[node name="bar" parent="drives/container/energy" instance=ExtResource("4_kq3sw")]
 layout_mode = 2
-text = "11%"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_open_paren" type="Label" parent="drives/container/energy"]
-custom_minimum_size = Vector2(6, 0)
-layout_mode = 2
-text = "("
-horizontal_alignment = 2
-vertical_alignment = 1
+full_texture = ExtResource("5_g6gq5")
+value = 4.0
+max_value = 8
 
 [node name="current" type="Label" parent="drives/container/energy"]
-custom_minimum_size = Vector2(18, 0)
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
-text = "9"
+text = "100"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -131,84 +98,22 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 text = "/"
-horizontal_alignment = 2
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="max" type="Label" parent="drives/container/energy"]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-text = "8888"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_close_paren" type="Label" parent="drives/container/energy"]
-custom_minimum_size = Vector2(4, 0)
-layout_mode = 2
-text = ")"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="mood" type="HBoxContainer" parent="drives/container"]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 2
-
-[node name="label" type="Label" parent="drives/container/mood"]
-clip_contents = true
-custom_minimum_size = Vector2(12, 0)
-layout_mode = 2
-text = "M:"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="percent" type="Label" parent="drives/container/mood"]
-custom_minimum_size = Vector2(22, 0)
-layout_mode = 2
-text = "100%"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_open_paren" type="Label" parent="drives/container/mood"]
-custom_minimum_size = Vector2(6, 0)
-layout_mode = 2
-text = "("
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="current" type="Label" parent="drives/container/mood"]
 custom_minimum_size = Vector2(18, 0)
-layout_mode = 2
-text = "9"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="_slash" type="Label" parent="drives/container/mood"]
-custom_minimum_size = Vector2(6, 0)
-layout_mode = 2
-text = "/"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="max" type="Label" parent="drives/container/mood"]
-custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 text = "100"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="_close_paren" type="Label" parent="drives/container/mood"]
-custom_minimum_size = Vector2(4, 0)
-layout_mode = 2
-text = ")"
-horizontal_alignment = 2
-vertical_alignment = 1
-
 [node name="sources" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 115.0
-offset_top = 11.0
-offset_right = 158.0
-offset_bottom = 59.0
+offset_left = 20.0
+offset_top = 46.0
+offset_right = 63.0
+offset_bottom = 84.0
 theme_override_styles/panel = ExtResource("3_4ljyg")
 
 [node name="container" type="VBoxContainer" parent="sources"]
@@ -285,26 +190,6 @@ text = "0.0"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="lumens" type="HBoxContainer" parent="sources/container"]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 2
-
-[node name="label" type="Label" parent="sources/container/lumens"]
-clip_contents = true
-custom_minimum_size = Vector2(10, 0)
-layout_mode = 2
-text = "L:"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="value" type="Label" parent="sources/container/lumens"]
-custom_minimum_size = Vector2(26, 0)
-layout_mode = 2
-text = "0.0"
-horizontal_alignment = 2
-vertical_alignment = 1
-
 [node name="horizontal" type="TextureRect" parent="."]
 visible = false
 layout_mode = 0
@@ -313,44 +198,6 @@ offset_top = 19.0
 offset_right = 83.0
 offset_bottom = 59.0
 texture = ExtResource("3")
-
-[node name="belly" type="TextureProgressBar" parent="horizontal"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 4.0
-offset_right = 49.0
-offset_bottom = 11.0
-value = 70.0
-rounded = true
-texture_under = ExtResource("4")
-texture_progress = ExtResource("5")
-tint_progress = Color(0.890196, 0.372549, 0.486275, 1)
-
-[node name="energy" type="TextureProgressBar" parent="horizontal"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 17.0
-offset_right = 49.0
-offset_bottom = 24.0
-max_value = 8.0
-value = 8.0
-texture_under = ExtResource("4")
-texture_progress = ExtResource("5")
-tint_progress = Color(0.509804, 1, 0.607843, 1)
-
-[node name="social" type="TextureProgressBar" parent="horizontal"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 29.0
-offset_right = 49.0
-offset_bottom = 36.0
-max_value = 8.0
-step = 0.0
-value = 4.0
-rounded = true
-texture_under = ExtResource("4")
-texture_progress = ExtResource("5")
-tint_progress = Color(0.360784, 0.490196, 1, 1)
 
 [node name="current_action" type="Label" parent="horizontal"]
 visible = false
