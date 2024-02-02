@@ -42,6 +42,10 @@ const AGE = &"age"
 const TRAITS = &"traits"
 const BIRTHDAY = &"birthday"
 
+# section titles on the item info ui
+const VALUE = &"value"
+const DESCRIPTION = &"description"
+
 #                                  c l o c k                                  #
 # --------------------------------------------------------------------------- #
 const YEAR = &"year"

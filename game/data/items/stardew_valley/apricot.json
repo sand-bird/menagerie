@@ -1,0 +1,24 @@
+{
+  "id": "apricot",
+  "type": "item",
+  "tags": ["fruit"],
+  "name": {
+    "en": "Apricot"
+  },
+  "size": 2,
+  "mass": 0.035,
+  "description": {
+    "en": "A type of stonefruit with a toxic pit. Usually cultivated by grafting onto plum or peach rootstocks."
+  },
+  "icon": "~/apricot.png",
+  "sprite": "~/apricot.png",
+  "value": 10,
+  "traits": {
+    "edible": {
+      "flavors": ["sweet", "tart"],
+      "porps": 0.5,
+      "scoses": 3.85,
+      "fobbles": 0.14
+    }
+  }
+}

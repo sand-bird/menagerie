@@ -71,4 +71,7 @@ func update_item_details(_selected: int, iref):
 		Log.warn(self, "(update_item_details) unexpected: no item selected")
 		return
 	var item = Player.inventory_get(iref)
+	if !item:
+		Log.error(self, ['could not find item in inventory: ', iref])
+		return
 	$item_info.update_item(item)

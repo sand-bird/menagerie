@@ -1,0 +1,24 @@
+{
+  "id": "raw_chicken",
+  "type": "item",
+  "tags": ["meat", "raw"],
+  "name": {
+    "en": "Raw Chicken"
+  },
+  "size": 5,
+  "mass": 2,
+  "description": {
+    "en": "A whole raw chicken. Carnivores only!"
+  },
+  "icon": "~/raw_chicken.png",
+  "sprite": "~/raw_chicken.png",
+  "value": 400,
+  "traits": {
+    "edible": {
+      "flavors": ["savory"],
+      "scoses": 0,
+      "fobbles": 300,
+      "porps": 285
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "burger",
+  "type": "item",
+  "tags": ["meat", "cooked"],
+  "name": {
+    "en": "Burger"
+  },
+  "size": 5,
+  "mass": 0.22,
+  "description": {
+    "en": "It has pickles, even though you ordered it without them..."
+  },
+  "icon": "~/burger.png",
+  "sprite": "~/burger.png",
+  "value": 10,
+  "traits": {
+    "edible": {
+      "flavors": ["savory"],
+      "scoses": 40,
+      "fobbles": 27,
+      "porps": 26
+    }
+  }
+}

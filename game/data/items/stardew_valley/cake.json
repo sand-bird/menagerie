@@ -1,0 +1,24 @@
+{
+  "id": "cake",
+  "type": "item",
+  "tags": ["cooked", "dessert"],
+  "name": {
+    "en": "Cake"
+  },
+  "size": 5,
+  "mass": 1.6,
+  "description": {
+    "en": "A double-layer cake. Who would eat all of this at once?"
+  },
+  "icon": "~/cake.png",
+  "sprite": "~/cake.png",
+  "value": 200,
+  "traits": {
+    "edible": {
+      "flavors": ["sweet"],
+      "scoses": 845,
+      "fobbles": 333,
+      "porps": 61
+    }
+  }
+}

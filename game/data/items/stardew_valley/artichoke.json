@@ -1,0 +1,24 @@
+{
+  "id": "artichoke",
+  "type": "item",
+  "tags": ["vegetable", "flower"],
+  "name": {
+    "en": "Artichoke"
+  },
+  "size": 4,
+  "mass": 0.16,
+  "description": {
+    "en": "Actually the flower bud of the artichoke plant. Only the heart is edible to humans, but monsters will eat it all."
+  },
+  "icon": "~/artichoke.png",
+  "sprite": "~/artichoke.png",
+  "value": 10,
+  "traits": {
+    "edible": {
+      "flavors": ["bitter"],
+      "scoses": 18.5,
+      "fobbles": 4.6,
+      "porps": 4.5
+    }
+  }
+}

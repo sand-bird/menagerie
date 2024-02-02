@@ -9,6 +9,9 @@ func initialize(iref, item_size: Vector2):
 	custom_minimum_size = item_size
 	size = item_size
 	var item = Player.inventory_get(iref)
+	if !item:
+		Log.error(self, ['could not find item in inventory: ', iref])
+		return
 	set_qty(item.qty)
 	$icon.texture = Data.fetch_res([item.id, "icon"])
 

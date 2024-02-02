@@ -164,6 +164,7 @@ func inventory_add(serialized: Dictionary, qty: int = 1):
 # args or as an array (since that's how we store them in the inventory menu ui.)
 func inventory_get(id, i = null):
 	if typeof(id) == TYPE_ARRAY: i = id[1]; id = id[0]
+	if !inventory.has(id) or inventory[id].size() <= i: return null
 	return inventory[id][i]
 
 # --------------------------------------------------------------------------- #
