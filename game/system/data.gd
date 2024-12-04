@@ -2,8 +2,6 @@ extends Node
 
 const BASE_DIR = "res://data"
 const MOD_DIR = "res://mods"
-const DATA_EXT= "json"
-const SCHEMA_EXT = "schema"
 
 # --------------------------------------------------------------------------- #
 
@@ -263,12 +261,15 @@ func load_data(dirname, sourceinfo):
 		if dir.current_is_dir():
 			var child = load_data(current_path, sourceinfo)
 			if child: loaded = merge(loaded, child)
-		elif current.get_extension() == DATA_EXT:
-			var d = load_datafile(current_path, sourceinfo)
-			loaded.data = merge(loaded.data, d)
-		elif current.get_extension() == SCHEMA_EXT:
-			var s = load_schemafile(current_path, sourceinfo)
-			loaded.schemas = merge(loaded.schemas, s)
+		# both datafiles and schemafiles are json files;
+		# we identify schemas by ending the filename with _schema.
+		elif current.get_extension() == 'json':
+			if current.ends_with('.schema.json'):
+				var s = load_schemafile(current_path, sourceinfo)
+				loaded.schemas = merge(loaded.schemas, s)
+			else:
+				var d = load_datafile(current_path, sourceinfo)
+				loaded.data = merge(loaded.data, d)
 		current = dir.get_next()
 	return loaded
 
@@ -298,7 +299,9 @@ func load_schemafile(path, sourceinfo):
 	if schema == null:
 		Log.error(self, ["error loading schema from `", path, "`!"])
 		return
-	var filename = path.get_basename().get_file()
+	# schemafiles are named foo.schema.json.
+	# this line strips the path and schema.json, leaving just foo.
+	var filename = path.get_basename().get_basename().get_file()
 	schema = process_schema(schema, filename)
 	schema.sources = [sourceinfo]
 	return { filename: schema }

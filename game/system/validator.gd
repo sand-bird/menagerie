@@ -206,7 +206,7 @@ func validate_schemas() -> Dictionary:
 		if key == &'schema': continue
 		var instance = schema_root[key]
 		Log.debug(log_name, ["(validate) schema: ", key])
-		# `definitions.schema` is a special case, as it is not a schema itself
+		# `definitions.schema.json` is a special case, as it is not a schema itself
 		# but a collection of schemas (analogous to '$defs' in a typical schema)
 		if key == &'definitions':
 			for dkey in instance:
