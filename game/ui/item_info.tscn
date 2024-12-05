@@ -10,8 +10,9 @@
 [ext_resource type="StyleBox" uid="uid://d0xo7wrbsiah1" path="res://assets/ui/panels/scrollbars/scroll_flatpink.tres" id="6_gci37"]
 [ext_resource type="StyleBox" uid="uid://dg5c15dcn8f3k" path="res://assets/ui/panels/qty_label.tres" id="7"]
 [ext_resource type="Texture2D" uid="uid://knkvn5yhvm8r" path="res://assets/garden/cursor.png" id="7_5rjka"]
+[ext_resource type="Texture2D" uid="uid://doqcoknciyswj" path="res://assets/ui/icons/player2.png" id="7_raf0q"]
+[ext_resource type="Texture2D" uid="uid://bqtctin6j12dc" path="res://assets/ui/icons/options.png" id="9_e8spq"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_sxbvh"]
-[ext_resource type="StyleBox" uid="uid://cm7df5uomjeve" path="res://assets/ui/panels/scrollbars/scroll_white.tres" id="10_32ank"]
 
 [sub_resource type="GDScript" id="1"]
 resource_name = "item_name"
@@ -29,12 +30,6 @@ VScrollBar/styles/scroll = ExtResource("6_gci37")
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0tlan"]
 content_margin_right = 2.0
 
-[sub_resource type="Theme" id="Theme_bnioo"]
-VScrollBar/styles/grabber = ExtResource("5_kx6tc")
-VScrollBar/styles/grabber_highlight = null
-VScrollBar/styles/grabber_pressed = null
-VScrollBar/styles/scroll = ExtResource("10_32ank")
-
 [node name="item_info" type="Control"]
 layout_mode = 3
 anchors_preset = 0
@@ -48,7 +43,7 @@ layout_mode = 0
 offset_left = 34.0
 offset_top = 4.0
 offset_right = 139.0
-offset_bottom = 32.0
+offset_bottom = 27.0
 theme = ExtResource("2")
 theme_override_styles/panel = ExtResource("3")
 
@@ -59,17 +54,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "test"
+theme_override_constants/line_spacing = 0
+text = "A Really Great Piece of Pierogie"
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 2
 script = SubResource("1")
 
 [node name="scroll" type="ScrollContainer" parent="."]
 layout_mode = 0
 offset_left = 3.0
-offset_top = 34.0
+offset_top = 38.0
 offset_right = 141.0
-offset_bottom = 118.0
+offset_bottom = 136.0
 theme = SubResource("Theme_vafoa")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0tlan")
 
@@ -77,104 +74,80 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_0tlan")
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 1
+theme_override_constants/separation = 2
 
 [node name="hbox" type="HBoxContainer" parent="scroll/info"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="mass" type="VBoxContainer" parent="scroll/info/hbox"]
+[node name="mass" type="PanelContainer" parent="scroll/info/hbox"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.66
-theme = ExtResource("5")
-theme_override_constants/separation = -2
-
-[node name="title" type="Label" parent="scroll/info/hbox/mass"]
-layout_mode = 2
-theme_override_styles/normal = ExtResource("9_sxbvh")
-text = " <qty>"
-vertical_alignment = 1
-
-[node name="panel" type="PanelContainer" parent="scroll/info/hbox/mass"]
-layout_mode = 2
 theme_override_styles/panel = ExtResource("3")
 
-[node name="value" type="Label" parent="scroll/info/hbox/mass/panel"]
+[node name="hbox" type="HBoxContainer" parent="scroll/info/hbox/mass"]
 layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="icon" type="TextureRect" parent="scroll/info/hbox/mass/hbox"]
+layout_mode = 2
+texture = ExtResource("7_raf0q")
+stretch_mode = 3
+
+[node name="value" type="Label" parent="scroll/info/hbox/mass/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
 text = "1,000"
-horizontal_alignment = 1
 vertical_alignment = 1
 max_lines_visible = 2
 
-[node name="value" type="VBoxContainer" parent="scroll/info/hbox"]
+[node name="value" type="PanelContainer" parent="scroll/info/hbox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("5")
-theme_override_constants/separation = -2
-
-[node name="title" type="Label" parent="scroll/info/hbox/value"]
-layout_mode = 2
-theme_override_styles/normal = ExtResource("9_sxbvh")
-text = " <value>"
-vertical_alignment = 1
-
-[node name="panel" type="PanelContainer" parent="scroll/info/hbox/value"]
-layout_mode = 2
 theme_override_styles/panel = ExtResource("3")
 
-[node name="hbox" type="HBoxContainer" parent="scroll/info/hbox/value/panel"]
+[node name="hbox" type="HBoxContainer" parent="scroll/info/hbox/value"]
 layout_mode = 2
-theme_override_constants/separation = 1
-alignment = 1
+theme_override_constants/separation = 5
 
-[node name="value" type="Label" parent="scroll/info/hbox/value/panel/hbox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/line_spacing = 1
-text = "1,000"
-horizontal_alignment = 2
-vertical_alignment = 1
-max_lines_visible = 2
-
-[node name="aster" type="TextureRect" parent="scroll/info/hbox/value/panel/hbox"]
+[node name="icon" type="TextureRect" parent="scroll/info/hbox/value/hbox"]
 layout_mode = 2
 texture = ExtResource("4")
 stretch_mode = 3
 
-[node name="tags" type="VBoxContainer" parent="scroll/info"]
-custom_minimum_size = Vector2(0, 23)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-theme = ExtResource("5")
-theme_override_constants/separation = -2
-
-[node name="title" type="Label" parent="scroll/info/tags"]
-layout_mode = 2
-theme_override_styles/normal = ExtResource("9_sxbvh")
-text = " <tags>"
-vertical_alignment = 1
-
-[node name="panel" type="PanelContainer" parent="scroll/info/tags"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("3")
-
-[node name="scroll" type="ScrollContainer" parent="scroll/info/tags/panel"]
-layout_mode = 2
-theme = SubResource("Theme_bnioo")
-
-[node name="value" type="Label" parent="scroll/info/tags/panel"]
-custom_minimum_size = Vector2(10, 0)
+[node name="value" type="Label" parent="scroll/info/hbox/value/hbox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/line_spacing = 1
-text = "meat, raw"
-autowrap_mode = 2
+text = "1,000"
+vertical_alignment = 1
+max_lines_visible = 2
+
+[node name="tags" type="PanelContainer" parent="scroll/info"]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3")
+
+[node name="hbox" type="HBoxContainer" parent="scroll/info/tags"]
+layout_mode = 2
+
+[node name="icon" type="TextureRect" parent="scroll/info/tags/hbox"]
+visible = false
+layout_mode = 2
+texture = ExtResource("9_e8spq")
+stretch_mode = 3
+
+[node name="value" type="Label" parent="scroll/info/tags/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 1
+text = "1,000"
+vertical_alignment = 1
+max_lines_visible = 2
 
 [node name="description" type="VBoxContainer" parent="scroll/info"]
 layout_mode = 2
@@ -183,12 +156,6 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 theme = ExtResource("5")
 theme_override_constants/separation = -2
-
-[node name="title" type="Label" parent="scroll/info/description"]
-layout_mode = 2
-theme_override_styles/normal = ExtResource("9_sxbvh")
-text = " <description>"
-vertical_alignment = 1
 
 [node name="panel" type="PanelContainer" parent="scroll/info/description"]
 layout_mode = 2
@@ -204,20 +171,6 @@ theme_override_constants/line_spacing = 1
 text = "Soft, silky fur from a Pufig's fluffy tail. It's said that stuffing your pillow with it will bring good dreams.
 This is the last line."
 autowrap_mode = 2
-
-[node name="scroll" type="ScrollContainer" parent="scroll/info/description/panel"]
-visible = false
-layout_mode = 2
-theme = SubResource("Theme_bnioo")
-
-[node name="Button2" type="Button" parent="."]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-offset_left = 3.0
-offset_top = 120.0
-offset_right = 138.0
-offset_bottom = 138.0
-text = "Place in garden"
 
 [node name="item_icon" type="TextureRect" parent="."]
 layout_mode = 0
@@ -338,3 +291,52 @@ This is the last line."
 autowrap_mode = 2
 clip_text = true
 max_lines_visible = 6
+
+[node name="hbox" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 39.0
+offset_top = 25.0
+offset_right = 134.0
+offset_bottom = 38.0
+theme_override_constants/separation = 2
+
+[node name="weight" type="PanelContainer" parent="hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("9_sxbvh")
+
+[node name="hbox" type="HBoxContainer" parent="hbox/weight"]
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="icon" type="TextureRect" parent="hbox/weight/hbox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_raf0q")
+stretch_mode = 3
+
+[node name="value" type="Label" parent="hbox/weight/hbox"]
+layout_mode = 2
+text = "100 kg"
+
+[node name="value" type="PanelContainer" parent="hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("9_sxbvh")
+
+[node name="hbox" type="HBoxContainer" parent="hbox/value"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="icon" type="TextureRect" parent="hbox/value/hbox"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4")
+stretch_mode = 3
+
+[node name="value" type="Label" parent="hbox/value/hbox"]
+layout_mode = 2
+text = "100,000"

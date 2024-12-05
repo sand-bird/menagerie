@@ -11,10 +11,93 @@
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_eddpa"]
 
 [node name="select_hud" type="ReferenceRect"]
+visible = false
 offset_left = 4.0
 offset_top = 4.0
 theme = ExtResource("3_kpdta")
 script = ExtResource("2")
+
+[node name="sources" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 45.0
+offset_right = 63.0
+offset_bottom = 83.0
+theme_override_styles/panel = ExtResource("3_4ljyg")
+
+[node name="container" type="VBoxContainer" parent="sources"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 4.0
+offset_right = -5.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="scoses" type="HBoxContainer" parent="sources/container"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="label" type="Label" parent="sources/container/scoses"]
+clip_contents = true
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+text = "S:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="value" type="Label" parent="sources/container/scoses"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="porps" type="HBoxContainer" parent="sources/container"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="label" type="Label" parent="sources/container/porps"]
+clip_contents = true
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+text = "P:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="value" type="Label" parent="sources/container/porps"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="fobbles" type="HBoxContainer" parent="sources/container"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="label" type="Label" parent="sources/container/fobbles"]
+clip_contents = true
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+text = "F:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="value" type="Label" parent="sources/container/fobbles"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="drives" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -105,88 +188,6 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(18, 0)
 layout_mode = 2
 text = "100"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="sources" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 46.0
-offset_right = 63.0
-offset_bottom = 84.0
-theme_override_styles/panel = ExtResource("3_4ljyg")
-
-[node name="container" type="VBoxContainer" parent="sources"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 3.0
-offset_top = 4.0
-offset_right = -5.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 0
-alignment = 1
-
-[node name="scoses" type="HBoxContainer" parent="sources/container"]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 2
-
-[node name="label" type="Label" parent="sources/container/scoses"]
-clip_contents = true
-custom_minimum_size = Vector2(10, 0)
-layout_mode = 2
-text = "S:"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="value" type="Label" parent="sources/container/scoses"]
-custom_minimum_size = Vector2(26, 0)
-layout_mode = 2
-text = "0.0"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="porps" type="HBoxContainer" parent="sources/container"]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 2
-
-[node name="label" type="Label" parent="sources/container/porps"]
-clip_contents = true
-custom_minimum_size = Vector2(10, 0)
-layout_mode = 2
-text = "P:"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="value" type="Label" parent="sources/container/porps"]
-custom_minimum_size = Vector2(26, 0)
-layout_mode = 2
-text = "0.0"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="fobbles" type="HBoxContainer" parent="sources/container"]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 2
-
-[node name="label" type="Label" parent="sources/container/fobbles"]
-clip_contents = true
-custom_minimum_size = Vector2(10, 0)
-layout_mode = 2
-text = "F:"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="value" type="Label" parent="sources/container/fobbles"]
-custom_minimum_size = Vector2(26, 0)
-layout_mode = 2
-text = "0.0"
 horizontal_alignment = 2
 vertical_alignment = 1
 

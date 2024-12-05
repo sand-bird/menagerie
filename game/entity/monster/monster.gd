@@ -458,7 +458,7 @@ const energy_source_values = {
 # - catabolize stored energy (porps/scoses/fobbles/lumens)
 # - burn energy for metabolism
 func metabolize() -> void:
-	var belly_attrition = (belly_capacity / 200.0)
+	var belly_attrition = (belly_capacity / 300.0)
 	update_belly(-belly_attrition)
 	
 	# decay (catabolize) energy sources and calculate the total energy yield

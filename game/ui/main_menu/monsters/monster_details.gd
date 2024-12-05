@@ -53,7 +53,7 @@ func update(m: Monster):
 #	U.sort_by(attr_keys, func(a): return -abs(m.attributes[a].variance))
 #	U.sort_by(attr_keys, func(a): return -m.attributes[a].value)
 	
-	set_section_title($right/traits/title, T.TRAITS)
+	set_section_title($right/traits/title, "ATTRIBUTES (DEBUG)")
 	$right/traits/panel/scroll/value.horizontal_alignment = HORIZONTAL_ALIGNMENT_FILL
 	$right/traits/panel/scroll/value.text = "\n".join(
 		attr_keys.map(func(key):

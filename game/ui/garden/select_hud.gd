@@ -76,6 +76,7 @@ func clear_target(_entity = null):
 	if !target: return
 	Dispatcher.tick_changed.disconnect(update_monster)
 	$drives.hide()
+	$sources.hide()
 	for c in get_incoming_connections():
 #		c.signal.disconnect(c.callable)
 		if c['signal'].get_object() == target:
@@ -93,8 +94,8 @@ func connect_monster():
 func update_monster():
 	var m: Monster = target as Monster
 	
-	
 	$drives.show()
+	$sources.show()
 	$name_bar.text = m.get_display_name()
 	const bar_length: int = 8
 	$drives/container/belly/bar.max_value = bar_length

@@ -4,11 +4,11 @@ extends Control
 func set_section_title(node: Label, t: StringName):
 	node.text = str(" ", tr(t).to_upper())
 
-func _ready():
-	set_section_title($scroll/info/hbox/value/title, T.VALUE)
-	set_section_title($scroll/info/hbox/mass/title, "WEIGHT")
-	set_section_title($scroll/info/description/title, T.DESCRIPTION)
-	set_section_title($scroll/info/tags/title, "TAGS")
+func _ready(): pass
+#	set_section_title($scroll/info/hbox/value/title, T.VALUE)
+#	set_section_title($scroll/info/hbox/mass/title, "WEIGHT")
+#	set_section_title($scroll/info/description/title, T.DESCRIPTION)
+#	set_section_title($scroll/info/tags/title, "TAGS")
 
 # --------------------------------------------------------------------------- #
 
@@ -28,10 +28,12 @@ func update_item(state):
 	$item_properties/value/aster.show()
 	
 	# new stuff
-	$scroll/info/hbox/mass/panel/value.text = str(U.comma(data.mass * 1000), ' g') if data.mass < 1 else str(U.str_num(data.mass), ' kg')
-	$scroll/info/hbox/value/panel/hbox/value.text = U.comma(value * state.qty)
+	$hbox/weight/hbox/value.text = str(U.comma(data.mass * 1000), ' g') if data.mass < 1 else str(U.str_num(data.mass), ' kg')
+	$hbox/value/hbox/value.text = U.comma(value)
+	$scroll/info/hbox/mass/hbox/value.text = str(U.comma(data.mass * 1000), ' g') if data.mass < 1 else str(U.str_num(data.mass), ' kg')
+	$scroll/info/hbox/value/hbox/value.text = U.comma(value * state.qty)
 	$scroll/info/description/panel/value.text = U.trans(data.description)
-	$scroll/info/tags/panel/value.text = ', '.join(data.tags)
+	$scroll/info/tags/hbox/value.text = ', '.join(data.tags)
 
 #	if state.qty == 1: $item_icon/quantity.hide()
 #	else:
