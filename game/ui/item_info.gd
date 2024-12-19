@@ -17,20 +17,17 @@ func update_item(state):
 	var data = Data.fetch(state.id)
 	
 	$item_name/label.text = U.trans(data.name)
-	$item_description/label.text = U.trans(data.description)
 	$item_icon/icon.texture = Data.fetch_res([state.id, 'icon'])
 	
 	# TODO: replace this with tags/properties (entities will not have a single category)
 #	$item_properties/category.text = data.category
 	
 	var value = state.get('value', data.value)
-	$item_properties/value.text = U.comma(value)
-	$item_properties/value/aster.show()
 	
 	# new stuff
-	$hbox/weight/hbox/value.text = str(U.comma(data.mass * 1000), ' g') if data.mass < 1 else str(U.str_num(data.mass), ' kg')
+	$hbox/weight/hbox/value.text = str(U.comma(data.mass * 1000), 'g') if data.mass < 1 else str(U.str_num(data.mass), 'kg')
 	$hbox/value/hbox/value.text = U.comma(value)
-	$scroll/info/hbox/mass/hbox/value.text = str(U.comma(data.mass * 1000), ' g') if data.mass < 1 else str(U.str_num(data.mass), ' kg')
+	$scroll/info/hbox/mass/hbox/value.text = str(U.comma(data.mass * 1000), 'g') if data.mass < 1 else str(U.str_num(data.mass), 'kg')
 	$scroll/info/hbox/value/hbox/value.text = U.comma(value * state.qty)
 	$scroll/info/description/panel/value.text = U.trans(data.description)
 	$scroll/info/tags/hbox/value.text = ', '.join(data.tags)

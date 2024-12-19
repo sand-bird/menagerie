@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://drv63ikod5fcf"]
+[gd_scene load_steps=19 format=3 uid="uid://drv63ikod5fcf"]
 
 [ext_resource type="Script" path="res://ui/item_info.gd" id="1"]
 [ext_resource type="Theme" uid="uid://dltxn70hmwoye" path="res://assets/ui/themes/flat_panel.tres" id="2"]
@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://doqcoknciyswj" path="res://assets/ui/icons/player2.png" id="7_raf0q"]
 [ext_resource type="Texture2D" uid="uid://bqtctin6j12dc" path="res://assets/ui/icons/options.png" id="9_e8spq"]
 [ext_resource type="StyleBox" uid="uid://3lagw1msvqpn" path="res://assets/ui/panels/qty_label_flat.tres" id="9_sxbvh"]
+[ext_resource type="StyleBox" uid="uid://c27udro7ac0h3" path="res://assets/ui/panels/box_outset.tres" id="14_u4say"]
+[ext_resource type="StyleBox" uid="uid://dnxa3mtyis2n2" path="res://assets/ui/panels/item_box.tres" id="15_a35w8"]
 
 [sub_resource type="GDScript" id="1"]
 resource_name = "item_name"
@@ -66,7 +68,7 @@ layout_mode = 0
 offset_left = 3.0
 offset_top = 38.0
 offset_right = 141.0
-offset_bottom = 136.0
+offset_bottom = 99.0
 theme = SubResource("Theme_vafoa")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0tlan")
 
@@ -198,7 +200,6 @@ texture = ExtResource("7_5rjka")
 stretch_mode = 3
 
 [node name="quantity" type="Label" parent="item_icon"]
-visible = false
 clip_contents = true
 layout_mode = 1
 anchors_preset = 3
@@ -214,83 +215,6 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 theme_override_styles/normal = ExtResource("7")
-
-[node name="item_properties" type="Panel" parent="."]
-visible = false
-layout_mode = 2
-offset_left = 2.0
-offset_top = 137.0
-offset_right = 139.0
-offset_bottom = 137.0
-theme = ExtResource("2")
-theme_override_styles/panel = ExtResource("3")
-
-[node name="category" type="Label" parent="item_properties"]
-layout_mode = 1
-anchors_preset = 9
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 3.0
-offset_right = 70.0
-offset_bottom = -1.0
-grow_vertical = 2
-text = "Resource"
-vertical_alignment = 1
-
-[node name="value" type="Label" parent="item_properties"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 73.0
-offset_top = 3.0
-offset_right = -17.0
-offset_bottom = -1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "1,230"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="aster" type="TextureRect" parent="item_properties/value"]
-layout_mode = 0
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 1.0
-offset_top = -5.0
-offset_right = 9.0
-offset_bottom = 3.0
-texture = ExtResource("4")
-
-[node name="item_description" type="Panel" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 2.0
-offset_top = 52.0
-offset_right = 139.0
-offset_bottom = 121.0
-theme = ExtResource("2")
-theme_override_styles/panel = ExtResource("3")
-
-[node name="label" type="Label" parent="item_description"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 5.0
-offset_right = -4.0
-offset_bottom = -3.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/line_spacing = 2
-text = "Soft, silky fur from a Pufig's fluffy tail. It's said that stuffing your pillow with it will bring good dreams.
-This is the last line."
-autowrap_mode = 2
-clip_text = true
-max_lines_visible = 6
 
 [node name="hbox" type="HBoxContainer" parent="."]
 layout_mode = 0
@@ -311,7 +235,6 @@ theme_override_constants/separation = 5
 alignment = 1
 
 [node name="icon" type="TextureRect" parent="hbox/weight/hbox"]
-visible = false
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("7_raf0q")
@@ -319,7 +242,7 @@ stretch_mode = 3
 
 [node name="value" type="Label" parent="hbox/weight/hbox"]
 layout_mode = 2
-text = "100 kg"
+text = "100kg"
 
 [node name="value" type="PanelContainer" parent="hbox"]
 layout_mode = 2
@@ -340,3 +263,23 @@ stretch_mode = 3
 [node name="value" type="Label" parent="hbox/value/hbox"]
 layout_mode = 2
 text = "100,000"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 102.0
+offset_right = 140.0
+offset_bottom = 119.0
+theme = ExtResource("2")
+theme_override_styles/hover = ExtResource("15_a35w8")
+theme_override_styles/normal = ExtResource("14_u4say")
+text = "View Details"
+
+[node name="Button2" type="Button" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 120.0
+offset_right = 140.0
+offset_bottom = 137.0
+theme_override_styles/normal = ExtResource("14_u4say")
+text = "Place in Garden"
