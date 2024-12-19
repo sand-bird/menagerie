@@ -83,15 +83,16 @@ func merge_obstacles(_obstacles: Array[PackedVector2Array]):
 # --------------------------------------------------------------------------- #
 
 func _ready():
-	var map = (get_parent().get_node('map') as TileMap)
-	var tileset = map.tile_set
+	pass
+#	var map = (get_parent().get_node('map') as TileMap)
+#	var tileset = map.tile_set
 	# for some reason get_used_rect is short by one in the x-direction
-	var map_size = map.get_used_rect().size + Vector2i(1, 0)
+#	var map_size = map.get_used_rect().size + Vector2i(1, 0)
 	# get_used_rect.size is the number of tiles; we have to multiply it by the
 	# grid size (stored on the tileset) to get the pixel size of the tilemap
-	var bounds = map_size * tileset.tile_size
-	var base = make_box(bounds, map.get_used_rect().position)
-	navpoly.add_outline(base)
+#	var bounds = map_size * tileset.tile_size
+#	var base = make_box(bounds, map.get_used_rect().position)
+#	navpoly.add_outline(base)
 	
 #	random_test(bounds)
 #	convex_test()
@@ -112,8 +113,9 @@ func _ready():
 	print('-------------------------')
 	
 #	parse_2d_collisionshapes(self)
-	navpoly.make_polygons_from_outlines()
-	set_navigation_polygon(navpoly)
+#	NavigationServer2D.bake_from_source_geometry_data(navpoly, merged)
+	#navpoly.make_polygons_from_outlines()
+#	set_navigation_polygon(navpoly)
 
 # --------------------------------------------------------------------------- #
 
