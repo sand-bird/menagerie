@@ -498,7 +498,7 @@ func metabolize() -> void:
 # overrides `Entity.save_keys`, which returns the generic keys shared by all
 # entities (uuid, id, and - for now - position).
 # order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially id`).  this is
+# in the list to already be loaded or generated (especially `id`).  this is
 # why we start with the keys from `super` (Entity) and append our own keys.
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
