@@ -1,5 +1,9 @@
 extends TileMapLayer
 
+# mapping from peering bits set on a TileSetAtlasSource in the editor to their
+# respective bitmask values for marching squares tiling.  uses to look up which
+# display tile to use for each cell on each layer of each display map based on
+# which terrain tile is on the data map cell at each of that cell's corners.
 const peering_bit_mapping = {
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: 1,
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER: 2,
@@ -7,23 +11,19 @@ const peering_bit_mapping = {
 	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER: 8
 }
 
-# display tiles are offset from data tiles by half a tile left and up, meaning
-# the display tile at (1, 1) will have the data tile at (1, 1) as its bottom
-# right corner, the data tile at (0, 0) as its top left corner, and so on.
-const display_to_data_offset_mapping = {
-	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: Vector2i(0, 0),
-	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER: Vector2i(-1, 0),
-	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER: Vector2i(-1, -1),
-	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER: Vector2i(0, -1)
+# mapping from terrain ids to the name of the display layer on which we draw
+# that terrain.  necessary to decouple terrain ids (which are serialized and
+# thus should stay the same) from display layer order.
+const terrain_to_layer_mapping = {
+	0: 'dirt', 1: 'grass', # 2: 'water'
 }
 
-var terrain_to_layer_mapping = {
-	0: 'dirt',
-	1: 'grass',
-#	2: 'water'
-}
-
+# a dictionary of  `{ [terrain_id]: TileIndex }`; see `build_tile_index`.
 var tile_index = {}
+
+# =========================================================================== #
+#                         I N I T I A L I Z A T I O N                         #
+# --------------------------------------------------------------------------- #
 
 func _ready():
 	for idx in terrain_to_layer_mapping:
@@ -33,20 +33,55 @@ func _ready():
 		var atlas = get_first_tilesetsource(layer)
 		tile_index[idx] = build_tile_index(atlas)
 
+# --------------------------------------------------------------------------- #
 
+# returns a mapping from a marching squares bitmask value (0 to 15) to an array
+# of tile options from the TileSetAtlasSource that are valid for that bitmask,
+# ie `{ [bitmask]: Array[TileOption] }`, where a TileOption is a dict with
+# `{ coords: Vector2i, probability: float }`.
+static func build_tile_index(atlas: TileSetAtlasSource):
+	var grid_size = atlas.get_atlas_grid_size()
+	var tile_index = {}
+	for i in range(16): tile_index[i] = []
+	for y in grid_size.y:
+		for x in grid_size.x:
+			var tile_data: TileData = atlas.get_tile_data(Vector2i(x, y), 0)
+			if !tile_data: continue
+			var bitmask = 0
+			for corner in peering_bit_mapping:
+				if tile_data.get_terrain_peering_bit(corner) > -1:
+					bitmask += peering_bit_mapping[corner]
+			tile_index[bitmask].append({
+				coords = Vector2i(x, y),
+				probability = tile_data.probability
+			})
+	return tile_index
+
+# =========================================================================== #
+#                                T E R R A I N                                #
 # --------------------------------------------------------------------------- #
 # we save the garden's terrain as a 2d array of integers, each representing a
 # terrain type (grass, dirt, etc).  each of these corresponds with a y-index in
-# the terrain atlas on the TileSet resource belonging to this TileMapLayer,
-# which is simply a vertical png with one tile for each type of terrain in the
-# game.  These tiles will hold properties relevant to each of those terrains,
-# eg navigation, physics (friction?? idk), etc.
+# the TileSetAtlasSource on the TileSet belonging to this TileMapLayer, which
+# is simply a vertical png with one tile for each type of terrain in the game.
+# These tiles will hold properties relevant to each of those terrains, eg
+# navigation, physics (friction?? idk), etc.
+# the terrain tiles themselves are invisible; to actually display the terrain,
+# we render each terrain type on its own separate display layer (TileMapLayer
+# child of this node) using render_display_cell.
 
-func set_cell_terrain(coords: Vector2i, idx):
+func set_cell_terrain(coords: Vector2i, idx: int):
 	set_cell(coords, tile_set.get_source_id(0), Vector2i(0, idx))
 
 func get_cell_terrain(coords: Vector2i):
 	return get_cell_atlas_coords(coords).y
+
+# when we update a cell's terrain after the initial load, we also need to
+# rerender the four surrounding display cells on each display layer.
+func update_cell_terrain(coords: Vector2i, idx: int):
+	set_cell_terrain(coords, idx)
+	var display_cells = get_display_cells(coords)
+	for cell in display_cells: render_display_cell(cell)
 
 # --------------------------------------------------------------------------- #
 
@@ -62,8 +97,6 @@ func save_terrain():
 	return data
 
 func load_terrain(data):
-	debug_peering()
-	print('source id:', tile_set.get_source_id(0))
 	for y in data.size():
 		for x in data[y].size():
 			var idx = data[y][x]
@@ -82,7 +115,20 @@ func load_terrain(data):
 			render_display_cell(Vector2i(x, y))
 #	Log.info(self, ["terrain used cells: ", get_used_cells(0)])
 
+
+# =========================================================================== #
+#                D A T A / D I S P L A Y   C O N V E R S I O N                #
 # --------------------------------------------------------------------------- #
+
+# display tiles are offset from data tiles by half a tile left and up, meaning
+# the display tile at (1, 1) will have the data tile at (1, 1) as its bottom
+# right corner, the data tile at (0, 0) as its top left corner, and so on.
+const display_to_data_offset_mapping = {
+	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: Vector2i(0, 0),
+	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER: Vector2i(-1, 0),
+	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER: Vector2i(-1, -1),
+	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER: Vector2i(0, -1)
+}
 
 # get the four data cells surrounding a display cell, mapped to the appropriate
 # TileSet.CellNeighbor.
@@ -100,6 +146,9 @@ func get_display_cells(coords: Vector2i) -> Array[Vector2i]:
 		cells.append(coords + Vector2i(x, y))
 	return cells
 
+
+# =========================================================================== #
+#                      D I S P L A Y   R E N D E R I N G                      #
 # --------------------------------------------------------------------------- #
 
 # first, find the terrain id for each corner of the display cell using the
@@ -120,15 +169,7 @@ func render_display_cell(coords: Vector2i):
 		var tile = pick_tile_for_cell(coords, valid_tiles)
 		layer.set_cell(coords, layer.tile_set.get_source_id(0), tile.coords)
 
-# chooses randomly from a weighted array of valid tile options using a seed
-# determined by the given cell coords. this ensures we always use the same tile
-# option per layer per cell.
-static func pick_tile_for_cell(coords: Vector2i, options: Array):
-	var rng = RandomNumberGenerator.new()
-	rng.seed = coords.x**5 + coords.y**3
-	var idx = rng.rand_weighted(options.map(func (x): return x.probability))
-	return options[idx]
-
+# --------------------------------------------------------------------------- #
 
 func calc_bitmask_for_layer(layer: int, corners: Dictionary) -> int:
 	var bitmask = 0
@@ -139,56 +180,17 @@ func calc_bitmask_for_layer(layer: int, corners: Dictionary) -> int:
 			bitmask += peering_bit_mapping[corner]
 	return bitmask
 
+# chooses randomly from a weighted array of valid tile options using a seed
+# determined by the given cell coords. this ensures we always use the same tile
+# option per layer per cell.
+static func pick_tile_for_cell(coords: Vector2i, options: Array):
+	var rng = RandomNumberGenerator.new()
+	rng.seed = coords.x**5 + coords.y**3
+	var idx = rng.rand_weighted(options.map(func (x): return x.probability))
+	return options[idx]
 
 # --------------------------------------------------------------------------- #
 
 static func get_first_tilesetsource(layer: TileMapLayer) -> TileSetSource:
 	var source_id = layer.tile_set.get_source_id(0)
 	return layer.tile_set.get_source(source_id)
-
-# returns a mapping from a marching squares bitmask value (0 to 15) to an array
-# of tiles from the TileSetAtlasSource that are valid for that bitmask.
-static func build_tile_index(atlas: TileSetAtlasSource):
-	var grid_size = atlas.get_atlas_grid_size()
-	var tile_index = {}
-	for i in range(16): tile_index[i] = []
-	for y in grid_size.y:
-		for x in grid_size.x:
-			var tile_data: TileData = atlas.get_tile_data(Vector2i(x, y), 0)
-			if !tile_data: continue
-			var bitmask = 0
-			for corner in peering_bit_mapping:
-				if tile_data.get_terrain_peering_bit(corner) > -1:
-					bitmask += peering_bit_mapping[corner]
-			tile_index[bitmask].append({
-				coords = Vector2i(x, y),
-				probability = tile_data.probability
-			})
-	return tile_index
-
-# --------------------------------------------------------------------------- #
-
-func debug_peering():
-	print("======= debug peering ==========================================")
-	var grass_tileset: TileSet = $grass.tile_set
-	var sid = grass_tileset.get_source_id(0)
-	print("source id ", sid)
-	var grass_atlas: TileSetAtlasSource = grass_tileset.get_source(sid)
-	var grid_size = grass_atlas.get_atlas_grid_size()
-	print("grass atlas ", grass_atlas, " | grid size: ", grid_size)
-	for x in grid_size.x:
-		for y in grid_size.y:
-			var tile_data = grass_atlas.get_tile_data(Vector2i(x, y), 0)
-			print("tile data for (", x, ", ", y, "): ", tile_data)
-			if !tile_data: continue
-			var bits = []
-			var bitmask = 0
-			for neighbor in peering_bit_mapping:
-				var bit_value = peering_bit_mapping[neighbor]
-				var peering_bit = tile_data.get_terrain_peering_bit(neighbor)
-				print("peering bit ", neighbor, " for tile (", x, ", ", y, "): ", peering_bit)
-				if peering_bit > -1:
-					bitmask += bit_value
-					bits.append(neighbor)
-			print("peering for (", x, ", ", y, "): ", bitmask, " ", bits)
-	print("================================================================")
