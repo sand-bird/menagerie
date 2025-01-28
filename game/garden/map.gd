@@ -7,8 +7,55 @@ that type of terrain.
 
 display maps are offset from the data map by half a cell's width, such that the
 center of a data cell lies at the vertex of 4 display cells, and vice versa.
+this allows us to display each terrain flexibly and accurately with a 2-corner
+Wang tileset, where 16 tiles (2^4) are enough to represent every permutation of
+terrain and non-terrain corners.  for example, consider the following data map,
+where 0 is the terrain id for dirt and 1 is grass:
 
+ ┌─┐┌─┐┌─┐
+ │1││0││0│
+ └─┘└─┘└─┘
+ ┌─┐┌─┐┌─┐
+ │0││1││0│
+ └─┘└─┘└─┘
+ ┌─┐┌─┐┌─┐
+ │0││0││0│
+ └─┘└─┘└─┘
+
+the display map for the grass layer would look like this, where an X at the
+corner of a tile means there is grass terrain at that corner, and the number
+inside each tile is the bitmask value of that tile from CORNER_BITMASK_VALUES:
+
+┌─┐┌─┐┌─┐┌─┐
+│1││2││ ││ │
+└─XX─┘└─┘└─┘
+┌─XX─┐┌─┐┌─┐
+│8││5││2││ │
+└─┘└─XX─┘└─┘
+┌─┐┌─XX─┐┌─┐
+│ ││8││4││ │
+└─┘└─┘└─┘└─┘
+┌─┐┌─┐┌─┐┌─┐
+│ ││ ││ ││ │
+└─┘└─┘└─┘└─┘
+
+each display layer is only concerned with its own terrain type; wherever there
+is no grass, the grass tileset should be transparent, so the dirt on the layer
+below can show through.
+
+more context on how this works and why:
 https://www.boristhebrave.com/docs/sylves/1/articles/tutorials/marching_squares.html
+http://www.boristhebrave.com/permanent/24/06/cr31/stagecast/wang/2corn.html
+
+to set this up, we add a single 2-corner Wang tileset to each display layer,
+then configure the appropriate peering bits for each tile in that tileset in
+the Godot editor. (someday it'd be cool to load this from datafiles for custom
+terrains, but not yet!)
+at runtime, when this node is initialized, it then generates a "tile index" for
+each terrain using those configured peering bits and CORNER_BITMASK_VALUES.
+then, whenever we render a display cell, it calculates that cell's Wang bitmask
+for each terrain type, looks up a valid tile for that bitmask value in the tile
+index for that terrain, and renders that tile to the terrain's display layer. 
 """
 
 # mapping from peering bits set on a TileSetAtlasSource in the editor to their
@@ -17,7 +64,7 @@ https://www.boristhebrave.com/docs/sylves/1/articles/tutorials/marching_squares.
 # on the data cell at each of the display cell's corners.
 # the value assigned to each corner is arbitrary; what matters is that each is
 # a power of 2, so we can represent any combination with an integer < 16.
-const PEERING_BIT_MAPPING = {
+const CORNER_BITMASK_VALUES = {
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: 1,
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER: 2,
 	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER: 4,
@@ -27,7 +74,9 @@ const PEERING_BIT_MAPPING = {
 # mapping from terrain ids to the name of the display layer on which we draw
 # that terrain.  necessary to decouple terrain ids (which are serialized and
 # thus should stay the same) from display layer order.
-const TERRAIN_TO_LAYER_MAPPING = {
+# note: only include a layer here if it actually has a TileSetAtlasSource with
+# peering data set up, or else this will break.
+const TERRAIN_LAYERS = {
 	0: 'dirt', 1: 'grass', # 2: 'water'
 }
 
@@ -42,8 +91,8 @@ var tile_index_map = {}
 # we reference this every time we render a display cell, but we only need to
 # build it once since the contents won't change.
 func _ready():
-	for idx in TERRAIN_TO_LAYER_MAPPING:
-		var layer_name = TERRAIN_TO_LAYER_MAPPING[idx]
+	for idx in TERRAIN_LAYERS:
+		var layer_name = TERRAIN_LAYERS[idx]
 		var layer = get_node(layer_name)
 		if !layer: continue
 		var atlas = get_first_tilesetsource(layer)
@@ -64,9 +113,9 @@ static func build_tile_index(atlas: TileSetAtlasSource):
 			var tile_data: TileData = atlas.get_tile_data(Vector2i(x, y), 0)
 			if !tile_data: continue
 			var bitmask = 0
-			for corner in PEERING_BIT_MAPPING:
+			for corner in CORNER_BITMASK_VALUES:
 				if tile_data.get_terrain_peering_bit(corner) > -1:
-					bitmask += PEERING_BIT_MAPPING[corner]
+					bitmask += CORNER_BITMASK_VALUES[corner]
 			tile_index[bitmask].append({
 				coords = Vector2i(x, y),
 				probability = tile_data.probability
@@ -112,6 +161,8 @@ func save_terrain():
 			data[y][x] = get_cell_terrain(Vector2i(x, y))
 	return data
 
+# --------------------------------------------------------------------------- #
+
 func load_terrain(data):
 	for y in data.size():
 		for x in data[y].size():
@@ -137,7 +188,7 @@ func load_terrain(data):
 # --------------------------------------------------------------------------- #
 
 # given the coords of a display cell, returns the coords of the four data cells
-# surrounding that disply cell, mapped to the appropriate TileSet.CellNeighbor.
+# surrounding that display cell, mapped to the appropriate TileSet.CellNeighbor.
 # display cells are offset from data cells by half a tile left and up, meaning
 # the display cell at (1, 1) will have the data cell at (1, 1) as its bottom
 # right corner, the data cell at (0, 0) as its top left corner, and so on.
@@ -166,36 +217,43 @@ func get_data_cell_neighbors(coords: Vector2i) -> Array[Vector2i]:
 # four data cells which overlap this display cell.
 # then, on each display layer, set the cell to the tile in that layer's first 
 # tileset (there should only be one tileset for each layer) whose peering bits
-# match the bitmask value for the corresponding terrain. 
+# match the cell's bitmask value for the layer's corresponding terrain. 
 func render_display_cell(coords: Vector2i):
 	var corners = get_display_cell_neighbors(coords)
-	for idx in TERRAIN_TO_LAYER_MAPPING:
-		var layer: TileMapLayer = get_node(TERRAIN_TO_LAYER_MAPPING[idx])
-		if !layer: return
-		var tileset = get_first_tilesetsource(layer)
+	for idx in TERRAIN_LAYERS:
+		var layer: TileMapLayer = get_node(TERRAIN_LAYERS[idx])
+		if !layer:
+			Log.warn(self, ["display layer not found for terrain id ", idx])
+			return
+		var tileset = get_first_tilesetsource_id(layer)
 		# for the bottom layer, just fill it with tiles
-		var bitmask = 15 if idx == 0 else calc_bitmask_for_layer(idx, corners)
+		var bitmask = 15 if idx == 0 else calc_bitmask_for_terrain(idx, corners)
 		var valid_tiles: Array = tile_index_map[idx][bitmask]
 		if valid_tiles.is_empty(): continue
 		var tile = pick_tile_for_cell(coords, valid_tiles)
-		layer.set_cell(coords, layer.tile_set.get_source_id(0), tile.coords)
+		layer.set_cell(coords, tileset, tile.coords)
 
 # --------------------------------------------------------------------------- #
 
-func calc_bitmask_for_layer(layer: int, corners: Dictionary) -> int:
+# given a terrain id and a dict of CellNeighbors (corners) to data cell coords,
+# add up the bitmask values for every corner whose data cell has that terrain.
+func calc_bitmask_for_terrain(id: int, corners: Dictionary) -> int:
 	var bitmask = 0
 	for corner in corners:
 		var data_cell = corners[corner]
 		var terrain = get_cell_terrain(data_cell)
-		if terrain == layer:
-			bitmask += PEERING_BIT_MAPPING[corner]
+		if terrain == id:
+			bitmask += CORNER_BITMASK_VALUES[corner]
 	return bitmask
 
+
+# =========================================================================== #
+#                                  U T I L S                                  #
 # --------------------------------------------------------------------------- #
 
 # chooses randomly from a weighted array of valid tile options using a seed
-# determined by the given cell coords. this ensures we always use the same tile
-# option per layer per cell.
+# determined by the given cell coords. this ensures that we always use the same
+# tile option for a given cell.
 static func pick_tile_for_cell(coords: Vector2i, options: Array):
 	var rng = RandomNumberGenerator.new()
 	rng.seed = coords.x**5 + coords.y**3
@@ -203,7 +261,14 @@ static func pick_tile_for_cell(coords: Vector2i, options: Array):
 	return options[idx]
 
 # --------------------------------------------------------------------------- #
+# each of our TileMapLayers should only have a single TileSet with a single
+# TileSetSource (specifically a TileSetAtlasSource) on it.  we need to fetch
+# these by "source id", which is inconsistent even if there's only one of them,
+# so first we have to get the source id of the TileSetSource at index 0
+
+static func get_first_tilesetsource_id(layer: TileMapLayer) -> int:
+	return layer.tile_set.get_source_id(0)
 
 static func get_first_tilesetsource(layer: TileMapLayer) -> TileSetSource:
-	var source_id = layer.tile_set.get_source_id(0)
+	var source_id = get_first_tilesetsource_id(layer)
 	return layer.tile_set.get_source(source_id)
