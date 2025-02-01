@@ -26,6 +26,7 @@ var garden: Garden
 # child nodes
 # -----------
 # var anim: AnimationPlayer
+var cg: CanvasGroup
 var sprite: Sprite2D
 var shape: CollisionShape2D
 
@@ -73,9 +74,14 @@ func _init(data_: Dictionary, garden_: Garden):
 	# rotation looks bad at low res so we turn it off.
 	# it can be reenabled for specific entities via traits 
 #	lock_rotation = true
+
+	cg = CanvasGroup.new()
+	cg.material = preload("res://cg_material.tres")
+	add_named_child(cg, 'cg')
 	
 	sprite = load(path.path_join('sprite.gd')).new()
-	add_named_child(sprite, 'sprite')
+	sprite.name = 'sprite'
+	cg.add_child(sprite)
 #	sprite.position = Vector2(0, size)
 	
 	shape = CollisionShape2D.new()

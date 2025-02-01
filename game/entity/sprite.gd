@@ -1,6 +1,6 @@
 extends Sprite2D
 
-@onready var parent_radius: int = get_parent().data.size
+@onready var parent_radius: int = get_parent().get_parent().data.size
 
 var aux_offset = Vector2(0, 0)
 

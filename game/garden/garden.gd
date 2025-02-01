@@ -1,10 +1,6 @@
 class_name Garden
 extends Control
 
-# we maintain a lookup table for our entities, primarily so that conditions
-# can check what's in the garden (though it also makes serialization easier).
-# these should match 1 to 1 with the actual entities in the garden, just like
-# the ui singleton's stack should match with the instanced ui node's children.
 var monsters:
 	get: return get_tree().get_nodes_in_group(&'monsters')
 	set(_x): return
@@ -17,25 +13,14 @@ var objects:
 
 func _ready():
 	$tint.sync_anim()
-# added to test pathing, camera sticking, etc. todo: remove someday
 
 func init(data):
-	Log.info(self, "initializing!")
 	deserialize(data)
 	Clock.start()
 
-#func _process(_delta):
-#	$nav_debug.draw_point(test_mon.position, 1, Color.from_hsv(0.5, 1, 1))
 
-func _input(e):
-	if e is InputEventMouseButton and e.is_pressed() and !monsters.is_empty():
-		for m in monsters:
-			m.set_current_action(
-				MoveAction.new(m, get_global_mouse_position(), { distance = 200 }),
-				true
-			)
-		$nav_debug.draw_point(get_global_mouse_position(), 4, Color.from_hsv(0.5, 1, 1))
-
+# =========================================================================== #
+#                      P O S I T I O N I N G   U T I L S                      #
 # --------------------------------------------------------------------------- #
 
 # takes a position relative to the garden and moves the mouse there.
@@ -47,6 +32,7 @@ func set_mouse_position(mouse_pos):
 
 # it seems that get_global_mouse_position and get_local_mouse_position both
 # return the mouse's position relative to the garden ¯\_(ツ)_/¯
+# note: currently unused, not sure if needed
 func get_screen_relative_mouse_pos():
 	return get_global_mouse_position() - $camera.get_target_position()
 
@@ -59,6 +45,90 @@ func get_map_size():
 	# get_used_rect.size is the number of tiles; we have to multiply it by the
 	# grid size (stored on the tileset) to get the pixel size of the tilemap
 	return map_size * $map.tile_set.tile_size
+
+# =========================================================================== #
+#                            I N T E R A C T I O N                            #
+# --------------------------------------------------------------------------- #
+
+enum InputState {
+	FREE,
+	SELECTING,
+	PLACING,
+	COMMANDING
+}
+
+var input_state := InputState.FREE
+
+# interaction targets
+var highlighted: Entity = null
+var selected: Entity = null
+# this should specifically be a Monster but that gives us a circular dependecy
+var commanding: Entity = null
+
+# --------------------------------------------------------------------------- #
+
+var outline_material = preload("res://outline_material.tres")
+var cg_material = preload("res://cg_material.tres")
+
+func highlight(entity: Entity):
+	highlighted = entity
+	Dispatcher.entity_highlighted.emit(entity)
+	entity.cg.material = outline_material
+	# apply some kind of shader to the entity
+	# show the highlight hud for the entity
+
+func unhighlight(entity: Entity):
+	if !highlighted: return
+	if highlighted != entity:
+		Log.warn(self, str("called unhighlight on an entity that wasn't highlighted! entity: ", entity, " highlighted: ", highlighted))
+	Dispatcher.entity_unhighlighted.emit(entity)
+	highlighted.cg.material = cg_material
+	highlighted = null
+	# remove shader on the entity
+	# hide highlight hud
+
+# --------------------------------------------------------------------------- #
+
+func select(entity):
+	selected = entity
+	Dispatcher.entity_selected.emit(entity)
+	input_state = InputState.SELECTING
+	# stick camera to entity
+	# maybe apply an additional shader
+	# open radial menu over entity
+
+func unselect(entity):
+	Dispatcher.entity_unselected.emit(entity)
+	selected = null
+	# unstick camera
+	# close radial menu
+
+# --------------------------------------------------------------------------- #
+
+func command(monster: Monster):
+	commanding = monster
+	input_state = InputState.COMMANDING
+
+# --------------------------------------------------------------------------- #
+
+func _input(e):
+	# touch mode: 
+	# - if input is touch release
+	# - and not dragging
+	# - and over an entity
+	if e is InputEventScreenTouch and !e.pressed:
+		print('touched!')
+		pass
+
+	# key mode
+	# --------
+	# if we have an entity highlighted, action button selects it
+	if e is InputEventAction:
+		if e.is_action_just_released('input/ui_accept') and !selected and !!highlighted:
+			select(highlighted)
+		if e.is_action_just_released('input/ui_cancel'):
+			if selected: unselect(selected)
+
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

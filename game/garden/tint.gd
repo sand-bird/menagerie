@@ -2,9 +2,11 @@ extends CanvasModulate
 
 var tint_anim: Animation
 
+const OUTLINE_COLOR = Color("fad6b8")
+
 # we will probably want to tint locales too, so it should be
 # independent from the garden.
-var colors = {
+const COLORS = {
 	0: Color("342659"),  # night
 	4: Color("473493"),  # dawn
 	8: Color("db9ab4"),  # morning
@@ -28,6 +30,13 @@ var colors = {
 
 # --------------------------------------------------------------------------- #
 
+func _process(_delta):
+	var outline_shader = preload("res://outline_material.tres")
+	var base_color = OUTLINE_COLOR * color
+	outline_shader.set_shader_parameter(&'line_color',
+		Color(base_color, 0.7).blend(Color(OUTLINE_COLOR, 0.1)) # Color(color, 0.5).blend(OUTLINE_COLOR)
+	)
+
 func _ready():
 	load_colors()
 	$anim.play("tint")
@@ -41,8 +50,8 @@ func load_colors():
 	tint_anim.set_length(Clock.HOURS_IN_DAY)
 	var actual_seconds_in_hour: float = float(Clock.ACTUAL_SECONDS_IN_TICK) * float(Clock.TICKS_IN_HOUR)
 	$anim.speed_scale = 1.0 / actual_seconds_in_hour
-	for hour in colors:
-		tint_anim.track_insert_key(0, hour, colors[hour])
+	for hour in COLORS:
+		tint_anim.track_insert_key(0, hour, COLORS[hour])
 
 func sync_anim():
 	$anim.seek(float(Clock.hour))

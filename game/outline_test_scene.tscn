@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://csbjyy1b0nb88"]
+
+[ext_resource type="Material" uid="uid://bwr7bontj5vry" path="res://outline_material.tres" id="1_t400p"]
+[ext_resource type="Texture2D" uid="uid://dy53o7y1d3g4c" path="res://assets/other/images/old/pufig_pink.png" id="2_nuv5u"]
+[ext_resource type="Material" uid="uid://vr527e30u6ll" path="res://outline_test.tres" id="3_5ffg6"]
+[ext_resource type="Material" uid="uid://c288t6uxruwvr" path="res://cg_material.tres" id="3_udhku"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="cg" type="CanvasGroup" parent="."]
+material = ExtResource("1_t400p")
+position = Vector2(30, 16)
+
+[node name="Sprite2D2" type="Sprite2D" parent="cg"]
+texture = ExtResource("2_nuv5u")
+
+[node name="cg2" type="CanvasGroup" parent="."]
+material = ExtResource("3_udhku")
+position = Vector2(30, 16)
+
+[node name="Sprite2D2" type="Sprite2D" parent="cg2"]
+position = Vector2(-1, 24)
+texture = ExtResource("2_nuv5u")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = ExtResource("3_5ffg6")
+position = Vector2(58, 16)
+texture = ExtResource("2_nuv5u")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.450808, 0.000146895, 0.452885, 1)

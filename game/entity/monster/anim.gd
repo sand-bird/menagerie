@@ -1,12 +1,23 @@
 extends AnimationPlayer
 
-var current = null
-var queue = []
+var current: StringName = Monster.Anim.IDLE:
+	set(x): 
+		var anim = str(x, "/", facing.y, "_", facing.x)
+		if !has_animation(anim):
+			Log.warn(self, ["animation missing: ", anim])
+			return
+		current = x
+	get: return current
+# AnimationPlayer already has a queue
+var anim_queue = []
 var facing = Vector2i(0, 1): set = _update_facing
 var loop_counter = 0
 
 func _ready():
 	animation_finished.connect(_play_next)
+
+func _set_current(anim_id: StringName):
+	current = anim_id
 
 # =========================================================================== #
 #                               P L A Y B A C K                               #
@@ -24,7 +35,7 @@ func play_anim(anim_id = null, loops = null):
 # --------------------------------------------------------------------------- #
 
 func queue_anim(anim_id, loops = 0):
-	queue.push_back({"id": anim_id, "loops": loops})
+	anim_queue.push_back({"id": anim_id, "loops": loops})
 	if current == null: _play_next()
 
 # --------------------------------------------------------------------------- #
@@ -35,8 +46,8 @@ func queue_anim(anim_id, loops = 0):
 func _play_next(_old_anim = null):
 	if loop_counter - 1 > 0:
 		loop_counter = loop_counter - 1
-	elif !queue.is_empty():
-		var new_anim = queue.pop_front()
+	elif !anim_queue.is_empty():
+		var new_anim = anim_queue.pop_front()
 		current = new_anim.id
 		loop_counter = new_anim.loops
 	# else: current = "idle"
@@ -119,7 +130,7 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	# update the following sprite properties based on anim_info:
 	# hframes, flip_h, aux_offset, texture
 	i = anim.add_track(Animation.TYPE_METHOD)
-	anim.track_set_path(i, "sprite")
+	anim.track_set_path(i, "cg/sprite")
 	anim.track_insert_key(i, 0.0, {
 		method = 'update_texture',
 		args = [anim_info]
@@ -128,7 +139,7 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	# add the animation track, with a keyframe for each frame in the spritesheet
 	# at intervals determined by the `step` parameter we calculated earlier
 	i = anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(i, "sprite:frame")
+	anim.track_set_path(i, "cg/sprite:frame")
 	anim.track_set_interpolation_loop_wrap(i, false)
 	for frame in range(anim_info.frames):
 		var time = anim.step * frame
