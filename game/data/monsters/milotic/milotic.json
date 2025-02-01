@@ -15,6 +15,24 @@
         "en": "Standard"
       },
       "animations": {
+        "sleep": {
+          "front": {
+            "left": {
+              "spritesheet": "~sleep_front_left.png",
+              "frames": 2,
+              "fps": 1.5,
+              "offset": { "x": 5, "y": 1 }
+            }
+          },
+          "back": {
+            "left": {
+              "spritesheet": "~sleep_front_left.png",
+              "frames": 2,
+              "fps": 1.5,
+              "offset": { "x": 5, "y": 1 }
+            }
+          }
+        },
         "idle": {
           "back": {
             "left": {
@@ -76,11 +94,94 @@
           }
         }
       }
+    },
+    "shiny": {
+      "name": {
+        "en": "Standard"
+      },
+      "animations": {
+        "sleep": {
+          "front": {
+            "left": {
+              "spritesheet": "~shiny_sleep_front_left.png",
+              "frames": 2,
+              "fps": 2.0
+            }
+          },
+          "back": {
+            "left": {
+              "spritesheet": "~shiny_sleep_front_left.png",
+              "frames": 2,
+              "fps": 2.0
+            }
+          }
+        },
+        "idle": {
+          "back": {
+            "left": {
+              "spritesheet": "~shiny_idle_back_left.png",
+              "frames": 4,
+              "fps": 2.0,
+              "offset": { "x": 1, "y": 10 }
+            },
+            "right": {
+              "spritesheet": "~shiny_idle_back_right.png",
+              "frames": 4,
+              "fps": 2.0,
+              "offset": { "x": -10, "y": 0 }
+            }
+          },
+          "front": {
+            "left": {
+              "spritesheet": "~shiny_idle_front_left.png",
+              "frames": 4,
+              "fps": 2.0,
+              "offset": { "x": 7, "y": 0 }
+            },
+            "right": {
+              "spritesheet": "~shiny_idle_front_right.png",
+              "frames": 4,
+              "fps": 2.0,
+              "offset": { "x": -1, "y": 0 }
+            }
+          }
+        },
+        "walk": {
+          "back": {
+            "left": {
+              "spritesheet": "~shiny_walk_back_left.png",
+              "frames": 6,
+              "fps": 6.0,
+              "offset": { "x": 1, "y": 10 }
+            },
+            "right": {
+              "spritesheet": "~shiny_walk_back_right.png",
+              "frames": 6,
+              "fps": 6.0,
+              "offset": { "x": -10, "y": 0 }
+            }
+          },
+          "front": {
+            "left": {
+              "spritesheet": "~shiny_walk_front_left.png",
+              "frames": 6,
+              "fps": 6.0,
+              "offset": { "x": 7, "y": 0 }
+            },
+            "right": {
+              "spritesheet": "~shiny_walk_front_right.png",
+              "frames": 6,
+              "fps": 6.0,
+              "offset": { "x": -1, "y": 0 }
+            }
+          }
+        }
+      }
     }
   },
   "attributes": {
     "appetite": {
-      "mean": 0.3
+      "mean": 0.2
     }
   }
 }
