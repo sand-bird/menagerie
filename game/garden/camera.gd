@@ -6,16 +6,6 @@ var ScrollMode = Options.ScrollMode
 # such as laying tiles.
 var drag_action = "scroll"
 
-# options used for drag scroll
-var FLICK_DISTANCE = Options.camera_flick_distance
-var FLICK_SPEED = Options.camera_flick_speed # 1.0
-
-# options used for edge scroll
-var EDGE_SIZE = Options.camera_edge_size
-var SCROLL_SPEED = Options.camera_scroll_speed
-# what were we supposed to use these for, and why aren't we using them??
-# var SCROLL_ACCEL = Options.camera_scroll_acceleration
-# var SCROLL_LERP = 0.05
 
 # viewport properties
 var screen_size
@@ -66,7 +56,7 @@ func _on_screen_resized():
 func get_screen_settings():
 	screen_size = get_viewport_rect().size
 	screen_radius = screen_size / 2.0
-	edge_width = screen_size * EDGE_SIZE
+	edge_width = screen_size * Options.camera_edge_size
 	dead_zone_radius = screen_radius - edge_width
 
 # --------------------------------------------------------------------------- #
@@ -119,15 +109,16 @@ func do_drag_scroll():
 		var mouse_pos = get_local_mouse_position()
 		var move_delta = last_mouse_pos - mouse_pos
 		# update target position
-		var new_target_pos = position + move_delta * FLICK_DISTANCE
+		var new_target_pos = position + move_delta * Options.camera_flick_distance
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
 
 # --------------------------------------------------------------------------- #
 
 # RTS-style scroll based on cursor position, only suitable for mouse input.
-# scrolls the camera when the cursor reaches EDGE_SIZE from the edge of the
-# window, proportionate to the cursor's distance from the absolute edge.
+# scrolls the camera when the cursor reaches `Options.camera_edge_size` percent
+# of the window's width or height from the edge of the window, with a speed
+# proportionate to the cursor's distance from the absolute edge.
 func do_edge_scroll():
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
@@ -136,7 +127,7 @@ func do_edge_scroll():
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 		var move_delta = abs_heading
 		# update target position
-		var new_target_pos = position + move_delta * direction * SCROLL_SPEED
+		var new_target_pos = position + move_delta * direction * Options.camera_scroll_speed
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.1))
 
@@ -174,10 +165,7 @@ func _process(_delta):
 
 	# lerp camera to target position
 	if position != target_pos:
-#		var new_x = round(lerp(position.x, target_pos.x, FLICK_SPEED / FLICK_DISTANCE))
-#		var new_y = round(lerp(position.y, target_pos.y, FLICK_SPEED / FLICK_DISTANCE))
-#		position = Vector2(new_x, new_y)
-		position = position.lerp(target_pos, FLICK_SPEED / FLICK_DISTANCE)
+		position = position.lerp(target_pos, Options.camera_flick_speed / Options.camera_flick_distance)
 		align()
 
 	# update saved cursor position (for drag scroll)

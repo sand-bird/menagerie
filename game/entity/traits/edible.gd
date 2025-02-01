@@ -36,9 +36,9 @@ const FLAVORS = {
 
 func calc_energy_value() -> float:
 	var energy_value: float = 0
-	for source in Monster.energy_source_values:
+	for source in Monster.ENERGY_SOURCE_VALUES:
 		var source_qty: float = get(source) if source in self else 0
-		var kcal: float = source_qty * Monster.energy_source_values[source]
+		var kcal: float = source_qty * Monster.ENERGY_SOURCE_VALUES[source]
 		energy_value += kcal
 	return energy_value
 

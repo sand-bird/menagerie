@@ -58,6 +58,7 @@ script = ExtResource("1")
 anchors_preset = 0
 
 [node name="debug" type="Label" parent="graphic"]
+visible = false
 layout_mode = 0
 offset_left = 9.0
 offset_top = -5.0

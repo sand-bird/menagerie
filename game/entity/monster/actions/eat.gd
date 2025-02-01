@@ -65,7 +65,7 @@ func _tick():
 	if require_target() and require_grabbing() and prereq == null:
 		var edible: EdibleTrait = t.traits.edible
 		m.update_belly(t.mass)
-		for source in Monster.energy_source_values:
+		for source in Monster.ENERGY_SOURCE_VALUES:
 			if source in edible: m[source] += edible[source]
 		t.tree_exited.connect(func(): exit(Status.SUCCESS))
 		t.queue_free()

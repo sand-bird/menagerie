@@ -1,8 +1,6 @@
 class_name Monster
 extends Entity
 
-signal drives_changed
-
 const Anim = {
 	IDLE = "idle",
 	LIE_DOWN = "lie_down",
@@ -153,14 +151,7 @@ func debug_vectors():
 func _ready():
 	joint.node_a = get_path()
 	Dispatcher.tick_changed.connect(_on_tick_changed)
-	Dispatcher.hour_changed.connect(debug_energy_spend)
 	body_entered.connect(_on_collide)
-
-
-var last_energy: float = energy
-func debug_energy_spend():
-	Log.debug(self, ['===== energy spent (', id, '): ', last_energy - energy, ' ====='])
-	last_energy = energy
 
 # --------------------------------------------------------------------------- #
 
@@ -189,7 +180,7 @@ func _init(data_: Dictionary, garden_: Garden):
 	load_anims()
 
 	nav = NavigationAgent2D.new()
-	nav.debug_enabled = true
+	nav.debug_enabled = false
 	nav.radius = size
 	nav.neighbor_distance = 500
 	nav.avoidance_enabled = false
@@ -201,7 +192,7 @@ func _init(data_: Dictionary, garden_: Garden):
 	perception = Area2D.new()
 	var perception_shape = CollisionShape2D.new()
 	var circle = CircleShape2D.new()
-	circle.radius = 100
+	circle.radius = 120
 	perception_shape.shape = circle
 	perception.add_child(perception_shape)
 	add_named_child(perception, 'perception')
@@ -218,6 +209,7 @@ func _init(data_: Dictionary, garden_: Garden):
 	debug_text = Label.new()
 	debug_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_named_child(debug_text, 'debug_text')
+	debug_text.hide()
 
 
 # =========================================================================== #
@@ -324,7 +316,6 @@ func set_current_action(action, queue_current = false):
 
 func choose_action():
 	set_current_action(await Decider.choose_action(self))
-	Log.info(self, '(choose_action) ' + current_action.name)
 
 # --------------------------------------------------------------------------- #
 
@@ -449,8 +440,10 @@ func update_mood(delta: float): mood += delta
 #                             M E T A B O L I S M                             #
 # --------------------------------------------------------------------------- #
 
+const DAYS_TO_EMPTY_BELLY = 3.0
+
 # amount of energy each unit of each energy source is worth
-const energy_source_values = {
+const ENERGY_SOURCE_VALUES = {
 	porps = 4.0, scoses = 3.0, fobbles = 9.0, lumens = 2.0
 }
 # handle the monster's ongoing biological processes:
@@ -458,32 +451,33 @@ const energy_source_values = {
 # - catabolize stored energy (porps/scoses/fobbles/lumens)
 # - burn energy for metabolism
 func metabolize() -> void:
-	var belly_attrition = (belly_capacity / 300.0)
+	var ticks_to_empy: float = DAYS_TO_EMPTY_BELLY * Clock.HOURS_IN_DAY * Clock.TICKS_IN_HOUR
+	var belly_attrition = (belly_capacity / ticks_to_empy)
 	update_belly(-belly_attrition)
 	
 	# decay (catabolize) energy sources and calculate the total energy yield
 	var food_energy := 0.0
-	for source in energy_source_values:
+	for source in ENERGY_SOURCE_VALUES:
 		# TODO: maybe vary decay rate by energy source (eg fobbles decay slower)
 		var decay_amount = get(source) * 0.05
 		self[source] -= decay_amount
-		food_energy += decay_amount * energy_source_values[source]
+		food_energy += decay_amount * ENERGY_SOURCE_VALUES[source]
 	# cap usable food energy by a portion of the monster's mass.
 	# anything over this amount is wasted.
 	var max_food_energy := mass ** 0.8 # why not
-	var scale := clampf(food_energy / max_food_energy, 0, 1)
+	# apply a small multiplier to passive energy recovery based on food energy.
 	# the multiplier needs to dip below 0 to force monsters with no food energy
 	# reserves out of energy equilibrium - otherwise, they may get stuck in an
 	# idle loop.  we can always still recover energy by sleeping.
-	var multiplier := lerpf(-0.2, 1.5, scale)
+	var multiplier := lerpf(-0.2, 1.5, clampf(food_energy / max_food_energy, 0, 1))
 	# TODO: DRY this (also used in SleepAction)
 	var base_energy_recovery := energy_capacity / 200.0
 	var energy_recovery := base_energy_recovery * multiplier
 	
-	prints('(metabolize) recovery:', U.str_num(energy_recovery),
+	Log.verbose(self, str('(metabolize) recovery:', U.str_num(energy_recovery),
 		'| total:', U.str_num(food_energy),
 		'| max:', U.str_num(max_food_energy),
-		'| monster:', id, monster_name)
+		'| monster:', id, monster_name))
 	update_energy(energy_recovery)
 
 

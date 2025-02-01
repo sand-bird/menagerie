@@ -124,7 +124,7 @@ static func calc_utility(m: Monster, action: Action, log: bool):
 
 # --------------------------------------------------------------------------- #
 
-static func choose_action(m: Monster, log: bool = true):
+static func choose_action(m: Monster, log: bool = false):
 	var actions = await poll_sources(m)
 	if log: print('\n===== (choose_action) ', m.id, ' ', m.monster_name, ' =====')
 	if log: print('belly: ', String.num(m.belly, 2), ' / ', String.num(m.belly_capacity, 2),
@@ -137,6 +137,18 @@ static func choose_action(m: Monster, log: bool = true):
 	var best_action = actions[0]
 	for action in actions:
 		var utility = calc_utility(m, action, log)
+		# if the monster has already attempted this action on the same target and
+		# it failed, cut the action's utility so it's less likely to keep trying.
+		var has_failed = m.past_actions.any(
+			func(past_action: Action): return (
+				past_action.name == action.name
+				# not all actions have targets, but if the name matches and the
+				# prospective action has a target, the past action should also
+				and ((not 't' in action) or past_action.t == action.t)
+				and past_action.status == Action.Status.FAILED
+		))
+		if has_failed: utility /= 2.0
+
 		if utility > best_utility:
 			best_utility = utility
 			best_action = action

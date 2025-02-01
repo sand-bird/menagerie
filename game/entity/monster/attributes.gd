@@ -60,6 +60,8 @@ iq = { heritability = 0.9 },
 # callow / worldly
 learning = { mean = 0, deviation = 0, heritability = 0 },
 
+# VIT
+# ---
 # accumulative attribute reflecting good feeding. exists to boost VIT.
 # malnourished / sleek
 nutrition = { deviation = 0.15, heritability = 1 },
@@ -125,7 +127,7 @@ empathy = { mean = 0.4, deviation = 0.2 }, # autistic / empathic
 # ---
 # cumulative sample of the pet's mood.  should be sampled once per day at a
 # random time each day. # depressed / jubilant
-happiness = { heritability = 1, deviation = 0.2 },
+happiness = { heritability = 0, deviation = 0 },
 # modifies how likely the pet is to accept commands. increased by discipline.
 # faithless / steadfast
 loyalty = { mean = 0.15, heritability = 0.2, deviation = 0.08 },

@@ -42,8 +42,8 @@ func estimate_energy() -> float:
 # --------------------------------------------------------------------------- #
 
 func _start():
-	m.play_anim('lie_down')
-	m.queue_anim('sleep')
+	m.play_anim(Monster.Anim.LIE_DOWN)
+	m.queue_anim(Monster.Anim.SLEEP)
 	m.announce('is going to sleep!')
 
 func _unpause():

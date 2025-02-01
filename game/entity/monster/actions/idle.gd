@@ -13,7 +13,7 @@ func _init(monster: Monster, options: Dictionary = {}):
 # --------------------------------------------------------------------------- #
 
 func _start():
-	m.play_anim('idle')
+	m.play_anim(Monster.Anim.IDLE)
 	m.announce('is doing nothing!')
 
 func _timeout(): exit(Status.SUCCESS)

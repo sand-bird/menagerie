@@ -6,9 +6,12 @@
   "name": {
     "en": "Fluffy Tuft"
   },
+  "size": 4,
+  "mass": 0.5,
   "description": {
     "en": "Soft, springy fur from a Pufig's fluffy tail. Pillows stuffed with this are said to bring good dreams."
   },
   "icon": "~/fluffy_tuft.png",
+  "sprite": "~/fluffy_tuft.png",
   "value": 45
 }

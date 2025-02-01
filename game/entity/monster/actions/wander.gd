@@ -73,7 +73,7 @@ func cleanup_move():
 	move_action.exited.disconnect(_on_move_exit)
 	move_action.queue_free()
 	move_action = null
-	m.play_anim('idle')
+	m.play_anim(Monster.Anim.IDLE)
 
 func _on_move_exit(_status):
 	cleanup_move()
