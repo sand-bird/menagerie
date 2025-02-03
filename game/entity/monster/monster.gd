@@ -538,7 +538,7 @@ func generate_sex():
 	return Sex.FEMALE if randf() < data.get(&'gender_ratio', 0.5) else Sex.MALE
 # TODO: take into account condition and weight
 func generate_morph(): return data.morphs.keys().pick_random()
-func generate_birthday(): return Clock.get_dict()
+func generate_birthday(): return Clock.to_dict()
 func generate_age(): return 0
 
 func generate_monster_name():

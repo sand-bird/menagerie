@@ -41,7 +41,7 @@ func update(m: Monster):
 		attr.get_node('points').value = points
 	
 	set_section_title($left/info/age/title, T.AGE)
-	$left/info/age/value.text = str(m.age) # TODO: make this printable
+	$left/info/age/value.text = Clock.format_duration(&'day', m.age) # TODO: make this printable
 	
 	# "traits" section, debug edition: show all attributes' values and their
 	# distance from the mean as a multiple of the deviation.  eventually we want
@@ -67,4 +67,4 @@ func update(m: Monster):
 		) + "\n " # needed to justify the last line
 	
 	set_section_title($right/birthday/title, T.BIRTHDAY)
-	$right/birthday/panel/value.text = Clock.get_printable_time(m.birthday)
+	$right/birthday/panel/value.text = Clock.format_date(m.birthday)

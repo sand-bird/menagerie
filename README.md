@@ -75,7 +75,7 @@ Note that tokenization is fairly dumb and only splits on spaces, meaning argumen
 
 While in the garden, time passes according to the game clock defined in `system/clock.gd`.  The basic unit is the tick (~0.5 seconds); this is when entities update state and perform behaviors that don't rely on the physics process (ie everything but moving around).
 
-A tick is something like a twelfth of an in-game "hour"; `clock.gd` defines all the other units that make up the game's calendar, and keeps track of in-game time.  Every time one of these units rolls over, it dispatches a corresponding event, eg `date_changed`, which implies that `hour_changed` and `tick_changed` were also just fired).  Most entities connect to the tick event, but the garden UI connects to some of the others to update the displayed date, and somewhere we have code that saves the game every time the in-game date rolls over.
+A tick is something like a twelfth of an in-game "hour"; `clock.gd` defines all the other units that make up the game's calendar, and keeps track of in-game time.  Every time one of these units rolls over, it dispatches a corresponding event, eg `day_changed`, which implies that `hour_changed` and `tick_changed` were also just fired).  Most entities connect to the tick event, but the garden UI connects to some of the others to update the displayed date, and somewhere we have code that saves the game at 6am each in-game day.
 
 
 ## Viewport scaling

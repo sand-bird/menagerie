@@ -220,7 +220,7 @@ func _draw():
 script/source = "extends Label
 
 func _process(_delta):
-	text = Clock.get_printable_hour()
+	text = Clock.format_time()
 "
 
 [node name="garden" type="Control"]

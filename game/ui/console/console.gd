@@ -28,10 +28,10 @@ Call it with no arguments to print the time without changing it.
 Accepts up to 5 integer arguments:
   1. tick: 0 - {t}
   2. hour: 0 - {h}
-  3. date: 0 - {d}
+  3. day: 0 - {d}
   4. month: 0 - {m}
   5. year: 0+
-(In order to set the month, you must also set the tick, hour, and date.)
+(In order to set the month, you must also set the tick, hour, and day.)
 Prints the current time after modification.""".format({
 		t = Clock.TICKS_IN_HOUR - 1,
 		h = Clock.HOURS_IN_DAY - 1,
@@ -151,15 +151,15 @@ func cmd_rename_monsters(_args):
 func cmd_time(args):
 	Clock.tick = int(args[0] if args.size() > 0 else Clock.tick)
 	Clock.hour = int(args[1] if args.size() > 1 else Clock.hour)
-	Clock.date = int(args[2] if args.size() > 2 else Clock.date)
+	Clock.day = int(args[2] if args.size() > 2 else Clock.day)
 	Clock.month = int(args[3] if args.size() > 3 else Clock.month)
 	Clock.year = int(args[4] if args.size() > 4 else Clock.year)
 	
 	# QOL: immediately update the garden tint
 	if Player.garden: Player.garden.get_node('tint').sync_anim()
 	
-	put([Clock.tick, Clock.hour, Clock.date, Clock.month, Clock.year])
-	put(Clock.get_printable_time())
+	put([Clock.tick, Clock.hour, Clock.day, Clock.month, Clock.year])
+	put(Clock.format_datetime())
 
 # --------------------------------------------------------------------------- #
 

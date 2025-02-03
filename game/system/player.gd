@@ -104,7 +104,7 @@ func update_playtime():
 
 # --------------------------------------------------------------------------- #
 
-func get_printable_playtime(time = null):
+func format_playtime(time = null):
 	if time == null:
 		time = playtime
 	# convert to minutes. playtime isn't updated often enough for us to watch it

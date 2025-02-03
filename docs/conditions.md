@@ -49,9 +49,9 @@ References the game's clock, which lives in the [`Clock` singleton](/game/system
 
 A few notes:
 
-* `date` refers to the day of the month, while `day` is the day-of-week.
-* Enumerated properties (`month` & `day`) will resolve to their integer value, ie `2` rather than `wednesday`, and `3` rather than `sol`.
-* All properties are 0-indexed, meaning the first of the month is `date` 0, and Year 1 is `year` 0.
+* `day` refers to the day of the month, while `weekday` is the day-of-week.
+* Enumerated properties (`month` & `weekday`) will resolve to their integer value, ie `2` rather than `wednesday`, and `3` rather than `sol`.
+* All properties are 0-indexed, meaning the first of the month is `day` 0, and Year 1 is `year` 0.
 * Properties reset when the next-highest property rolls over, so `tick` will never be larger than `TICKS_IN_HOUR - 1`.
 
 ### $data

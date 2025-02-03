@@ -20,8 +20,8 @@ func _ready():
 	update_month()
 
 func update_date():
-	$week_day.set_text(Clock.get_printable_day_abbr())
-	$date.set_text(Clock.get_printable_date())
+	$week_day.set_text(Clock.format_weekday_abbr())
+	$date.set_text(Clock.format_day())
 
 func update_month():
 	$month_inset.get_node(\"sprite\").set_frame(Clock.month)
@@ -41,7 +41,7 @@ func _ready():
 	update_time()
 
 func update_time():
-	$time.text = Clock.get_printable_hour()
+	$time.text = Clock.format_time()
 
 func move_hand():
 	$hand.set_frame(Clock.hour % 12)
