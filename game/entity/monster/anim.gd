@@ -122,7 +122,8 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	var anim = Animation.new()
 	anim.step = 1.0 / anim_info.fps
 	anim.length = anim.step * anim_info.frames
-#	anim.loop = anim_info.loop if anim_info.has("loop") else true
+	# we handle looping ourself in _play_next.  if the animation is configured
+	# to loop it won't fire the `animation_finished` signal.
 	anim.loop_mode = Animation.LOOP_NONE
 	
 	var i: int # current track index
@@ -131,6 +132,7 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	# hframes, flip_h, aux_offset, texture
 	i = anim.add_track(Animation.TYPE_METHOD)
 	anim.track_set_path(i, "cg/sprite")
+	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
 	anim.track_insert_key(i, 0.0, {
 		method = 'update_texture',
 		args = [anim_info]
@@ -141,6 +143,7 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	i = anim.add_track(Animation.TYPE_VALUE)
 	anim.track_set_path(i, "cg/sprite:frame")
 	anim.track_set_interpolation_loop_wrap(i, false)
+	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
 	for frame in range(anim_info.frames):
 		var time = anim.step * frame
 		anim.track_insert_key(i, time, frame)
