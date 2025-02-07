@@ -1,10 +1,26 @@
+class_name FooAction
 extends Action
 """
 """
 
-func _init(monster: Monster, _other_args, timeout = null):
-	super(monster, timeout)
-	name = "action_name"
+# options: timeout
+func _init(monster: Monster, options: Dictionary = {}):
+	super(monster, options.get('timeout'))
+
+# return an array of properties to serialize & deserialize *in addition* to any
+# save keys defined on superclasses of this action (including the base Action).
+# this only needs to be overridden if there are keys to add.
+static func _save_keys() -> Array[StringName]:
+	return []
+
+# create a new instance of this action from a serialized action dict.
+# this only needs to be overridden for actions that require other parameters in
+# addition to monster (eg target, dest, etc).  in that case, the action should
+# pull whatever properties it needs from `input` into its constructor, and
+# handle errors if something necessary is missing.
+static func _deserialize(monster: Monster, input: Dictionary):
+	return Action.new(monster, input)
+
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #

@@ -9,9 +9,8 @@ var pos: Vector2
 
 # options: position, timeout
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, options.get('timeout'))
-	pos = options.get('position', m.position)
-	name = "dig"
+	super(monster, options)
+	pos = options.get('position', monster.position)
 	require_at_position()
 
 func require_at_position() -> bool: return require(
@@ -19,3 +18,5 @@ func require_at_position() -> bool: return require(
 	m.position.distance_squared_to(pos) < 100,
 	func (): prereq = MoveAction.new(m, pos)
 )
+
+static func _save_keys(): return [ &'pos']

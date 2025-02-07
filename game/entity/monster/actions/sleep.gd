@@ -18,8 +18,11 @@ const max_dur: int = 24 * Clock.TICKS_IN_HOUR
 
 # options: duration
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, options.get('duration', calc_duration(monster)))
-	name = 'sleep'
+	var duration = options.get('duration', calc_duration(monster))
+	# pass `duration` to the base class as `timeout`.  the convention is to call
+	# it `duration` when it's a success condition, and `timeout` otherwise.
+	super(monster, { timeout = duration }.merged(options))
+
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #

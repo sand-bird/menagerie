@@ -12,15 +12,19 @@ of approaching the target)
 # success when item is eaten
 # fail if item is lost or if previous steps fail
 
-@onready var t: Entity = null
+var t: Entity = null
 
 # options: timeout
 func _init(monster: Monster, target: Entity, options: Dictionary = {}):
-	super(monster, options.get('timeout'))
+	super(monster, options)
 	t = target
-	name = 'eat'
 	require_target()
 	require_grabbing()
+
+static func _save_keys(): return [&'t']
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return EatAction.new(monster, input.t, input)
 
 
 #                           r e q u i r e m e n t s                           #

@@ -23,9 +23,12 @@ var t: Entity = null
 
 # options: target, position, timeout
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, options.get('timeout'))
-	pos = options.get('position', m.position)
+	super(monster, options)
+	pos = options.get('position', monster.position)
 	t = options.get('target')
+
+static func _save_keys(): return [&'t', &'pos']
+
 
 # --------------------------------------------------------------------------- #
 

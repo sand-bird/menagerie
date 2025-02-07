@@ -6,8 +6,11 @@ const max_dur = 3 * Clock.TICKS_IN_HOUR
 
 # options: duration
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, options.get('duration', randi_range(min_dur, max_dur)))
-	name = 'idle'
+	var duration = options.get('duration', randi_range(min_dur, max_dur))
+	# pass `duration` to the base class as `timeout`.  the convention is to call
+	# it `duration` when it's a success condition, and `timeout` otherwise.
+	super(monster, { timeout = duration })
+
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #

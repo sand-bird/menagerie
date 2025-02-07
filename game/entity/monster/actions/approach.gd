@@ -4,7 +4,7 @@ extends MoveAction
 move action that targets an entity and repaths every tick.
 """
 
-@onready var t: Entity
+var t: Entity
 
 # options (inherited from MoveAction): speed, target_distance, timeout
 func _init(monster: Monster, target: Entity, options: Dictionary = {}):
@@ -14,8 +14,16 @@ func _init(monster: Monster, target: Entity, options: Dictionary = {}):
 	options.target_distance = options.get('target_distance', monster.size) + target.size
 	super(monster, target.position, options)
 	t = target
-	name = 'approach'
 	require_target()
+
+# --------------------------------------------------------------------------- #
+
+static func _save_keys() -> Array[StringName]:
+	return [&'t']
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return ApproachAction.new(monster, input.t, input)
+
 
 #                           r e q u i r e m e n t s                           #
 # --------------------------------------------------------------------------- #
@@ -32,4 +40,5 @@ func require_target() -> bool:
 func _tick():
 	if require_target() and dest.distance_squared_to(t.position) > target_distance ** 2:
 		m.nav.target_position = t.position
+		dest = t.position
 	super._tick()

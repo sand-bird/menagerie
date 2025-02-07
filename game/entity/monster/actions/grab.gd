@@ -7,16 +7,19 @@ exits with success when the entity is grabbed.
 prerequisites: in range (approach)
 """
 
-@onready var t: Entity
+var t: Entity
 
 # options: timeout
 func _init(monster: Monster, target: Entity, options: Dictionary = {}):
-	super(monster, options.get('timeout'))
+	super(monster, options)
 	t = target
-	name = 'grab'
 	require_target()
 	require_in_range()
 
+static func _save_keys(): return [&'t']
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return GrabAction.new(monster, input.t, input)
 
 #                           r e q u i r e m e n t s                           #
 # --------------------------------------------------------------------------- #

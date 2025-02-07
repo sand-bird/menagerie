@@ -5,7 +5,7 @@ extends MoveAction
 # success when duration runs out
 # fail if reached by target
 
-@onready var t: Entity = null
+var t: Entity = null
 
 # options: speed, target_distance, duration
 func _init(monster: Monster, target: Entity, options: Dictionary = {}):
@@ -15,7 +15,13 @@ func _init(monster: Monster, target: Entity, options: Dictionary = {}):
 	if options.has('duration'): options.timeout = options.duration
 	super(monster, target.position, options)
 	t = target
-	name = 'approach'
+
+static func _save_keys(): return [&'t']
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return FleeAction.new(monster, input.t, input)
+
+# --------------------------------------------------------------------------- #
 
 func _timeout():
 	exit(Status.SUCCESS)

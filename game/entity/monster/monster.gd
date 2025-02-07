@@ -40,8 +40,14 @@ var sex = Sex.FEMALE
 # right now memory only stores past actions, and just keeps a certain max number
 # rather than expiring.
 var past_actions: Array[Action] = []
-var current_action: Action
-var next_action: Action # ?
+var current_action: Action:
+	set(new_action):
+		if current_action and current_action.exited.is_connected(_on_action_exit):
+			current_action.exited.disconnect(_on_action_exit)
+		current_action = new_action
+		if new_action and not new_action.exited.is_connected(_on_action_exit):
+			new_action.exited.connect(_on_action_exit)
+var next_action: Action
 
 # ids of action ids the monster knows.
 # used for less-obvious actions like shaking trees.  pets should be able to
@@ -290,7 +296,7 @@ func get_grabbed_name():
 # if not, returns true if the monster is grabbing anything.
 func is_grabbing(target = null):
 	return (
-		joint.node_b != NodePath("") and has_node(joint.node_b)
+		!!joint and joint.node_b != NodePath("") and has_node(joint.node_b)
 		and (!target or target == grabbed)
 	)
 
@@ -302,7 +308,13 @@ func vec_to_grabbed() -> Vector2:
 #                                A C T I O N S                                #
 # --------------------------------------------------------------------------- #
 
-func set_current_action(action, queue_current = false):
+# interrupts the current action to start a new one.
+# if there is already a current action ongoing and we don't want to (or can't)
+# queue it, fail out of it.  this should do two things:
+# 1. trigger `_on_action_exit`, pushing the action to `past_actions`
+# 2. trigger the `current_action` setter, which handles connecting and
+#    disconnecting the current action's `exit` signal to `_on_action_exit`
+func override_action(action: Action, queue_current = false):
 	if current_action:
 		if queue_current and !next_action:
 			next_action = current_action
@@ -310,34 +322,41 @@ func set_current_action(action, queue_current = false):
 		else:
 			current_action.exit(Action.Status.FAILED)
 	current_action = action
-	current_action.exited.connect(_on_action_exit)
 
 # --------------------------------------------------------------------------- #
 
+# called on tick when we don't have a current action.
+# pulls out the action stored in `next_action` if we have one, otherwise
+# chooses a new action to execute via the decider.
 func choose_action():
-	set_current_action(await Decider.choose_action(self))
+	if current_action: return
+	if next_action:
+		current_action = next_action
+		next_action = null
+	else:
+		current_action = await Decider.choose_action(self)
 
 # --------------------------------------------------------------------------- #
 
+# 
 func _on_action_exit(status):
 	Log.debug(self, ['action exited with status ', status, ': ', current_action])
-	current_action.exited.disconnect(_on_action_exit)
-	# TODO: we should just serialize them now, instead of keeping references
-	# to action objects around
-	past_actions.append(current_action)
+	# this shouldn't be necessary since we do it in the `current_action` setter
+#	if current_action.exited.is_connected(_on_action_exit):
+#		current_action.exited.disconnect(_on_action_exit)
+	past_actions.append(current_action.serialize())
 	current_action = null
 
 	if past_actions.size() > get_memory_size():
-		past_actions.pop_front().queue_free()
-	if next_action:
-		set_current_action(next_action, false)
-		next_action = null
-	else:
-		await choose_action()
+		past_actions.pop_front()
+	
+	# this shouldn't be necessary since we do it on tick if the monster doesn't
+	# already have a current action
+#	choose_action()
 
 # --------------------------------------------------------------------------- #
 
-# number of past actions to remember: 2-8 depending on pet iq.
+# number of past actions to remember: 2-8 depending on monster iq.
 func get_memory_size():
 	return attributes.iq.ilerp(2, 8)
 
@@ -503,7 +522,8 @@ func save_keys() -> Array[StringName]:
 		&'scoses', &'porps', &'fobbles', &'lumens',
 		&'orientation',
 		# TODO: 'preferences',
-		# TODO: 'past_actions', 'current_action', 'next_action', 'learned_actions'
+		&'past_actions', &'current_action', &'next_action',
+		# TODO: 'learned_actions'
 	])
 	return keys
 
@@ -529,6 +549,13 @@ func load_attributes(input):
 func load_morph(input):
 	if Data.missing([id, &'morphs', input]): input = generate_morph()
 	morph = input
+
+#func load_current_action(input):
+	#if input: current_action = Action.deserialize(self, input)
+
+#func load_next_action(input):
+	#if input: next_action = Action.deserialize(self, input)
+
 
 #                             g e n e r a t o r s                             #
 # --------------------------------------------------------------------------- #

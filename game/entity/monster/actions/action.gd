@@ -1,5 +1,5 @@
 class_name Action
-extends Node
+extends RefCounted
 """
 basic behavior tree style action.  has two active methods, "proc" and "tick".
 the former runs on the physics clock, and the latter runs every in-game tick.
@@ -25,11 +25,22 @@ enum Status {
 	PAUSED = 4
 }
 
-static func get_status(status_code):
-	return ['new', 'running', 'success', 'failed'][status_code]
+# directory for action scripts, used in `Action.deserialize` to dynamically
+# determine which Action subclass to use when deserializing an action.
+# this should be equivalent to `get_script().resource_path.get_base_dir()`,
+# but it needs to behardcoded because `Action.deserialize` is a static method.
+const SCRIPT_PATH = "res://entity/monster/actions"
+# set on `_init` in the base Action (ie here) to the action's script's filename.
+# this determines which script to use when deserializing a saved action.
+var name: StringName = &'action'
 
 # reference to the monster running the action
 var m: Monster
+# reference to the target of the action.
+# not all actions have targets, but enough do that we declare a var for it on
+# the base action so that we can handle 
+#var t: Entity
+
 var status := Status.NEW
 # time remaining, decremented every tick. when this hits 0 we call _timeout().
 var timer: int = Clock.TICKS_IN_HOUR * 3
@@ -44,22 +55,18 @@ var prereq: Action = null:
 
 # --------------------------------------------------------------------------- #
 
-func _init(monster, timeout = null):
+# options: timeout
+func _init(monster, options = {}):
 	m = monster
-	if timeout != null: timer = timeout
+	timer = options.get('timeout', timer)
+	name = get_script().resource_path.get_basename().get_file()
+	print('_init action name after base set: ', name)
 
 # --------------------------------------------------------------------------- #
 
 func _on_prereq_exit(_status: Status):
 	Log.debug(self, ['prereq exited: ', prereq.name if prereq else '(none)',
 		' | status ', _status])
-	clean_up_prereq()
-
-# --------------------------------------------------------------------------- #
-
-func clean_up_prereq():
-	if !prereq: return
-	prereq.queue_free()
 	prereq = null
 
 # --------------------------------------------------------------------------- #
@@ -161,7 +168,7 @@ func tick() -> void:
 func exit(exit_status: Status) -> void:
 	status = exit_status
 	_exit(status)
-	clean_up_prereq()
+	prereq = null
 	Log.verbose(self, ['(exit) status: ', status])
 	exited.emit(status)
 
@@ -198,3 +205,58 @@ func _timeout(): exit(Status.FAILED)
 # last tick or with any changes that depend on the outcome of the action),
 # and to perform any necessary cleanup (eg, resetting animations).
 func _exit(_status: Status) -> void: pass
+
+
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
+
+# generate the full list of save keys for an action by recursively calling
+# the static `_save_keys` function for every class in our inheritance hierarchy.
+# eg, for an ApproachAction, it will append `ApproachAction._save_keys`, then
+# `MoveAction._save_keys`, then `Action._save_keys` to the `keys` array.
+func save_keys() -> Array[StringName]:
+	var keys: Array[StringName] = []
+	var script = get_script()
+	while script != null:
+		if script.has_method(&'_save_keys'):
+			keys.append_array(script._save_keys())
+		script = script.get_base_script()
+	return keys
+
+# --------------------------------------------------------------------------- #
+
+func serialize() -> Dictionary:
+	var serialized = {}
+	for key in save_keys():
+		serialized[key] = U.serialize_value(get(key))
+	return serialized
+
+# --------------------------------------------------------------------------- #
+
+static func deserialize(monster: Monster, input: Dictionary) -> Action:
+	assert(&'name' in input, str("cannot load an action without a name: ", input))
+	var action_path = SCRIPT_PATH.path_join(input.name + ".gd")
+	var script = load(action_path)
+	assert(&'_deserialize' in script, "action script does not implement deserialize: " + input.name)
+	var action: Action = script._deserialize(monster, input)
+	for key in action.save_keys():
+		U.deserialize_value(action, input.get(key), key)
+	return action
+
+#                               a b s t r a c t                               #
+# --------------------------------------------------------------------------- #
+
+# return an array of properties to serialize & deserialize.
+# override this in subclasses to add properties to the list *in addition* to
+# those of the base Action and any parent classes in between (see `save_keys`).
+static func _save_keys() -> Array[StringName]:
+	return [&'name', &'status', &'timer', &'sleep_timer', &'prereq']
+
+# action subclasses have different constructor signatures depending on which
+# params are required - eg actions with a target generally take that target as
+# a required second parameter to `_init`.  overriding `_deserialize` allows an
+# action subclass to pull whatever properties it needs from `input` into the
+# constructor, and handle errors appropriately if something required is missing.
+static func _deserialize(monster: Monster, input: Dictionary) -> Action:
+	return Action.new(monster, input)

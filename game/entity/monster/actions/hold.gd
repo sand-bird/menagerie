@@ -17,7 +17,10 @@ func _init(monster: Monster, target: Entity, options: Dictionary = {}):
 	# here) and `timeout` when it's a failure condition (like in GrabAction).
 	if options.has('duration'): options.timeout = options.duration
 	super(monster, target, options)
-	name = 'hold'
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return HoldAction.new(monster, input.t, input)
+
 
 #                              e x e c u t i o n                              #
 # --------------------------------------------------------------------------- #

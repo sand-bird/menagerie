@@ -28,12 +28,11 @@ var speed: float = 1
 # typically we want to be right on top of the target, but for some advanced
 # actions like games or "observe", we want to maintain some distance.
 var target_distance: float
-var path: Array
 
 # the position of the monster when we last spent energy (ie, last tick).
 # `spend_energy` calculates the energy cost to move from here to the monster's
 # current position, then updates `last_pos`.
-@onready var last_pos: Vector2 = m.position
+var last_pos: Vector2
 
 # DEBUG DEBUG
 var running_calories = 0
@@ -41,14 +40,21 @@ var estimated = 0
 
 # options: speed, target_distance, timeout
 func _init(monster: Monster, destination: Vector2, options: Dictionary = {}):
-	super(monster, options.get('timeout'))
-	last_pos = m.position
-	name = 'move'
+	super(monster, options)
+	last_pos = monster.position
 	dest = destination
 	speed = options.get('speed', 1.0)
 	assert(speed > 0, "move speed multiplier must be greater than 0")
-	target_distance = options.get('target_distance', m.data.size)
+	target_distance = options.get('target_distance', monster.data.size)
 	estimated = estimate_energy()
+
+# --------------------------------------------------------------------------- #
+
+static func _save_keys() -> Array[StringName]:
+	return [&'dest', &'speed', &'target_distance']
+
+static func _deserialize(monster: Monster, input: Dictionary) -> MoveAction:
+	return MoveAction.new(monster, input.dest, input)
 
 
 #                    u t i l i t y   c a l c u l a t i o n                    #

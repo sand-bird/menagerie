@@ -8,10 +8,15 @@ the target is?  or maybe we should just have `steal` and `steal_from`...
 var t: Entity
 
 # options: timeout
-func _init(m: Monster, target: Entity, options: Dictionary = {}):
-	super(m, options.get('timeout'))
+func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+	super(monster, options)
 	t = target
-	name = 'steal'
+
+static func _save_keys() -> Array[StringName]:
+	return [&'t']
+
+static func _deserialize(monster: Monster, input: Dictionary):
+	return StealAction.new(monster, input.get('t'), input)
 
 
 #                    u t i l i t y   c a l c u l a t i o n                    #

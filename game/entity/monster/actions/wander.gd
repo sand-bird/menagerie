@@ -15,9 +15,13 @@ var wait_counter = 0
 
 # options: duration, speed
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, options.get('duration', randi_range(min_dur, max_dur)))
+	super(monster, {
+		timeout = options.get('duration', randi_range(min_dur, max_dur)) 
+	})
 	move_speed = options.get('speed', 0.6)
-	name = 'wander'
+
+static func _save_keys() -> Array[StringName]:
+	return [&'move_action', &'move_speed', &'wait_counter']
 
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
@@ -71,7 +75,6 @@ func pick_dest():
 
 func cleanup_move():
 	move_action.exited.disconnect(_on_move_exit)
-	move_action.queue_free()
 	move_action = null
 	m.play_anim(Monster.Anim.IDLE)
 
