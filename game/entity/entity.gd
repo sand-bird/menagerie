@@ -29,6 +29,7 @@ var garden: Garden
 var cg: CanvasGroup
 var sprite: Sprite2D
 var shape: CollisionShape2D
+var shadow: TextureRect
 
 # core properties
 # ---------------
@@ -89,6 +90,17 @@ func _init(data_: Dictionary, garden_: Garden):
 	shape.shape.radius = size
 #	shape.position.y -= size
 	add_named_child(shape, 'shape')
+	
+	shadow = TextureRect.new()
+	shadow.texture = preload("res://assets/garden/shadow.png")
+	shadow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	shadow.size.x = size * 2.5
+	shadow.position.x = -(shadow.size.x * 0.5)
+	shadow.pivot_offset = shadow.size / 2
+	shadow.size.y = size * 1
+	shadow.position.y = 0
+	shadow.show_behind_parent = true
+	add_named_child(shadow, 'shadow')
 	
 	# debugging
 	var d_vecs = debug_vectors()
