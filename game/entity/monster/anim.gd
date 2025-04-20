@@ -2,7 +2,7 @@ extends AnimationPlayer
 
 var current: StringName = Monster.Anim.IDLE:
 	set(x): 
-		var anim = str(x, "/", facing.y, "_", facing.x)
+		var anim = anim_with_facing(x)
 		if !has_animation(anim):
 			Log.warn(self, ["animation missing: ", anim])
 			return
@@ -16,8 +16,14 @@ var loop_counter = 0
 func _ready():
 	animation_finished.connect(_play_next)
 
-func _set_current(anim_id: StringName):
-	current = anim_id
+# sugar to get the actual animation key for the current animation and facing.
+# the `current` animation stored in this class is just a name, eg `idle` or
+# `walk`.  we actually have separate animations for each facing direction
+# (back left, back right, front left, front right), so we must combine these
+# to get the actual anim key for AnimationPlayer's `play` method.
+func anim_with_facing(anim: StringName) -> StringName:
+	return str(anim, "/", facing.y, "_", facing.x)
+
 
 # =========================================================================== #
 #                               P L A Y B A C K                               #
@@ -30,7 +36,7 @@ func _set_current(anim_id: StringName):
 func play_anim(anim_id = null, loops = null):
 	if anim_id: current = anim_id
 	if loops: loop_counter = loops
-	play(str(current, "/", facing.y, "_", facing.x))
+	play(anim_with_facing(current))
 
 # --------------------------------------------------------------------------- #
 
@@ -64,7 +70,7 @@ func _update_facing(new_facing):
 	# string interpolation (x and y should be either 0 or 1)
 	facing = new_facing.abs()
 	var anim_pos = current_animation_position
-	current_animation = str(current, "/", facing.y, "_", facing.x)
+	current_animation = anim_with_facing(current)
 	seek(anim_pos)
 
 
@@ -149,3 +155,31 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 		anim.track_insert_key(i, time, frame)
 	
 	return anim
+
+
+# =========================================================================== #
+#                          S E R I A L I Z A T I O N                          #
+# --------------------------------------------------------------------------- #
+
+# note: we don't persist `facing` because we load animations just before monster
+# orientation, so we expect it to get overwritten immediately anyway 
+func save_keys() -> Array[StringName]:
+	return [&'current', &'anim_queue', &'loop_counter']
+
+# --------------------------------------------------------------------------- #
+
+func serialize() -> Dictionary:
+	var serialized = {}
+	for key in save_keys():
+		serialized[key] = U.serialize_value(get(key))
+	return serialized
+
+# --------------------------------------------------------------------------- #
+
+func deserialize(serialized = {}) -> void:
+	for key in save_keys():
+		U.deserialize_value(self, serialized.get(key), key)
+	play_anim()
+
+func generate_current():
+	return Monster.Anim.IDLE

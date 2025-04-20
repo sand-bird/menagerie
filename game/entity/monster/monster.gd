@@ -178,13 +178,6 @@ func _init(data_: Dictionary, garden_: Garden):
 	max_contacts_reported = 1
 	contact_monitor = true
 	
-	var script: Resource = get_script()
-	var path: String = script.resource_path.get_base_dir()
-	
-	anim = load(path.path_join('anim.gd')).new()
-	add_named_child(anim, 'anim')
-	load_anims()
-
 	nav = NavigationAgent2D.new()
 	nav.debug_enabled = false
 	nav.radius = size
@@ -215,7 +208,7 @@ func _init(data_: Dictionary, garden_: Garden):
 	debug_text = Label.new()
 	debug_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_named_child(debug_text, 'debug_text')
-	debug_text.hide()
+#	debug_text.hide()
 
 
 # =========================================================================== #
@@ -381,18 +374,8 @@ var morph_anims: Dictionary:
 func get_sprite_info(_key = null, _facing = null) -> Dictionary:
 	var key = _key if _key != null else anim.current
 	var facing = _facing if _facing != null else anim.facing
-	var anim_data = morph_anims.get(key, morph_anims.get('idle'))
+	var anim_data = morph_anims.get(key, morph_anims.get(Monster.Anim.IDLE))
 	return anim.get_anim_info_for_facing(anim_data, facing)
-
-# --------------------------------------------------------------------------- #
-
-func load_anims():
-	Log.verbose(self, ['morph anim data: ', morph_anims])
-	# TODO: handle unexpected case where there is no anim_data
-	for anim_id in morph_anims:
-		anim.add_anim(anim_id, morph_anims[anim_id])
-	Log.debug(self, ['animations: ', anim.get_animation_list()])
-	play_anim(Anim.IDLE)
 
 # --------------------------------------------------------------------------- #
 
@@ -400,10 +383,8 @@ func play_anim(anim_id, speed = 1.0, loops = 0):
 	anim.set_speed_scale(speed)
 	anim.play_anim(anim_id, loops)
 
-
 func queue_anim(anim_id, loops = 0):
 	anim.queue_anim(anim_id, loops)
-
 
 func set_anim_speed(speed):
 	anim.set_speed_scale(speed)
@@ -520,7 +501,8 @@ func save_keys() -> Array[StringName]:
 		&'attributes',
 		&'belly', &'mood', &'energy', &'social',
 		&'scoses', &'porps', &'fobbles', &'lumens',
-		&'orientation',
+		&'anim',
+		&'orientation', 
 		# TODO: 'preferences',
 		&'past_actions', &'current_action', &'next_action',
 		# TODO: 'learned_actions'
@@ -529,6 +511,12 @@ func save_keys() -> Array[StringName]:
 
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
+
+# ideally we would fail to load a monster with an invalid morph.  i'm not sure
+# how to fail out of the constructor though, so for now just pick a valid one
+func load_morph(input):
+	if Data.missing([id, &'morphs', input]): input = generate_morph()
+	morph = input
 
 func load_orientation(input):
 	orientation = U.parse_vec(input, Vector2(1, 0))
@@ -544,11 +532,25 @@ func load_attributes(input):
 	energy_capacity = attributes.pep.modify(data.mass * 10, 2)
 	social_capacity = attributes.extraversion.modify(100, 2)
 
-# ideally we would fail to load a monster with an invalid morph.  i'm not sure
-# how to fail out of the constructor though, so for now just pick a valid one
-func load_morph(input):
-	if Data.missing([id, &'morphs', input]): input = generate_morph()
-	morph = input
+# --------------------------------------------------------------------------- #
+
+func load_anim(input):
+	# initialize the custom AnimationPlayer child node
+	var base_path: String = get_script().resource_path.get_base_dir()
+	anim = load(base_path.path_join('anim.gd')).new()
+	add_named_child(anim, 'anim')
+	
+	# load all of our animations into the AnimationPlayer
+	Log.verbose(self, ['morph anim data: ', morph_anims])
+	# TODO: handle unexpected case where there is no anim_data
+	for anim_id in morph_anims:
+		anim.add_anim(anim_id, morph_anims[anim_id])
+	Log.debug(self, ['animations: ', anim.get_animation_list()])
+	
+	# deserialize animation state (current animation, queue, loop counter)
+	anim.deserialize(input)
+
+# --------------------------------------------------------------------------- #
 
 #func load_current_action(input):
 	#if input: current_action = Action.deserialize(self, input)
