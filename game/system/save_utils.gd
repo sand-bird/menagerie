@@ -3,9 +3,9 @@ extends Node
 const LNAME = 'SaveUtils'
 
 const SAVE_ROOT = "user://saves/"
-const PLAYER = "player.save"
-const GARDEN = "garden.save"
-const NEW_SAVE = "res://data/system/new.save"
+const PLAYER = "player.json"
+const GARDEN = "garden.json"
+const NEW_SAVE = "res://system/new_save.json"
 
 # =========================================================================== #
 #                      G E T T I N G   S A V E   I N F O                      #
