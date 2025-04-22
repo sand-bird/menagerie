@@ -16,19 +16,17 @@ recover some energy so the monster is not trapped in a death loop.
 const min_dur: int = 2 * Clock.TICKS_IN_HOUR
 const max_dur: int = 24 * Clock.TICKS_IN_HOUR
 
-# options: duration
-func _init(monster: Monster, options: Dictionary = {}):
-	var duration = options.get('duration', calc_duration(monster))
-	# pass `duration` to the base class as `timeout`.  the convention is to call
-	# it `duration` when it's a success condition, and `timeout` otherwise.
-	super(monster, { timeout = duration }.merged(options))
+func _init(monster: Monster, options = {}):
+	super(monster, options)
 
+func generate_timeout():
+	return calc_duration(m)
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #
 
 func estimate_energy() -> float:
-	return float(timer) * energy_per_tick(m)
+	return float(timeout) * energy_per_tick(m)
 
 # TODO: make this a modifier like Attribute.modify, where it's a positive
 # multiplier on positive utility, and an inverse multiplier on negative utility
@@ -70,4 +68,4 @@ static func energy_per_tick(monster: Monster) -> float:
 static func calc_duration(monster: Monster) -> int:
 	var energy_needed := monster.target_energy - monster.energy
 	var dur_needed := energy_needed / energy_per_tick(monster)
-	return clampi(dur_needed, min_dur, max_dur)
+	return clamp(dur_needed, min_dur, max_dur)

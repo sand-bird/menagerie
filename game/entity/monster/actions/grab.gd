@@ -7,31 +7,23 @@ exits with success when the entity is grabbed.
 prerequisites: in range (approach)
 """
 
-var t: Entity
+var target: Entity
 
-# options: timeout
-func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+static func _save_keys(): return [&'target']
+
+# required: target
+func _init(monster: Monster, options: Dictionary = {}):
 	super(monster, options)
-	t = target
 	require_target()
 	require_in_range()
-
-static func _save_keys(): return [&'t']
-
-static func _deserialize(monster: Monster, input: Dictionary):
-	return GrabAction.new(monster, input.t, input)
 
 #                           r e q u i r e m e n t s                           #
 # --------------------------------------------------------------------------- #
 
-func require_target() -> bool:
-	return require(!!t, func(): exit(Status.FAILED))
-
 func require_in_range() -> bool: return require(
 	m.grabbed == t or t in m.get_colliding_bodies(),
-	func (): prereq = ApproachAction.new(m, t)
+	func (): prereq = ApproachAction.new(m, { target = t })
 )
-
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
 # --------------------------------------------------------------------------- #

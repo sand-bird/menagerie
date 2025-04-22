@@ -39,7 +39,7 @@ var sex = Sex.FEMALE
 # multiply changes in the pet's preference for it when we discipline the pet.
 # right now memory only stores past actions, and just keeps a certain max number
 # rather than expiring.
-var past_actions: Array[Action] = []
+var past_actions: Array[Dictionary] = []
 var current_action: Action:
 	set(new_action):
 		if current_action and current_action.exited.is_connected(_on_action_exit):
@@ -552,11 +552,15 @@ func load_anim(input):
 
 # --------------------------------------------------------------------------- #
 
-#func load_current_action(input):
-	#if input: current_action = Action.deserialize(self, input)
+func load_current_action(input):
+	if input: garden.entities_loaded.connect(func ():
+		current_action = Action.deserialize(self, input)
+	)
 
-#func load_next_action(input):
-	#if input: next_action = Action.deserialize(self, input)
+func load_next_action(input):
+	if input: garden.entities_loaded.connect(func ():
+		next_action = Action.deserialize(self, input)
+	)
 
 
 #                             g e n e r a t o r s                             #

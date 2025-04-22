@@ -71,4 +71,4 @@ func load_flavors(_flavors):
 # --------------------------------------------------------------------------- #
 
 func get_actions(m: Monster) -> Array[Action]:
-	return [EatAction.new(m, parent)]
+	return [EatAction.new(m, { target = parent })]

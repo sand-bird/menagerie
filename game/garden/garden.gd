@@ -1,6 +1,10 @@
 class_name Garden
 extends Control
 
+# since monster actions usually target other entities in the garden, monsters
+# will wait to deserialize their actions until all garden entities are loaded.
+signal entities_loaded
+
 var monsters:
 	get: return get_tree().get_nodes_in_group(&'monsters')
 	set(_x): return
@@ -149,6 +153,7 @@ func deserialize(data: Dictionary):
 	$map.load_terrain(data.terrain)
 	for key in entity_keys:
 		load_entities(key, data)
+	entities_loaded.emit()
 #	if data.has("camera"):
 #		$camera.deserialize(data.camera)
 

@@ -140,11 +140,11 @@ static func choose_action(m: Monster, log: bool = false):
 		# if the monster has already attempted this action on the same target and
 		# it failed, cut the action's utility so it's less likely to keep trying.
 		var has_failed = m.past_actions.any(
-			func(past_action: Action): return (
+			func(past_action: Dictionary): return (
 				past_action.name == action.name
 				# not all actions have targets, but if the name matches and the
 				# prospective action has a target, the past action should also
-				and ((not 't' in action) or past_action.t == action.t)
+				and (!action.t or past_action.target.uuid == action.t.uuid)
 				and past_action.status == Action.Status.FAILED
 		))
 		if has_failed: utility /= 2.0

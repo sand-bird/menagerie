@@ -23,7 +23,7 @@ const FPS_COEFFICIENT = 0.6
 
 var dest: Vector2
 # a multiplier for how fast we should move, relative to "normal" speed (1).
-var speed: float = 1
+var speed: float = 1.0
 # how far from the target we want to approach to.
 # typically we want to be right on top of the target, but for some advanced
 # actions like games or "observe", we want to maintain some distance.
@@ -38,23 +38,27 @@ var last_pos: Vector2
 var running_calories = 0
 var estimated = 0
 
-# options: speed, target_distance, timeout
-func _init(monster: Monster, destination: Vector2, options: Dictionary = {}):
-	super(monster, options)
-	last_pos = monster.position
-	dest = destination
-	speed = options.get('speed', 1.0)
-	assert(speed > 0, "move speed multiplier must be greater than 0")
-	target_distance = options.get('target_distance', monster.data.size)
-	estimated = estimate_energy()
-
-# --------------------------------------------------------------------------- #
 
 static func _save_keys() -> Array[StringName]:
-	return [&'dest', &'speed', &'target_distance']
+	return [
+		# PARAMS
+		&'dest', # required
+		&'speed', &'target_distance', # optional
+		# STATE
+		&'last_pos', # used for energy spend
+		&'running_calories', &'estimated' # used for debug
+	]
 
-static func _deserialize(monster: Monster, input: Dictionary) -> MoveAction:
-	return MoveAction.new(monster, input.dest, input)
+# required: dest
+# optional: speed, target_distance
+func _init(monster: Monster, options: Dictionary = {}):
+	super(monster, options)
+	assert(speed > 0, "move speed multiplier must be greater than 0")
+	assert(dest != null, "move action requires a `dest`")
+	estimated = estimate_energy()
+
+func generate_last_pos(): return m.position
+func generate_target_distance(): return m.data.size
 
 
 #                    u t i l i t y   c a l c u l a t i o n                    #

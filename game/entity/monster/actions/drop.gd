@@ -1,5 +1,7 @@
 class_name DropAction
 extends Action
+# TODO: this plan is stupidly complex. when we actually get around to using it
+# we'll simplify or split it out into different actions or whatever.
 """
 drop a grabbed entity.
 
@@ -19,7 +21,9 @@ should support optional parameters for more complex behavior:
 """
 
 var pos: Vector2
-var t: Entity = null
+var target: Entity = null
+
+static func _save_keys(): return [&'t', &'pos']
 
 # options: target, position, timeout
 func _init(monster: Monster, options: Dictionary = {}):
@@ -27,14 +31,12 @@ func _init(monster: Monster, options: Dictionary = {}):
 	pos = options.get('position', monster.position)
 	t = options.get('target')
 
-static func _save_keys(): return [&'t', &'pos']
-
 
 # --------------------------------------------------------------------------- #
 
 func require_grabbing_target() -> bool: return require(
 	m.is_grabbing(t),
-	func (): prereq = GrabAction.new(m, t)
+	func (): prereq = GrabAction.new(m, { target = t })
 )
 
 func require_grabbing() -> bool: return require(
@@ -45,7 +47,7 @@ func require_grabbing() -> bool: return require(
 func require_at_position() -> bool: return require(
 	# TODO: extract this to a standardized "is at position" function on Monster
 	m.position.distance_squared_to(pos) < 100,
-	func (): prereq = MoveAction.new(m, pos)
+	func (): prereq = MoveAction.new(m, { dest = pos })
 )
 
 

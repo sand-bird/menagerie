@@ -1,4 +1,4 @@
-class_name DigAction
+#class_name DigAction
 extends Action
 """
 dig a hole at a certain position.  can specify a position and have the monster
@@ -16,7 +16,7 @@ func _init(monster: Monster, options: Dictionary = {}):
 func require_at_position() -> bool: return require(
 	# TODO: extract this to a standardized "is at position" function on Monster
 	m.position.distance_squared_to(pos) < 100,
-	func (): prereq = MoveAction.new(m, pos)
+	func (): prereq = MoveAction.new(m, { dest = pos })
 )
 
 static func _save_keys(): return [ &'pos']

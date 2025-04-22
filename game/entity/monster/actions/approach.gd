@@ -4,32 +4,26 @@ extends MoveAction
 move action that targets an entity and repaths every tick.
 """
 
-var t: Entity
+var target: Entity
 
-# options (inherited from MoveAction): speed, target_distance, timeout
-func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+
+static func _save_keys() -> Array[StringName]:
+	return [&'target']
+
+# required: target
+# optional: speed, target_distance, timeout
+func _init(monster: Monster, options: Dictionary = {}):
+	# load_target will be called from the base Action constructor since `target`
+	# is in our _save_keys, but we need to load it manually first in order to
+	# initialize params for the parent MoveAction.
+	load_target(options.target)
 	# add the target's size (the radius of its collision circle) to the target
 	# distance.  since the target position is the _center_ of the target, this
 	# will allow us to stop once we touch the target's side.
 	options.target_distance = options.get('target_distance', monster.size) + target.size
-	super(monster, target.position, options)
-	t = target
+	options.dest = target.position
+	super(monster, options)
 	require_target()
-
-# --------------------------------------------------------------------------- #
-
-static func _save_keys() -> Array[StringName]:
-	return [&'t']
-
-static func _deserialize(monster: Monster, input: Dictionary):
-	return ApproachAction.new(monster, input.t, input)
-
-
-#                           r e q u i r e m e n t s                           #
-# --------------------------------------------------------------------------- #
-
-func require_target() -> bool:
-	return require(!!t, func(): exit(Status.FAILED))
 
 
 #                              e x e c u t i o n                              #

@@ -12,30 +12,23 @@ of approaching the target)
 # success when item is eaten
 # fail if item is lost or if previous steps fail
 
-var t: Entity = null
+var target: Entity
 
-# options: timeout
-func _init(monster: Monster, target: Entity, options: Dictionary = {}):
+static func _save_keys(): return [&'target']
+
+# required: target
+func _init(monster: Monster, options: Dictionary = {}):
 	super(monster, options)
-	t = target
 	require_target()
 	require_grabbing()
-
-static func _save_keys(): return [&'t']
-
-static func _deserialize(monster: Monster, input: Dictionary):
-	return EatAction.new(monster, input.t, input)
 
 
 #                           r e q u i r e m e n t s                           #
 # --------------------------------------------------------------------------- #
 
-func require_target() -> bool:
-	return require(!!t, func(): exit(Status.FAILED))
-
 func require_grabbing() -> bool: return require(
 	m.is_grabbing(t),
-	func(): prereq = GrabAction.new(m, t)
+	func(): prereq = GrabAction.new(m, { target = t })
 )
 
 #                    u t i l i t y   c a l c u l a t i o n                    #

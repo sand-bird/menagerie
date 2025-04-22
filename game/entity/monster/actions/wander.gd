@@ -9,19 +9,22 @@ const min_dur = 1 * Clock.TICKS_IN_HOUR
 const max_dur = 6 * Clock.TICKS_IN_HOUR
 
 var move_action: MoveAction
-var move_speed: float
+var speed: float = 0.6
 # ticks to wait between move actions
 var wait_counter = 0
 
+static func _save_keys() -> Array[StringName]:
+	return [&'move_action', &'speed', &'wait_counter']
+
 # options: duration, speed
 func _init(monster: Monster, options: Dictionary = {}):
-	super(monster, {
-		timeout = options.get('duration', randi_range(min_dur, max_dur)) 
-	})
-	move_speed = options.get('speed', 0.6)
+	super(monster, options)
 
-static func _save_keys() -> Array[StringName]:
-	return [&'move_action', &'move_speed', &'wait_counter']
+func generate_timeout():
+	return randi_range(min_dur, max_dur)
+
+func load_move_action(input):
+	if input: move_action = Action.deserialize(m, input)
 
 
 #                    u t i l i t y   c a l c u l a t i o n                    #
@@ -29,7 +32,7 @@ static func _save_keys() -> Array[StringName]:
 
 # TODO: improve this calculation based on energy calcs in MoveAction (need to
 # estimate roughly how far the monster will be moving based on duration)
-func estimate_energy() -> float: return -0.2 * timer
+func estimate_energy() -> float: return -0.2 * timeout
 
 
 #                              e x e c u t i o n                              #
@@ -55,8 +58,8 @@ func _timeout():
 
 func new_move():
 	var dest = pick_dest()
-	move_action = MoveAction.new(m, dest, {
-		speed = move_speed, timeout = min_dur
+	move_action = MoveAction.new(m, {
+		dest = dest, speed = speed, timeout = min_dur
 	})
 	move_action.exited.connect(_on_move_exit)
 

@@ -40,7 +40,12 @@ static func deserialize_value(o: Object, value: Variant, key: String) -> void:
 	elif value == null:
 		var generator = str('generate_', key)
 		if o.has_method(generator): o.set(key, o.call(generator))
-	else: o.set(key, value)
+	else:
+		# if the value is a serialized vec, parse it here so we don't have
+		# to implement a `load_x` function for it in the callee (unless it
+		# needs to handle defaults or partial vecs)
+		if is_serialized_vec(value): value = parse_vec(value)
+		o.set(key, value)
 
 
 # =========================================================================== #
@@ -255,6 +260,14 @@ static func str_num(x: float, decimals: int = -1) -> String: return (
 
 # =========================================================================== #
 #                                V E C T O R S                                #
+# --------------------------------------------------------------------------- #
+
+# a serialized vec is an { x, y } dict. 
+static func is_serialized_vec(data: Variant, allow_partial = false):
+	if !data is Dictionary: return false
+	if allow_partial: return data.keys().all(func (k): return k in ['x', 'y'])
+	return data.keys().size() == 2 and 'x' in data and 'y' in data
+
 # --------------------------------------------------------------------------- #
 
 # parse a vector from an { x, y } dict. throws an error if either of the props
