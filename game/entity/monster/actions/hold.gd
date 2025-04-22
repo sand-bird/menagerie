@@ -10,16 +10,10 @@ differences from the parent grab action:
 	- DO release the target on exit
 """
 
-# options: duration
-func _init(monster: Monster, target: Entity, options: Dictionary = {}):
-	# note: the `duration` option is equivalent to `timeout` on the base class.
-	# convention is to call it `duration` when it's a success condition (like
-	# here) and `timeout` when it's a failure condition (like in GrabAction).
-	if options.has('duration'): options.timeout = options.duration
-	super(monster, target, options)
+static func _save_keys(): return [&'target']
 
-static func _deserialize(monster: Monster, input: Dictionary):
-	return HoldAction.new(monster, input.t, input)
+func _init(monster: Monster, options: Dictionary = {}):
+	super(monster, options)
 
 
 #                              e x e c u t i o n                              #
