@@ -13,17 +13,13 @@ static func _save_keys() -> Array[StringName]:
 # required: target
 # optional: speed, target_distance, timeout
 func _init(monster: Monster, options: Dictionary = {}):
-	# load_target will be called from the base Action constructor since `target`
-	# is in our _save_keys, but we need to load it manually first in order to
-	# initialize params for the parent MoveAction.
-	load_target(options.target)
 	# add the target's size (the radius of its collision circle) to the target
 	# distance.  since the target position is the _center_ of the target, this
 	# will allow us to stop once we touch the target's side.
-	options.target_distance = options.get('target_distance', monster.size) + target.size
-	options.dest = target.position
 	super(monster, options)
 	require_target()
+	target_distance += target.size
+	dest = target.position
 
 
 #                              e x e c u t i o n                              #

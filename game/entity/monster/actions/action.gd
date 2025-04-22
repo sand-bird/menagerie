@@ -15,7 +15,7 @@ if the prerequisite is not met, we initialize that action as our `prereq` and
 delegate execution to it until it succeeds.
 """
 
-signal exited(status, drive_diff)
+signal exited(status)
 
 enum Status {
 	NEW = 0,
@@ -56,9 +56,10 @@ var prereq: Action = null:
 	set(action):
 		prereq = action
 		if action is Action: action.exited.connect(func(_status):
+			var _name = str(prereq.name) if prereq else '(none)'
 			Log.debug(self, [
-				'prereq exited: ', str(prereq.name) if prereq else '(none)',
-				' | status: ', _status])
+				'prereq exited: ', _name, ' | status: ', _status])
+			_on_prereq_exit(_status, _name)
 			prereq = null
 		)
 
@@ -234,6 +235,7 @@ func _timeout(): exit(Status.FAILED)
 # and to perform any necessary cleanup (eg, resetting animations).
 func _exit(_status: Status) -> void: pass
 
+func _on_prereq_exit(_status: Status, _name: StringName) -> void: pass
 
 # =========================================================================== #
 #                          S E R I A L I Z A T I O N                          #

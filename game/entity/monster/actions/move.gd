@@ -21,13 +21,19 @@ const FORCE_MULTIPLIER: float = 3
 # twice as fast, the animation will play 1.5 times as fast with a speed of 2.
 const FPS_COEFFICIENT = 0.6
 
-var dest: Vector2
+var dest: Vector2:
+	set(x):
+		dest = x
+		m.nav.set_target_position(dest)
 # a multiplier for how fast we should move, relative to "normal" speed (1).
 var speed: float = 1.0
 # how far from the target we want to approach to.
 # typically we want to be right on top of the target, but for some advanced
 # actions like games or "observe", we want to maintain some distance.
-var target_distance: float
+var target_distance: float:
+	set(x):
+		target_distance = x
+		m.nav.target_desired_distance = target_distance
 
 # the position of the monster when we last spent energy (ie, last tick).
 # `spend_energy` calculates the energy cost to move from here to the monster's
@@ -54,7 +60,6 @@ static func _save_keys() -> Array[StringName]:
 func _init(monster: Monster, options: Dictionary = {}):
 	super(monster, options)
 	assert(speed > 0, "move speed multiplier must be greater than 0")
-	assert(dest != null, "move action requires a `dest`")
 	estimated = estimate_energy()
 
 func generate_last_pos(): return m.position
@@ -80,8 +85,6 @@ func estimate_energy() -> float:
 # --------------------------------------------------------------------------- #
 
 func _start():
-	m.nav.target_desired_distance = target_distance
-	m.nav.set_target_position(dest)
 	# nav agent with object avoidance fires a signal when it's done calculating
 	# the "safe" velocity.  this happens at the end of the physics process, so
 	# we can call `move_and_slide` in the handler
