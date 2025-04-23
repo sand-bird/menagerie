@@ -157,7 +157,7 @@ func _physics_process(_delta):
 		if 'rotation' in child: child.rotation = -rotation
 	var d_vecs = debug_vectors()
 	for key in d_vecs:
-		(get_node(key) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
+		(get_node(NodePath(key)) as RayCast2D).target_position = (d_vecs[key][1] as Callable).call()
 
 #                                  d e b u g                                  #
 # --------------------------------------------------------------------------- #

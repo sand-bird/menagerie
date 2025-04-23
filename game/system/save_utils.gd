@@ -40,12 +40,13 @@ static func get_save_list() -> Array[String]:
 static func get_save_info(save_dir: String) -> Dictionary:
 	var save_info = {}
 	var data: Dictionary = U.read_file(get_filepath(save_dir, PLAYER))
-	for k in ['player_name', 'time', 'money', 'playtime']:
-		save_info[k] = data.get(k, "")
+	for k in [&'money', &'playtime', &'monster_count']:
+		save_info[k] = data.get(k, 0) as int
 	save_info.encyclopedia = Data.get_completion_percent(
-		data.get('discovered', {})
+		data.get(&'discovered', {})
 	)
-	save_info.monsters = data.get('monster_count', 0)
+	save_info.player_name = data.get(&'player_name', "")
+	save_info.time = data.get(&'time', {}) as Dictionary[StringName, int]
 	save_info.save_dir = save_dir
 	return save_info
 

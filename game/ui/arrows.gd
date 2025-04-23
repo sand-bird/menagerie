@@ -1,6 +1,6 @@
 extends Control
 
-#warning-ignore:unused_signal
+@warning_ignore('unused_signal')
 signal change_page
 
 const ANIM = "bob"

@@ -16,11 +16,11 @@ var loop_counter = 0
 func _ready():
 	animation_finished.connect(_play_next)
 
-# sugar to get the actual animation key for the current animation and facing.
-# the `current` animation stored in this class is just a name, eg `idle` or
-# `walk`.  we actually have separate animations for each facing direction
-# (back left, back right, front left, front right), so we must combine these
-# to get the actual anim key for AnimationPlayer's `play` method.
+## sugar to get the actual animation key for the current animation and facing.
+## the `current` animation stored in this class is just a name, eg `idle` or
+## `walk`.  we actually have separate animations for each facing direction
+## (back left, back right, front left, front right), so we must combine these
+## to get the actual anim key for AnimationPlayer's `play` method.
 func anim_with_facing(anim: StringName) -> StringName:
 	return str(anim, "/", facing.y, "_", facing.x)
 
@@ -65,7 +65,7 @@ func _play_next(_old_anim = null):
 # we need to start playing the animation for the new one. in order to prevent
 # it starting over from the beginning, we save our position from the old
 # animation and seek to it in the new one.
-func _update_facing(new_facing):
+func _update_facing(new_facing: Vector2i):
 	# important because rotation produces values of -0, which throw off our
 	# string interpolation (x and y should be either 0 or 1)
 	facing = new_facing.abs()
@@ -138,7 +138,7 @@ func create_animation_for_facing(anim_info: Dictionary) -> Animation:
 	# hframes, flip_h, aux_offset, texture
 	i = anim.add_track(Animation.TYPE_METHOD)
 	anim.track_set_path(i, "cg/sprite")
-	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
+#	anim.value_track_set_update_mode(i, Animation.UPDATE_DISCRETE)
 	anim.track_insert_key(i, 0.0, {
 		method = 'update_texture',
 		args = [anim_info]

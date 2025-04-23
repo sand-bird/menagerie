@@ -5,7 +5,7 @@ var save_dir
 func load_info(index, save_info):
 	save_dir = save_info.save_dir
 	$player_name/label.text = save_info.player_name
-	$monsters/label.text = str(save_info.monsters)
+	$monsters/label.text = str(save_info.monster_count)
 	$money/label.text = str(save_info.money)
 	$encyclopedia/label.text = str(save_info.encyclopedia, '%')
 	$playtime/label.text = Player.format_playtime(save_info.playtime)

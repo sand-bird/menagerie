@@ -176,7 +176,7 @@ func open_select(arg):
 # --------------------------------------------------------------------------- #
 
 func push(item) -> Node:
-	var pop_from
+	var pop_from = null
 	# look through the stack for items that match or exceed the layer value of
 	# our current item. these would have layered above our new item, so they
 	# need to be removed.

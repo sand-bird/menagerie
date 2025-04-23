@@ -69,11 +69,11 @@ func _set_year(new):
 
 # --------------------------------------------------------------------------- #
 
-# self[unit] += 1 will call the setget setter for self.unit (and it lets us
-# pass the variable name as a string). each tier of unit, when modified, calls
-# try_rollover for the next; in this way, the last tick of year 1 will trigger
-# a cascade of rollovers that ends by incrementing year to 2.
-func try_rollover(new_value: int, units_per_next_unit: int, next_unit: StringName):
+## self[unit] += 1 will call the setget setter for self.unit (and it lets us
+## pass the variable name as a string). each tier of unit, when modified, calls
+## try_rollover for the next; in this way, the last tick of year 1 will trigger
+## a cascade of rollovers that ends by incrementing year to 2.
+func try_rollover(new_value: float, units_per_next_unit: float, next_unit: StringName):
 	if new_value >= units_per_next_unit:
 		set(next_unit, get(next_unit) + 1)
 		units_to_dispatch.push_back(next_unit)
@@ -118,17 +118,17 @@ func dispatch_updates():
 # load saved data into the class.  called from the save and load entrypoints
 # in game.gd.
 
-# we used to serialize clock to a timestamp, but now we use a dict for better
-# clarity when viewing/editing a save file.
-func serialize() -> Dictionary:
-	var dict = {}
+## we used to serialize clock to a timestamp, but now we use a dict for better
+## clarity when viewing/editing a save file.
+func serialize() -> Dictionary[StringName, int]:
+	var dict: Dictionary[StringName, int] = {}
 	for key in [&'tick', &'hour', &'day', &'month', &'year']:
-		dict[key] = get(key)
+		dict[key] = get(key) as int
 	return dict
 
 # --------------------------------------------------------------------------- #
 
-# accepts a timestamp or time dict and uses it to set internal state.
+## accepts a timestamp or time dict and uses it to set internal state.
 func deserialize(time):
 	var dict = to_dict(time)
 	for key in dict.keys():
@@ -150,25 +150,25 @@ func reset():
 # or a total duration represented by an integer and a unit (`tick` by default).
 # the input can also be omitted, in which case we use the clock's current value.
 
-# returns a time dict (`{ tick, hour, day, month, year }`).
-# clock state (ie the current in-game time) is serialized in this format.
-# the second argument is used when passing an int to be parsed as a duration.
-func to_dict(input = null, unit: StringName = &'tick') -> Dictionary:
+## returns a time dict (`{ tick, hour, day, month, year }`).
+## clock state (ie the current in-game time) is serialized in this format.
+## the second argument is used when passing an int to be parsed as a duration.
+func to_dict(input = null, unit: StringName = &'tick') -> Dictionary[StringName, int]:
 	if input == null: return serialize()
 	if input is Dictionary:
-		var dict = {}
+		var dict: Dictionary[StringName, int] = {}
 		for u in UNITS:
-			dict[u] = input.get(u, 0)
+			dict[u] = input.get(u, 0) as int
 		return dict
 	return parse_duration(input, unit)
 
 # --------------------------------------------------------------------------- #
 
-# returns the input time (or current time)'s duration in the given unit.  eg,
-# `duration(&'day', { tick = 5, day = 1, month = 2, year = 3 })` would return
-# `1 + (2 * DAYS_IN_MONTH) + (3 * DAYS_IN_MONTH * MONTHS_IN_YEAR)`.  note that
-# lesser units (eg, days and ticks in the case of month durations) are omitted
-# from the result, meaning only tick durations can be re-parsed losslessly.
+## returns the input time (or current time)'s duration in the given unit.  eg,
+## `duration(&'day', { tick = 5, day = 1, month = 2, year = 3 })` would return
+## `1 + (2 * DAYS_IN_MONTH) + (3 * DAYS_IN_MONTH * MONTHS_IN_YEAR)`.  note that
+## lesser units (eg, days and ticks in the case of month durations) are omitted
+## from the result, meaning only tick durations can be re-parsed losslessly.
 func duration(unit: StringName, input = null, input_unit: StringName = &'tick'):
 	assert(unit in UNITS, str("(get_duration) invalid unit: ", unit,
 			" (should be one of ", UNITS, ")"))
@@ -177,35 +177,34 @@ func duration(unit: StringName, input = null, input_unit: StringName = &'tick'):
 	var units: Array[StringName] = U.reverse(UNITS)
 	var relations: Array[int] = U.reverse(RELATIONS)
 	var scale: int = units.find(unit)
-	var duration: int = 0
+	var dur: int = 0
 
 	for i in scale + 1:
 		# add this unit to total
-		duration += dict[units[i]]
+		dur += dict[units[i]]
 		# convert running total to next unit
-		if i < scale:
-			duration = duration * relations[i]
+		if i < scale: dur *= relations[i]
 		else: break
 
-	return duration
+	return dur
 
 # --------------------------------------------------------------------------- #
 
-# static function to parse a duration to a time dict. 
-static func parse_duration(duration: int, unit: StringName = &'tick') -> Dictionary:
+## static function to parse a duration to a time dict. 
+static func parse_duration(dur: int, unit: StringName = &'tick') -> Dictionary[StringName, int]:
 	assert(unit in UNITS, str("(parse_duration) invalid unit: ", unit,
 			" (should be one of ", UNITS, ")"))
-	var dict = {}
+	var dict: Dictionary[StringName, int] = {}
 	var scale: int = UNITS.find(unit)
 	for i in UNITS.size():
 		if i < scale:
 			dict[UNITS[i]] = 0
 			continue
 		if i < RELATIONS.size():
-			dict[UNITS[i]] = int(duration) % RELATIONS[i]
-			duration = duration / RELATIONS[i]
+			dict[UNITS[i]] = int(dur) % RELATIONS[i]
+			dur /= RELATIONS[i]
 		else:
-			dict[UNITS[i]] = int(duration)
+			dict[UNITS[i]] = int(dur)
 	return dict
 
 # =========================================================================== #
@@ -217,14 +216,14 @@ static func parse_duration(duration: int, unit: StringName = &'tick') -> Diction
 func format_time(input = null, unit: StringName = &'tick'):
 	var dict = to_dict(input, unit)
 	var ampm = "a.m." if dict.hour < 12 else "p.m."
-	var ampm_hour = dict.hour if dict.hour < 12 else dict.hour - 12
+	var ampm_hour: int = dict.hour if dict.hour < 12 else dict.hour - 12
 	if ampm_hour == 0: ampm_hour = 12
 	var minutes = dict.tick * 60 / TICKS_IN_HOUR
 	return (str(ampm_hour) + ":" + str(minutes).pad_zeros(2) + ampm)
 
 func format_day(input = null, unit: StringName = &'tick'):
-	var day = to_dict(input, unit).day
-	return U.ordinalize(day + 1)
+	var d = to_dict(input, unit).day
+	return U.ordinalize(d + 1)
 
 func format_weekday(input = null, unit: StringName = &'tick'):
 	var wd = calculate_weekday(input, unit)
@@ -267,13 +266,13 @@ func format_duration(
 	for i in units.size():
 		if i > last and not parts.is_empty(): break
 		var unit = units[i]
-		var duration = dict[unit]
-		if duration <= 0: continue
+		var dur = dict[unit]
+		if dur <= 0: continue
 		if unit == &'tick':
-			duration *= 60 / TICKS_IN_HOUR
+			dur *= 60 / TICKS_IN_HOUR
 			unit = 'minute'
-		if duration > 1: unit += "s"
-		parts.append(str(duration, " ", unit))
+		if dur > 1: unit += "s"
+		parts.append(str(dur, " ", unit))
 	
 	return ", ".join(parts)
 

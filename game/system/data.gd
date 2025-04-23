@@ -248,7 +248,7 @@ func load_mod_data(modconfig):
 
 func load_data(dirname, sourceinfo):
 	Log.verbose(self, ["loading data from directory: `", dirname, "`"])
-	var loaded = { data = {}, schemas = {} }
+	var loaded: Dictionary = { data = {}, schemas = {} }
 	var dir = DirAccess.open(dirname) 
 	if !dir:
 		Log.error(self, ["could not open `", dirname, "`!"])
@@ -278,15 +278,15 @@ func load_data(dirname, sourceinfo):
 # basically file i/o boilerplate so we can call process_data. accepts the path
 # either in two arguments, the directory and the filename, or as a single arg
 # containing the full path.
-func load_datafile(path, sourceinfo):
+func load_datafile(path, sourceinfo) -> Dictionary:
 	Log.debug(self, ["loading data from file: `", path, "`"])
 	var filedata = U.read_file(path)
 	if filedata == null:
 		Log.error(self, ["error loading data from `", path, "`!"])
-		return
+		return {}
 	if !filedata.has("id"):
 		Log.error(self, ["the datafile at `", path, "` is missing an id"])
-		return
+		return {}
 	filedata = process_data(filedata, path.get_base_dir())
 	filedata.sources = [sourceinfo]
 	return { filedata.id: filedata }
@@ -374,14 +374,14 @@ func process_schema(s, filename):
 # - for keys that lead to arrays in the base dict, whatever's in the mod dict
 #   is appended to them. there is no type checking here, obviously, so if we
 #   were expecting an array of dicts and the mod doesn't conform, we're SOL.
-func merge(base, mod):
+func merge(base: Dictionary, mod: Dictionary):
 	if mod == null: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
 
 	for key in mod:
 		var k = key
 		var replace = false
-		if k[0] == '!':
+		if k.left(1) == '!':
 			replace = true
 			k = U.strip_sigil(key)
 		if base.has(k) and !replace:
@@ -455,7 +455,7 @@ func list_dir(dirname):
 # available data which has been discovered.
 # each key in `data` is weighted the same, whether or not it has discoverable
 # children (morphs or states).
-func get_completion_percent(discovered: Dictionary):
+func get_completion_percent(discovered: Dictionary) -> int:
 	var total: float = data.size()
 	var completed: float = 0
 	var valid_keys = discovered.keys().filter(func (k): return data.has(k))
@@ -465,7 +465,7 @@ func get_completion_percent(discovered: Dictionary):
 			TYPE_BOOL: if value: completed += 1
 			TYPE_DICTIONARY:
 				completed += get_key_completion(key, value)
-	return round((completed / total) * 100)
+	return round((completed / total) * 100) as int
 
 const discoverable_children = { monster = 'morphs', object = 'states' }
 func get_key_completion(key: String, value: Dictionary):

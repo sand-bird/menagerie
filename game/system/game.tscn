@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://bq6ckffi55cft"]
 
-[ext_resource type="Script" path="res://system/game.gd" id="1"]
-[ext_resource type="Script" path="res://system/viewport.gd" id="2_rt0sc"]
-[ext_resource type="Script" path="res://ui/ui.gd" id="3_n1r56"]
+[ext_resource type="Script" uid="uid://c5vh1f1bx2qto" path="res://system/game.gd" id="1"]
+[ext_resource type="Script" uid="uid://cqiaj6t1p68fv" path="res://system/viewport.gd" id="2_rt0sc"]
+[ext_resource type="Script" uid="uid://dwespdi5digi4" path="res://ui/ui.gd" id="3_n1r56"]
 [ext_resource type="PackedScene" uid="uid://bp3v3rcxs38cv" path="res://ui/console/console.tscn" id="5_qs71f"]
 
 [node name="game" type="SubViewportContainer"]

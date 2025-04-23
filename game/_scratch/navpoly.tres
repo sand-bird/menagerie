@@ -1,9 +1,0 @@
-[gd_resource type="NavigationPolygon" format=2]
-
-[resource]
-
-vertices = PackedVector2Array( 16, 0, 16, 16, 0, 16, 0, 0 )
-polygons = [ PackedInt32Array( 0, 1, 2, 3 ) ]
-outlines = [ PackedVector2Array( 0, 0, 0, 16, 16, 16, 16, 0 ) ]
-_sections_unfolded = [ "Resource" ]
-

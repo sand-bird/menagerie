@@ -1,3 +1,4 @@
+@warning_ignore_start('unused_signal')
 extends Node
 """
 the dispatcher handles every signal in the game, except for a couple used by
