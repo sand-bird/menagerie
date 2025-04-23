@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://bqg4hrfom0imj" path="res://ui/main_menu/tabs.tscn" id="2_enjax"]
 [ext_resource type="Texture2D" uid="uid://cltvm0xbpken5" path="res://assets/ui/elements/book.png" id="3"]
-[ext_resource type="StyleBox" uid="uid://bloajccdvxu2m" path="res://assets/ui/panels/menu_header.tres" id="4"]
+[ext_resource type="StyleBox" uid="uid://d3od8ym322sll" path="res://assets/ui/panels/menu_title_box.tres" id="8_lq2y3"]
 [ext_resource type="PackedScene" uid="uid://cd7dhnfb88hwa" path="res://ui/arrows.tscn" id="6"]
 [ext_resource type="Texture2D" uid="uid://cy0hf5t6hfmqm" path="res://assets/ui/elements/page_turn_1.png" id="24_04plg"]
 [ext_resource type="Texture2D" uid="uid://b24eb3mcd00gg" path="res://assets/ui/elements/page_turn_2.png" id="25_7547p"]
@@ -58,12 +58,6 @@ script/source = "extends \"res://ui/event_button.gd\"
 func _ready():
 	signal_name = 'ui_close'
 	args = 'main_menu'
-	Dispatcher.control_mode_changed.connect(update_visibility)
-	update_visibility(Options.control_mode)
-
-func update_visibility(control_mode):
-	if control_mode == Options.ControlMode.TOUCH: show()
-	else: hide()
 "
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ypvhq"]
@@ -139,10 +133,11 @@ custom_minimum_size = Vector2(96, 0)
 anchors_preset = -1
 anchor_right = 0.5
 offset_left = -128.0
-offset_top = -78.0
+offset_top = -77.0
 offset_right = -181.0
-offset_bottom = -66.0
-theme_override_styles/normal = ExtResource("4")
+offset_bottom = -67.0
+grow_horizontal = 2
+theme_override_styles/normal = ExtResource("8_lq2y3")
 text = "Monster info"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -150,15 +145,15 @@ autowrap_mode = 3
 uppercase = true
 
 [node name="pages" type="Label" parent="book"]
-custom_minimum_size = Vector2(56, 0)
+custom_minimum_size = Vector2(48, 0)
 anchors_preset = -1
 anchor_left = 0.75
 anchor_right = 0.75
-offset_left = -186.0
-offset_top = -78.0
-offset_right = -130.0
-offset_bottom = -66.0
-theme_override_styles/normal = ExtResource("4")
+offset_left = -182.0
+offset_top = -77.0
+offset_right = -134.0
+offset_bottom = -67.0
+theme_override_styles/normal = ExtResource("8_lq2y3")
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
@@ -177,9 +172,9 @@ script = SubResource("GDScript_0qu84")
 [node name="chapter" type="CenterContainer" parent="book"]
 custom_minimum_size = Vector2(296, 142)
 offset_left = -148.0
-offset_top = -63.0
+offset_top = -64.0
 offset_right = 148.0
-offset_bottom = 79.0
+offset_bottom = 78.0
 
 [node name="page_turn" type="AnimatedSprite2D" parent="book"]
 z_index = 2
