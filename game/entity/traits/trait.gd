@@ -58,7 +58,7 @@ func save_keys() -> Array[StringName]:
 func serialize():
 	var serialized = {}
 	for key in save_keys():
-		serialized[key] = U.serialize_value(get(key))
+		serialized[key] = U.serialize_value(get(key), key)
 	return serialized
 
 # --------------------------------------------------------------------------- #

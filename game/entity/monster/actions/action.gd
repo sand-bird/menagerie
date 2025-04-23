@@ -79,7 +79,6 @@ func _init(monster, options = {}):
 	name = get_script().resource_path.get_basename().get_file()
 	for key in save_keys():
 		U.deserialize_value(self, options.get(key), key)
-	print('_init action name after base set: ', name)
 
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
@@ -264,7 +263,7 @@ func save_keys() -> Array[StringName]:
 func serialize() -> Dictionary:
 	var serialized = {}
 	for key in save_keys():
-		serialized[key] = U.serialize_value(get(key))
+		serialized[key] = U.serialize_value(get(key), key)
 	return serialized
 
 # --------------------------------------------------------------------------- #
