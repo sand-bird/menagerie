@@ -1,7 +1,5 @@
 extends Camera2D
 
-var ScrollMode = Options.ScrollMode
-
 # so we can turn off drag scrolling if we are using drag for something else,
 # such as laying tiles.
 var drag_action = "scroll"
@@ -56,7 +54,7 @@ func _on_screen_resized():
 func get_screen_settings():
 	screen_size = get_viewport_rect().size
 	screen_radius = screen_size / 2.0
-	edge_width = screen_size * Options.camera_edge_size
+	edge_width = screen_size * Options.edge_scroll_edge_size
 	dead_zone_radius = screen_radius - edge_width
 
 # --------------------------------------------------------------------------- #
@@ -109,7 +107,7 @@ func do_drag_scroll():
 		var mouse_pos = get_local_mouse_position()
 		var move_delta = last_mouse_pos - mouse_pos
 		# update target position
-		var new_target_pos = position + move_delta * Options.camera_flick_distance
+		var new_target_pos = position + move_delta * Options.drag_scroll_flick_distance
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.5))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.5))
 
@@ -120,6 +118,7 @@ func do_drag_scroll():
 # of the window's width or height from the edge of the window, with a speed
 # proportionate to the cursor's distance from the absolute edge.
 func do_edge_scroll():
+	if !Options.edge_scroll_enabled: return
 	# calculate move delta
 	var heading = get_local_mouse_position() - screen_radius
 	var direction = heading.sign()
@@ -127,7 +126,7 @@ func do_edge_scroll():
 	if abs_heading.x >= dead_zone_radius.x or abs_heading.y >= dead_zone_radius.y:
 		var move_delta = abs_heading
 		# update target position
-		var new_target_pos = position + move_delta * direction * Options.camera_scroll_speed
+		var new_target_pos = position + move_delta * direction * Options.edge_scroll_speed
 		target_pos.x = round(lerp(target_pos.x, new_target_pos.x, 0.1))
 		target_pos.y = round(lerp(target_pos.y, new_target_pos.y, 0.1))
 
@@ -150,12 +149,9 @@ func do_joystick_scroll():
 # --------------------------------------------------------------------------- #
 
 func _process(_delta):
-	# update target_pos via our scroll methods
-	if Options.is_scroll_enabled(ScrollMode.EDGE_SCROLL): do_edge_scroll()
-	if Options.is_scroll_enabled(ScrollMode.DRAG_SCROLL): do_drag_scroll()
-	# (not sure if these will be here or in _process_input)
-	if Options.is_scroll_enabled(ScrollMode.KEY_SCROLL): do_key_scroll()
-	if Options.is_scroll_enabled(ScrollMode.JOYSTICK_SCROLL): do_joystick_scroll()
+	# handle all our different scroll behaviors
+	for scroll_type in ['drag', 'edge', 'key', 'joystick']:
+		call('_'.join(['do', scroll_type, 'scroll']))
 
 	if stick_target:
 		target_pos = stick_target.position - screen_radius
@@ -165,7 +161,7 @@ func _process(_delta):
 
 	# lerp camera to target position
 	if position != target_pos:
-		position = position.lerp(target_pos, Options.camera_flick_speed / Options.camera_flick_distance)
+		position = position.lerp(target_pos, Options.drag_scroll_flick_speed / Options.drag_scroll_flick_distance)
 		align()
 
 	# update saved cursor position (for drag scroll)
@@ -174,10 +170,10 @@ func _process(_delta):
 # --------------------------------------------------------------------------- #
 
 func deserialize(data):
-	for i in ["x", "y"]:
-		position[i] = data[i]
-		target_pos[i] = data[i]
-		align()
+	var pos = U.parse_vec(data)
+	position = pos
+	target_pos = pos
+	align()
 
 func serialize():
-	return { "x": position.x, "y": position.y }
+	return U.format_vec(position)

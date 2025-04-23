@@ -22,7 +22,7 @@ script/source = "extends Label
 
 func _set_text(t):
 	if typeof(t) == TYPE_OBJECT:
-		text = t[Options.get_lang()]
+		text = t[OS.get_locale_language()]
 "
 
 [sub_resource type="Theme" id="Theme_vafoa"]

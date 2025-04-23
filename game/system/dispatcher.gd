@@ -50,10 +50,6 @@ signal entity_unhighlighted(entity)
 signal entity_selected(entity)
 signal entity_unselected()
 
-#                                o p t i o n s                                #
-# --------------------------------------------------------------------------- #
-signal control_mode_changed(control_mode)
-
 
 # =========================================================================== #
 #                                M E T H O D S                                #
