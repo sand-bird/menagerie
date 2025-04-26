@@ -35,8 +35,8 @@ var units_to_dispatch: Array[StringName] = []
 
 # --------------------------------------------------------------------------- #
 
-# time only moves in the garden, so it should be stopped on init,
-# and starting & stopping it should be managed by the garden scene.
+## time only moves in the garden, so it should be stopped on init,
+## and starting & stopping it should be managed by the garden scene.
 func _ready(): stop()
 
 func start(): set_process(true)
@@ -83,28 +83,28 @@ func try_rollover(new_value: float, units_per_next_unit: float, next_unit: Strin
 
 # --------------------------------------------------------------------------- #
 
-# to ensure that the day of the week remains consistent with the date, it is
-# calculated from the total elapsed days.
+## to ensure that the day of the week remains consistent with the date, it is
+## calculated from the total elapsed days.
 func calculate_weekday(input = null, unit: StringName = &'tick'):
 	var total_days = duration(&'day', input, unit)
 	return int(total_days) % DAYS_IN_WEEK
 
 # --------------------------------------------------------------------------- #
 
-# because try_rollover() pushes the update method for the NEXT unit to the
-# callstack before it resolves (which must happen before we update the CURRENT
-# unit), our units are actually updated in largest-to-smallest order.
-#
-# this is problematic for dispatching time events from within the update logic,
-# as the lesser units (eg. `tick` and `hour`) have not yet been updated when a
-# greater unit (eg. `day`) finishes updating and sends its dispatch. so other
-# classes that listen to eg. `day` will see a Clock gobal with the correct day,
-# but incorrect hours and ticks, at the time of the dispatch.
-#
-# to solve this, we queue all the units we need to dispatch updates for, and
-# then dispatch them all at once at the end of _set_tick(), which is the last
-# step of the update logic. this ensures that all our units have been fully
-# updated by the time anyone else receives a dispatch.
+## because try_rollover() pushes the update method for the NEXT unit to the
+## callstack before it resolves (which must happen before we update the CURRENT
+## unit), our units are actually updated in largest-to-smallest order.
+##
+## this is problematic for dispatching time events from within the update logic,
+## as the lesser units (eg. `tick` and `hour`) have not yet been updated when a
+## greater unit (eg. `day`) finishes updating and sends its dispatch. so other
+## classes that listen to eg. `day` will see a Clock gobal with the correct day,
+## but incorrect hours and ticks, at the time of the dispatch.
+##
+## to solve this, we queue all the units we need to dispatch updates for, and
+## then dispatch them all at once at the end of _set_tick(), which is the last
+## step of the update logic. this ensures that all our units have been fully
+## updated by the time anyone else receives a dispatch.
 func dispatch_updates():
 	while units_to_dispatch:
 		var unit = units_to_dispatch.pop_front()

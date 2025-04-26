@@ -6,13 +6,13 @@ chapters.  individual chapters should extend this class and implement their own
 logic for initializing their sections based on game state.
 """
 
-# dict of section keys to MenuSection PackedScenes.
-# although sections are supposed to be ordered, we use a dict because we need to
-# be able to nagivate directly to a specific section, identified by its key.
-# fortunately godot appears to preserve ordering of dict properties, so ordering
-# of sections _should_ still work.
-# the key is also the param we pass into `initialize` on the MenuSection
-# instance, eg a monster uuid for monster details.
+## dict of section keys to MenuSection PackedScenes.
+## although sections are supposed to be ordered, we use a dict because we need to
+## be able to nagivate directly to a specific section, identified by its key.
+## fortunately godot appears to preserve ordering of dict properties, so ordering
+## of sections _should_ still work.
+## the key is also the param we pass into `initialize` on the MenuSection
+## instance, eg a monster uuid for monster details.
 var sections: Dictionary = {}
 
 var current_section = null
@@ -20,8 +20,8 @@ var current_section = null
 func _init():
 	build_index()
 
-# open the chapter to the section associated with the key param, or to the first
-# section if the key is null.
+## open the chapter to the section associated with the key param, or to the first
+## section if the key is null.
 func open(key = null) -> Control: # key: String
 #	if sections.is_empty(): build_index()
 	if sections.is_empty(): return
@@ -44,8 +44,8 @@ func direction(new_section):
 #                               a b s t r a c t                               #
 # --------------------------------------------------------------------------- #
 
-# populate the `sections` dict. the first key/value pair added will be the
-# default, or "index" page.
+## populate the `sections` dict. the first key/value pair added will be the
+## default, or "index" page.
 func build_index(): pass
 
 #                             s u b c l a s s e s                             #

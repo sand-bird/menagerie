@@ -45,7 +45,7 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_xolhl"]
 _data = {
-"title": SubResource("1")
+&"title": SubResource("1")
 }
 
 [node name="title_screen" type="Control"]
@@ -81,7 +81,7 @@ stretch_mode = 2
 
 [node name="anim" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_xolhl")
+&"": SubResource("AnimationLibrary_xolhl")
 }
 
 [node name="menu" parent="." instance=ExtResource("2")]

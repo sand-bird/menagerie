@@ -14,19 +14,19 @@ const REFS = [
 	UI_PATH + R + "/" + R + EXT
 ]
 
-# we can't count on our main_menu node always being instantiated, but we still
-# want to remember the last open menu page, so we keep track of it here instead
+## we can't count on our main_menu node always being instantiated, but we still
+## want to remember the last open menu page, so we keep track of it here instead
 var last_menu_path = []
 
-# UI used to be a singleton, where `ui_node` held a reference to the instanced
-# CanvasLayer that would hold the instances of the nodes in our stack. that was
-# silly, since (a) we only have one instanced ui node, and (b) UI's primary
-# function is to instantiate scenes anyway - but let's keep the variable
-# around, just in case.
+## UI used to be a singleton, where `ui_node` held a reference to the instanced
+## CanvasLayer that would hold the instances of the nodes in our stack. that was
+## silly, since (a) we only have one instanced ui node, and (b) UI's primary
+## function is to instantiate scenes anyway - but let's keep the variable
+## around, just in case.
 var ui_node = self
 
-# stack items are dicts with `path` and `layer` keys and an optional `restore`
-# key, which contains an array of elements to restore when the item is closed.
+## stack items are dicts with `path` and `layer` keys and an optional `restore`
+## key, which contains an array of elements to restore when the item is closed.
 var stack = []
 
 func _ready():
@@ -45,7 +45,7 @@ var input_map = {
 	ui_cancel = [close]
 }
 
-# ui input handling. there's probably a better place for this to live
+## ui input handling. there's probably a better place for this to live
 func _unhandled_input(e):
 	for action in input_map:
 		var target: Array = input_map[action]
@@ -57,21 +57,21 @@ func _unhandled_input(e):
 #                        S I G N A L   H A N D L I N G                        #
 # --------------------------------------------------------------------------- #
 
-# can happen in a few different ways, depending on values passed by the caller
-# when it triggers the signal. accepts a single argument: either a STRING
-# representing the item_ref of the ui element to open (implying default for the
-# others), or an ARRAY with the following elements:
-# 0: item_ref (string), required
-# 1: open_type (enum), optional - determines how the element will interact with
-#    existing elements:
-#    DEFAULT (null) - uses the "layer" variable specified in the element, if it
-#      exists, else falls back to OVERLAY
-#    OVERLAY (-1) - uses the current highest layer value plus one, making
-#      restore_on_close meaningless
-#    CUSTOM (any int) - uses the given number as the new element's layer value
-# 2: restore_on_close (boolean), optional - indicates whether the replaced
-#    elements, if there are any, should be restored when this element is
-#    closed. defaults to true.
+## can happen in a few different ways, depending on values passed by the caller
+## when it triggers the signal. accepts a single argument: either a STRING
+## representing the item_ref of the ui element to open (implying default for the
+## others), or an ARRAY with the following elements:
+## 0: item_ref (string), required
+## 1: open_type (enum), optional - determines how the element will interact with
+##    existing elements:
+##    DEFAULT (null) - uses the "layer" variable specified in the element, if it
+##      exists, else falls back to OVERLAY
+##    OVERLAY (-1) - uses the current highest layer value plus one, making
+##      restore_on_close meaningless
+##    CUSTOM (any int) - uses the given number as the new element's layer value
+## 2: restore_on_close (boolean), optional - indicates whether the replaced
+##    elements, if there are any, should be restored when this element is
+##    closed. defaults to true.
 func open(args):
 	get_tree().paused = true
 	Log.debug(self, ["(open) args: ", args])
@@ -109,11 +109,11 @@ func open(args):
 
 # --------------------------------------------------------------------------- #
 
-# TODO: here we should accept a node pointer (or maybe an item_ref) indicating
-# that we want to close a specific node. we search the stack for this node, pop
-# it (and everything above it) if we find it, or quit if we don't (meaning it
-# was already removed). this will help with cases that can't be handled
-# elegantly using layer values.
+## TODO: here we should accept a node pointer (or maybe an item_ref) indicating
+## that we want to close a specific node. we search the stack for this node, pop
+## it (and everything above it) if we find it, or quit if we don't (meaning it
+## was already removed). this will help with cases that can't be handled
+## elegantly using layer values.
 func close(arg = null):
 	if stack.is_empty(): return
 	var item = _pop(arg) if typeof(arg) == TYPE_INT else _pop(find_item(arg))
@@ -124,9 +124,9 @@ func close(arg = null):
 
 # --------------------------------------------------------------------------- #
 
-# removes the item if it already exists in the stack, otherwise opens it.
-# unlike `open`, only takes a single arg for the item ref. we're not even using
-# those overlay/restore args anywhere (yet??)
+## removes the item if it already exists in the stack, otherwise opens it.
+## unlike `open`, only takes a single arg for the item ref. we're not even using
+## those overlay/restore args anywhere (yet??)
 func toggle(arg):
 	var item_ref = U.unpack(arg)
 	var item_idx = find_item(item_ref)
@@ -135,10 +135,10 @@ func toggle(arg):
 
 # --------------------------------------------------------------------------- #
 
-# executed when we hear a 'menu_open' signal. the main menu scene listens for
-# the signal on its own, so if it's already loaded it will handle it - but if
-# not, we need to add it to the ui stack and then call its open function
-# manually. we also take this opportunity to update last_menu_page.
+## executed when we hear a 'menu_open' signal. the main menu scene listens for
+## the signal on its own, so if it's already loaded it will handle it - but if
+## not, we need to add it to the ui stack and then call its open function
+## manually. we also take this opportunity to update last_menu_page.
 func open_menu(args = null):
 	var path = U.pack(args)
 	
@@ -211,11 +211,11 @@ func push(item) -> Node:
 
 # --------------------------------------------------------------------------- #
 
-# currently only accepts an index to the stack. that's probably fine; in future
-# we will want to handle a noderef argument for ui_close, so that nodes can
-# close themselves, but this can be handled in close() instead of here.
-# (int, bool) -> dict | undefined
-#warning-ignore:unused_argument
+## currently only accepts an index to the stack. that's probably fine; in future
+## we will want to handle a noderef argument for ui_close, so that nodes can
+## close themselves, but this can be handled in close() instead of here.
+## (int, bool) -> dict | undefined
+##warning-ignore:unused_argument
 func _pop(i = null):
 	if stack == null or stack.is_empty() or (i and i >= stack.size()):
 		Log.warn(self, "stack is empty!")
@@ -259,10 +259,10 @@ func load_node(path: String) -> Node:
 
 # --------------------------------------------------------------------------- #
 
-# the "layer value" of a ui element determines which elements it will replace
-# (those with an equal or greater value) and which it will overlay. here we
-# look up the layer value for our new element based on the open_type property
-# that was passed to open() by whoever emitted the signal (see above).
+## the "layer value" of a ui element determines which elements it will replace
+## (those with an equal or greater value) and which it will overlay. here we
+## look up the layer value for our new element based on the open_type property
+## that was passed to open() by whoever emitted the signal (see above).
 func get_layer_value(open_type, path):
 	if open_type == null:
 		var node = load_node(path)
@@ -284,8 +284,8 @@ func get_next_layer():
 
 # --------------------------------------------------------------------------- #
 
-# the `process` argument lets us skip processing the ref if we know it's been
-# processed already (assuming the arg is an item_ref and not a node pointer)
+## the `process` argument lets us skip processing the ref if we know it's been
+## processed already (assuming the arg is an item_ref and not a node pointer)
 func find_item(arg, process = true):
 	if arg == null: return
 	if typeof(arg) == TYPE_STRING:

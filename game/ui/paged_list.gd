@@ -48,25 +48,25 @@ signal selected_changed(selected: int, data: Variant)
 #                                 c o n f i g                                 #
 # --------------------------------------------------------------------------- #
 
-# determines how (or if) we select items by mouse interaction.
-# hover selects on hover, click on click, and none does not select.
+## determines how (or if) we select items by mouse interaction.
+## hover selects on hover, click on click, and none does not select.
 enum MouseMode { HOVER, CLICK, NONE }
 @export var mouse_mode: MouseMode
 
-# rows per page.
-# page size is the product of rows and columns (inherited from GridContainer).
+## rows per page.
+## page size is the product of rows and columns (inherited from GridContainer).
 @export_range(1, 1024) var rows: int = 1:
 	set(x): rows = maxi(x, 1)
 
-# if this is false, we force `selected` to be a valid index of `items` unless
-# `items` is empty.  if true, we can clear `selected` by setting it to -1.
+## if this is false, we force `selected` to be a valid index of `items` unless
+## `items` is empty.  if true, we can clear `selected` by setting it to -1.
 @export var allow_unselected: bool = true
 
 #                                  s t a t e                                  #
 # --------------------------------------------------------------------------- #
 
-# source data.  the size of this array determines the total number of pages.
-# each element will be loaded into a grid item when we load the page it's on.  
+## source data.  the size of this array determines the total number of pages.
+## each element will be loaded into a grid item when we load the page it's on.  
 var data: Array[Variant] = []:
 	set(x):
 		data = x
@@ -77,7 +77,7 @@ var data: Array[Variant] = []:
 		# since we don't really expect rows or columns to change at runtime.
 		page_count_changed.emit(page_count)
 
-# current page, so we know which slice to load when changing pages
+## current page, so we know which slice to load when changing pages
 var page: int = 0:
 	set(new):
 		page = clampi(new, 0, page_count - 1)
@@ -85,22 +85,22 @@ var page: int = 0:
 		on_page_changed()
 		page_changed.emit(page)
 
-# children on the current page.  should be no larger than rows * columns.
-# the selected item is the one whose index is `selected`.
+## children on the current page.  should be no larger than rows * columns.
+## the selected item is the one whose index is `selected`.
 var items: Array[Control] = []
-# index of the selected item
+## index of the selected item
 var selected: int = -1: set = select
-# items can lose focus for two reasons:
-#  1. because of a change in selection, or
-#  2. because we clicked outside the item.
-# when the selection changes, we manage focus via `on_select` & `on_deselect`,
-# so we don't have to do anything extra.
-# when clicking outside the item though, we need to either clear the selection
-# (if allow_unselected is true) or re-focus the item by selecting it again,
-# to ensure that focus always matches the selected item.  this is handled in a
-# `focus_exited` listener on each item, which we set up in `connect_item`.
-# this boolean tells the `focus_exited` handler not to do anything, since the
-# item is losing focus due to a selection change.
+## items can lose focus for two reasons:
+##  1. because of a change in selection, or
+##  2. because we clicked outside the item.
+## when the selection changes, we manage focus via `on_select` & `on_deselect`,
+## so we don't have to do anything extra.
+## when clicking outside the item though, we need to either clear the selection
+## (if allow_unselected is true) or re-focus the item by selecting it again,
+## to ensure that focus always matches the selected item.  this is handled in a
+## `focus_exited` listener on each item, which we set up in `connect_item`.
+## this boolean tells the `focus_exited` handler not to do anything, since the
+## item is losing focus due to a selection change.
 var ignore_unfocus: bool = false
 
 func select(new: int):
@@ -130,14 +130,14 @@ var page_count: int:
 var has_selected: bool:
 	get: return selected > -1
 
-# column (x) and row (y) of the current selected item
+## column (x) and row (y) of the current selected item
 var column: int:
 	get: return selected % columns
 var row: int:
 	get: return selected / columns
 
-# get the last selectable row on the page.  should be no larger than rows - 1,
-# but may be smaller if we don't have a full page of items.
+## get the last selectable row on the page.  should be no larger than rows - 1,
+## but may be smaller if we don't have a full page of items.
 var last_row: int:
 	get: return 0 if items.is_empty() else (items.size() - 1) / columns
 
@@ -156,17 +156,17 @@ func _ready():
 #                               A B S T R A C T                               #
 # --------------------------------------------------------------------------- #
 
-# override this instead of _ready
+## override this instead of _ready
 func initialize(): pass
 
-# should take in a slice of data the same length as page_size, and return an
-# array of Control nodes which we will then add as children.
+## should take in a slice of data the same length as page_size, and return an
+## array of Control nodes which we will then add as children.
 func load_items(_data_slice: Array[Variant]) -> Array[Control]:
 	return []
 
-# do whatever should be done when a child is selected.
-# note: we might _always_ want to manage focus on select/deselect, so it may
-# be better to do so outside these abstract functions.
+## do whatever should be done when a child is selected.
+## note: we might _always_ want to manage focus on select/deselect, so it may
+## be better to do so outside these abstract functions.
 func on_select(item: Control): item.grab_focus()
 
 func on_deselect(item: Control): item.release_focus()
@@ -178,7 +178,7 @@ func on_page_changed(): pass
 #                             P A G I N A T I O N                             #
 # --------------------------------------------------------------------------- #
 
-# called from the `page` setter.  should not be called on its own.
+## called from the `page` setter.  should not be called on its own.
 func load_page():
 	for child in get_children(): child.queue_free()
 	var start = page_size * page
@@ -193,7 +193,7 @@ func load_page():
 
 # --------------------------------------------------------------------------- #
 
-# set up each item to update `selected` on the appropriate mouse action
+## set up each item to update `selected` on the appropriate mouse action
 func connect_item(item: Control, i: int):
 	match mouse_mode:
 		MouseMode.HOVER: item.mouse_entered.connect(func(): select(i))

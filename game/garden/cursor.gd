@@ -1,34 +1,34 @@
 extends Control
 
-# the cursor has two parts: a collsion circle that tracks the mouse cursor
-# (or is moved via joystick/keyboard input), and the hand graphic. when the
-# circle overlaps an entity, the cursor becomes "stuck" to that entity.
-# when stuck:
-# - both parts of the cursor should follow that entity around
-# - the camera should probably center on the entity (or save this for when the
-#   entity is "selected"?)
-# - (maybe) when the entity is too close to the edge of the garden for the
-#   camera to center on it, we should update the actual mouse position
+## the cursor has two parts: a collsion circle that tracks the mouse cursor
+## (or is moved via joystick/keyboard input), and the hand graphic. when the
+## circle overlaps an entity, the cursor becomes "stuck" to that entity.
+## when stuck:
+## - both parts of the cursor should follow that entity around
+## - the camera should probably center on the entity (or save this for when the
+##   entity is "selected"?)
+## - (maybe) when the entity is too close to the edge of the garden for the
+##   camera to center on it, we should update the actual mouse position
 @onready var hand = $graphic/hand
 
 const HAND_X = 3
 const DEFAULT_HAND_HEIGHT = 16
-# used for positioning the cursor hand graphic when it's stuck to an entity.
-# the entity's sprite should be taller than its shape (the shape represents the
-# part that touches the ground).  for quick & dirty positioning, we multiply
-# the shape's height by this magic number.
+## used for positioning the cursor hand graphic when it's stuck to an entity.
+## the entity's sprite should be taller than its shape (the shape represents the
+## part that touches the ground).  for quick & dirty positioning, we multiply
+## the shape's height by this magic number.
 const SHAPE_HEIGHT_MULTIPLIER = 1.2
 var hand_height: int = DEFAULT_HAND_HEIGHT
 
 var selecting = false
-# holds a pointer to the entity the cursor is currently stuck to, if one exists
+## holds a pointer to the entity the cursor is currently stuck to, if one exists
 var curr_body: Node2D = null
-# time in seconds to wait since the mouse was last moved before we warp the
-# mouse cursor on top of the entity it's stuck to (if one exists). we do this
-# to keep the cursor stuck to a moving monster until the player moves it away.
+## time in seconds to wait since the mouse was last moved before we warp the
+## mouse cursor on top of the entity it's stuck to (if one exists). we do this
+## to keep the cursor stuck to a moving monster until the player moves it away.
 const MOUSE_FOLLOW_DELAY = 0.1
 
-# for lerping the cursor graphic
+## for lerping the cursor graphic
 var graphic_dest = Vector2()
 const lerp_val = 0.3
 
@@ -48,8 +48,8 @@ func reset_anim():
 
 # --------------------------------------------------------------------------- #
 
-# hide the actual cursor when the garden is paused, because we replace it with
-# a hand graphic. unhide it for menus until we implement a custom menu cursor.
+## hide the actual cursor when the garden is paused, because we replace it with
+## a hand graphic. unhide it for menus until we implement a custom menu cursor.
 func _notification(n: int):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)

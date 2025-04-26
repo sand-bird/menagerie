@@ -2,9 +2,9 @@ extends Control
 
 @onready var MenuTab = U.load_relative(scene_file_path, 'menu_tab')
 
-# array of tabs from left to right. when we open a chapter (thus updating the
-# current tab), we move all the tabs left of it to `prev` and all the tabs
-# right of it to `next`.
+## array of tabs from left to right. when we open a chapter (thus updating the
+## current tab), we move all the tabs left of it to `prev` and all the tabs
+## right of it to `next`.
 var tabs: Array[Control]
 
 # =========================================================================== #
@@ -25,8 +25,8 @@ func initialize(chapters):
 #                             P A G I N A T I O N                             #
 # --------------------------------------------------------------------------- #
 
-# must be called from MainMenu.open - if we connect to the dispatcher signal on
-# ready we will miss the first emit
+## must be called from MainMenu.open - if we connect to the dispatcher signal on
+## ready we will miss the first emit
 func open(input):
 	var path = U.pack(input)
 	var chapter = U.aget(path, 0)

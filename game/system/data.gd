@@ -59,9 +59,9 @@ func _init():
 
 # --------------------------------------------------------------------------- #
 
-# get a data definition or returns null.  takes a path array.
-# we can't call this `get` anymore because godot 4 no longer lets you override
-# native functions :(
+## get a data definition or returns null.  takes a path array.
+## we can't call this `get` anymore because godot 4 no longer lets you override
+## native functions :(
 func fetch(a, default = null, warn = true):
 	var args = U.pack(a)
 	Log.verbose(self, ["(fetch) ", args])
@@ -110,8 +110,8 @@ func fetch_res(a):
 #                             . M O D C O N F I G                             #
 # --------------------------------------------------------------------------- #
 
-# fetches modconfig from the place where we keep it. if there is no modconfig,
-# we make one (duh).
+## fetches modconfig from the place where we keep it. if there is no modconfig,
+## we make one (duh).
 func load_modconfig():
 	var modconfig = U.read_file(MOD_DIR.path_join(".modconfig"))
 	if modconfig == null: modconfig = {
@@ -127,12 +127,12 @@ func save_modconfig(modconfig):
 
 # --------------------------------------------------------------------------- #
 
-# checks mod directory against modconfig for any new mods. we call either
-# check_modinfo or add_modinfo for every mod found, depending on whether it's
-# in modconfig already. important: both of these functions add a temporary flag
-# to that mod's info, "found", to be used by clean_modconfig, which wipes the
-# flag when it is done. this is why we call clean_modconfig from here, rather
-# than from _ready.
+## checks mod directory against modconfig for any new mods. we call either
+## check_modinfo or add_modinfo for every mod found, depending on whether it's
+## in modconfig already. important: both of these functions add a temporary flag
+## to that mod's info, "found", to be used by clean_modconfig, which wipes the
+## flag when it is done. this is why we call clean_modconfig from here, rather
+## than from _ready.
 func update_modconfig(modconfig):
 	var dir = DirAccess.open(MOD_DIR)
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
@@ -152,14 +152,14 @@ func update_modconfig(modconfig):
 
 # --------------------------------------------------------------------------- #
 
-# looks for the presence of a "found" key, which is set by add_modinfo and
-# check_modinfo, in each entry in modconfig. since update_modconfig crawls the
-# mod directory and calls one of those for each valid mod it finds, we can
-# expect it to be set for all mods ~*found*~ in the directory. we clear the
-# "found" key after we've seen it.
-#
-# fyi, we do these shenanigans so we don't have to crawl the directory all over
-# again in search of missing mods.
+## looks for the presence of a "found" key, which is set by add_modinfo and
+## check_modinfo, in each entry in modconfig. since update_modconfig crawls the
+## mod directory and calls one of those for each valid mod it finds, we can
+## expect it to be set for all mods ~*found*~ in the directory. we clear the
+## "found" key after we've seen it.
+##
+## fyi, we do these shenanigans so we don't have to crawl the directory all over
+## again in search of missing mods.
 func clean_modconfig(modconfig):
 	for i in modconfig.load_order.size():
 		var id = modconfig.load_order[i]
@@ -174,16 +174,16 @@ func clean_modconfig(modconfig):
 
 # --------------------------------------------------------------------------- #
 
-# formerly it checked the entire mod directory to see if any of the files
-# inside had a more recent date_modified. now it checks the version in the
-# mod's meta.data against the one known to our modconfig. right now this is
-# mostly relevant for updating the schema list.
-#
-# ALSO i just realized that we need to make sure the mod's directory is what we
-# expect it to be. phew, BUG AVERTED
-#
-# note: if we're here, it means we've already validated that the passed-in
-# modinfo's id exists in modconfig.mods.
+## formerly it checked the entire mod directory to see if any of the files
+## inside had a more recent date_modified. now it checks the version in the
+## mod's meta.data against the one known to our modconfig. right now this is
+## mostly relevant for updating the schema list.
+##
+## ALSO i just realized that we need to make sure the mod's directory is what we
+## expect it to be. phew, BUG AVERTED
+##
+## note: if we're here, it means we've already validated that the passed-in
+## modinfo's id exists in modconfig.mods.
 func check_modinfo(modconfig, modinfo, path):
 	var mod_id = modinfo.id
 	var saved_info = modconfig.mods[mod_id]
@@ -205,7 +205,7 @@ func check_modinfo(modconfig, modinfo, path):
 
 # --------------------------------------------------------------------------- #
 
-# new mod! yay!
+## new mod! yay!
 func add_modinfo(modconfig, modinfo, path):
 	Log.debug(self, ["new mod found! adding to modconfig: `",
 			modinfo.id, "`"])
@@ -275,9 +275,9 @@ func load_data(dirname, sourceinfo):
 
 # --------------------------------------------------------------------------- #
 
-# basically file i/o boilerplate so we can call process_data. accepts the path
-# either in two arguments, the directory and the filename, or as a single arg
-# containing the full path.
+## basically file i/o boilerplate so we can call process_data. accepts the path
+## either in two arguments, the directory and the filename, or as a single arg
+## containing the full path.
 func load_datafile(path, sourceinfo) -> Dictionary:
 	Log.debug(self, ["loading data from file: `", path, "`"])
 	var filedata = U.read_file(path)
@@ -362,18 +362,18 @@ func process_schema(s, filename):
 
 # --------------------------------------------------------------------------- #
 
-# if we find multiple instances of some data, we should try to intelligently
-# merge them. the second argument, the "mod" dict, takes precedence over the
-# first. we do the following:
-# - keys that do not appear in the base dict are added
-# - keys that lead to dicts in the base dict *and* in the mod dict are dealt
-# 	with recursively. the goal is to prevent loss of data whenever possible,
-# 	so the game ideally never misses something it's expecting (like a nested
-# 	subproperty). if the mod dict is trying to replace a dictionary property
-# 	with something else, it's probably user error.
-# - for keys that lead to arrays in the base dict, whatever's in the mod dict
-#   is appended to them. there is no type checking here, obviously, so if we
-#   were expecting an array of dicts and the mod doesn't conform, we're SOL.
+## if we find multiple instances of some data, we should try to intelligently
+## merge them. the second argument, the "mod" dict, takes precedence over the
+## first. we do the following:
+## - keys that do not appear in the base dict are added
+## - keys that lead to dicts in the base dict *and* in the mod dict are dealt
+## 	with recursively. the goal is to prevent loss of data whenever possible,
+## 	so the game ideally never misses something it's expecting (like a nested
+## 	subproperty). if the mod dict is trying to replace a dictionary property
+## 	with something else, it's probably user error.
+## - for keys that lead to arrays in the base dict, whatever's in the mod dict
+##   is appended to them. there is no type checking here, obviously, so if we
+##   were expecting an array of dicts and the mod doesn't conform, we're SOL.
 func merge(base: Dictionary, mod: Dictionary):
 	if mod == null: return base
 	Log.verbose(self, ["merging: ", mod.keys(), " into ", base.keys()])
@@ -451,10 +451,10 @@ func list_dir(dirname):
 
 # --------------------------------------------------------------------------- #
 
-# given a `discovered` object (see player.gd), calculates the percentage of
-# available data which has been discovered.
-# each key in `data` is weighted the same, whether or not it has discoverable
-# children (morphs or states).
+## given a `discovered` object (see player.gd), calculates the percentage of
+## available data which has been discovered.
+## each key in `data` is weighted the same, whether or not it has discoverable
+## children (morphs or states).
 func get_completion_percent(discovered: Dictionary) -> int:
 	var total: float = data.size()
 	var completed: float = 0

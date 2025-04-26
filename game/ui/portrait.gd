@@ -31,15 +31,15 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-# only used in the select hud for now. probably temporary
+## only used in the select hud for now. probably temporary
 const FEMALE_BG = Color("f86790")
 const MALE_BG = Color("40c8f8")
 const NONE_BG = Color("e9b5a3")
 const BG_COLORS = [FEMALE_BG, MALE_BG]
 
-# note: this duplicates a lot of the logic in `entity/sprite`.
-# ideally we should have generic EntitySprite class that can parse sprite_info
-# and animate itself accordingly, and use it both here and in Entity.
+## note: this duplicates a lot of the logic in `entity/sprite`.
+## ideally we should have generic EntitySprite class that can parse sprite_info
+## and animate itself accordingly, and use it both here and in Entity.
 func update(e: Entity, idle = false):
 	@warning_ignore("incompatible_ternary")
 	var sprite_info = e.get_sprite_info('idle' if idle else null, Vector2(1, 1))
@@ -79,9 +79,9 @@ func update_border_radius():
 
 # --------------------------------------------------------------------------- #
 
-# note: sprite positioning depends on this rect, but only for centering, and
-# since bg is always centered in the parent it's not necessary to reposition the
-# sprite when this changes.
+## note: sprite positioning depends on this rect, but only for centering, and
+## since bg is always centered in the parent it's not necessary to reposition the
+## sprite when this changes.
 func update_bg_margin():
 	if !has_node('bg'): return
 	$bg.set_offsets_preset(
@@ -91,12 +91,12 @@ func update_bg_margin():
 		)
 
 # --------------------------------------------------------------------------- #
-# vertical alignment of the sprite relative to the container.
-# 0 is top, 1 is bottom, 0.5 is center.
+## vertical alignment of the sprite relative to the container.
+## 0 is top, 1 is bottom, 0.5 is center.
 const VALIGN = 0.7
 
-# update the sprite's position.  called when a container size changes or when
-# the sprite's texture is updated.
+## update the sprite's position.  called when a container size changes or when
+## the sprite's texture is updated.
 func position_sprite():
 	var sprite: Sprite2D = $mask/sprite
 	sprite.centered = false

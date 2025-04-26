@@ -4,8 +4,8 @@ extends Sprite2D
 
 var aux_offset = Vector2(0, 0)
 
-# set the offset based on the texture size so that the sprite is hoizontally
-# centered and vertically bottom-aligned with the entity's collision shape.
+## set the offset based on the texture size so that the sprite is hoizontally
+## centered and vertically bottom-aligned with the entity's collision shape.
 func offset_texture():
 	offset.y = aux_offset.y - texture.get_height() + parent_radius
 	offset.x = aux_offset.x - round(

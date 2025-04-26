@@ -1,21 +1,21 @@
 extends Camera2D
 
-# so we can turn off drag scrolling if we are using drag for something else,
-# such as laying tiles.
+## so we can turn off drag scrolling if we are using drag for something else,
+## such as laying tiles.
 var drag_action = "scroll"
 
 
 # viewport properties
 var screen_size
 var screen_radius
-var edge_width # used for edge scroll
-var dead_zone_radius # used for edge scroll
+var edge_width ## used for edge scroll
+var dead_zone_radius ## used for edge scroll
 
 # parent properties
-var base_pos # global pos of parent - this is our (0, 0), even if parent is offset
-var parent_size # parent dimensions (for clamping the view)
-var parent_center # global pos of parent's center
-var center_pos # global pos to center the view on the parent's center
+var base_pos ## global pos of parent - this is our (0, 0), even if parent is offset
+var parent_size ## parent dimensions (for clamping the view)
+var parent_center ## global pos of parent's center
+var center_pos ## global pos to center the view on the parent's center
 
 # parent boundaries so we can't scroll forever
 var min_pos = Vector2(-INF, -INF)
@@ -59,13 +59,13 @@ func get_screen_settings():
 
 # --------------------------------------------------------------------------- #
 
-# calculates and stores the properties of the camera's parent node (the garden)
-# so we can initialize it to the center and stop it from scrolling too far past
-# the parent's boundaries. no relation to the screen size properties.
-#
-# for now, lets us view a fifth of the parent's size or a quarter of the screen
-# size, whichever's smaller, of space outside the bounds of the parent (magic
-# numbers below).
+## calculates and stores the properties of the camera's parent node (the garden)
+## so we can initialize it to the center and stop it from scrolling too far past
+## the parent's boundaries. no relation to the screen size properties.
+##
+## for now, lets us view a fifth of the parent's size or a quarter of the screen
+## size, whichever's smaller, of space outside the bounds of the parent (magic
+## numbers below).
 func get_bounds():
 	# set up our member vars
 # 	base_pos = get_parent().get_global_pos() # i guess not???
@@ -99,8 +99,8 @@ func stick(target):
 
 # --------------------------------------------------------------------------- #
 
-# scroll based on touch (or click) input. moves the camera opposite the drag
-# direction and magnitude to create the impression of dragging the screen.
+## scroll based on touch (or click) input. moves the camera opposite the drag
+## direction and magnitude to create the impression of dragging the screen.
 func do_drag_scroll():
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && drag_action == "scroll":
 		# calculate move delta
@@ -113,10 +113,10 @@ func do_drag_scroll():
 
 # --------------------------------------------------------------------------- #
 
-# RTS-style scroll based on cursor position, only suitable for mouse input.
-# scrolls the camera when the cursor reaches `Options.camera_edge_size` percent
-# of the window's width or height from the edge of the window, with a speed
-# proportionate to the cursor's distance from the absolute edge.
+## RTS-style scroll based on cursor position, only suitable for mouse input.
+## scrolls the camera when the cursor reaches `Options.camera_edge_size` percent
+## of the window's width or height from the edge of the window, with a speed
+## proportionate to the cursor's distance from the absolute edge.
 func do_edge_scroll():
 	if !Options.edge_scroll_enabled: return
 	# calculate move delta
@@ -132,17 +132,17 @@ func do_edge_scroll():
 
 # --------------------------------------------------------------------------- #
 
-# moves the camera up, down, left, and/or right based on key input. suitable
-# for mouse-and-keyboard or keyboard only input schemes. naturally also works
-# for joypad buttons, since the primary purpose of key-only is for all inputs
-# to be externally remappable to an unrecognized controller.
+## moves the camera up, down, left, and/or right based on key input. suitable
+## for mouse-and-keyboard or keyboard only input schemes. naturally also works
+## for joypad buttons, since the primary purpose of key-only is for all inputs
+## to be externally remappable to an unrecognized controller.
 func do_key_scroll():
 	pass
 
 # --------------------------------------------------------------------------- #
 
-# scrolls based on joystick axis (-1.0 to 1.0 vertical and horizontal).
-# hopefully identifying joystick axes won't be too bad :(
+## scrolls based on joystick axis (-1.0 to 1.0 vertical and horizontal).
+## hopefully identifying joystick axes won't be too bad :(
 func do_joystick_scroll():
 	pass
 

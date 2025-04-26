@@ -117,21 +117,21 @@ const PAUSES = {
 	'pause': 0
 }
 
-# modifiers to apply to the next character we push to the buffer
+## modifiers to apply to the next character we push to the buffer
 @onready var _modifiers = MOD_DEFAULTS.duplicate(true)
-# used for automatically closing modifiers. if we get a close tag without a
-# token, pop off the last (most recent) one from here.
+## used for automatically closing modifiers. if we get a close tag without a
+## token, pop off the last (most recent) one from here.
 var _mod_tokens = []
 
-# used during tokenization for automatic newlines. `_current_line` tells us if
-# the line is too long for the container, while `_last_space` holds the index of
-# the last space character in the buffer, which is replaced by a newline.
+## used during tokenization for automatic newlines. `_current_line` tells us if
+## the line is too long for the container, while `_last_space` holds the index of
+## the last space character in the buffer, which is replaced by a newline.
 var _last_space = 0
 var _current_line = ''
 var current_at = 0
 
-# updated during tokenization.
-# this would be used for pagination but it's not implemented yet.
+## updated during tokenization.
+## this would be used for pagination but it's not implemented yet.
 var _line_count = 1
 
 # --------------------------------------------------------------------------- #
@@ -141,9 +141,6 @@ func _ready(): tokenize(text)
 # --------------------------------------------------------------------------- #
 
 func tokenize(raw: String) -> void:
-	# time at which to render the current character. this is incremented by the
-	# standard amount for each character we push to the buffer, plus any extra
-	# pauses (either from punctuation or from pause tokens).
 	var is_escaped = false
 
 	var i = 0
@@ -164,6 +161,10 @@ func tokenize(raw: String) -> void:
 			continue
 
 		# if it's anything else, we can consider it a character
+		
+		# time at which to render the current character. this is incremented by
+		# the standard amount for each character we push to the buffer, plus any
+		# extra pauses (either from punctuation or from pause tokens).
 		current_at += CHAR_DELAY / _modifiers.speed + _modifiers.pause
 		_modifiers.pause = 0
 
@@ -200,14 +201,16 @@ func tokenize(raw: String) -> void:
 
 # --------------------------------------------------------------------------- #
 
-# adds a newline to the buffer. if use_last_space is true, it replaces the last
-# space in the buffer with the newline, so that all text after the last space
-# gets rendered to the next line. otherwise, it just appends the newline to the
-# end of the buffer.
+## adds a newline to the buffer. if use_last_space is true, it replaces the last
+## space in the buffer with the newline, so that all text after the last space
+## gets rendered to the next line. otherwise, it just appends the newline to the
+## end of the buffer.
 func insert_newline(use_last_space = false):
 	_current_line = ''
 	if use_last_space and _last_space:
 		_buf[_last_space] = { type = BufType.NEWLINE }
+		# re-add whatever characters we already handled after the inserted
+		# newline to _current_line
 		for i in _buf.size() - _last_space:
 			if 'uni' in _buf[i]:
 				_current_line += char(_buf[i].uni)
@@ -300,12 +303,12 @@ func _draw():
 #                       r e n d e r   f u n c t i o n s
 # --------------------------------------------------------------------------- #
 
-# draw_char now takes a font size instead of the next char, meaning it doesn't
-# support kerning anymore (godot recommends we not use it to draw text one
-# character at a time).  screw them; we can keep using this if we can get the
-# kerning for the pair and manually offset the next position.
-# (note: line length calculation during tokenizing _does_ appear to work with
-# kerning, so all we have to do is fix rendering)
+## draw_char now takes a font size instead of the next char, meaning it doesn't
+## support kerning anymore (godot recommends we not use it to draw text one
+## character at a time).  screw them; we can keep using this if we can get the
+## kerning for the pair and manually offset the next position.
+## (note: line length calculation during tokenizing _does_ appear to work with
+## kerning, so all we have to do is fix rendering)
 func do_draw_char(i: int, pos: Vector2) -> int:
 	return font.draw_char(
 		rid,
@@ -323,13 +326,13 @@ func draw_image(_i: int, _pos: Vector2) -> int:
 #                                h e l p e r s
 # --------------------------------------------------------------------------- #
 
-# returns the unicode value of the next character in the buffer
+## returns the unicode value of the next character in the buffer
 func next_char(i):
 	return _buf[i + 1].uni if (i < _buf.size() - 1
 			and 'uni' in _buf[i + 1]) else -1
 
-# returns the position at which we should render the character.
-# this is modified by the animation on that character, if there is one.
+## returns the position at which we should render the character.
+## this is modified by the animation on that character, if there is one.
 func do_anim(i, pos) -> Vector2:
 	return (call(_buf[i].anim, i, pos)
 			if exists_in('anim', _buf[i]) else pos)
@@ -379,8 +382,8 @@ func get_max_lines(max_height):
 
 # --------------------------------------------------------------------------- #
 
-# note: apparently we care about whether dict[prop] is truthy, not just whether
-# it exists. (not sure why though - there doesn't seem to be any usage here
-# where it would matter)
+## note: apparently we care about whether dict[prop] is truthy, not just whether
+## it exists. (not sure why though - there doesn't seem to be any usage here
+## where it would matter)
 func exists_in(prop, dict):
 	return prop in dict and dict[prop]

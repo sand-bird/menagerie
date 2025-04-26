@@ -60,7 +60,7 @@ func _ready():
 #                               C H A P T E R S                               #
 # --------------------------------------------------------------------------- #
 
-# called from Ui.open, which is triggered on a `menu_open` dispatch.
+## called from Ui.open, which is triggered on a `menu_open` dispatch.
 func open(input = null):
 	var path = U.pack(input)
 	var chapter_key = path[0] if !path.is_empty() else null

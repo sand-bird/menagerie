@@ -24,12 +24,12 @@ var debug_text: Label
 
 # core properties
 # ---------------
-var monster_name: String # unfortunately "name" is a reserved property of Node
-# id of the morph in the `morphs` object of monster's data definition.
-# should be non-null
+var monster_name: String ## unfortunately "name" is a reserved property of Node
+## id of the morph in the `morphs` object of monster's data definition.
+## should be non-null
 var morph: StringName
-var birthday: Dictionary # serialized time object ({ tick, hour, day, month, year })
-var age: int # in ticks. tracked separately from birthday in case of time travel
+var birthday: Dictionary ## serialized time object ({ tick, hour, day, month, year })
+var age: int ## in ticks. tracked separately from birthday in case of time travel
 var sex = Sex.FEMALE
 
 # memory
@@ -49,18 +49,18 @@ var current_action: Action:
 			new_action.exited.connect(_on_action_exit)
 var next_action: Action
 
-# ids of action ids the monster knows.
-# used for less-obvious actions like shaking trees.  pets should be able to
-# learn actions by watching others do them, or by insight (low chance for the
-# decider _not_ to filter out an unlearned available action, modified by iq).
-#
-# aside from intrisic, basic actions (idle/sleep/emote/move/eat), maybe _all_
-# actions should be unlearned by default, with varying degrees of learnability?
+## ids of action ids the monster knows.
+## used for less-obvious actions like shaking trees.  pets should be able to
+## learn actions by watching others do them, or by insight (low chance for the
+## decider _not_ to filter out an unlearned available action, modified by iq).
+##
+## aside from intrisic, basic actions (idle/sleep/emote/move/eat), maybe _all_
+## actions should be unlearned by default, with varying degrees of learnability?
 var learned_actions: Array[StringName] = []
 
 # drives
 # ------
-# belly is in kg (like mass)
+## belly is in kg (like mass)
 var belly_capacity: float: # depends on mass and belly_size from data
 	set(value):
 		belly_capacity = value
@@ -81,16 +81,16 @@ var fobbles: float = 0: # fats
 var lumens: float = 0: # sunlight
 	set(value): lumens = maxf(0, value)
 
-# energy is in "kcal"
+## energy is in "kcal"
 var energy_capacity: float: # depends on mass and metabolism rate
 	set(value):
 		energy_capacity = value
 		energy = minf(energy, energy_capacity)
 var energy: float = energy_capacity:
 	set(value): energy = clampf(value, 0, energy_capacity)
-# target energy reflects the pet's preference for activity or rest, and is
-# determined by the inverse of its pep attribute (which ranges from 0 to 1).
-# high pep & low target energy means a more active pet, and vice versa.
+## target energy reflects the pet's preference for activity or rest, and is
+## determined by the inverse of its pep attribute (which ranges from 0 to 1).
+## high pep & low target energy means a more active pet, and vice versa.
 var target_energy: float:
 	get: return energy_capacity * attributes.pep.lerp(0.8, 0.2)
 	set(_x): return
@@ -161,14 +161,14 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-# monsters must be initialized in code because they depend on data definitions
-# that are loaded at runtime.  this makes storing the node's children in a
-# PackedScene (monster.tscn) counter-productive, because the scene would be
-# incomplete/invalid without initialization at runtime.
-#
-# instead, we should create the entire scene programmatically.  this allows us
-# to initialize monsters in a single step with `new`, rather than having to
-# instantiate an incomplete scene and then initialize it in a separate step.
+## monsters must be initialized in code because they depend on data definitions
+## that are loaded at runtime.  this makes storing the node's children in a
+## PackedScene (monster.tscn) counter-productive, because the scene would be
+## incomplete/invalid without initialization at runtime.
+##
+## instead, we should create the entire scene programmatically.  this allows us
+## to initialize monsters in a single step with `new`, rather than having to
+## instantiate an incomplete scene and then initialize it in a separate step.
 func _init(data_: Dictionary, garden_: Garden):
 	super(data_, garden_)
 	
@@ -238,7 +238,7 @@ func _on_tick_changed():
 
 # --------------------------------------------------------------------------- #
 
-# debug logging, shows up in garden ui
+## debug logging, shows up in garden ui
 func announce(msg):
 	var l = garden.get_node('ui/log')
 	l.add_text('[' + monster_name + '] ' + msg + '\n')
@@ -301,12 +301,12 @@ func vec_to_grabbed() -> Vector2:
 #                                A C T I O N S                                #
 # --------------------------------------------------------------------------- #
 
-# interrupts the current action to start a new one.
-# if there is already a current action ongoing and we don't want to (or can't)
-# queue it, fail out of it.  this should do two things:
-# 1. trigger `_on_action_exit`, pushing the action to `past_actions`
-# 2. trigger the `current_action` setter, which handles connecting and
-#    disconnecting the current action's `exit` signal to `_on_action_exit`
+## interrupts the current action to start a new one.
+## if there is already a current action ongoing and we don't want to (or can't)
+## queue it, fail out of it.  this should do two things:
+## 1. trigger `_on_action_exit`, pushing the action to `past_actions`
+## 2. trigger the `current_action` setter, which handles connecting and
+##    disconnecting the current action's `exit` signal to `_on_action_exit`
 func override_action(action: Action, queue_current = false):
 	if current_action:
 		if queue_current and !next_action:
@@ -318,9 +318,9 @@ func override_action(action: Action, queue_current = false):
 
 # --------------------------------------------------------------------------- #
 
-# called on tick when we don't have a current action.
-# pulls out the action stored in `next_action` if we have one, otherwise
-# chooses a new action to execute via the decider.
+## called on tick when we don't have a current action.
+## pulls out the action stored in `next_action` if we have one, otherwise
+## chooses a new action to execute via the decider.
 func choose_action():
 	if current_action: return
 	if next_action:
@@ -349,13 +349,13 @@ func _on_action_exit(status):
 
 # --------------------------------------------------------------------------- #
 
-# number of past actions to remember: 2-8 depending on monster iq.
+## number of past actions to remember: 2-8 depending on monster iq.
 func get_memory_size():
 	return attributes.iq.ilerp(2, 8)
 
 # --------------------------------------------------------------------------- #
 
-# note: `is_sleeping` is already a method on RigidBody2D
+## note: `is_sleeping` is already a method on RigidBody2D
 func is_asleep(): return (
 	current_action is SleepAction
 	and current_action.status == Action.Status.RUNNING
@@ -369,8 +369,8 @@ func is_asleep(): return (
 var morph_anims: Dictionary:
 	get: return Data.fetch([id, 'morphs', morph, 'animations'])
 
-# get the anim_info dict for a particular key and facing.
-# uses the current values from $anim if arguments are null.
+## get the anim_info dict for a particular key and facing.
+## uses the current values from $anim if arguments are null.
 func get_sprite_info(_key = null, _facing = null) -> Dictionary:
 	var key = _key if _key != null else anim.current
 	var facing = _facing if _facing != null else anim.facing
@@ -394,8 +394,8 @@ func set_anim_speed(speed):
 #                                 D R I V E S                                 #
 # --------------------------------------------------------------------------- #
 
-# sugar for calling individual `update_x` methods
-# TODO: emit signal
+## sugar for calling individual `update_x` methods
+## TODO: emit signal
 func update_drive(drive: StringName, delta: float) -> void:
 	if not drive in Action.DRIVES:
 		Log.error(self, ['called `estimate_drive` with an invalid drive: ', drive])
@@ -407,32 +407,32 @@ func update_drives(drive_diff: Dictionary) -> void:
 
 # --------------------------------------------------------------------------- #
 
-# pets with higher vigor use less energy to perform the same amount of activity
-# as those with lower vigor, and can extract more energy from stored energy
-# sources.  the default vigor multiplier scale is 2, meaning maximum and minimum
-# vigor will double or halve energy recovery, respectively (and vice versa for
-# energy drain), but this can be tweaked using the second parameter.
+## pets with higher vigor use less energy to perform the same amount of activity
+## as those with lower vigor, and can extract more energy from stored energy
+## sources.  the default vigor multiplier scale is 2, meaning maximum and minimum
+## vigor will double or halve energy recovery, respectively (and vice versa for
+## energy drain), but this can be tweaked using the second parameter.
 func update_energy(delta: float, vigor_mod_scale: float = 2):
 	energy += attributes.vigor.modify(delta, vigor_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
-# belly changes are modified by appetite in the same way that energy is modified
-# by vigor, but inverted, so that higher appetite values will increase belly
-# loss (causing the pet to become hungry faster) by up to 2x, and decrease gain
-# (causing it to be less sated when it eats food) by up to half.
+## belly changes are modified by appetite in the same way that energy is modified
+## by vigor, but inverted, so that higher appetite values will increase belly
+## loss (causing the pet to become hungry faster) by up to 2x, and decrease gain
+## (causing it to be less sated when it eats food) by up to half.
 func update_belly(delta: float, appetite_mod_scale: float = 2):
 	belly += attributes.appetite.modify(delta, appetite_mod_scale, true)
 
 # --------------------------------------------------------------------------- #
 
-# high confidence increases social gain and decreases loss, and vice versa.
+## high confidence increases social gain and decreases loss, and vice versa.
 func update_social(delta: float, confidence_mod_scale: float = 2):
 	social += attributes.confidence.modify(delta, confidence_mod_scale)
 
 # --------------------------------------------------------------------------- #
 
-# mood is unmodified by attributes (for now)
+## mood is unmodified by attributes (for now)
 func update_mood(delta: float): mood += delta
 
 
@@ -446,10 +446,10 @@ const DAYS_TO_EMPTY_BELLY = 3.0
 const ENERGY_SOURCE_VALUES = {
 	porps = 4.0, scoses = 3.0, fobbles = 9.0, lumens = 2.0
 }
-# handle the monster's ongoing biological processes:
-# - digest food, reducing `belly` (eventually we should turn this into poop)
-# - catabolize stored energy (porps/scoses/fobbles/lumens)
-# - burn energy for metabolism
+## handle the monster's ongoing biological processes:
+## - digest food, reducing `belly` (eventually we should turn this into poop)
+## - catabolize stored energy (porps/scoses/fobbles/lumens)
+## - burn energy for metabolism
 func metabolize() -> void:
 	var ticks_to_empy: float = DAYS_TO_EMPTY_BELLY * Clock.HOURS_IN_DAY * Clock.TICKS_IN_HOUR
 	var belly_attrition = (belly_capacity / ticks_to_empy)
@@ -488,12 +488,12 @@ func metabolize() -> void:
 # `deserialize` is called from the Entity constructor, and `serialize` is
 # called from the garden's `serialize` method.
 
-# list of property names to persist and load.
-# overrides `Entity.save_keys`, which returns the generic keys shared by all
-# entities (uuid, id, and - for now - position).
-# order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially `id`).  this is
-# why we start with the keys from `super` (Entity) and append our own keys.
+## list of property names to persist and load.
+## overrides `Entity.save_keys`, which returns the generic keys shared by all
+## entities (uuid, id, and - for now - position).
+## order matters for deserialization; some properties depend on others earlier
+## in the list to already be loaded or generated (especially `id`).  this is
+## why we start with the keys from `super` (Entity) and append our own keys.
 func save_keys() -> Array[StringName]:
 	var keys = super.save_keys()
 	keys.append_array([
@@ -512,8 +512,8 @@ func save_keys() -> Array[StringName]:
 #                                l o a d e r s                                #
 # --------------------------------------------------------------------------- #
 
-# ideally we would fail to load a monster with an invalid morph.  i'm not sure
-# how to fail out of the constructor though, so for now just pick a valid one
+## ideally we would fail to load a monster with an invalid morph.  i'm not sure
+## how to fail out of the constructor though, so for now just pick a valid one
 func load_morph(input):
 	if Data.missing([id, &'morphs', input]): input = generate_morph()
 	morph = input

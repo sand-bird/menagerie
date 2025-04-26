@@ -33,15 +33,15 @@ var shadow: TextureRect
 
 # core properties
 # ---------------
-var uuid: StringName # unique id of the entity
-var id: StringName # id of the entity's data definition
-var size: int # radius of the entity's collision shape
+var uuid: StringName ## unique id of the entity
+var id: StringName ## id of the entity's data definition
+var size: int ## radius of the entity's collision shape
 
 var data:
 	get: return Data.fetch(id)
 	set(_x): return
 
-# modular behavior implementations (not currently used for monsters)
+## modular behavior implementations (not currently used for monsters)
 var traits: Dictionary = {}
 
 
@@ -49,14 +49,14 @@ var traits: Dictionary = {}
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 
-# entities must be initialized in code because they depend on data definitions
-# that are loaded at runtime.  this makes storing the node's children in a
-# PackedScene (entity.tscn) counter-productive, because the scene would be
-# incomplete/invalid without initialization at runtime.
-#
-# instead, we should create the entire scene programmatically.  this allows us
-# to initialize entities in a single step with `new`, rather than having to
-# instantiate an incomplete scene and then initialize it in a separate step.
+## entities must be initialized in code because they depend on data definitions
+## that are loaded at runtime.  this makes storing the node's children in a
+## PackedScene (entity.tscn) counter-productive, because the scene would be
+## incomplete/invalid without initialization at runtime.
+##
+## instead, we should create the entire scene programmatically.  this allows us
+## to initialize entities in a single step with `new`, rather than having to
+## instantiate an incomplete scene and then initialize it in a separate step.
 func _init(data_: Dictionary, garden_: Garden):
 	garden = garden_
 	deserialize(data_)
@@ -113,9 +113,9 @@ func _init(data_: Dictionary, garden_: Garden):
 
 # --------------------------------------------------------------------------- #
 
-# it's nicer to use vars for children because of typing, but we name them so
-# other nodes can get them with `get_node`.  this is also necessary for $anim
-# since it takes a NodePath to $sprite (the target of all animations).
+## it's nicer to use vars for children because of typing, but we name them so
+## other nodes can get them with `get_node`.  this is also necessary for $anim
+## since it takes a NodePath to $sprite (the target of all animations).
 func add_named_child(node: Node, n: String):
 	node.name = n
 	add_child(node)
@@ -127,15 +127,15 @@ func add_named_child(node: Node, n: String):
 #                               a b s t r a c t                               #
 # --------------------------------------------------------------------------- #
 
-# returns a sprite_info dict from the entity's data.  used for portraits.
+## returns a sprite_info dict from the entity's data.  used for portraits.
 func get_sprite_info(_key = null, _facing = null) -> Dictionary:
 	return { spritesheet = "res://assets/ui/icons/monster.png" } # placeholder
 
-# returns a name suitable for display in menus.
+## returns a name suitable for display in menus.
 func get_display_name() -> String:
 	return U.trans(data.name)
 
-# returns the actions the given monster can perform on this entity.
+## returns the actions the given monster can perform on this entity.
 func get_actions(m: Monster) -> Array[Action]:
 	var actions = [] as Array[Action]
 	for t in traits.values():
@@ -145,8 +145,8 @@ func get_actions(m: Monster) -> Array[Action]:
 #                                p h y s i c s                                #
 # --------------------------------------------------------------------------- #
 
-# truncate linear velocity so that janky grab physics can't rocket things
-# across the map
+## truncate linear velocity so that janky grab physics can't rocket things
+## across the map
 func _integrate_forces(state: PhysicsDirectBodyState2D):
 	state.linear_velocity = state.linear_velocity.limit_length(100)
 
@@ -161,9 +161,9 @@ func _physics_process(_delta):
 
 #                                  d e b u g                                  #
 # --------------------------------------------------------------------------- #
-# configuration for raycasts to show for debug purposes.
-# need to reload when adding/uncommenting one since we set these up in _init.
-# can add more in subclasses by overriding the `debug_vectors` fn.
+## configuration for raycasts to show for debug purposes.
+## need to reload when adding/uncommenting one since we set these up in _init.
+## can add more in subclasses by overriding the `debug_vectors` fn.
 func debug_vectors():
 	return {
 		linear_velocity = [Color(1, 0, 0), func (): return linear_velocity * 3],
@@ -175,9 +175,9 @@ func debug_vectors():
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 
-# list of property names to persist and load.
-# order matters for deserialization; some properties depend on others earlier
-# in the list to already be loaded or generated (especially id`).
+## list of property names to persist and load.
+## order matters for deserialization; some properties depend on others earlier
+## in the list to already be loaded or generated (especially id`).
 func save_keys() -> Array[StringName]:
 	return [&'uuid', &'id', &'position', &'traits'] as Array[StringName]
 
@@ -208,8 +208,8 @@ func deserialize(serialized = {}) -> void:
 func load_position(input) -> void:
 	position = U.parse_vec(input, generate_position())
 
-# ideally we would fail to load an entity with an invalid id.  i'm not sure
-# how to fail out of the constructor though, so for now just pick a valid one
+## ideally we would fail to load an entity with an invalid id.  i'm not sure
+## how to fail out of the constructor though, so for now just pick a valid one
 func load_id(input) -> void:
 	if input == null or Data.missing(input): input = generate_id()
 	id = input

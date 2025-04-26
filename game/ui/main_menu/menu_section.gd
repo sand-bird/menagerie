@@ -63,22 +63,22 @@ func _input(e: InputEvent):
 #                               a b s t r a c t                               #
 # --------------------------------------------------------------------------- #
 
-# pseudo-constructor, called from `menu_chapter` when it loads a section.
-# menu sections sometimes take params (ie, a monster uuid), but are stored as
-# PackedScenes because they are full of fiddly ui bits.
-# this _should_ be called before `_ready` since we call it before adding the
-# section as a child of the chapter, but we should test to be sure.
+## pseudo-constructor, called from `menu_chapter` when it loads a section.
+## menu sections sometimes take params (ie, a monster uuid), but are stored as
+## PackedScenes because they are full of fiddly ui bits.
+## this _should_ be called before `_ready` since we call it before adding the
+## section as a child of the chapter, but we should test to be sure.
 func initialize(_key = null): pass
 
-# given a page index, render that page.
+## given a page index, render that page.
 func load_page(_page: int): pass
 
-# focus the appropriate child.  `from_right` is true when navigating back via
-# `prev_page`, meaning we should focus the rightmost child instead of the left.
+## focus the appropriate child.  `from_right` is true when navigating back via
+## `prev_page`, meaning we should focus the rightmost child instead of the left.
 func focus(_from_right = false): pass
 
-# the ui_right/ui_left inputs should turn the page if the focused element is on
-# the far right or left side of the page.  it seems the easiest way to check for
-# this is to let subclasses determine it by overriding these functions.
+## the ui_right/ui_left inputs should turn the page if the focused element is on
+## the far right or left side of the page.  it seems the easiest way to check for
+## this is to let subclasses determine it by overriding these functions.
 func can_next_page() -> bool: return false
 func can_prev_page() -> bool: return false

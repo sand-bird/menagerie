@@ -1,8 +1,8 @@
 class_name Garden
 extends Control
 
-# since monster actions usually target other entities in the garden, monsters
-# will wait to deserialize their actions until all garden entities are loaded.
+## since monster actions usually target other entities in the garden, monsters
+## will wait to deserialize their actions until all garden entities are loaded.
 signal entities_loaded
 
 var monsters:
@@ -27,16 +27,16 @@ func init(data):
 #                      P O S I T I O N I N G   U T I L S                      #
 # --------------------------------------------------------------------------- #
 
-# takes a position relative to the garden and moves the mouse there.
-# warp_mouse expects a position relative to the screen, so we convert between
-# the two with get_target_position, which returns the difference.
+## takes a position relative to the garden and moves the mouse there.
+## warp_mouse expects a position relative to the screen, so we convert between
+## the two with get_target_position, which returns the difference.
 func set_mouse_position(mouse_pos):
 	var new_mouse_pos = mouse_pos - $camera.get_target_position()
 	warp_mouse(new_mouse_pos)
 
-# it seems that get_global_mouse_position and get_local_mouse_position both
-# return the mouse's position relative to the garden ¯\_(ツ)_/¯
-# note: currently unused, not sure if needed
+## it seems that get_global_mouse_position and get_local_mouse_position both
+## return the mouse's position relative to the garden ¯\_(ツ)_/¯
+## note: currently unused, not sure if needed
 func get_screen_relative_mouse_pos():
 	return get_global_mouse_position() - $camera.get_target_position()
 
@@ -63,10 +63,10 @@ enum InputState {
 
 var input_state := InputState.FREE
 
-# interaction targets
+## interaction targets
 var highlighted: Entity = null
 var selected: Entity = null
-# this should specifically be a Monster but that gives us a circular dependecy
+## this should specifically be a Monster but that gives us a circular dependecy
 var commanding: Entity = null
 
 # --------------------------------------------------------------------------- #

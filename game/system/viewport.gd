@@ -60,8 +60,8 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-# manually resizing the window sends a bunch of resize events, so we need to
-# debounce to avoid thrash.
+## manually resizing the window sends a bunch of resize events, so we need to
+## debounce to avoid thrash.
 func debounce():
 	counter.y += 1
 	var c = Vector2i(counter)
@@ -77,11 +77,11 @@ func debounce():
 
 # --------------------------------------------------------------------------- #
 
-# for pixel perfect, the viewport size must be an exact multiple of the base
-# size, which depends on the window size and our size constraints defined in
-# the constants above.  first we calculate the proper base size, then scale
-# the viewport container to match, then finally offset it by the gutter so the
-# viewport is centered in the window.
+## for pixel perfect, the viewport size must be an exact multiple of the base
+## size, which depends on the window size and our size constraints defined in
+## the constants above.  first we calculate the proper base size, then scale
+## the viewport container to match, then finally offset it by the gutter so the
+## viewport is centered in the window.
 func update_screen(source_counter):
 	updating = true
 	counter.x += 1
@@ -114,12 +114,12 @@ func update_screen(source_counter):
 
 # --------------------------------------------------------------------------- #
 
-# just some sugar to floating-point divide our many ints
+## just some sugar to floating-point divide our many ints
 func div(a: int, b: int) -> float: return float(a) / float(b)
 
-# the scale is found using IDEAL_SIZE, then clamped to the minimum and maximum
-# possible scale just in case. if the window's width exceeds the maximum aspect
-# ratio, we must calculate the scale using its height.
+## the scale is found using IDEAL_SIZE, then clamped to the minimum and maximum
+## possible scale just in case. if the window's width exceeds the maximum aspect
+## ratio, we must calculate the scale using its height.
 func get_scale(win_size) -> int:
 	var scale_x = div(win_size.x, IDEAL_SIZE.x)
 	var scale_y = div(win_size.y, IDEAL_SIZE.y)
@@ -151,10 +151,10 @@ func get_scale(win_size) -> int:
 
 # --------------------------------------------------------------------------- #
 
-# sets `base_size` according to the new window dimensions and our constraints.
-# if the window is wider than the minimum aspect ratio, we must calculate
-# base_size from the window's height; same with width if it's taller than the
-# maximum. here we use width by default, and height when necessary.
+## sets `base_size` according to the new window dimensions and our constraints.
+## if the window is wider than the minimum aspect ratio, we must calculate
+## base_size from the window's height; same with width if it's taller than the
+## maximum. here we use width by default, and height when necessary.
 func get_new_size(win_size, scale):
 	var new_x
 	var new_y

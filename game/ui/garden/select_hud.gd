@@ -11,9 +11,9 @@ should persist for a little while when no entity is highlighted, then disappear.
 to do this we start an internal timer 
 """
 
-# how long to leave the UI on the screen when nothing is highlighted
+## how long to leave the UI on the screen when nothing is highlighted
 const CLEAR_DELAY = 10.0
-# how long it takes for it to fade out (included in CLEAR_DELAY)
+## how long it takes for it to fade out (included in CLEAR_DELAY)
 const FADE_TIME = 1.0
 
 var target: Entity
@@ -67,10 +67,10 @@ func set_target(new_target: Node2D):
 
 # --------------------------------------------------------------------------- #
 
-# disconnects whatever signals we were listening to on the target.
-# 1`get_incoming_connections` returns everything linked to a callable in this
-# script, eg `Dispatcher.entity_highlighted`.  we filter those for signals on
-# the target, and just disconnect those.
+## disconnects whatever signals we were listening to on the target.
+## 1`get_incoming_connections` returns everything linked to a callable in this
+## script, eg `Dispatcher.entity_highlighted`.  we filter those for signals on
+## the target, and just disconnect those.
 func clear_target(_entity = null):
 	hide()
 	if !target: return

@@ -1,17 +1,17 @@
-# evaluates and resolves conditions parsed from data files.
+## evaluates and resolves conditions parsed from data files.
 class_name Condition
 const log_name = "Condition"
 
-# not a typo: actually a portmanteau of "separators" and "operators".
-# these apply to condition arguments
+## not a typo: actually a portmanteau of "separators" and "operators".
+## these apply to condition arguments
 const seperators = {
 	'.': 'get',
 	':': 'map'
 }
 
-# our global refs must be parsed at runtime, since not every global will be a
-# singleton (and we don't want to depend too much on the other singletons being
-# loaded first, anyway). otherwise this would be a dictionary also.
+## our global refs must be parsed at runtime, since not every global will be a
+## singleton (and we don't want to depend too much on the other singletons being
+## loaded first, anyway). otherwise this would be a dictionary also.
 static func resolve_global(arg):
 	match (arg):
 		'player': return Player
@@ -87,15 +87,15 @@ static func resolve(data, caller = null, parent = null):
 #                               b o o l e a n s
 # --------------------------------------------------------------------------- #
 
-# accepts an ARRAY with AT LEAST 2 members
-# returns true if all members resolve to true
+## accepts an ARRAY with AT LEAST 2 members
+## returns true if all members resolve to true
 static func _and(data, caller, parent):
 	for condition in data:
 		if !resolve(condition, caller, parent): return false
 	return true
 
-# accepts an ARRAY with AT LEAST 2 members
-# returns true if at least one member resolves to true
+## accepts an ARRAY with AT LEAST 2 members
+## returns true if at least one member resolves to true
 static func _or(data, caller, parent):
 	for condition in data:
 		if resolve(condition, caller, parent): return true
@@ -140,10 +140,10 @@ static func _in(data, caller, parent):
 #                        d a t a   o p e r a t o r s
 # --------------------------------------------------------------------------- #
 
-# accepts an ARRAY with EXACTLY 2 members, where the first is a dictionary or
-# object and the second is a valid index or property of the first. returns the
-# value corresponding to the key or property of the former, specified by the
-# latter. (should crash if data doesn't have key.)
+## accepts an ARRAY with EXACTLY 2 members, where the first is a dictionary or
+## object and the second is a valid index or property of the first. returns the
+## value corresponding to the key or property of the former, specified by the
+## latter. (should crash if data doesn't have key.)
 static func _get_op(args, caller, parent):
 	Log.verbose(log_name, ["(_get): ", args])
 	var data = eval_arg(args[0], caller, parent)
@@ -176,11 +176,11 @@ static func _get_op(args, caller, parent):
 
 # --------------------------------------------------------------------------- #
 
-# accepts an ARRAY with EXACTLY 2 members, where the first is a dictionary or
-# array, and the second is a valid index or property of at least one ELEMENT IN
-# the first. returns a dictionary or array containing, for each element in the
-# former, the value corresponding to the key or property specified by the
-# latter, if such a value exists.
+## accepts an ARRAY with EXACTLY 2 members, where the first is a dictionary or
+## array, and the second is a valid index or property of at least one ELEMENT IN
+## the first. returns a dictionary or array containing, for each element in the
+## former, the value corresponding to the key or property specified by the
+## latter, if such a value exists.
 static func _map(args, caller, parent):
 	Log.verbose(log_name, ["(_map) before: ", args])
 	var results = []
@@ -202,9 +202,9 @@ static func _map(args, caller, parent):
 
 # --------------------------------------------------------------------------- #
 
-# accepts an ARRAY with EXACTLY 2 members: the first a collection, and the
-# second a condition object. returns a collection containing the elements of
-# the former for which the latter resolves to true.
+## accepts an ARRAY with EXACTLY 2 members: the first a collection, and the
+## second a condition object. returns a collection containing the elements of
+## the former for which the latter resolves to true.
 static func _filter(args, caller, parent):
 	var results = []
 	var data = eval_arg(args[0], caller, parent)
@@ -228,8 +228,8 @@ static func _empty(arg, caller, parent):
 #                              A R G U M E N T S                              #
 # --------------------------------------------------------------------------- #
 
-# residual from 1.0 - convenient for the basic comparators but probably won't
-# handle * context right, meaning it will break for filtering
+## residual from 1.0 - convenient for the basic comparators but probably won't
+## handle * context right, meaning it will break for filtering
 static func eval_args(data, caller, parent):
 	assert(typeof(data) == TYPE_ARRAY and data.size() == 2)
 	var resolved_data = []
@@ -237,8 +237,8 @@ static func eval_args(data, caller, parent):
 		resolved_data.append(eval_arg(arg, caller, parent))
 	return resolved_data
 
-# this is called from anybody who might get an argment with seperators in it.
-# expands the arg, then resolves it.
+## this is called from anybody who might get an argment with seperators in it.
+## expands the arg, then resolves it.
 static func eval_arg(arg, caller = null, parent = null):
 	var expanded = expand_ops(arg)
 	if typeof(expanded) == TYPE_DICTIONARY:
@@ -250,7 +250,7 @@ static func eval_arg(arg, caller = null, parent = null):
 #                                 s i g i l s
 # --------------------------------------------------------------------------- #
 
-# accepts an ATOMIC (no seperators) string that may or may not have a sigil.
+## accepts an ATOMIC (no seperators) string that may or may not have a sigil.
 static func eval_sigil(arg, caller, parent):
 	match arg[0]:
 		'$': return resolve_global(U.strip_sigil(arg))
@@ -261,11 +261,11 @@ static func eval_sigil(arg, caller, parent):
 #                             s e p e r a t o r s
 # --------------------------------------------------------------------------- #
 
-# expands an argument string with separator operators, aka seperators (see the
-# const up top), into actual "condition" objects that our regular resolve logic
-# knows how to handle. the seperator becomes the key, and the rest of the
-# string is split around it to become the arguments, which are then expanded
-# themselves.
+## expands an argument string with separator operators, aka seperators (see the
+## const up top), into actual "condition" objects that our regular resolve logic
+## knows how to handle. the seperator becomes the key, and the rest of the
+## string is split around it to become the arguments, which are then expanded
+## themselves.
 static func expand_ops(arg):
 	if typeof(arg) != TYPE_STRING: return arg
 	var op_pos = find_op(arg)
@@ -278,14 +278,14 @@ static func expand_ops(arg):
 		]}
 	else: return arg
 
-# gets all operator positions in the argument string, and returns the largest
-# one as an array[2] with the operator at 0 and its position at 1.
-#
-# the rfind is VERY IMPORTANT for our argument to expand in the correct order.
-# resolve recurses from the inside out, so the "top level" of the expansion
-# must be the innermost nested operator. meanwhile, expand_ops recurses from
-# the outside in, so we have to start at the END of the string to obtain the
-# correct structure.
+## gets all operator positions in the argument string, and returns the largest
+## one as an array[2] with the operator at 0 and its position at 1.
+##
+## the rfind is VERY IMPORTANT for our argument to expand in the correct order.
+## resolve recurses from the inside out, so the "top level" of the expansion
+## must be the innermost nested operator. meanwhile, expand_ops recurses from
+## the outside in, so we have to start at the END of the string to obtain the
+## correct structure.
 static func find_op(arg):
 	var op_pos
 	var max_pos = 0

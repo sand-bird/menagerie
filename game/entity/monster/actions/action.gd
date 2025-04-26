@@ -1,19 +1,17 @@
+## basic behavior tree style action.  has two active methods, `proc` and `tick`.
+## the former runs on the physics clock, and the latter runs every in-game tick.
+## 
+## all actions have, at minimum, a reference to the monster performing the action
+## and a timeout value (to avoid infinite loops).  action subclasses often take
+## in addition parameters like a target.
+## 
+## many actions have prerequisites - eg, for a monster to eat an item it must be
+## grabbing that item, and for it to grab an item it must be in close proximity
+## to it.  each prerequisite is associated with another action that can accomplish
+## it; if the prerequisite is not met, we initialize that action as our `prereq`
+## and delegate execution to it until it succeeds.
 class_name Action
 extends RefCounted
-"""
-basic behavior tree style action.  has two active methods, `proc` and `tick`.
-the former runs on the physics clock, and the latter runs every in-game tick.
-
-all actions have, at minimum, a reference to the monster performing the action
-and a timeout value (to avoid infinite loops).  action subclasses often take in
-addition parameters like a target.
-
-many actions have prerequisites - eg, for a monster to eat an item it must be
-grabbing that item, and for it to grab an item it must be in close proximity to
-it.  each prerequisite is associated with another action that can accomplish it;
-if the prerequisite is not met, we initialize that action as our `prereq` and
-delegate execution to it until it succeeds.
-"""
 
 signal exited(status)
 
@@ -124,8 +122,8 @@ func require_target() -> bool:
 
 const DRIVES = [&'belly', &'energy', &'social', &'mood']
 
-# public method called by the Decider.  combines intrinsic drive estimates with
-# those of the prerequisite action, if one is set.
+## public method called by the Decider.  combines intrinsic drive estimates with
+## those of the prerequisite action, if one is set.
 func estimate_drive(drive: StringName) -> float:
 	if not drive in DRIVES:
 		Log.error(self, ['called `estimate_drive` with an invalid drive: ', drive])
@@ -146,9 +144,9 @@ func estimate_belly() -> float: return 0
 func estimate_energy() -> float: return 0
 func estimate_social() -> float: return 0
 
-# takes in the utility value calculated by the Decider based on the output of
-# the `estimate_{drive}` functions above, and returns a new utility value.
-# can be used to modify the calculated utility value or simply override it. 
+## takes in the utility value calculated by the Decider based on the output of
+## the `estimate_{drive}` functions above, and returns a new utility value.
+## can be used to modify the calculated utility value or simply override it. 
 func mod_utility(utility: float): return utility
 
 
@@ -208,7 +206,7 @@ func exit(exit_status: Status) -> void:
 
 # --------------------------------------------------------------------------- #
 
-# sleep for a certain number of ticks
+## sleep for a certain number of ticks
 func sleep(duration) -> void:
 	if duration > 0:
 		sleep_timer = duration
@@ -224,14 +222,14 @@ func _unpause(): _start()
 func _tick() -> void: pass
 func _proc(_delta): pass
 
-# behavior when the timeout expires. all actions need a timeout to prevent
-# infinite loops. by default the action fails, but this can be overridden by
-# subclasses.
+## behavior when the timeout expires. all actions need a timeout to prevent
+## infinite loops. by default the action fails, but this can be overridden by
+## subclasses.
 func _timeout(): exit(Status.FAILED)
 
-# called on exit.  this allows actions to update drives (with changes since the
-# last tick or with any changes that depend on the outcome of the action),
-# and to perform any necessary cleanup (eg, resetting animations).
+## called on exit.  this allows actions to update drives (with changes since the
+## last tick or with any changes that depend on the outcome of the action),
+## and to perform any necessary cleanup (eg, resetting animations).
 func _exit(_status: Status) -> void: pass
 
 func _on_prereq_exit(_status: Status, _name: StringName) -> void: pass
@@ -240,10 +238,10 @@ func _on_prereq_exit(_status: Status, _name: StringName) -> void: pass
 #                          S E R I A L I Z A T I O N                          #
 # --------------------------------------------------------------------------- #
 
-# generate the full list of save keys for an action by recursively calling
-# the static `_save_keys` function for every class in our inheritance hierarchy.
-# eg, for an ApproachAction, it will append `ApproachAction._save_keys`, then
-# `MoveAction._save_keys`, then `Action._save_keys` to the returned array.
+## generate the full list of save keys for an action by recursively calling
+## the static `_save_keys` function for every class in our inheritance hierarchy.
+## eg, for an ApproachAction, it will append `ApproachAction._save_keys`, then
+## `MoveAction._save_keys`, then `Action._save_keys` to the returned array.
 func save_keys() -> Array[StringName]:
 	var keys: Array[StringName] = []
 	var script = get_script()
@@ -268,12 +266,12 @@ func serialize() -> Dictionary:
 
 # --------------------------------------------------------------------------- #
 
-# action deserialization is somewhat unusual because we must identify the right
-# Action subclass from the `name` property in `input` before we can initialize
-# the action.  thus this is a static function that returns a new Action, rather
-# than a class method like other `deserialize` functions.
-# (TODO: maybe come up with a different name for this?? the discrepancy is gonna
-# be hella confusing like 2 years from now)
+## action deserialization is somewhat unusual because we must identify the right
+## Action subclass from the `name` property in `input` before we can initialize
+## the action.  thus this is a static function that returns a new Action, rather
+## than a class method like other `deserialize` functions.
+## (TODO: maybe come up with a different name for this?? the discrepancy is gonna
+## be hella confusing like 2 years from now)
 static func deserialize(monster: Monster, input: Dictionary) -> Action:
 	assert(&'name' in input, str("cannot load an action without a name: ", input))
 	var action_path = SCRIPT_PATH.path_join(input.name + ".gd")

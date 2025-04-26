@@ -21,8 +21,8 @@ func initialize():
 			on_press = func(): Dispatcher.ui_open.emit("save_list")
 		})
 
-# should take in a slice of data the same length as page_size, and return an
-# array of Control nodes which we will then add as children.
+## should take in a slice of data the same length as page_size, and return an
+## array of Control nodes which we will then add as children.
 func load_items(data_slice: Array[Variant]) -> Array[Control]:
 	var buttons: Array[Control] = []
 	for d in data_slice:

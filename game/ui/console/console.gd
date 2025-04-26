@@ -9,11 +9,11 @@ const MAX_LOGGED_LINES = 20
 var logged_lines = []
 var user_input = ""
 
-# previously executed commands
+## previously executed commands
 var prev_commands = []
-# the current index of prev_commands
+## the current index of prev_commands
 var prev_index = null
-# the command that was in progress before we started going through prev commands
+## the command that was in progress before we started going through prev commands
 var stored_command = ''
 
 # =========================================================================== #
@@ -93,7 +93,7 @@ func cmd_help(args = []):
 
 # --------------------------------------------------------------------------- #
 
-# args: entity name or type, count (int), custom state (json)
+## args: entity name or type, count (int), custom state (json)
 func cmd_spawn(args = []):
 	if Player.garden == null:
 		put("Error: no garden is loaded")
@@ -227,7 +227,7 @@ func cmd_reset(_args):
 
 # --------------------------------------------------------------------------- #
 
-# quick n dirty way to clear _after_ we append the post-command newline
+## quick n dirty way to clear _after_ we append the post-command newline
 func cmd_clear(_args):
 	get_tree().create_timer(0.01).timeout.connect($output.clear)
 
@@ -334,8 +334,8 @@ func update_user_input():
 
 # --------------------------------------------------------------------------- #
 
-# substituting color bbcode for commands is so common that we do it every log,
-# so that text only needs to wrap the command in {c}...{/c}
+## substituting color bbcode for commands is so common that we do it every log,
+## so that text only needs to wrap the command in {c}...{/c}
 func put(x):
 	for line in str(x).split("\n"):
 		$output.append_text(line.format({

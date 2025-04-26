@@ -58,12 +58,12 @@ for each terrain type, looks up a valid tile for that bitmask value in the tile
 index for that terrain, and renders that tile to the terrain's display layer. 
 """
 
-# mapping from peering bits set on a TileSetAtlasSource in the editor to their
-# respective bitmask values for marching squares tiling.  uses to look up which
-# tile to use for each cell of each display map based on which terrain tile is
-# on the data cell at each of the display cell's corners.
-# the value assigned to each corner is arbitrary; what matters is that each is
-# a power of 2, so we can represent any combination with an integer < 16.
+## mapping from peering bits set on a TileSetAtlasSource in the editor to their
+## respective bitmask values for marching squares tiling.  uses to look up which
+## tile to use for each cell of each display map based on which terrain tile is
+## on the data cell at each of the display cell's corners.
+## the value assigned to each corner is arbitrary; what matters is that each is
+## a power of 2, so we can represent any combination with an integer < 16.
 const CORNER_BITMASK_VALUES = {
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: 1,
 	TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER: 2,
@@ -71,25 +71,25 @@ const CORNER_BITMASK_VALUES = {
 	TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER: 8
 }
 
-# mapping from terrain ids to the name of the display layer on which we draw
-# that terrain.  necessary to decouple terrain ids (which are serialized and
-# thus should stay the same) from display layer order.
-# note: only include a layer here if it actually has a TileSetAtlasSource with
-# peering data set up, or else this will break.
+## mapping from terrain ids to the name of the display layer on which we draw
+## that terrain.  necessary to decouple terrain ids (which are serialized and
+## thus should stay the same) from display layer order.
+## note: only include a layer here if it actually has a TileSetAtlasSource with
+## peering data set up, or else this will break.
 const TERRAIN_LAYERS = {
 	0: 'dirt', 1: 'grass', # 2: 'water'
 }
 
-# a dictionary of  `{ [terrain_id]: TileIndex }`; see `build_tile_index`.
-var tile_index_map = {}
+## a dictionary of  `{ [terrain_id]: TileIndex }`; see `build_tile_index`.
+var tile_index_map: Dictionary[int, Dictionary] = {}
 
 # =========================================================================== #
 #                         I N I T I A L I Z A T I O N                         #
 # --------------------------------------------------------------------------- #
 
-# build the tile index for each terrain type and add them to `tile_index_map`.
-# we reference this every time we render a display cell, but we only need to
-# build it once since the contents won't change.
+## build the tile index for each terrain type and add them to `tile_index_map`.
+## we reference this every time we render a display cell, but we only need to
+## build it once since the contents won't change.
 func _ready():
 	for idx in TERRAIN_LAYERS:
 		var layer_name = TERRAIN_LAYERS[idx]
@@ -100,14 +100,20 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-# returns a mapping from a marching squares bitmask value (0 to 15) to an array
-# of tile options from the TileSetAtlasSource that are valid for that bitmask,
-# ie `{ [bitmask]: Array[TileOption] }`, where a TileOption is a dict with
-# `{ coords: Vector2i, probability: float }`.
-static func build_tile_index(atlas: TileSetAtlasSource):
+## dollar store struct for fancy typing
+class TileOption:
+	var coords: Vector2i
+	var probability: float
+	func _init(dict: Dictionary): for key in dict: self[key] = dict[key]
+
+## returns a mapping from a marching squares bitmask value (0 to 15) to an array
+## of tile options from the TileSetAtlasSource that are valid for that bitmask,
+## ie `{ [bitmask]: Array[TileOption] }`, where a TileOption is a dict with
+## `{ coords: Vector2i, probability: float }`.
+static func build_tile_index(atlas: TileSetAtlasSource) -> Dictionary[int, Array]:
 	var grid_size = atlas.get_atlas_grid_size()
-	var tile_index = {}
-	for i in range(16): tile_index[i] = []
+	var tile_index: Dictionary[int, Array] = {}
+	for i in range(16): tile_index[i] = [] as Array[TileOption]
 	for y in grid_size.y:
 		for x in grid_size.x:
 			var tile_data: TileData = atlas.get_tile_data(Vector2i(x, y), 0)
@@ -116,10 +122,10 @@ static func build_tile_index(atlas: TileSetAtlasSource):
 			for corner in CORNER_BITMASK_VALUES:
 				if tile_data.get_terrain_peering_bit(corner) > -1:
 					bitmask += CORNER_BITMASK_VALUES[corner]
-			tile_index[bitmask].append({
+			tile_index[bitmask].append(TileOption.new({
 				coords = Vector2i(x, y),
 				probability = tile_data.probability
-			})
+			}))
 	return tile_index
 
 # =========================================================================== #
@@ -141,8 +147,8 @@ func set_cell_terrain(coords: Vector2i, idx: int):
 func get_cell_terrain(coords: Vector2i):
 	return get_cell_atlas_coords(coords).y
 
-# when we update a cell's terrain after the initial load, we also need to
-# rerender the four surrounding display cells on each display layer.
+## when we update a cell's terrain after the initial load, we also need to
+## rerender the four surrounding display cells on each display layer.
 func update_cell_terrain(coords: Vector2i, idx: int):
 	set_cell_terrain(coords, idx)
 	var display_cells = get_display_cell_neighbors(coords)
@@ -187,11 +193,11 @@ func load_terrain(data):
 #                D A T A / D I S P L A Y   C O N V E R S I O N                #
 # --------------------------------------------------------------------------- #
 
-# given the coords of a display cell, returns the coords of the four data cells
-# surrounding that display cell, mapped to the appropriate TileSet.CellNeighbor.
-# display cells are offset from data cells by half a tile left and up, meaning
-# the display cell at (1, 1) will have the data cell at (1, 1) as its bottom
-# right corner, the data cell at (0, 0) as its top left corner, and so on.
+## given the coords of a display cell, returns the coords of the four data cells
+## surrounding that display cell, mapped to the appropriate TileSet.CellNeighbor.
+## display cells are offset from data cells by half a tile left and up, meaning
+## the display cell at (1, 1) will have the data cell at (1, 1) as its bottom
+## right corner, the data cell at (0, 0) as its top left corner, and so on.
 func get_display_cell_neighbors(coords: Vector2i) -> Dictionary:
 	return {
 		TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER: coords + Vector2i(0, 0),
@@ -200,8 +206,8 @@ func get_display_cell_neighbors(coords: Vector2i) -> Dictionary:
 		TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER: coords + Vector2i(0, -1)
 	}
 
-# get the four display cells surrounding a data cell. when we update the terrain
-# on a data cell, we should update the display cells affected by the change.
+## get the four display cells surrounding a data cell. when we update the terrain
+## on a data cell, we should update the display cells affected by the change.
 func get_data_cell_neighbors(coords: Vector2i) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
 	for x in range(2): for y in range(2):
@@ -213,11 +219,11 @@ func get_data_cell_neighbors(coords: Vector2i) -> Array[Vector2i]:
 #                      D I S P L A Y   R E N D E R I N G                      #
 # --------------------------------------------------------------------------- #
 
-# first, find the terrain id for each corner of the display cell using the
-# four data cells which overlap this display cell.
-# then, on each display layer, set the cell to the tile in that layer's first 
-# tileset (there should only be one tileset for each layer) whose peering bits
-# match the cell's bitmask value for the layer's corresponding terrain. 
+## first, find the terrain id for each corner of the display cell using the
+## four data cells which overlap this display cell.
+## then, on each display layer, set the cell to the tile in that layer's first 
+## tileset (there should only be one tileset for each layer) whose peering bits
+## match the cell's bitmask value for the layer's corresponding terrain. 
 func render_display_cell(coords: Vector2i):
 	var corners = get_display_cell_neighbors(coords)
 	for idx in TERRAIN_LAYERS:
@@ -230,13 +236,13 @@ func render_display_cell(coords: Vector2i):
 		var bitmask = 15 if idx == 0 else calc_bitmask_for_terrain(idx, corners)
 		var valid_tiles: Array = tile_index_map[idx][bitmask]
 		if valid_tiles.is_empty(): continue
-		var tile = pick_tile_for_cell(coords, valid_tiles)
+		var tile: TileOption = pick_tile_for_cell(coords, valid_tiles)
 		layer.set_cell(coords, tileset, tile.coords)
 
 # --------------------------------------------------------------------------- #
 
-# given a terrain id and a dict of CellNeighbors (corners) to data cell coords,
-# add up the bitmask values for every corner whose data cell has that terrain.
+## given a terrain id and a dict of CellNeighbors (corners) to data cell coords,
+## add up the bitmask values for every corner whose data cell has that terrain.
 func calc_bitmask_for_terrain(id: int, corners: Dictionary) -> int:
 	var bitmask = 0
 	for corner in corners:
@@ -251,10 +257,10 @@ func calc_bitmask_for_terrain(id: int, corners: Dictionary) -> int:
 #                                  U T I L S                                  #
 # --------------------------------------------------------------------------- #
 
-# chooses randomly from a weighted array of valid tile options using a seed
-# determined by the given cell coords. this ensures that we always use the same
-# tile option for a given cell.
-static func pick_tile_for_cell(coords: Vector2i, options: Array):
+## chooses randomly from a weighted array of valid tile options using a seed
+## determined by the given cell coords. this ensures that we always use the same
+## tile option for a given cell.
+static func pick_tile_for_cell(coords: Vector2i, options: Array[TileOption]) -> TileOption:
 	var rng = RandomNumberGenerator.new()
 	rng.seed = coords.x**5 + coords.y**3
 	var idx = rng.rand_weighted(options.map(func (x): return x.probability))

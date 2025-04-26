@@ -26,7 +26,7 @@ signal year_changed
 
 #                            u i :   g e n e r a l                            #
 # --------------------------------------------------------------------------- #
-signal ui_open(args) # item_ref, open_type, restore_on_close
+signal ui_open(args) ## item_ref, open_type, restore_on_close
 signal ui_close
 signal ui_toggle(item_ref)
 
@@ -34,8 +34,8 @@ signal ui_toggle(item_ref)
 # --------------------------------------------------------------------------- #
 signal menu_open(args)
 
-signal menu_set_title(title) # sets the title of the main menu
-signal menu_set_pages(curent, total) # sets the number of pages of the main menu
+signal menu_set_title(title) ## sets the title of the main menu
+signal menu_set_pages(curent, total) ## sets the number of pages of the main menu
 
 signal menu_next_page(wrap)
 signal menu_prev_page(wrap)

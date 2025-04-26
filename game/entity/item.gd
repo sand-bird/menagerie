@@ -11,14 +11,14 @@ func _ready():
 
 # --------------------------------------------------------------------------- #
 
-# monsters must be initialized in code because they depend on data definitions
-# that are loaded at runtime.  this makes storing the node's children in a
-# PackedScene (monster.tscn) counter-productive, because the scene would be
-# incomplete/invalid without initialization at runtime.
-#
-# instead, we should create the entire scene programmatically.  this allows us
-# to initialize monsters in a single step with `new`, rather than having to
-# instantiate an incomplete scene and then initialize it in a separate step.
+## monsters must be initialized in code because they depend on data definitions
+## that are loaded at runtime.  this makes storing the node's children in a
+## PackedScene (monster.tscn) counter-productive, because the scene would be
+## incomplete/invalid without initialization at runtime.
+##
+## instead, we should create the entire scene programmatically.  this allows us
+## to initialize monsters in a single step with `new`, rather than having to
+## instantiate an incomplete scene and then initialize it in a separate step.
 func _init(data_: Dictionary, garden_: Garden):
 	super(data_, garden_)
 	mass = data.get('mass', 1)
