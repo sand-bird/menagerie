@@ -14,8 +14,8 @@ config/name="Menagerie"
 run/main_scene="res://system/game.tscn"
 config/features=PackedStringArray("4.4")
 boot_splash/bg_color=Color(0.721569, 0.945098, 0.972549, 1)
-boot_splash/image="res://assets/other/images/sandbird3_transp.png"
 boot_splash/fullsize=false
+boot_splash/image="res://assets/other/images/sandbird3_transp.png"
 config/icon="res://assets/ui/icons/thumbnail.png"
 name="Menagerie"
 main_scene="res://system/game.tscn"
@@ -142,6 +142,42 @@ console={
 "deadzone": 0.5,
 "events": [null, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":true,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":96,"location":0,"echo":false,"script":null)
 ]
+}
+cursor_left={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+]
+}
+cursor_right={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+]
+}
+cursor_up={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+]
+}
+cursor_down={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
+]
+}
+cursor_up_left={
+"deadzone": 0.2,
+"events": []
+}
+cursor_up_right={
+"deadzone": 0.2,
+"events": []
+}
+cursor_down_left={
+"deadzone": 0.2,
+"events": []
+}
+cursor_down_right={
+"deadzone": 0.2,
+"events": []
 }
 
 [input_devices]

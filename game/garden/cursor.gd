@@ -1,5 +1,19 @@
 extends Control
 
+## the cursor can read input from four distinct sources.  we continually listen
+## for input from all of these sources, but can only be in one "mode" at a time.
+## input mode determines some nuances of cursor behavior, eg touch mode hides
+## the cursor sprite and simply warps it to whereever was last touched; joy and
+## key modes have a greater stick radius than mouse mode, etc.
+enum InputMode {
+	MOUSE,
+	JOYSTICK,
+	KEY,
+	TOUCH
+}
+
+var input_mode: InputMode = InputMode.MOUSE
+
 ## the cursor has two parts: a collsion circle that tracks the mouse cursor
 ## (or is moved via joystick/keyboard input), and the hand graphic. when the
 ## circle overlaps an entity, the cursor becomes "stuck" to that entity.
@@ -52,7 +66,7 @@ func reset_anim():
 ## a hand graphic. unhide it for menus until we implement a custom menu cursor.
 func _notification(n: int):
 	if n == NOTIFICATION_UNPAUSED:
-		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if n == NOTIFICATION_PAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
@@ -90,23 +104,86 @@ func unstick(body: Node2D):
 
 # --------------------------------------------------------------------------- #
 
-var last_mouse_speed = Vector2()
-var time_since_mouse_moved = 0.0
-
-func measure_mouse_movement(delta):
-	var current_mouse_speed = Input.get_last_mouse_velocity()
-	if current_mouse_speed != last_mouse_speed:
-		last_mouse_speed = current_mouse_speed
-		time_since_mouse_moved = 0.0
-	else:
-		time_since_mouse_moved += delta
+func handle_mouse_input(e: InputEvent) -> Vector2:
+	if e is InputEventMouseMotion:
+		move(e.relative, true)
+		return e.relative
+	else: return Vector2.INF
 
 # --------------------------------------------------------------------------- #
+
+const JOY_SPEED: float = 2.0
+
+## we need the JoypadMotion event so we can measure axis strength (probably).
+func handle_joystick_input(e: InputEvent) -> Vector2:
+	if e is InputEventJoypadMotion:
+		var relative := Vector2(0, 0)
+		if e.axis == JOY_AXIS_LEFT_X:
+			relative.x += e.axis_value * JOY_SPEED
+		if e.axis == JOY_AXIS_LEFT_Y:
+			relative.y += e.axis_value * JOY_SPEED
+		move(relative, true)
+		return relative
+	else: return Vector2.INF
+
+# --------------------------------------------------------------------------- #
+
+## controls how fast key inputs move the cursor.
+## this should be a configurable option but we can use a const for now.
+const KEY_SPEED: float = 2.0
+## key_speed * (sqrt(2)/2), equivalent to cos(key_speed) or sin(key_speed)
+const DIAG_KEY_SPEED = KEY_SPEED * 0.7071
+
+const mapping = {
+	left = Vector2(-KEY_SPEED, 0),
+	right = Vector2(KEY_SPEED, 0),
+	up = Vector2(0, -KEY_SPEED),
+	down = Vector2(0, KEY_SPEED),
+	up_left = Vector2(-DIAG_KEY_SPEED, -DIAG_KEY_SPEED),
+	up_right = Vector2(DIAG_KEY_SPEED, -DIAG_KEY_SPEED),
+	down_left = Vector2(-DIAG_KEY_SPEED, DIAG_KEY_SPEED),
+	down_right = Vector2(DIAG_KEY_SPEED, DIAG_KEY_SPEED),
+}
+
+func handle_key_input(e: InputEvent) -> Vector2:
+	var relative: Vector2 = Vector2(0, 0)
+	if !e.is_action_type(): return Vector2.INF
+	for key in mapping:
+		if e.is_action("cursor_" + key) and e.is_pressed():
+			relative += mapping[key]
+	move(relative, true)
+	return relative
+
+# --------------------------------------------------------------------------- #
+
+func handle_touch_input(e: InputEvent) -> Vector2:
+	if e is InputEventScreenTouch and !e.canceled:
+		move(e.position)
+		return e.position
+	return Vector2.INF
+
+# --------------------------------------------------------------------------- #
+
+func _unhandled_input(e: InputEvent):
+	var touch_pos = handle_touch_input(e)
+	var key_diff = handle_key_input(e)
+	var joy_diff = handle_joystick_input(e)
+	var mouse_diff = handle_mouse_input(e)
+	
+	prints('touch', touch_pos, '| key:', key_diff, '| joy:', joy_diff, '| mouse:', mouse_diff)
+
+
+## move the stick area and unstick area.
+## 
+func move(pos: Vector2, diff = false):
+	if diff: $stick_area.position += pos
+	else: $stick_area.position = pos
+	$unstick_area.position = $stick_area.position
+
 
 func _process(delta):
 	if curr_body: $graphic/debug.text = str(curr_body)
 	else: $graphic/debug.text = str(Vector2i($graphic.position))
-	measure_mouse_movement(delta)
 	# decide whether to follow a highlighted entity. if player has moved the
 	# mouse recently, then stop following so we don't get stuck.
 #	if curr_body && time_since_mouse_moved > MOUSE_FOLLOW_DELAY and !selecting:
@@ -116,8 +193,7 @@ func _process(delta):
 		# mouse manually, so we have to set this separately
 #		$stick_area.position = curr_body.position
 #	else:
-	$stick_area.position = get_local_mouse_position()
-	$unstick_area.position = $stick_area.position
+
 	graphic_dest = curr_body.position if curr_body else $stick_area.position
 
 	var new_graphic_pos = $graphic.position.lerp(graphic_dest, lerp_val).round()

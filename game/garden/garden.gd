@@ -54,14 +54,14 @@ func get_map_size():
 #                            I N T E R A C T I O N                            #
 # --------------------------------------------------------------------------- #
 
-enum InputState {
+enum ControlState {
 	FREE,
 	SELECTING,
 	PLACING,
 	COMMANDING
 }
 
-var input_state := InputState.FREE
+var control_state := ControlState.FREE
 
 ## interaction targets
 var highlighted: Entity = null
@@ -96,7 +96,7 @@ func unhighlight(entity: Entity):
 func select(entity):
 	selected = entity
 	Dispatcher.entity_selected.emit(entity)
-	input_state = InputState.SELECTING
+	control_state = ControlState.SELECTING
 	# stick camera to entity
 	# maybe apply an additional shader
 	# open radial menu over entity
@@ -111,7 +111,7 @@ func unselect(entity):
 
 func command(monster: Monster):
 	commanding = monster
-	input_state = InputState.COMMANDING
+	control_state = ControlState.COMMANDING
 
 # --------------------------------------------------------------------------- #
 

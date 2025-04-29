@@ -1,16 +1,16 @@
 [gd_scene load_steps=26 format=4 uid="uid://bdejgafuf4gj2"]
 
-[ext_resource type="Script" path="res://garden/garden.gd" id="1"]
+[ext_resource type="Script" uid="uid://bo030tk6fj0mx" path="res://garden/garden.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://o6bdg8doc18k" path="res://garden/camera.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://clp67bw1gvg3i" path="res://assets/garden/terrains.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://gq6uq1bf8kdn" path="res://assets/garden/dirt.png" id="4_jtsro"]
-[ext_resource type="Script" path="res://garden/map.gd" id="4_p8gd4"]
+[ext_resource type="Script" uid="uid://c6ts8kvrbg77e" path="res://garden/map.gd" id="4_p8gd4"]
 [ext_resource type="Texture2D" uid="uid://biv3hxic7p3b5" path="res://assets/garden/grass.png" id="5_3335p"]
-[ext_resource type="Script" path="res://garden/nav.gd" id="6_vsf7u"]
-[ext_resource type="Script" path="res://garden/tint.gd" id="7"]
+[ext_resource type="Script" uid="uid://c6fjqm1sxyjku" path="res://garden/nav.gd" id="6_vsf7u"]
+[ext_resource type="Script" uid="uid://dyeqy4vk1bsod" path="res://garden/tint.gd" id="7"]
 [ext_resource type="PackedScene" uid="uid://c341es5fjd78x" path="res://garden/cursor.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://dqd3uy65kfqe1" path="res://ui/garden/clock_hud.tscn" id="9"]
-[ext_resource type="PackedScene" uid="uid://o54onhiymp3l" path="res://ui/garden/select_hud.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://o54onhiymp3l" path="res://ui/garden/entity_info.tscn" id="10"]
 [ext_resource type="Theme" uid="uid://bd8yvip5xenwp" path="res://assets/ui/theme.tres" id="12"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_6owde"]
@@ -195,7 +195,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_agdeu"]
 _data = {
-"tint": SubResource("2")
+&"tint": SubResource("2")
 }
 
 [sub_resource type="GDScript" id="GDScript_kmer2"]
@@ -260,7 +260,7 @@ script = ExtResource("7")
 
 [node name="anim" type="AnimationPlayer" parent="tint"]
 libraries = {
-"": SubResource("AnimationLibrary_agdeu")
+&"": SubResource("AnimationLibrary_agdeu")
 }
 
 [node name="cursor" parent="." instance=ExtResource("8")]
@@ -306,7 +306,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "12:00a.m."
 script = SubResource("3")
 
-[node name="select_hud" parent="ui" instance=ExtResource("10")]
+[node name="entity_info" parent="ui" instance=ExtResource("10")]
 offset_left = -2.0
 offset_right = -2.0
 offset_bottom = 4.0
