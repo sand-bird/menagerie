@@ -97,6 +97,7 @@ func select(entity):
 	selected = entity
 	Dispatcher.entity_selected.emit(entity)
 	control_state = ControlState.SELECTING
+	print("==================== SELECTED!!! ----- ", entity)
 	# stick camera to entity
 	# maybe apply an additional shader
 	# open radial menu over entity

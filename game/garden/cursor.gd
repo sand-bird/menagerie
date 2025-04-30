@@ -191,6 +191,7 @@ func handle_touch_input(e: InputEvent):
 	if e is InputEventScreenTouch and !e.canceled and !e.pressed:
 		input_mode = InputMode.TOUCH
 		move(make_canvas_position_local(e.position))
+	# TODO: select curr_body on a second touch
 
 # --------------------------------------------------------------------------- #
 
@@ -198,6 +199,9 @@ func handle_mouse_input(e: InputEvent):
 	if e is InputEventMouseMotion:
 		input_mode = InputMode.MOUSE
 		move(e.relative, true)
+	if (e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT
+			and !e.pressed and curr_body):
+		get_parent().select(curr_body)
 
 # --------------------------------------------------------------------------- #
 
@@ -210,6 +214,12 @@ var max_speed: float = 0.0
 ## handles both keypad and joystick input; whatever is bound to the four
 ## `cursor_{direction}` actions.
 func handle_action_input():
+	# handle selecting an entity
+	if Input.is_action_just_released(&'ui_accept') and curr_body:
+		get_parent().select(curr_body)
+	
+	# handle movement
+	# ---------------
 	var speed_mult = BASE_SPEED_MULT
 	if Input.is_action_pressed(&'cursor_accel'):
 		speed_mult *= FAST_SPEED_MULT
