@@ -114,10 +114,9 @@ func move_graphic():
 	var graphic_dest = curr_body.position if curr_body else $stick_area.position
 	$graphic.position = $graphic.position.lerp(graphic_dest, 0.3)
 	
-	var new_hand_y: float = curr_body.size * 2 if curr_body else stick_radius
-	# print(new_hand_y)
+	var new_hand_y: float = curr_body.size * 2.0 if curr_body else stick_radius
 	$graphic/hand_anchor.position.y = -new_hand_y
-	$graphic/shadow_anchor.position.y = curr_body.size - 1 if curr_body else stick_radius
+	$graphic/shadow_anchor.position.y = curr_body.size - 1.0 if curr_body else stick_radius
 
 
 # =========================================================================== #
@@ -162,17 +161,9 @@ func maybe_restick(vec: Vector2, diff: bool = false) -> void:
 			(func(x): return -alignment(vec, x)) if diff else
 			(func(x): return $stick_area.position.distance_squared_to(x.position))
 		))
-#	for pt in possible_targets:
-#		var dist = $stick_area.position.distance_squared_to(pt.position)
-#		var dir: Vector2 = $stick_area.position.direction_to(pt.position)
-#		var dot = dir.dot(vec.normalized())
-#		prints(pt.id, '| current:', pt == curr_body,
-#			'| dot:', dot, '| dist:'
-#		)
 	var target = possible_targets[0]
 	if !diff or alignment(vec, target) > 0: maybe_stick(target)
 
-# --------------------------------------------------------------------------- #
 
 ## returns the dot product of (a) the given movement vector and (b) the target's
 ## direction from the center of stick_area; the return value will be between -1
