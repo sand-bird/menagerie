@@ -137,7 +137,9 @@ static func sorter(fn: Callable):
 # --------------------------------------------------------------------------- #
 
 static func sort_by(arr: Array, fn: Callable):
-	arr.sort_custom(U.sorter(fn))
+	var new_arr = arr.duplicate()
+	new_arr.sort_custom(U.sorter(fn))
+	return new_arr
 
 # --------------------------------------------------------------------------- #
 
