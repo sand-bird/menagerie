@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://c341es5fjd78x"]
 
-[ext_resource type="Script" path="res://garden/cursor.gd" id="1"]
+[ext_resource type="Script" uid="uid://drba2tcvlxitx" path="res://garden/cursor.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://knkvn5yhvm8r" path="res://assets/garden/cursor.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://dhbeaaapgdms7" path="res://assets/garden/cursor_shadow.png" id="3"]
 
@@ -17,7 +17,7 @@ step = 0.01
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("graphic/hand:offset")
+tracks/0/path = NodePath("graphic/hand_anchor/hand:offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -33,7 +33,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("graphic/hand:offset")
+tracks/0/path = NodePath("graphic/hand_anchor/hand:offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -45,8 +45,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_3pitw"]
 _data = {
-"click": SubResource("3"),
-"cursor_bob": SubResource("4")
+&"click": SubResource("3"),
+&"cursor_bob": SubResource("4")
 }
 
 [node name="cursor" type="Control"]
@@ -66,11 +66,16 @@ offset_right = 49.0
 offset_bottom = 8.0
 text = "test"
 
-[node name="hand" type="Sprite2D" parent="graphic"]
+[node name="hand_anchor" type="Control" parent="graphic"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="hand" type="Sprite2D" parent="graphic/hand_anchor"]
 z_index = 999
 z_as_relative = false
+position = Vector2(3, -6)
 texture = ExtResource("2")
-offset = Vector2(0, 1)
 
 [node name="shadow_anchor" type="Control" parent="graphic"]
 anchors_preset = 0
@@ -91,5 +96,5 @@ shape = SubResource("2")
 
 [node name="anim" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_3pitw")
+&"": SubResource("AnimationLibrary_3pitw")
 }

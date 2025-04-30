@@ -1,50 +1,30 @@
 extends Control
 
-## the cursor can read input from four distinct sources.  we continually listen
+## the cursor can read input from three distinct sources.  we continually listen
 ## for input from all of these sources, but can only be in one "mode" at a time.
-## input mode determines some nuances of cursor behavior, eg touch mode hides
-## the cursor sprite and simply warps it to whereever was last touched; joy and
-## key modes have a greater stick radius than mouse mode, etc.
-enum InputMode {
-	MOUSE,
-	JOYSTICK,
-	KEY,
-	TOUCH
-}
+## input mode determines some nuances of cursor behavior.
+enum InputMode { MOUSE, ACTION, TOUCH }
 
-var input_mode: InputMode = InputMode.MOUSE
+var stick_radius: float:
+	set(x): $stick_area/shape.shape.radius = x
+	get: return $stick_area/shape.shape.radius
 
-## the cursor has two parts: a collsion circle that tracks the mouse cursor
-## (or is moved via joystick/keyboard input), and the hand graphic. when the
-## circle overlaps an entity, the cursor becomes "stuck" to that entity.
-## when stuck:
-## - both parts of the cursor should follow that entity around
-## - the camera should probably center on the entity (or save this for when the
-##   entity is "selected"?)
-## - (maybe) when the entity is too close to the edge of the garden for the
-##   camera to center on it, we should update the actual mouse position
-@onready var hand = $graphic/hand
+var unstick_radius: float:
+	set(x): $unstick_area/shape.shape.radius = x
+	get: return $unstick_area/shape.shape.radius
 
-const HAND_X = 3
-const DEFAULT_HAND_HEIGHT = 16
-## used for positioning the cursor hand graphic when it's stuck to an entity.
-## the entity's sprite should be taller than its shape (the shape represents the
-## part that touches the ground).  for quick & dirty positioning, we multiply
-## the shape's height by this magic number.
-const SHAPE_HEIGHT_MULTIPLIER = 1.2
-var hand_height: int = DEFAULT_HAND_HEIGHT
+var input_mode: InputMode = InputMode.MOUSE:
+	set(x):
+		input_mode = x
+		if x == InputMode.ACTION:
+			stick_radius = 5
+			unstick_radius = 6
+		if x == InputMode.MOUSE:
+			stick_radius = 3
+			unstick_radius = 6
 
-var selecting = false
 ## holds a pointer to the entity the cursor is currently stuck to, if one exists
-var curr_body: Node2D = null
-## time in seconds to wait since the mouse was last moved before we warp the
-## mouse cursor on top of the entity it's stuck to (if one exists). we do this
-## to keep the cursor stuck to a moving monster until the player moves it away.
-const MOUSE_FOLLOW_DELAY = 0.1
-
-## for lerping the cursor graphic
-var graphic_dest = Vector2()
-const lerp_val = 0.3
+var curr_body: Entity = null
 
 # --------------------------------------------------------------------------- #
 
@@ -72,136 +52,130 @@ func _notification(n: int):
 
 # --------------------------------------------------------------------------- #
 
+## we can only detect touches using InputEventScreenTouch, so we must handle
+## touch input in `_input` rather than in `_process`.
+## similarly for mouse, when `Input.mouse_mode` is CAPTURED, we must handle
+## mouse motion events with InputEventMouseMotion.relative. (since we sometimes
+## have to programmatically move the cursor, this is probably a friendlier
+## solution than force-moving the mouse cursor in those cases.)
+func _input(e: InputEvent):
+	handle_touch_input(e)
+	handle_mouse_input(e)
+	debug_radius_control(e)
+
+# --------------------------------------------------------------------------- #
+
+func _process(_delta):
+	handle_action_input()
+	move_graphic()
+	if curr_body: $graphic/debug.text = str(curr_body)
+	else: $graphic/debug.text = str(Vector2i($graphic.position))
+
+# --------------------------------------------------------------------------- #
+
+func debug_radius_control(e: InputEvent):
+	const label_offset = 48
+	if e is InputEventKey and e.is_released():
+		for i in 10:
+			if e.keycode - label_offset == i:
+				if e.shift_pressed: unstick_radius = i
+				else: stick_radius = i
+		print('-----------------------------')
+		print('stick: ', stick_radius, ' unstick: ', unstick_radius)
+		print('-----------------------------')
+
+# =========================================================================== #
+#                               M O V E M E N T                               #
+# --------------------------------------------------------------------------- #
+
+## move the invisible part of the cursor: the stick and unstick areas.
+## these should always move together. when the stick area overlaps an entity,
+## we attach the cursor graphic to it while allowing the areas to continue
+## moving freely. this creates the impression that the cursor is attracted to
+## entities, in proportion to the size of the stick area.
+func move(vec: Vector2, diff = false):
+	if diff: $stick_area.position += vec
+	else: $stick_area.position = vec
+	$unstick_area.position = $stick_area.position
+
+# --------------------------------------------------------------------------- #
+
+## move the visible part of the cursor: the hand and shadow.
+func move_graphic():
+	var graphic_dest = curr_body.position if curr_body else $stick_area.position
+	$graphic.position = $graphic.position.lerp(graphic_dest, 0.3)
+	
+	var new_hand_y: float = curr_body.size * 2 if curr_body else stick_radius
+	# print(new_hand_y)
+	$graphic/hand_anchor.position.y = -new_hand_y
+	$graphic/shadow_anchor.position.y = curr_body.size - 1 if curr_body else stick_radius
+
+
+# =========================================================================== #
+#                     T A R G E T   I N T E R A C T I O N                     #
+# --------------------------------------------------------------------------- #
+
 func maybe_stick(body: Node2D):
-	if selecting: return
-	if curr_body:
-		if body == curr_body: return
-		else: unstick(curr_body)
-	if body is Entity:
-		stick(body)
+	if curr_body and body == curr_body: return
+	if body is Entity: stick(body)
 
 # --------------------------------------------------------------------------- # 
 
 func stick(body: Entity):
+	if curr_body and curr_body != body: unstick(curr_body)
 	curr_body = body
-	var shape_node = body.shape.shape
-	if shape_node:
-		var shape_height = 8
-		if shape_node is CircleShape2D:
-			shape_height = shape_node.radius * 2
-		elif shape_node is RectangleShape2D:
-			shape_height = shape_node.size.y
-		hand_height = shape_height * SHAPE_HEIGHT_MULTIPLIER
-		get_parent().highlight(body)
+	get_parent().highlight(body)
 
 # --------------------------------------------------------------------------- #
 
 func unstick(body: Node2D):
 	if body != curr_body: return
-	hand_height = DEFAULT_HAND_HEIGHT
 	curr_body = null
 	get_parent().unhighlight(body)
 
+
+# =========================================================================== #
+#                         I N P U T   H A N D L I N G                         #
 # --------------------------------------------------------------------------- #
 
-func handle_mouse_input(e: InputEvent) -> Vector2:
+func handle_touch_input(e: InputEvent):
+	if e is InputEventScreenTouch and !e.canceled and !e.pressed:
+		input_mode = InputMode.TOUCH
+		move(make_canvas_position_local(e.position))
+
+# --------------------------------------------------------------------------- #
+
+func handle_mouse_input(e: InputEvent):
 	if e is InputEventMouseMotion:
+		input_mode = InputMode.MOUSE
 		move(e.relative, true)
-		return e.relative
-	else: return Vector2.INF
-
-# --------------------------------------------------------------------------- #
-
-const JOY_SPEED: float = 2.0
-
-## we need the JoypadMotion event so we can measure axis strength (probably).
-func handle_joystick_input(e: InputEvent) -> Vector2:
-	if e is InputEventJoypadMotion:
-		var relative := Vector2(0, 0)
-		if e.axis == JOY_AXIS_LEFT_X:
-			relative.x += e.axis_value * JOY_SPEED
-		if e.axis == JOY_AXIS_LEFT_Y:
-			relative.y += e.axis_value * JOY_SPEED
-		move(relative, true)
-		return relative
-	else: return Vector2.INF
 
 # --------------------------------------------------------------------------- #
 
 ## controls how fast key inputs move the cursor.
 ## this should be a configurable option but we can use a const for now.
-const KEY_SPEED: float = 2.0
-## key_speed * (sqrt(2)/2), equivalent to cos(key_speed) or sin(key_speed)
-const DIAG_KEY_SPEED = KEY_SPEED * 0.7071
+const BASE_SPEED_MULT: float = 2.5
+const FAST_SPEED_MULT: float = 1.8
+var max_speed: float = 0.0
 
-const mapping = {
-	left = Vector2(-KEY_SPEED, 0),
-	right = Vector2(KEY_SPEED, 0),
-	up = Vector2(0, -KEY_SPEED),
-	down = Vector2(0, KEY_SPEED),
-	up_left = Vector2(-DIAG_KEY_SPEED, -DIAG_KEY_SPEED),
-	up_right = Vector2(DIAG_KEY_SPEED, -DIAG_KEY_SPEED),
-	down_left = Vector2(-DIAG_KEY_SPEED, DIAG_KEY_SPEED),
-	down_right = Vector2(DIAG_KEY_SPEED, DIAG_KEY_SPEED),
-}
-
-func handle_key_input(e: InputEvent) -> Vector2:
-	var relative: Vector2 = Vector2(0, 0)
-	if !e.is_action_type(): return Vector2.INF
-	for key in mapping:
-		if e.is_action("cursor_" + key) and e.is_pressed():
-			relative += mapping[key]
-	move(relative, true)
-	return relative
-
-# --------------------------------------------------------------------------- #
-
-func handle_touch_input(e: InputEvent) -> Vector2:
-	if e is InputEventScreenTouch and !e.canceled:
-		move(e.position)
-		return e.position
-	return Vector2.INF
-
-# --------------------------------------------------------------------------- #
-
-func _unhandled_input(e: InputEvent):
-	var touch_pos = handle_touch_input(e)
-	var key_diff = handle_key_input(e)
-	var joy_diff = handle_joystick_input(e)
-	var mouse_diff = handle_mouse_input(e)
+## handles both keypad and joystick input; whatever is bound to the four
+## `cursor_{direction}` actions.
+func handle_action_input():
+	var speed_mult = BASE_SPEED_MULT
+	if Input.is_action_pressed(&'cursor_accel'):
+		speed_mult *= FAST_SPEED_MULT
 	
-	prints('touch', touch_pos, '| key:', key_diff, '| joy:', joy_diff, '| mouse:', mouse_diff)
-
-
-## move the stick area and unstick area.
-## 
-func move(pos: Vector2, diff = false):
-	if diff: $stick_area.position += pos
-	else: $stick_area.position = pos
-	$unstick_area.position = $stick_area.position
-
-
-func _process(delta):
-	if curr_body: $graphic/debug.text = str(curr_body)
-	else: $graphic/debug.text = str(Vector2i($graphic.position))
-	# decide whether to follow a highlighted entity. if player has moved the
-	# mouse recently, then stop following so we don't get stuck.
-#	if curr_body && time_since_mouse_moved > MOUSE_FOLLOW_DELAY and !selecting:
-#		print('this is where we would stick to the body')
-#		Player.garden.set_mouse_position(curr_body.position)
-		# get_global_mouse_position doesn't update until the player moves the
-		# mouse manually, so we have to set this separately
-#		$stick_area.position = curr_body.position
-#	else:
-
-	graphic_dest = curr_body.position if curr_body else $stick_area.position
-
-	var new_graphic_pos = $graphic.position.lerp(graphic_dest, lerp_val).round()
-
-	$graphic.position = graphic_dest if (
-		new_graphic_pos == $graphic.position.round()
-		and new_graphic_pos != graphic_dest
-	) else new_graphic_pos
-
-	var new_hand_y = lerp(hand.position.y, float(-hand_height), lerp_val)
-	hand.position = Vector2(HAND_X, new_hand_y).round()
+	# calculates a normalized vector from our direction actions.
+	# if key input, this is always max length (1) or 0 since keys don't have
+	# action strength. if axis input, the length can be less than 1.
+	var vector: Vector2 = Input.get_vector(
+			&'cursor_left', &'cursor_right', &'cursor_up', &'cursor_down'
+		) * speed_mult
+	# 
+	max_speed = min(max_speed, vector.length())
+	
+	if !vector.is_zero_approx():
+		max_speed = lerpf(max_speed, speed_mult, 0.1)
+		vector = vector.limit_length(max_speed)
+		input_mode = InputMode.ACTION
+		move(vector, true)

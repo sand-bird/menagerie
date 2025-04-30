@@ -39,9 +39,9 @@ func _ready():
 
 var input_map = {
 	menu = [open_menu],
-	menu_monsters = [open_menu, 'monsters'],
-	menu_items = [open_menu, 'items'],
-	menu_objects = [open_menu, 'objects'],
+#	menu_monsters = [open_menu, 'monsters'],
+#	menu_items = [open_menu, 'items'],
+#	menu_objects = [open_menu, 'objects'],
 	ui_cancel = [close]
 }
 
