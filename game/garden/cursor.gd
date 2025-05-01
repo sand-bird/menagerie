@@ -55,8 +55,10 @@ func _ready():
 func _notification(n: int):
 	if n == NOTIFICATION_UNPAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		if input_mode != InputMode.TOUCH: $graphic.show()
 	if n == NOTIFICATION_PAUSED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		$graphic.hide()
 
 # --------------------------------------------------------------------------- #
 

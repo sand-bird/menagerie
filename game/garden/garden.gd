@@ -23,6 +23,19 @@ func init(data):
 	Clock.start()
 
 
+func open_menu(entity: Entity):
+	var menu = load("res://ui/radial_menu.tscn").instantiate()
+	add_child(menu)
+	menu.position = entity.position
+	#var screen_pos = get_screen_relative_position(entity.position)
+	#Dispatcher.ui_open.emit('radial_menu')
+	#$ui.add_child(menu)
+	#menu.position = screen_pos
+
+
+func close_menu():
+	pass
+
 # =========================================================================== #
 #                      P O S I T I O N I N G   U T I L S                      #
 # --------------------------------------------------------------------------- #
@@ -98,13 +111,15 @@ func select(entity):
 	Dispatcher.entity_selected.emit(entity)
 	control_state = ControlState.SELECTING
 	print("==================== SELECTED!!! ----- ", entity)
-	# stick camera to entity
-	# maybe apply an additional shader
-	# open radial menu over entity
+	open_menu(entity)
+
 
 func unselect(entity):
 	Dispatcher.entity_unselected.emit(entity)
 	selected = null
+	Dispatcher.ui_close.emit('radial_menu')
+	control_state = ControlState.FREE
+	close_menu()
 	# unstick camera
 	# close radial menu
 
@@ -114,25 +129,6 @@ func command(monster: Monster):
 	commanding = monster
 	control_state = ControlState.COMMANDING
 
-# --------------------------------------------------------------------------- #
-
-func _input(e):
-	# touch mode: 
-	# - if input is touch release
-	# - and not dragging
-	# - and over an entity
-	if e is InputEventScreenTouch and !e.pressed:
-		print('touched!')
-		pass
-
-	# key mode
-	# --------
-	# if we have an entity highlighted, action button selects it
-	if e is InputEventAction:
-		if e.is_action_just_released('input/ui_accept') and !selected and !!highlighted:
-			select(highlighted)
-		if e.is_action_just_released('input/ui_cancel'):
-			if selected: unselect(selected)
 
 
 # =========================================================================== #
