@@ -176,7 +176,8 @@ func serialize() -> Dictionary:
 
 # --------------------------------------------------------------------------- #
 
-func deserialize(serialized = {}) -> void:
+func deserialize(serialized) -> void:
+	if not serialized is Dictionary: serialized = {}
 	for key in save_keys():
 		U.deserialize_value(self, serialized.get(key), key)
 	play_anim()
