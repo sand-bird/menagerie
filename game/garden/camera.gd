@@ -30,6 +30,7 @@ var stick_target = null
 # --------------------------------------------------------------------------- #
 
 func _ready():
+	anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
 	get_tree().get_root().size_changed.connect(_on_screen_resized)
 	$"..".resized.connect(_on_screen_resized)
 
@@ -113,7 +114,7 @@ func do_drag_scroll():
 
 # --------------------------------------------------------------------------- #
 
-## RTS-style scroll based on cursor position, only suitable for mouse input.
+## RTS-style scroll based on cursor position.
 ## scrolls the camera when the cursor reaches `Options.camera_edge_size` percent
 ## of the window's width or height from the edge of the window, with a speed
 ## proportionate to the cursor's distance from the absolute edge.
@@ -149,23 +150,24 @@ func do_joystick_scroll():
 # --------------------------------------------------------------------------- #
 
 func _process(_delta):
+	target_pos = $'../cursor/stick_area'.position.round()
 	# handle all our different scroll behaviors
-	for scroll_type in ['drag', 'edge', 'key', 'joystick']:
-		call('_'.join(['do', scroll_type, 'scroll']))
-
-	if stick_target:
-		target_pos = stick_target.position - screen_radius
-
+	#for scroll_type in ['drag', 'edge', 'key', 'joystick']:
+		#call('_'.join(['do', scroll_type, 'scroll']))
+#
+	#if stick_target:
+		#target_pos = stick_target.position - screen_radius
+#
 	# clamp target to camera bounds
-	target_pos = target_pos.clamp(min_pos, max_pos).round()
-
+#	target_pos = target_pos.clamp(min_pos, max_pos).round()
+#
 	# lerp camera to target position
-	if position != target_pos:
-		position = position.lerp(target_pos, Options.drag_scroll_flick_speed / Options.drag_scroll_flick_distance)
+	if position.round() != target_pos:
+		position = position.lerp(target_pos, 0.1)
 		align()
 
-	# update saved cursor position (for drag scroll)
-	last_mouse_pos = get_local_mouse_position()
+	## update saved cursor position (for drag scroll)
+	#last_mouse_pos = get_local_mouse_position()
 
 # --------------------------------------------------------------------------- #
 
